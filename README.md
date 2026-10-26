@@ -7,8 +7,7 @@
 
 <p align="center">
   <b>The PDF workbench; an open-source, modern PDF reader and editor, built in pure Rust.</b><br>
-  Read, organize, combine, split and secure PDFs in a fast, native app, written in Rust from the ground up.<br>
-  macOS · Windows · Linux · FreeBSD · the web
+  Read, organize, combine, split and secure PDFs in a fast, native app, written in Rust from the ground up.
 </p>
 
 <p align="center">
@@ -36,12 +35,7 @@
 <p align="center">
   <img src="docs/images/localpdf-viewer.png" alt="LocalPDF with the LocalPDF Showcase cover page open, the All tools panel on the left and 20 threaded comments on the right" width="100%">
   <br>
-  <sub>The LocalPDF Showcase, a 13-page specimen PDF, open with the All tools panel and threaded comments.</sub>
 </p>
-
-> [!NOTE]
-> **Local is a community of artists from all walks of life.** Digital, generative, music,
-> games &mdash; if you make things, you're one of us. **[Open a Discussion](https://github.com/Anon5T4R/local-pdf/discussions).**
 
 <p align="center">
   <a href="#highlights">Highlights</a> ·
