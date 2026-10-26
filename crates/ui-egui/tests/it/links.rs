@@ -23,14 +23,14 @@ fn discord_button_in_the_top_bar_opens_discord() {
     h.get_by_label("Discord").click();
     h.run_steps(2);
     assert_eq!(h.state().last_opened_url.as_deref(), Some(links::DISCORD));
-    assert_eq!(links::DISCORD, "https://discord.gg/artcraft");
+    assert_eq!(links::DISCORD, "https://github.com/Anon5T4R/local-pdf/discussions");
 }
 
 #[test]
 fn home_screen_links() {
     for (label, url) in [
         ("Join our Discord", links::DISCORD),
-        ("LocalPDF web page", "https://github.com/Anon5T4R/apps/localpdf"),
+        ("LocalPDF web page", "https://github.com/Anon5T4R/local-pdf"),
         ("LocalPDF on GitHub", "https://github.com/Anon5T4R/local-pdf"),
         ("Local website", "https://github.com/Anon5T4R"),
     ] {

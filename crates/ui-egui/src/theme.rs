@@ -391,6 +391,7 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
         .chain(localpdf_fonts::ui_hebrew_fonts())
         .chain(localpdf_fonts::ui_thai_fonts())
         .chain(localpdf_fonts::ui_devanagari_fonts())
+        .chain(localpdf_fonts::ui_symbols_fonts())
     {
         let name = face.name();
         if !fonts.font_data.contains_key(&name) {

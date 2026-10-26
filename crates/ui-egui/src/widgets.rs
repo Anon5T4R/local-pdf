@@ -556,7 +556,7 @@ pub fn progress_notice(app: &LocalPDFApp, ctx: &egui::Context) -> bool {
 pub fn local_logo(ui: &mut egui::Ui, height: f32) -> Response {
     let uri = "bytes://com.local.localpdf.svg";
     let bytes = include_bytes!("../../../assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg");
-    ui.add(egui::Image::from_bytes(uri, bytes).max_height(height).alt_text("LocalPDF"))
+    ui.add(egui::Image::from_bytes(uri, bytes).max_height(height).alt_text("Local"))
 }
 
 /// The LocalPDF mark (the app icon's source SVG, works on light and dark), `size` points square.
@@ -566,8 +566,8 @@ pub fn local_mark(ui: &mut egui::Ui, size: f32) -> Response {
             "bytes://com.local.localpdf.svg",
             include_bytes!("../../../assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg"),
         )
-        .fit_to_exact_size(vec2(size, size))
-        .alt_text("LocalPDF"),
+        .max_size(vec2(size, size))
+        .alt_text("Local"),
     )
 }
 

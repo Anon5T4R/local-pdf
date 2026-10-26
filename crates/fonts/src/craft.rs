@@ -108,6 +108,12 @@ fn hebrew_face(faces: &[CraftFont], bold: bool) -> Option<&CraftFont> {
     hebr().find(|f| f.style == style).or_else(|| hebr().find(|f| f.style == "Regular")).or_else(|| hebr().next())
 }
 
+/// The `Zsym` craft-fonts faces (Noto Sans Symbols) for symbols the interface faces lack
+/// (e.g. U+22EF, the menu overflow glyph). Empty without craft-fonts or without a symbols face.
+pub fn ui_symbols_fonts() -> Vec<&'static CraftFont> {
+    CRAFT_FONTS.iter().filter(|f| f.covers("Zsym")).collect()
+}
+
 /// Interface CJK faces in fallback order for the UI language: Simplified Chinese first when
 /// `prefer_hans`, otherwise Japanese first (the historical default).
 ///
