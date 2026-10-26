@@ -87,6 +87,7 @@ impl EguiGlow {
                 &mut self.viewport_info,
                 commands,
                 window,
+                &mut self.egui_winit,
                 &mut actions_requested,
             );
             for action in actions_requested {

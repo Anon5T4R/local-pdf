@@ -431,6 +431,10 @@ pub struct NativeOptions {
     /// [`with_android_app`]: winit::platform::android::EventLoopBuilderExtAndroid::with_android_app
     #[cfg(target_os = "android")]
     pub android_app: Option<winit::platform::android::activity::AndroidApp>,
+
+    /// Per-viewport window and raw-input callbacks, see [`crate::ViewportHooks`].
+    #[cfg(any(feature = "glow", feature = "wgpu_no_default_features"))]
+    pub viewport_hooks: Option<std::sync::Arc<dyn crate::ViewportHooks>>,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -455,6 +459,9 @@ impl Clone for NativeOptions {
 
             #[cfg(target_os = "android")]
             android_app: self.android_app.clone(),
+
+            #[cfg(any(feature = "glow", feature = "wgpu_no_default_features"))]
+            viewport_hooks: self.viewport_hooks.clone(),
 
             ..*self
         }
@@ -503,6 +510,9 @@ impl Default for NativeOptions {
 
             #[cfg(target_os = "android")]
             android_app: None,
+
+            #[cfg(any(feature = "glow", feature = "wgpu_no_default_features"))]
+            viewport_hooks: None,
         }
     }
 }
@@ -739,6 +749,20 @@ pub struct Frame {
     /// taken by the app. See [`Frame::request_activation_token`].
     #[cfg(not(target_arch = "wasm32"))]
     pub(crate) activation_token: Option<String>,
+
+    /// The context [`Frame::set_ui_language`] sets the language of; `None` in kittest.
+    pub(crate) egui_ctx: Option<egui::Context>,
+
+    /// See [`Frame::set_text_input_language`].
+    #[cfg(target_arch = "wasm32")]
+    pub(crate) text_input_language: Option<String>,
+}
+
+#[cfg(target_arch = "wasm32")]
+fn set_if_changed(slot: &mut Option<String>, value: Option<&str>) {
+    if slot.as_deref() != value {
+        *slot = value.map(ToOwned::to_owned);
+    }
 }
 
 // Implementing `Clone` would violate the guarantees of `HasWindowHandle` and `HasDisplayHandle`.
@@ -781,6 +805,9 @@ impl Frame {
             window: None,
             #[cfg(not(target_arch = "wasm32"))]
             activation_token: None,
+            egui_ctx: None,
+            #[cfg(target_arch = "wasm32")]
+            text_input_language: None,
             storage: None,
             #[cfg(feature = "wgpu_no_default_features")]
             wgpu_render_state: None,
@@ -800,6 +827,41 @@ impl Frame {
     /// Information about the integration.
     pub fn info(&self) -> &IntegrationInfo {
         &self.info
+    }
+
+    /// Set the language of the user interface, as a BCP 47 tag (`"ar"`, `"pt-BR"`).
+    ///
+    /// Same as [`egui::Context::set_language`]: it goes on the root of the AccessKit tree.
+    /// On the web, eframe also speaks the built-in screen reader's output in this language, and
+    /// uses it as the default `lang` of the hidden text input used for IME
+    /// (see [`Self::set_text_input_language`]).
+    ///
+    /// Cheap to call every frame.
+    pub fn set_ui_language(&self, lang: Option<&str>) {
+        if let Some(ctx) = &self.egui_ctx
+            && ctx.options(|o| o.language.as_deref() != lang)
+        {
+            ctx.set_language(lang.map(ToOwned::to_owned));
+        }
+    }
+
+    /// Set the language of the text being typed, as a BCP 47 tag, when it differs from the
+    /// UI language (for example the language of the document being edited).
+    ///
+    /// On the web, eframe puts it in the `lang` attribute of the hidden text input used for IME,
+    /// which browsers pass on to IMEs, virtual keyboards and spell checkers.
+    /// `None` falls back to the UI language ([`egui::Context::language`]).
+    ///
+    /// Cheap to call every frame. Does nothing natively.
+    pub fn set_text_input_language(&mut self, lang: Option<&str>) {
+        cfg_select! {
+            target_arch = "wasm32" => {
+                set_if_changed(&mut self.text_input_language, lang);
+            }
+            _ => {
+                let _ = (self, lang);
+            }
+        }
     }
 
     /// A place where you can store custom data in a way that persists when you restart the app.

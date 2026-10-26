@@ -5,6 +5,9 @@
 
 #![expect(clippy::identity_op)]
 
+#[cfg(test)]
+mod text_tests;
+
 use emath::{
     GuiRounding as _, NumExt as _, Pos2, Rangef, Rect, Rot2, TSTransform, Vec2, fast_midpoint,
     pos2, remap, vec2,
@@ -2318,48 +2321,60 @@ impl Tessellator {
                     .map(|index| index + index_offset),
             );
 
-            out.vertices.extend(
-                row.visuals
-                    .mesh
-                    .vertices
-                    .iter()
-                    .enumerate()
-                    .map(|(i, vertex)| {
-                        let Vertex { pos, uv, mut color } = *vertex;
+            // Specialize the vertex loop once per row. Even a never-taken runtime color
+            // branch inhibits optimization of ordinary text (upstream issue #8731).
+            // Literal arguments keep a single source for the two compiled loop bodies.
+            macro_rules! append_vertices {
+                ($color_glyphs:literal) => {{
+                    out.vertices.extend(
+                        row.visuals
+                            .mesh
+                            .vertices
+                            .iter()
+                            .enumerate()
+                            .map(|(i, vertex)| {
+                                let Vertex { pos, uv, mut color } = *vertex;
 
-                        if let Some(override_text_color) = override_text_color {
-                            // Only override the glyph color (not background color, strike-through color, etc)
-                            if row.visuals.glyph_vertex_range.contains(&i) {
-                                color = *override_text_color;
-                            }
-                        } else if color == Color32::PLACEHOLDER {
-                            color = *fallback_color;
-                        }
+                                if let Some(override_text_color) = override_text_color {
+                                    // Only override the glyph color (not background color, strike-through color, etc)
+                                    if row.visuals.glyph_vertex_range.contains(&i) {
+                                        color = *override_text_color;
+                                    }
+                                } else if color == Color32::PLACEHOLDER {
+                                    color = *fallback_color;
+                                }
 
-                        if is_color_glyph_vertex(i) {
-                            // Don't tint: keep the glyph's own color, but respect the text alpha.
-                            color = Color32::from_white_alpha(color.a());
-                        }
+                                if $color_glyphs && is_color_glyph_vertex(i) {
+                                    // Don't tint: keep the glyph's own color, but respect the text alpha.
+                                    color = Color32::from_white_alpha(color.a());
+                                }
 
-                        if *opacity_factor < 1.0 {
-                            color = color.gamma_multiply(*opacity_factor);
-                        }
+                                if *opacity_factor < 1.0 {
+                                    color = color.gamma_multiply(*opacity_factor);
+                                }
 
-                        debug_assert!(color != Color32::PLACEHOLDER, "A placeholder color made it to the tessellator. You forgot to set a fallback color.");
+                                debug_assert!(color != Color32::PLACEHOLDER, "A placeholder color made it to the tessellator. You forgot to set a fallback color.");
 
-                        let offset = if *angle == 0.0 {
-                            pos.to_vec2()
-                        } else {
-                            rotator * pos.to_vec2()
-                        };
+                                let offset = if *angle == 0.0 {
+                                    pos.to_vec2()
+                                } else {
+                                    rotator * pos.to_vec2()
+                                };
 
-                        Vertex {
-                            pos: final_row_pos + offset,
-                            uv: (uv.to_vec2() * uv_normalizer).to_pos2(),
-                            color,
-                        }
-                    }),
-            );
+                                Vertex {
+                                    pos: final_row_pos + offset,
+                                    uv: (uv.to_vec2() * uv_normalizer).to_pos2(),
+                                    color,
+                                }
+                            }),
+                    );
+                }};
+            }
+            if row_has_color_glyphs {
+                append_vertices!(true);
+            } else {
+                append_vertices!(false);
+            }
 
             if *underline != Stroke::NONE {
                 self.tessellate_line_segment(

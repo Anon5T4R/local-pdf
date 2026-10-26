@@ -2,7 +2,7 @@ name: RGB driver transport
 on:
   workflow_dispatch:
   push:
-    branches: [main, codex/shared-rgb-print-20261013]
+    branches: [main]
     paths: ['crates/gdi/**', '.github/workflows/gdi.yml']
   pull_request:
     paths: ['crates/gdi/**', '.github/workflows/gdi.yml']

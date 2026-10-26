@@ -3,58 +3,49 @@ use std::error::Error;
 
 #[cfg(x11_platform)]
 fn main() -> Result<(), Box<dyn Error>> {
-    use softbuffer::{Context, Surface};
     use winit::application::ApplicationHandler;
     use winit::event::WindowEvent;
-    use winit::event_loop::{ActiveEventLoop, EventLoop, OwnedDisplayHandle};
-    use winit::platform::x11::WindowAttributesX11;
-    use winit::window::{Window, WindowAttributes, WindowId};
+    use winit::event_loop::{ActiveEventLoop, EventLoop};
+    use winit::platform::x11::WindowAttributesExtX11;
+    use winit::window::{Window, WindowId};
 
     #[path = "util/fill.rs"]
     mod fill;
-    #[path = "util/tracing.rs"]
-    mod tracing;
 
-    #[derive(Debug)]
     pub struct XEmbedDemo {
         parent_window_id: u32,
-        surface: Option<Surface<OwnedDisplayHandle, Box<dyn Window>>>,
+        window: Option<Window>,
     }
 
     impl ApplicationHandler for XEmbedDemo {
-        fn can_create_surfaces(&mut self, event_loop: &dyn ActiveEventLoop) {
-            let mut window_attributes = WindowAttributes::default()
+        fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+            let window_attributes = Window::default_attributes()
                 .with_title("An embedded window!")
-                .with_surface_size(winit::dpi::LogicalSize::new(128.0, 128.0));
-            let x11_attrs =
-                WindowAttributesX11::default().with_embed_parent_window(self.parent_window_id);
-            window_attributes = window_attributes.with_platform_attributes(Box::new(x11_attrs));
+                .with_inner_size(winit::dpi::LogicalSize::new(128.0, 128.0))
+                .with_embed_parent_window(self.parent_window_id);
 
-            let window = event_loop.create_window(window_attributes).unwrap();
-            let context = Context::new(event_loop.owned_display_handle()).unwrap();
-            let surface = Surface::new(&context, window).unwrap();
-            self.surface = Some(surface);
+            self.window = Some(event_loop.create_window(window_attributes).unwrap());
         }
 
         fn window_event(
             &mut self,
-            event_loop: &dyn ActiveEventLoop,
+            event_loop: &ActiveEventLoop,
             _window_id: WindowId,
             event: WindowEvent,
         ) {
+            let window = self.window.as_ref().unwrap();
             match event {
                 WindowEvent::CloseRequested => event_loop.exit(),
                 WindowEvent::RedrawRequested => {
-                    let surface = self.surface.as_mut().unwrap();
-                    surface.window().pre_present_notify();
-                    fill::fill(surface);
+                    window.pre_present_notify();
+                    fill::fill_window(window);
                 },
                 _ => (),
             }
         }
 
-        fn about_to_wait(&mut self, _event_loop: &dyn ActiveEventLoop) {
-            self.surface.as_ref().unwrap().window().request_redraw();
+        fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+            self.window.as_ref().unwrap().request_redraw();
         }
     }
 
@@ -64,13 +55,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         .ok_or("Expected a 32-bit X11 window ID as the first argument.")?
         .parse::<u32>()?;
 
-    tracing::init();
+    tracing_subscriber::fmt::init();
     let event_loop = EventLoop::new()?;
 
-    Ok(event_loop.run_app(XEmbedDemo { parent_window_id, surface: None })?)
+    let mut app = XEmbedDemo { parent_window_id, window: None };
+    event_loop.run_app(&mut app).map_err(Into::into)
 }
 
 #[cfg(not(x11_platform))]
 fn main() -> Result<(), Box<dyn Error>> {
-    panic!("This example is only supported on X11 platforms.")
+    println!("This example is only supported on X11 platforms.");
+    Ok(())
 }

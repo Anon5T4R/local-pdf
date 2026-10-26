@@ -1,26 +1,34 @@
 # Android
-/winit-android                      @MarijnS95
+/src/platform/android.rs            @MarijnS95
+/src/platform_impl/android          @MarijnS95
 
-# Apple (AppKit + UIKit)
-/winit-appkit                       @madsmtm
-/winit-uikit                        @madsmtm
-/winit-common/src/core_foundation   @madsmtm
-/winit-common/src/event_handler.rs  @madsmtm
+# iOS
+/src/platform/ios.rs                @madsmtm
+/src/platform_impl/ios              @madsmtm
 
-# XKB
-/winit-common/src/xkb               @kchibisov
+# Unix
+/src/platform_impl/linux/mod.rs     @kchibisov
 
 # Wayland
-/winit-wayland                      @kchibisov
+/src/platform/wayland.rs            @kchibisov
+/src/platform_impl/linux/wayland    @kchibisov
 
 # X11
-/winit-x11                          @kchibisov
+/src/platform/x11.rs                @kchibisov @notgull
+/src/platform_impl/linux/x11        @kchibisov @notgull
+
+# macOS
+/src/platform/macos.rs              @madsmtm
+/src/platform_impl/macos            @madsmtm
 
 # Web
-/winit-web                          @daxpedda
+/src/platform/web.rs                @daxpedda
+/src/platform_impl/web              @daxpedda
 
-# Windows (Win32) (UNOWNED)
-#/winit-win32                       
+# Windows
+/src/platform/windows.rs            @notgull
+/src/platform_impl/windows          @notgull
 
 # Orbital (Redox OS)
-/winit-orbital                      @jackpot51
+/src/platform/orbital.rs            @jackpot51
+/src/platform_impl/orbital          @jackpot51

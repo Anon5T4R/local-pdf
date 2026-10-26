@@ -8,7 +8,7 @@ use crate::{App, epi};
 use super::{
     AppRunner, PanicHandler,
     events::{self, ResizeObserverContext},
-    text_agent::TextAgent,
+    text_agent::{TextAgent, TextAgentListeners},
 };
 
 /// This is how `eframe` runs your web application
@@ -30,6 +30,9 @@ pub struct WebRunner {
     /// the panic handler, since they aren't `Send`.
     events_to_unsubscribe: Rc<RefCell<Vec<EventToUnsubscribe>>>,
 
+    /// Separate from the possibly poisoned `AppRunner`; callbacks hold weak runner references.
+    text_agent_listeners: Rc<RefCell<TextAgentListeners>>,
+
     /// Current animation frame in flight.
     frame: Rc<RefCell<Option<AnimationFrameRequest>>>,
 
@@ -46,6 +49,7 @@ impl WebRunner {
             panic_handler,
             app_runner: Rc::new(RefCell::new(None)),
             events_to_unsubscribe: Rc::new(RefCell::new(Default::default())),
+            text_agent_listeners: Default::default(),
             frame: Default::default(),
             resize_observer: Default::default(),
         }
@@ -107,6 +111,13 @@ impl WebRunner {
     }
 
     fn unsubscribe_from_all_events(&self) {
+        {
+            // Removing a focused DOM node can synchronously invoke a global focus handler.
+            // Panic cleanup must remain safe even when that callback reenters this method.
+            if let Ok(mut listeners) = self.text_agent_listeners.try_borrow_mut() {
+                listeners.shutdown();
+            }
+        }
         let events_to_unsubscribe: Vec<_> =
             core::mem::take(&mut *self.events_to_unsubscribe.borrow_mut());
 
@@ -138,6 +149,12 @@ impl WebRunner {
         }
     }
 
+    #[cfg(test)]
+    pub(super) fn install_test_app_runner(&self, runner: AppRunner) -> Result<(), JsValue> {
+        self.app_runner.replace(Some(runner));
+        super::events::install_test_focus_and_keyboard(self)
+    }
+
     /// Returns `None` if there has been a panic, or if we have been destroyed.
     /// In that case, just return to JS.
     pub(crate) fn try_lock(&self) -> Option<core::cell::RefMut<'_, AppRunner>> {
@@ -162,6 +179,14 @@ impl WebRunner {
     ) -> Option<core::cell::RefMut<'_, ConcreteApp>> {
         self.try_lock()
             .map(|lock| core::cell::RefMut::map(lock, |runner| runner.app_mut::<ConcreteApp>()))
+    }
+
+    pub(super) fn text_agent_context(&self) -> super::text_agent::TextAgentContext {
+        super::text_agent::TextAgentContext {
+            runner: Rc::downgrade(&self.app_runner),
+            panic_handler: self.panic_handler.clone(),
+            listeners: Rc::clone(&self.text_agent_listeners),
+        }
     }
 
     /// Convenience function to reduce boilerplate and ensure that all event handlers

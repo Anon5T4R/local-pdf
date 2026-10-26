@@ -4,7 +4,7 @@ use super::{
     AppRunner, Closure, DEBUG_RESIZE, JsCast as _, JsValue, WebRunner, button_from_mouse_event,
     location_hash, modifiers_from_kb_event, modifiers_from_mouse_event, modifiers_from_wheel_event,
     native_pixels_per_point, pos_from_mouse_event, prefers_color_scheme, primary_touch_pos,
-    push_touches, text_from_keyboard_event, translate_key,
+    push_touches, text_from_keyboard_event,
 };
 
 use js_sys::Reflect;
@@ -109,6 +109,16 @@ pub(crate) fn install_event_handlers(runner_ref: &WebRunner) -> Result<(), JsVal
     Ok(())
 }
 
+#[cfg(test)]
+pub(super) fn install_test_focus_and_keyboard(runner: &WebRunner) -> Result<(), JsValue> {
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas = runner.try_lock().unwrap().canvas().clone();
+    install_blur_focus(runner, &document)?;
+    install_blur_focus(runner, &canvas)?;
+    install_keydown(runner, &canvas)?;
+    install_keyup(runner, &canvas)
+}
+
 fn install_blur_focus(runner_ref: &WebRunner, target: &EventTarget) -> Result<(), JsValue> {
     // NOTE: because of the text agent we sometime miss 'blur' events,
     // so we also poll the focus state each frame in `AppRunner::logic`.
@@ -193,13 +203,13 @@ pub(crate) fn on_keydown(event: web_sys::KeyboardEvent, runner: &mut AppRunner) 
     let modifiers = modifiers_from_kb_event(&event);
     runner.input.set_modifiers(modifiers);
 
-    let key = event.key();
-    let logical_key = translate_key(&key);
-    let physical_key = translate_key(&event.code());
+    let crate::web_keys::KeyDown {
+        key: logical_key,
+        physical_key,
+        query_layout_map: _, // handled by `key_down`
+    } = runner.input.keys.key_down(&event);
 
-    // Fall back to the physical key so that modifier keys (which have no logical
-    // `egui::Key`) and non-Latin layouts still produce a `Key` event.
-    if let Some(active_key) = logical_key.or(physical_key) {
+    if let Some(active_key) = logical_key {
         let egui_event = egui::Event::Key {
             key: active_key,
             physical_key,
@@ -289,10 +299,9 @@ pub(crate) fn on_keyup(event: web_sys::KeyboardEvent, runner: &mut AppRunner) {
 
     let mut should_stop_propagation = true;
 
-    let logical_key = translate_key(&event.key());
-    let physical_key = translate_key(&event.code());
+    let (logical_key, physical_key) = runner.input.keys.key_up(&event);
 
-    if let Some(active_key) = logical_key.or(physical_key) {
+    if let Some(active_key) = logical_key {
         let egui_event = egui::Event::Key {
             key: active_key,
             physical_key,
@@ -323,6 +332,9 @@ pub(crate) fn on_keyup(event: web_sys::KeyboardEvent, runner: &mut AppRunner) {
             };
             should_stop_propagation &= (runner.web_options.should_stop_propagation)(&egui_event);
             runner.input.raw.events.push(egui_event);
+            // Retire authority only for the release actually queued. A keydown still in
+            // raw.events may not yet be present in ctx.keys_down and still needs its owner.
+            runner.input.keys.release_receipts_for(key);
         }
     }
 

@@ -2,13 +2,13 @@
 
 [![Crates.io](https://img.shields.io/crates/v/winit.svg)](https://crates.io/crates/winit)
 [![Docs.rs](https://docs.rs/winit/badge.svg)](https://docs.rs/winit)
-[![UNSTABLE docs](https://img.shields.io/github/actions/workflow/status/rust-windowing/winit/docs.yml?branch=master&label=UNSTABLE%20docs
+[![Master Docs](https://img.shields.io/github/actions/workflow/status/rust-windowing/winit/docs.yml?branch=master&label=master%20docs
 )](https://rust-windowing.github.io/winit/winit/index.html)
 [![CI Status](https://github.com/rust-windowing/winit/workflows/CI/badge.svg)](https://github.com/rust-windowing/winit/actions)
 
 ```toml
 [dependencies]
-winit = "0.31.0-beta.3"
+winit = "0.30.13"
 ```
 
 ## [Documentation](https://docs.rs/winit)
@@ -39,7 +39,7 @@ For contributing guidelines see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## MSRV Policy
 
-This crate's Minimum Supported Rust Version (MSRV) is **1.86**. Changes to
+This crate's Minimum Supported Rust Version (MSRV) is **1.70**. Changes to
 the MSRV will be accompanied by a minor version bump.
 
 As a **tentative** policy, the upper bound of the MSRV is given by the following
@@ -54,14 +54,11 @@ Where `sid` is the current version of `rustc` provided by [Debian Sid], and
 
 [Debian Sid]: https://packages.debian.org/sid/rustc
 
-An exception is made for the Android platform, where a higher Rust version
+The exception is for the Android platform, where a higher Rust version
 must be used for certain Android features. In this case, the MSRV will be
 capped at the latest stable version of Rust minus three. This inconsistency is
 not reflected in Cargo metadata, as it is not powerful enough to expose this
 restriction.
-
-Redox OS is also not covered by this MSRV policy, as it requires a Rust nightly
-toolchain to compile.
 
 All crates in the [`rust-windowing`] organizations have the
 same MSRV policy.
@@ -70,10 +67,4 @@ same MSRV policy.
 
 ### Platform-specific usage
 
-Check out the [`winit::platform`](https://docs.rs/winit/latest/winit/platform/index.html) module for platform-specific usage.
-
-### Repository License
-
-Note that the license in `LICENSE` doesn't apply in full to the DPI package [./dpi](./dpi).
-Full details can be found in that folder's README.
-<!-- This doesn't apply to users of the Winit crate, but this is also the repository level README -->
+Check out the [`winit::platform`](https://rust-windowing.github.io/winit/winit/platform/index.html) module for platform-specific usage.

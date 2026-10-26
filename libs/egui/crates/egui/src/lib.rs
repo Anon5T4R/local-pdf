@@ -405,6 +405,7 @@ pub mod gui_zoom;
 mod hit_test;
 mod id;
 mod id_salt;
+pub mod ime_context;
 mod input_state;
 mod interaction;
 pub mod introspection;
@@ -440,6 +441,9 @@ pub mod widgets;
 mod callstack;
 pub mod class;
 
+#[cfg(test)]
+mod right_to_left_tests;
+
 pub use accesskit;
 pub use accesskit::Role;
 
@@ -470,7 +474,8 @@ pub mod text {
     pub use crate::text_selection::CCursorRange;
     pub use epaint::text::{
         ByteIndex, ByteRange, CharIndex, CharRange, FontData, FontDefinitions, FontFamily, Fonts,
-        Galley, LayoutJob, LayoutSection, TextFormat, TextWrapping, cursor::CCursor,
+        Galley, LayoutJob, LayoutSection, LineBreak, LineBreakKind, LineBreaker, SimpleLineBreaker,
+        TextFormat, TextWrapping, cursor::CCursor,
     };
 }
 
@@ -498,8 +503,8 @@ pub use self::{
             TouchPhase, ViewportEvent, ViewportInfo,
         },
         output::{
-            self, CursorIcon, CustomCursorImage, FullOutput, LogicOutput, OpenUrl, OutputCommand,
-            PlatformOutput, UserAttentionType, WidgetInfo, role_description,
+            self, CursorIcon, CustomCursorImage, FullOutput, ImeChangeCause, LogicOutput, OpenUrl,
+            OutputCommand, PlatformOutput, UserAttentionType, WidgetInfo, role_description,
         },
     },
     drag_and_drop::DragAndDrop,
@@ -507,6 +512,10 @@ pub use self::{
     grid::Grid,
     id::{Id, IdMap, IdSet},
     id_salt::{AsIdSalt, IdSalt, IdSaltMap, IdSaltSet},
+    ime_context::{
+        CommittedText, ImeContextTracker, ImeContextUpdate, ImeMutationStamp, ImeObservation,
+        ImeResetId, ImeTarget,
+    },
     input_state::{InputOptions, InputState, MultiTouchInfo, PointerState, SurrenderFocusOn},
     layers::{LayerId, Order},
     layout::Layout,

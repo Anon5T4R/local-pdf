@@ -106,6 +106,7 @@ impl Ui {
             accessibility_parent,
             accessibility_label,
             accessibility_role,
+            language,
             classes,
         } = ui_builder;
 
@@ -138,6 +139,7 @@ impl Ui {
             min_rect: placer.min_rect(),
             max_rect: placer.max_rect(),
             classes,
+            language: language.clone(),
         };
 
         let mut ui = Ui {
@@ -193,6 +195,9 @@ impl Ui {
             if let Some(label) = accessibility_label {
                 node.set_label(label);
             }
+            if let Some(language) = language {
+                node.set_language(language);
+            }
         });
 
         ui
@@ -222,6 +227,7 @@ impl Ui {
             accessibility_parent,
             accessibility_label,
             accessibility_role,
+            language,
             classes,
         } = ui_builder;
 
@@ -274,6 +280,7 @@ impl Ui {
             min_rect: placer.min_rect(),
             max_rect: placer.max_rect(),
             classes,
+            language: language.clone(),
         };
 
         let mut child_ui = Ui {
@@ -328,6 +335,9 @@ impl Ui {
                 node.set_role(role);
                 if let Some(label) = accessibility_label {
                     node.set_label(label);
+                }
+                if let Some(language) = language {
+                    node.set_language(language);
                 }
             });
 
@@ -471,6 +481,16 @@ impl Ui {
     #[inline]
     pub fn stack(&self) -> &Arc<UiStack> {
         &self.stack
+    }
+
+    /// The language of this `Ui`'s content, as a BCP 47 tag:
+    /// the nearest [`UiBuilder::language`] up the stack, or else the
+    /// language of the user interface ([`Context::language`]).
+    pub fn language(&self) -> Option<String> {
+        match self.stack.language() {
+            Some(language) => Some(language.to_owned()),
+            None => self.ctx().language(),
+        }
     }
 
     /// Get a reference to the parent [`Context`].
@@ -2351,7 +2371,8 @@ impl Ui {
         CollapsingHeader::new(heading).show(self, add_contents)
     }
 
-    /// Create a child ui which is indented to the right.
+    /// Create a child ui which is indented to the right
+    /// (to the left with [`crate::Style::right_to_left`]).
     ///
     /// The `id_salt` here be anything at all.
     // TODO(emilk): remove `id_salt` argument?
@@ -2376,8 +2397,13 @@ impl Ui {
         );
 
         let indent = self.spacing().indent;
+        let right_to_left = self.style().right_to_left;
         let mut child_rect = self.placer.available_rect_before_wrap();
-        child_rect.min.x += indent;
+        if right_to_left {
+            child_rect.max.x -= indent;
+        } else {
+            child_rect.min.x += indent;
+        }
 
         let mut child_ui = self.new_child(UiBuilder::new().id_salt(id_salt).max_rect(child_rect));
         let ret = add_contents(&mut child_ui);
@@ -2391,19 +2417,29 @@ impl Ui {
             }
 
             let stroke = self.visuals().widgets.noninteractive.bg_stroke;
-            let left_top = child_rect.min - 0.5 * indent * Vec2::X;
-            let left_bottom = pos2(left_top.x, child_ui.min_rect().bottom() - 2.0);
+            // The line sits in the middle of the indent, on the start side.
+            let line_x = if right_to_left {
+                child_rect.max.x + 0.5 * indent
+            } else {
+                child_rect.min.x - 0.5 * indent
+            };
+            let line_top = pos2(line_x, child_rect.min.y);
+            let line_bottom = pos2(line_x, child_ui.min_rect().bottom() - 2.0);
 
             if left_vline {
-                // draw a faint line on the left to mark the indented section
-                self.painter.line_segment([left_top, left_bottom], stroke);
+                // draw a faint line to mark the indented section
+                self.painter.line_segment([line_top, line_bottom], stroke);
             }
 
             if end_with_horizontal_line {
                 let fudge = 2.0; // looks nicer with button rounding in collapsing headers
-                let right_bottom = pos2(child_ui.min_rect().right() - fudge, left_bottom.y);
+                let end_x = if right_to_left {
+                    child_ui.min_rect().left() + fudge
+                } else {
+                    child_ui.min_rect().right() - fudge
+                };
                 self.painter
-                    .line_segment([left_bottom, right_bottom], stroke);
+                    .line_segment([line_bottom, pos2(end_x, line_bottom.y)], stroke);
             }
         }
 

@@ -37,7 +37,7 @@ impl TextureManager {
 
         self.metas.entry(id).or_insert_with(|| TextureMeta {
             name,
-            resolution: image.resolution(),
+            size: image.size(),
             bytes_per_pixel: image.bytes_per_pixel(),
             retain_count: 1,
             options,
@@ -53,13 +53,13 @@ impl TextureManager {
         if let Some(meta) = self.metas.get_mut(&id) {
             if let Some(pos) = delta.pos {
                 debug_assert!(
-                    pos[0] + delta.image.width() <= meta.resolution[0]
-                        && pos[1] + delta.image.height() <= meta.resolution[1],
+                    pos[0] + delta.image.width() <= meta.size[0]
+                        && pos[1] + delta.image.height() <= meta.size[1],
                     "Partial texture update is outside the bounds of texture {id:?}",
                 );
             } else {
                 // whole update
-                meta.resolution = delta.image.resolution();
+                meta.size = delta.image.size();
                 meta.bytes_per_pixel = delta.image.bytes_per_pixel();
             }
             self.delta.push(id, delta);
@@ -132,7 +132,7 @@ pub struct TextureMeta {
     pub name: String,
 
     /// width x height
-    pub resolution: [usize; 2],
+    pub size: [usize; 2],
 
     /// 4 or 1
     pub bytes_per_pixel: usize,
@@ -148,7 +148,7 @@ impl TextureMeta {
     /// Size in bytes.
     /// width x height x [`Self::bytes_per_pixel`].
     pub fn bytes_used(&self) -> usize {
-        self.resolution[0] * self.resolution[1] * self.bytes_per_pixel
+        self.size[0] * self.size[1] * self.bytes_per_pixel
     }
 }
 
@@ -335,7 +335,9 @@ impl TexturesDelta {
 impl Drop for TexturesDelta {
     fn drop(&mut self) {
         debug_assert!(
-            self.is_empty(),
+            // Preserve an in-flight application/test panic. A second panic from Drop would
+            // abort the process and hide the original UI failure instead of diagnosing it.
+            self.is_empty() || std::thread::panicking(),
             "Dropped TexturesDelta with {} unapplied deltas. Deltas need to be handled. \
             If you want to drop this intentionally call `clear` before dropping.",
             self.free.len() + self.set.len()
@@ -353,7 +355,7 @@ impl core::fmt::Debug for TexturesDelta {
             #[expect(clippy::iter_over_hash_type)]
             for (tex_id, deltas) in &self.set {
                 for delta in deltas {
-                    let size = delta.image.resolution();
+                    let size = delta.image.size();
                     if let Some(pos) = delta.pos {
                         write!(
                             string,
@@ -376,5 +378,37 @@ impl core::fmt::Debug for TexturesDelta {
             debug_struct.field("free", &self.free);
         }
         debug_struct.finish()
+    }
+}
+
+#[cfg(all(test, panic = "unwind"))]
+mod drop_tests {
+    #![expect(clippy::disallowed_methods)] // These regressions exercise unwinding itself.
+
+    use super::TexturesDelta;
+
+    #[test]
+    fn pending_texture_deltas_preserve_the_original_unwind() {
+        let result = std::panic::catch_unwind(|| {
+            let mut delta = TexturesDelta::default();
+            delta.free.insert(crate::TextureId::Managed(42));
+            panic!("original UI failure");
+        });
+        let payload = result.expect_err("the original panic must still propagate");
+        assert_eq!(payload.downcast_ref::<&str>(), Some(&"original UI failure"));
+    }
+
+    #[test]
+    #[cfg(debug_assertions)]
+    fn pending_texture_deltas_still_reject_an_ordinary_unhandled_drop() {
+        let result = std::panic::catch_unwind(|| {
+            let mut delta = TexturesDelta::default();
+            delta.free.insert(crate::TextureId::Managed(42));
+            drop(delta);
+        });
+        assert!(
+            result.is_err(),
+            "normal drops must still enforce renderer ownership"
+        );
     }
 }

@@ -240,6 +240,7 @@ impl EpiIntegration {
             raw_display_handle: window.display_handle().map(|h| h.as_raw()),
             raw_window_handle: window.window_handle().map(|h| h.as_raw()),
             activation_token: None,
+            egui_ctx: Some(egui_ctx.clone()),
         };
 
         let icon = native_options
@@ -420,6 +421,7 @@ impl EpiIntegration {
 
         raw_input.time = Some(self.beginning.elapsed().as_secs_f64());
 
+        super::viewport_hooks::with(|hooks| hooks.raw_input(&self.egui_ctx, &mut raw_input));
         app.raw_input_hook(&self.egui_ctx, &mut raw_input);
 
         raw_input

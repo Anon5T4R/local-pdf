@@ -17,19 +17,6 @@ jobs:
     - name: Check Formatting
       run: cargo fmt -- --check
 
-  taplo:
-    name: Taplo
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: taiki-e/checkout-action@v1
-      - name: Install Taplo
-        uses: taiki-e/install-action@v2
-        with:
-          tool: taplo-cli
-      - name: Run Taplo
-        run: taplo fmt --check
-
   typos:
     name: Check for typos
     runs-on: ubuntu-latest
@@ -55,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolchain: [stable, nightly, '1.86']
+        toolchain: [stable, nightly, '1.70.0']
         platform:
           # Note: Make sure that we test all the `docs.rs` targets defined in Cargo.toml!
           - { name: 'Windows 64bit MSVC', target: x86_64-pc-windows-msvc,   os: windows-latest,  }
@@ -66,42 +53,27 @@ jobs:
           - { name: 'Linux 64bit',        target: x86_64-unknown-linux-gnu, os: ubuntu-latest,   }
           - { name: 'X11',                target: x86_64-unknown-linux-gnu, os: ubuntu-latest, options: '--no-default-features --features=x11' }
           - { name: 'Wayland',            target: x86_64-unknown-linux-gnu, os: ubuntu-latest, options: '--no-default-features --features=wayland,wayland-dlopen' }
-          - { name: 'Android',            target: aarch64-linux-android,    os: ubuntu-latest, options: '--package winit --features=android-native-activity', cmd: 'apk -- ' }
+          - { name: 'Android',            target: aarch64-linux-android,    os: ubuntu-latest, options: '--package=winit --features=android-native-activity', cmd: 'apk --' }
           - { name: 'Redox OS',           target: x86_64-unknown-redox,     os: ubuntu-latest,   }
-          - { name: 'macOS x86_64',       target: x86_64-apple-darwin,      os: macos-latest,    }
-          - { name: 'macOS Aarch64',      target: aarch64-apple-darwin,     os: macos-latest,    }
-          - { name: 'macOS Private APIs', target: aarch64-apple-darwin,     os: macos-latest, options: '--package winit --features=private-apple-apis' }
+          - { name: 'macOS',              target: x86_64-apple-darwin,      os: macos-latest,    }
           - { name: 'iOS x86_64',         target: x86_64-apple-ios,         os: macos-latest,    }
           - { name: 'iOS Aarch64',        target: aarch64-apple-ios,        os: macos-latest,    }
-          - { name: 'Web',                target: wasm32-unknown-unknown,   os: ubuntu-latest,   }
+          - { name: 'web',                target: wasm32-unknown-unknown,   os: ubuntu-latest,   }
         exclude:
-              # Web on nightly needs extra arguments
-
-          - toolchain: nightly
-            platform: { name: 'Web' }
-            # Rustup is broken.
-          - toolchain: nightly
-            platform: { name: 'Windows 32bit GNU' }
           # Android is tested on stable-3
-          - toolchain: '1.86'
-            platform: { name: 'Android' }
-          # Redox OS doesn't follow MSRV
-          - toolchain: '1.86'
-            platform: { name: 'Redox OS' }
+          - toolchain: '1.70.0'
+            platform: { name: 'Android', target: aarch64-linux-android, os: ubuntu-latest, options: '--package=winit --features=android-native-activity', cmd: 'apk --' }
         include:
-          - toolchain: '1.86'
-            platform: { name: 'Android', target: aarch64-linux-android, os: ubuntu-latest, options: '--package winit --features=android-native-activity', cmd: 'apk -- ' }
-          - toolchain: 'nightly'
-            platform: { name: 'Web', target: wasm32-unknown-unknown, os: ubuntu-latest, test-options: -Zdoctest-xcompile }
+          - toolchain: '1.70.0'
+            platform: { name: 'Android', target: aarch64-linux-android, os: ubuntu-latest, options: '--package=winit --features=android-native-activity', cmd: 'apk --' }
           - toolchain: 'nightly'
             platform: {
-              name:         'Web Atomic',
-              target:       wasm32-unknown-unknown,
-              os:           ubuntu-latest,
-              options:      '-Zbuild-std=panic_abort,std',
-              test-options: -Zdoctest-xcompile,
-              rustflags:    '-Ctarget-feature=+atomics,+bulk-memory',
-              components:   rust-src,
+              name:       'web Atomic',
+              target:     wasm32-unknown-unknown,
+              os:         ubuntu-latest,
+              options:    '-Zbuild-std=panic_abort,std',
+              rustflags:  '-Ctarget-feature=+atomics,+bulk-memory',
+              components: rust-src,
             }
 
     env:
@@ -111,10 +83,8 @@ jobs:
 
       # Faster compilation and error on warnings
       RUSTFLAGS: '--codegen=debuginfo=0 --deny=warnings ${{ matrix.platform.rustflags }}'
-      RUSTDOCFLAGS: ${{ matrix.platform.rustflags }}
 
       OPTIONS: --target=${{ matrix.platform.target }} ${{ matrix.platform.options }}
-      TEST_OPTIONS: ${{ matrix.platform.test-options }}
       CMD: ${{ matrix.platform.cmd }}
 
     steps:
@@ -125,7 +95,7 @@ jobs:
       # the cache has been downloaded.
       #
       # This could be avoided if we added Cargo.lock to the repository.
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v3
       with:
         # https://doc.rust-lang.org/cargo/guide/cargo-home.html#caching-the-cargo-home-in-ci
         path: |
@@ -137,7 +107,17 @@ jobs:
 
     - name: Generate lockfile
       # Also updates the crates.io index
-      run: cargo generate-lockfile
+      run: |
+           cargo generate-lockfile
+           cargo update -p ahash --precise 0.8.7
+           cargo update -p bumpalo --precise 3.14.0
+           cargo update -p softbuffer --precise 0.4.0
+           cargo update -p objc2-encode --precise 4.0.3
+           cargo update -p orbclient --precise 0.3.47
+           cargo update -p image --precise 0.25.0
+           cargo update -p gethostname@1.1.0 --precise 1.0.2
+           cargo update -p unicode-ident --precise 1.0.10
+           cargo update -p syn --precise 2.0.114
 
     - name: Install GCC Multilib
       if: (matrix.platform.os == 'ubuntu-latest') && contains(matrix.platform.target, 'i686')
@@ -146,7 +126,7 @@ jobs:
     - name: Cache cargo-apk
       if: contains(matrix.platform.target, 'android')
       id: cargo-apk-cache
-      uses: actions/cache@v5
+      uses: actions/cache@v3
       with:
         path: ~/.cargo/bin/cargo-apk
         # Change this key if we update the required cargo-apk version
@@ -160,11 +140,6 @@ jobs:
     - name: Install cargo-apk
       if: contains(matrix.platform.target, 'android') && (steps.cargo-apk-cache.outputs.cache-hit != 'true')
       run: cargo install cargo-apk --version=^0.9.7 --locked
-
-    - uses: taiki-e/cache-cargo-install-action@v3
-      if: contains(matrix.platform.target, 'wasm32') && matrix.toolchain == 'nightly'
-      with:
-        tool: wasm-bindgen-cli
 
     - uses: dtolnay/rust-toolchain@master
       with:
@@ -180,109 +155,56 @@ jobs:
     - name: Build crate
       run: cargo $CMD build $OPTIONS
 
-    - name: Test winit core
-      run: cargo test -p winit-core
-
-    - name: Test winit Android
-      if: contains(matrix.platform.target, 'android')
-      run: cargo $CMD test -p winit-android --features native-activity --no-run
-
-    - name: Test winit Common (EventHandler)
-      run: cargo $CMD test -p winit-common --features event-handler --no-run
-
-    - name: Test winit Common (CF)
-      if: contains(matrix.platform.target, 'apple')
-      run: cargo $CMD test -p winit-common --features core-foundation --no-run
-
-    - name: Test winit Common (XKB)
-      if: contains(matrix.platform.target, 'linux-gnu')
-      run: cargo $CMD test -p winit-common --features xkb,x11,wayland --no-run
-
-    - name: Test winit AppKit
-      if: contains(matrix.platform.target, 'macos')
-      run: cargo $CMD test -p winit-appkit $OPTIONS
-
-    - name: Test winit Orbital
-      if: contains(matrix.platform.target, 'redox')
-      run: cargo test -p winit-orbital
-
-    - name: Test winit UIKit
-      if: contains(matrix.platform.target, 'ios')
-      # TODO: Run on Simulator
-      run: cargo $CMD test -p winit-uikit $OPTIONS --no-run
-
-    - name: Test winit Web
-      if: contains(matrix.platform.target, 'wasm')
-      run: cargo $CMD test -p winit-web $OPTIONS --no-run
-
-    - name: Test winit Win32
-      if: contains(matrix.platform.target, 'windows')
-      run: cargo $CMD test -p winit-win32 $OPTIONS
-
-    - name: Test winit X11
-      if: contains(matrix.platform.target, 'linux-gnu')
-      run: cargo $CMD test -p winit-x11 --target=${{ matrix.platform.target }}
-
-    - name: Test winit Wayland
-      if: contains(matrix.platform.target, 'linux-gnu')
-      run: cargo $CMD test -p winit-wayland --target=${{ matrix.platform.target }}
-
     # Test only on Linux x86_64, so we avoid spending unnecessary CI hours.
     - name: Test dpi crate
       if: >
         contains(matrix.platform.name, 'Linux 64bit') &&
-        matrix.toolchain != '1.86'
+        matrix.toolchain != '1.70.0'
       run: cargo test -p dpi
-
-    - name: Check dpi crate (no_std)
-      if: >
-        contains(matrix.platform.name, 'Linux 64bit') &&
-        matrix.toolchain != '1.86'
-      run: cargo check -p dpi --no-default-features
 
     - name: Build tests
       if: >
         !contains(matrix.platform.target, 'redox') &&
-        matrix.toolchain != '1.86'
+        matrix.toolchain != '1.70.0'
       run: cargo $CMD test --no-run $OPTIONS
 
     - name: Run tests
       if: >
         !contains(matrix.platform.target, 'android') &&
         !contains(matrix.platform.target, 'ios') &&
-        (!contains(matrix.platform.target, 'wasm32') || matrix.toolchain == 'nightly') &&
+        !contains(matrix.platform.target, 'wasm32') &&
         !contains(matrix.platform.target, 'redox') &&
-        matrix.toolchain != '1.86'
+        matrix.toolchain != '1.70.0'
       run: cargo $CMD test $OPTIONS
 
     - name: Lint with clippy
       if: (matrix.toolchain == 'stable') && !contains(matrix.platform.options, '--no-default-features')
-      run: cargo clippy --all-targets $OPTIONS $TEST_OPTIONS -- -Dwarnings
+      run: cargo clippy --all-targets $OPTIONS -- -Dwarnings
 
     - name: Build tests with serde enabled
       if: >
         !contains(matrix.platform.target, 'redox') &&
-        matrix.toolchain != '1.86'
-      run: cargo $CMD test --no-run $OPTIONS $TEST_OPTIONS --features serde
+        matrix.toolchain != '1.70.0'
+      run: cargo $CMD test --no-run $OPTIONS --features serde
 
     - name: Run tests with serde enabled
       if: >
         !contains(matrix.platform.target, 'android') &&
         !contains(matrix.platform.target, 'ios') &&
-        (!contains(matrix.platform.target, 'wasm32') || matrix.toolchain == 'nightly') &&
+        !contains(matrix.platform.target, 'wasm32') &&
         !contains(matrix.platform.target, 'redox') &&
-        matrix.toolchain != '1.86'
-      run: cargo $CMD test $OPTIONS $TEST_OPTIONS --features serde
+        matrix.toolchain != '1.70.0'
+      run: cargo $CMD test $OPTIONS --features serde
 
     - name: Check docs.rs documentation
       if: matrix.toolchain == 'nightly'
-      run: cargo doc --no-deps $OPTIONS --features=serde,mint,android-native-activity
+      run: cargo doc --no-deps $OPTIONS --features=rwh_04,rwh_05,rwh_06,serde,mint,android-native-activity
       env:
         RUSTDOCFLAGS: '--deny=warnings ${{ matrix.platform.rustflags }} --cfg=docsrs --cfg=unreleased_changelogs'
 
     # See restore step above
     - name: Save cache of cargo folder
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v3
       with:
         path: |
           ~/.cargo/registry/index/
@@ -291,37 +213,33 @@ jobs:
         key: cargo-${{ matrix.toolchain }}-${{ matrix.platform.name }}-${{ hashFiles('Cargo.lock') }}
 
   cargo-deny:
-    name: Run cargo-deny
+    name: Run cargo-deny on ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
+
+    # TODO: remove this matrix when https://github.com/EmbarkStudios/cargo-deny/issues/324 is resolved
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { name: 'Android', target: aarch64-linux-android }
+          - { name: 'iOS', target: aarch64-apple-ios }
+          - { name: 'Linux', target: x86_64-unknown-linux-gnu }
+          - { name: 'macOS', target: x86_64-apple-darwin }
+          - { name: 'Redox OS', target: x86_64-unknown-redox }
+          - { name: 'web', target: wasm32-unknown-unknown }
+          - { name: 'Windows', target: x86_64-pc-windows-gnu }
 
     steps:
     - uses: taiki-e/checkout-action@v1
     - uses: EmbarkStudios/cargo-deny-action@v2
       with:
+        command: check
         log-level: error
-
-  eslint:
-    name: ESLint
-
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./winit-web/src/script
-
-    steps:
-      - uses: taiki-e/checkout-action@v1
-      - name: Setup NPM
-        run: npm install
-      - name: Run ESLint
-        run: npx eslint@9.38.0
+        arguments: --all-features --target ${{ matrix.platform.target }}
 
   swc:
     name: Minimize JavaScript
-
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./winit-web/src/script
 
     steps:
       - uses: taiki-e/checkout-action@v1
@@ -329,7 +247,7 @@ jobs:
         run: sudo npm i -g @swc/cli
       - name: Run SWC
         run: |
-          swc . --ignore node_modules,**/*.d.ts --only **/*.ts -d . --out-file-extension min.js
+          swc src/platform_impl/web/web_sys/worker.js -o src/platform_impl/web/web_sys/worker.min.js
       - name: Check for diff
         run: |
           [[ -z $(git status -s) ]]

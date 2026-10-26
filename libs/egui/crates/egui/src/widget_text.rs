@@ -816,9 +816,20 @@ impl WidgetText {
         let wrap_mode = wrap_mode.unwrap_or_else(|| ui.wrap_mode());
         let text_wrapping = TextWrapping::from_wrap_mode_and_width(wrap_mode, available_width);
 
-        self.into_galley_impl(ui.ctx(), style, text_wrapping, fallback_font.into(), valign)
+        self.layout_with_language(
+            ui.ctx(),
+            style,
+            text_wrapping,
+            fallback_font.into(),
+            valign,
+            ui.language(),
+        )
     }
 
+    /// Layout with the given wrapping.
+    ///
+    /// Text without a [`LayoutJob::language`] gets the language of the user interface
+    /// ([`crate::Context::language`]).
     pub fn into_galley_impl(
         self,
         ctx: &crate::Context,
@@ -826,6 +837,27 @@ impl WidgetText {
         text_wrapping: TextWrapping,
         fallback_font: FontSelection,
         default_valign: Align,
+    ) -> Arc<Galley> {
+        let language = ctx.language();
+        self.layout_with_language(
+            ctx,
+            style,
+            text_wrapping,
+            fallback_font,
+            default_valign,
+            language,
+        )
+    }
+
+    /// `language` fills in [`LayoutJob::language`] where the text doesn't set one.
+    fn layout_with_language(
+        self,
+        ctx: &crate::Context,
+        style: &Style,
+        text_wrapping: TextWrapping,
+        fallback_font: FontSelection,
+        default_valign: Align,
+        language: Option<String>,
     ) -> Arc<Galley> {
         match self {
             Self::Text(text) => {
@@ -850,6 +882,7 @@ impl WidgetText {
                     },
                 );
                 layout_job.wrap = text_wrapping;
+                layout_job.language = layout_job.language.or(language);
                 ctx.fonts_mut(|f| f.layout_job(layout_job))
             }
             Self::RichText(text) => {
@@ -859,11 +892,13 @@ impl WidgetText {
                     default_valign,
                 );
                 layout_job.wrap = text_wrapping;
+                layout_job.language = layout_job.language.or(language);
                 ctx.fonts_mut(|f| f.layout_job(layout_job))
             }
             Self::LayoutJob(job) => {
                 let mut job = Arc::unwrap_or_clone(job);
                 job.wrap = text_wrapping;
+                job.language = job.language.or(language);
                 ctx.fonts_mut(|f| f.layout_job(job))
             }
             Self::Galley(galley) => galley,

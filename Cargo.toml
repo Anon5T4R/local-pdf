@@ -144,4 +144,4 @@ egui_system_font_provider = { path = "libs/egui/crates/egui_system_font_provider
 eframe = { path = "libs/egui/crates/eframe/" }
 egui_demo_lib = { path = "libs/egui/crates/egui_demo_lib/" }
 egui_inspection = { path = "libs/egui/crates/egui_inspection/" }
-winit = { path = "libs/winit/winit/" }
+winit = { path = "libs/winit/" }

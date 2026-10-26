@@ -142,6 +142,17 @@ pub enum Event {
     /// IME Event
     Ime(ImeEvent),
 
+    /// Actual ordered completion of an application-requested native composition reset.
+    ///
+    /// Integrations emit this only for the corresponding viewport/window's completed local
+    /// cancellation fence, never immediately upon calling the reset API. Custom editors must
+    /// match their latest request at this exact position in the raw event stream. Stock
+    /// [`crate::TextEdit`] ignores this control event; it does not mutate text or focus.
+    ImeResetCompleted {
+        /// The exact opaque request retained by the integration.
+        request_id: crate::ImeResetId,
+    },
+
     /// On touch screens, report this *in addition to*
     /// [`Self::PointerMoved`], [`Self::PointerButton`], [`Self::PointerGone`]
     Touch {

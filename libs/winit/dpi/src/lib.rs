@@ -54,25 +54,13 @@
 //!
 //! * `serde`: Enables serialization/deserialization of certain types with [Serde](https://crates.io/crates/serde).
 //! * `mint`: Enables mint (math interoperability standard types) conversions.
-//! * `std` (enabled by default): Uses the standard library mathematical functions (normally through
-//!   your target platform's libm). This feature also changes the library's license from `Apache-2.0
-//!   AND MIT` to `APACHE-2.0` (only). For full details, see the package README.
 //!
-//! To use this library on a target without the standard library available, you should disable
-//! default features (thus disabling the `std` feature, with the license consequences thereof).
 //!
 //! [points]: https://en.wikipedia.org/wiki/Point_(typography)
 //! [picas]: https://en.wikipedia.org/wiki/Pica_(typography)
 
-#![cfg_attr(docsrs, feature(doc_cfg), doc(auto_cfg(hide(doc, docsrs))))]
-#![cfg_attr(feature = "std", forbid(unsafe_code))]
-#![no_std]
-
-#[cfg(not(feature = "std"))]
-mod libm;
-
-#[cfg(any(feature = "std", test))]
-extern crate std;
+#![cfg_attr(docsrs, feature(doc_auto_cfg, doc_cfg_hide), doc(cfg_hide(doc, docsrs)))]
+#![forbid(unsafe_code)]
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -84,18 +72,36 @@ pub trait Pixel: Copy + Into<f64> {
     }
 }
 
-macro_rules! pixel_int_impl {
-    ($($t:ty),*) => {$(
-        impl Pixel for $t {
-            fn from_f64(f: f64) -> Self {
-                round(f) as $t
-            }
-        }
-    )*}
+impl Pixel for u8 {
+    fn from_f64(f: f64) -> Self {
+        f.round() as u8
+    }
 }
-
-pixel_int_impl!(u8, u16, u32, i8, i16, i32);
-
+impl Pixel for u16 {
+    fn from_f64(f: f64) -> Self {
+        f.round() as u16
+    }
+}
+impl Pixel for u32 {
+    fn from_f64(f: f64) -> Self {
+        f.round() as u32
+    }
+}
+impl Pixel for i8 {
+    fn from_f64(f: f64) -> Self {
+        f.round() as i8
+    }
+}
+impl Pixel for i16 {
+    fn from_f64(f: f64) -> Self {
+        f.round() as i16
+    }
+}
+impl Pixel for i32 {
+    fn from_f64(f: f64) -> Self {
+        f.round() as i32
+    }
+}
 impl Pixel for f32 {
     fn from_f64(f: f64) -> Self {
         f as f32
@@ -105,15 +111,6 @@ impl Pixel for f64 {
     fn from_f64(f: f64) -> Self {
         f
     }
-}
-
-/// Round f to the closest integer, rounding away from `0.0`
-#[inline]
-fn round(f: f64) -> f64 {
-    #[cfg(feature = "std")]
-    return f.round();
-    #[cfg(not(feature = "std"))]
-    return libm::round(f);
 }
 
 /// Checks that the scale factor is a normal positive `f64`.
@@ -360,48 +357,6 @@ impl<P: Pixel> From<LogicalUnit<P>> for PixelUnit {
     }
 }
 
-macro_rules! vec2_from_impls {
-    ($t:ident, $a:ident, $b:ident, $mint_ty:ident) => {
-        impl<P: Pixel, X: Pixel> From<(X, X)> for $t<P> {
-            fn from(($a, $b): (X, X)) -> Self {
-                Self::new($a.cast(), $b.cast())
-            }
-        }
-
-        impl<P: Pixel, X: Pixel> From<$t<P>> for (X, X) {
-            fn from(p: $t<P>) -> Self {
-                (p.$a.cast(), p.$b.cast())
-            }
-        }
-
-        impl<P: Pixel, X: Pixel> From<[X; 2]> for $t<P> {
-            fn from([$a, $b]: [X; 2]) -> Self {
-                Self::new($a.cast(), $b.cast())
-            }
-        }
-
-        impl<P: Pixel, X: Pixel> From<$t<P>> for [X; 2] {
-            fn from(p: $t<P>) -> Self {
-                [p.$a.cast(), p.$b.cast()]
-            }
-        }
-
-        #[cfg(feature = "mint")]
-        impl<P: Pixel> From<mint::$mint_ty<P>> for $t<P> {
-            fn from(p: mint::$mint_ty<P>) -> Self {
-                Self::new(p.x, p.y)
-            }
-        }
-
-        #[cfg(feature = "mint")]
-        impl<P: Pixel> From<$t<P>> for mint::$mint_ty<P> {
-            fn from(p: $t<P>) -> Self {
-                Self { x: p.$a, y: p.$b }
-            }
-        }
-    };
-}
-
 /// A position represented in logical pixels.
 ///
 /// The position is stored as floats, so please be careful. Casting floats to integers truncates the
@@ -444,7 +399,43 @@ impl<P: Pixel> LogicalPosition<P> {
     }
 }
 
-vec2_from_impls!(LogicalPosition, x, y, Point2);
+impl<P: Pixel, X: Pixel> From<(X, X)> for LogicalPosition<P> {
+    fn from((x, y): (X, X)) -> LogicalPosition<P> {
+        LogicalPosition::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<LogicalPosition<P>> for (X, X) {
+    fn from(p: LogicalPosition<P>) -> (X, X) {
+        (p.x.cast(), p.y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<[X; 2]> for LogicalPosition<P> {
+    fn from([x, y]: [X; 2]) -> LogicalPosition<P> {
+        LogicalPosition::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<LogicalPosition<P>> for [X; 2] {
+    fn from(p: LogicalPosition<P>) -> [X; 2] {
+        [p.x.cast(), p.y.cast()]
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<mint::Point2<P>> for LogicalPosition<P> {
+    fn from(p: mint::Point2<P>) -> Self {
+        Self::new(p.x, p.y)
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<LogicalPosition<P>> for mint::Point2<P> {
+    fn from(p: LogicalPosition<P>) -> Self {
+        mint::Point2 { x: p.x, y: p.y }
+    }
+}
 
 /// A position represented in physical pixels.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Hash)]
@@ -484,7 +475,43 @@ impl<P: Pixel> PhysicalPosition<P> {
     }
 }
 
-vec2_from_impls!(PhysicalPosition, x, y, Point2);
+impl<P: Pixel, X: Pixel> From<(X, X)> for PhysicalPosition<P> {
+    fn from((x, y): (X, X)) -> PhysicalPosition<P> {
+        PhysicalPosition::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<PhysicalPosition<P>> for (X, X) {
+    fn from(p: PhysicalPosition<P>) -> (X, X) {
+        (p.x.cast(), p.y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<[X; 2]> for PhysicalPosition<P> {
+    fn from([x, y]: [X; 2]) -> PhysicalPosition<P> {
+        PhysicalPosition::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<PhysicalPosition<P>> for [X; 2] {
+    fn from(p: PhysicalPosition<P>) -> [X; 2] {
+        [p.x.cast(), p.y.cast()]
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<mint::Point2<P>> for PhysicalPosition<P> {
+    fn from(p: mint::Point2<P>) -> Self {
+        Self::new(p.x, p.y)
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<PhysicalPosition<P>> for mint::Point2<P> {
+    fn from(p: PhysicalPosition<P>) -> Self {
+        mint::Point2 { x: p.x, y: p.y }
+    }
+}
 
 /// A size represented in logical pixels.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Hash)]
@@ -524,7 +551,43 @@ impl<P: Pixel> LogicalSize<P> {
     }
 }
 
-vec2_from_impls!(LogicalSize, width, height, Vector2);
+impl<P: Pixel, X: Pixel> From<(X, X)> for LogicalSize<P> {
+    fn from((x, y): (X, X)) -> LogicalSize<P> {
+        LogicalSize::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<LogicalSize<P>> for (X, X) {
+    fn from(s: LogicalSize<P>) -> (X, X) {
+        (s.width.cast(), s.height.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<[X; 2]> for LogicalSize<P> {
+    fn from([x, y]: [X; 2]) -> LogicalSize<P> {
+        LogicalSize::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<LogicalSize<P>> for [X; 2] {
+    fn from(s: LogicalSize<P>) -> [X; 2] {
+        [s.width.cast(), s.height.cast()]
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<mint::Vector2<P>> for LogicalSize<P> {
+    fn from(v: mint::Vector2<P>) -> Self {
+        Self::new(v.x, v.y)
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<LogicalSize<P>> for mint::Vector2<P> {
+    fn from(s: LogicalSize<P>) -> Self {
+        mint::Vector2 { x: s.width, y: s.height }
+    }
+}
 
 /// A size represented in physical pixels.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Hash)]
@@ -561,7 +624,43 @@ impl<P: Pixel> PhysicalSize<P> {
     }
 }
 
-vec2_from_impls!(PhysicalSize, width, height, Vector2);
+impl<P: Pixel, X: Pixel> From<(X, X)> for PhysicalSize<P> {
+    fn from((x, y): (X, X)) -> PhysicalSize<P> {
+        PhysicalSize::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<PhysicalSize<P>> for (X, X) {
+    fn from(s: PhysicalSize<P>) -> (X, X) {
+        (s.width.cast(), s.height.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<[X; 2]> for PhysicalSize<P> {
+    fn from([x, y]: [X; 2]) -> PhysicalSize<P> {
+        PhysicalSize::new(x.cast(), y.cast())
+    }
+}
+
+impl<P: Pixel, X: Pixel> From<PhysicalSize<P>> for [X; 2] {
+    fn from(s: PhysicalSize<P>) -> [X; 2] {
+        [s.width.cast(), s.height.cast()]
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<mint::Vector2<P>> for PhysicalSize<P> {
+    fn from(v: mint::Vector2<P>) -> Self {
+        Self::new(v.x, v.y)
+    }
+}
+
+#[cfg(feature = "mint")]
+impl<P: Pixel> From<PhysicalSize<P>> for mint::Vector2<P> {
+    fn from(s: PhysicalSize<P>) -> Self {
+        mint::Vector2 { x: s.width, y: s.height }
+    }
+}
 
 /// A size that's either physical or logical.
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -660,155 +759,10 @@ impl<P: Pixel> From<LogicalPosition<P>> for Position {
     }
 }
 
-/// The logical distance between the edges of two rectangles.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Hash)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct LogicalInsets<P> {
-    /// The distance to the top edge.
-    pub top: P,
-    /// The distance to the left edge.
-    pub left: P,
-    /// The distance to the bottom edge.
-    pub bottom: P,
-    /// The distance to the right edge.
-    pub right: P,
-}
-
-impl<P> LogicalInsets<P> {
-    #[inline]
-    pub const fn new(top: P, left: P, bottom: P, right: P) -> Self {
-        Self { top, left, bottom, right }
-    }
-}
-
-impl<P: Pixel> LogicalInsets<P> {
-    #[inline]
-    pub fn from_physical<T: Into<PhysicalInsets<X>>, X: Pixel>(
-        physical: T,
-        scale_factor: f64,
-    ) -> Self {
-        physical.into().to_logical(scale_factor)
-    }
-
-    #[inline]
-    pub fn to_physical<X: Pixel>(&self, scale_factor: f64) -> PhysicalInsets<X> {
-        assert!(validate_scale_factor(scale_factor));
-        let top = self.top.into() * scale_factor;
-        let left = self.left.into() * scale_factor;
-        let bottom = self.bottom.into() * scale_factor;
-        let right = self.right.into() * scale_factor;
-        PhysicalInsets::new(top, left, bottom, right).cast()
-    }
-
-    #[inline]
-    pub fn cast<X: Pixel>(&self) -> LogicalInsets<X> {
-        LogicalInsets {
-            top: self.top.cast(),
-            left: self.left.cast(),
-            bottom: self.bottom.cast(),
-            right: self.right.cast(),
-        }
-    }
-}
-
-/// The physical distance between the edges of two rectangles.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Hash)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct PhysicalInsets<P> {
-    /// The distance to the top edge.
-    pub top: P,
-    /// The distance to the left edge.
-    pub left: P,
-    /// The distance to the bottom edge.
-    pub bottom: P,
-    /// The distance to the right edge.
-    pub right: P,
-}
-
-impl<P> PhysicalInsets<P> {
-    #[inline]
-    pub const fn new(top: P, left: P, bottom: P, right: P) -> Self {
-        Self { top, left, bottom, right }
-    }
-}
-
-impl<P: Pixel> PhysicalInsets<P> {
-    #[inline]
-    pub fn from_logical<T: Into<LogicalInsets<X>>, X: Pixel>(
-        logical: T,
-        scale_factor: f64,
-    ) -> Self {
-        logical.into().to_physical(scale_factor)
-    }
-
-    #[inline]
-    pub fn to_logical<X: Pixel>(&self, scale_factor: f64) -> LogicalInsets<X> {
-        assert!(validate_scale_factor(scale_factor));
-        let top = self.top.into() / scale_factor;
-        let left = self.left.into() / scale_factor;
-        let bottom = self.bottom.into() / scale_factor;
-        let right = self.right.into() / scale_factor;
-        LogicalInsets::new(top, left, bottom, right).cast()
-    }
-
-    #[inline]
-    pub fn cast<X: Pixel>(&self) -> PhysicalInsets<X> {
-        PhysicalInsets {
-            top: self.top.cast(),
-            left: self.left.cast(),
-            bottom: self.bottom.cast(),
-            right: self.right.cast(),
-        }
-    }
-}
-
-/// Insets that are either physical or logical.
-#[derive(Debug, Copy, Clone, PartialEq)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub enum Insets {
-    Physical(PhysicalInsets<u32>),
-    Logical(LogicalInsets<f64>),
-}
-
-impl Insets {
-    pub fn new<S: Into<Self>>(insets: S) -> Self {
-        insets.into()
-    }
-
-    pub fn to_logical<P: Pixel>(&self, scale_factor: f64) -> LogicalInsets<P> {
-        match *self {
-            Self::Physical(insets) => insets.to_logical(scale_factor),
-            Self::Logical(insets) => insets.cast(),
-        }
-    }
-
-    pub fn to_physical<P: Pixel>(&self, scale_factor: f64) -> PhysicalInsets<P> {
-        match *self {
-            Self::Physical(insets) => insets.cast(),
-            Self::Logical(insets) => insets.to_physical(scale_factor),
-        }
-    }
-}
-
-impl<P: Pixel> From<PhysicalInsets<P>> for Insets {
-    #[inline]
-    fn from(insets: PhysicalInsets<P>) -> Self {
-        Self::Physical(insets.cast())
-    }
-}
-
-impl<P: Pixel> From<LogicalInsets<P>> for Insets {
-    #[inline]
-    fn from(insets: LogicalInsets<P>) -> Self {
-        Self::Logical(insets.cast())
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use super::*;
+    use std::collections::HashSet;
 
     macro_rules! test_pixel_int_impl {
         ($($name:ident => $ty:ty),*) => {$(
@@ -1171,20 +1125,20 @@ mod tests {
     // Eat coverage for the Debug impls et al
     #[test]
     fn ensure_attrs_do_not_panic() {
-        let _ = std::format!("{:?}", LogicalPosition::<u32>::default().clone());
+        let _ = format!("{:?}", LogicalPosition::<u32>::default().clone());
         HashSet::new().insert(LogicalPosition::<u32>::default());
 
-        let _ = std::format!("{:?}", PhysicalPosition::<u32>::default().clone());
+        let _ = format!("{:?}", PhysicalPosition::<u32>::default().clone());
         HashSet::new().insert(PhysicalPosition::<u32>::default());
 
-        let _ = std::format!("{:?}", LogicalSize::<u32>::default().clone());
+        let _ = format!("{:?}", LogicalSize::<u32>::default().clone());
         HashSet::new().insert(LogicalSize::<u32>::default());
 
-        let _ = std::format!("{:?}", PhysicalSize::<u32>::default().clone());
+        let _ = format!("{:?}", PhysicalSize::<u32>::default().clone());
         HashSet::new().insert(PhysicalSize::<u32>::default());
 
-        let _ = std::format!("{:?}", Size::Physical((1, 2).into()).clone());
-        let _ = std::format!("{:?}", Position::Physical((1, 2).into()).clone());
+        let _ = format!("{:?}", Size::Physical((1, 2).into()).clone());
+        let _ = format!("{:?}", Position::Physical((1, 2).into()).clone());
     }
 
     #[test]

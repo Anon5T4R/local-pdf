@@ -1,104 +1,99 @@
 #![allow(clippy::single_match)]
 
 // Limit this example to only compatible platforms.
-#[cfg(any(windows_platform, macos_platform, x11_platform, wayland_platform, orbital_platform))]
+#[cfg(any(windows_platform, macos_platform, x11_platform, wayland_platform,))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::time::Duration;
 
-    use softbuffer::{Context, Surface};
-    use tracing::info;
     use winit::application::ApplicationHandler;
     use winit::event::WindowEvent;
-    use winit::event_loop::run_on_demand::EventLoopExtRunOnDemand;
-    use winit::event_loop::{ActiveEventLoop, EventLoop, OwnedDisplayHandle};
-    use winit::window::{Window, WindowAttributes, WindowId};
+    use winit::event_loop::{ActiveEventLoop, EventLoop};
+    use winit::platform::run_on_demand::EventLoopExtRunOnDemand;
+    use winit::window::{Window, WindowId};
 
     #[path = "util/fill.rs"]
     mod fill;
-    #[path = "util/tracing.rs"]
-    mod tracing;
 
-    #[derive(Debug)]
+    #[derive(Default)]
     struct App {
-        context: Context<OwnedDisplayHandle>,
         idx: usize,
-        surface: Option<Surface<OwnedDisplayHandle, Box<dyn Window>>>,
         window_id: Option<WindowId>,
+        window: Option<Window>,
     }
 
     impl ApplicationHandler for App {
-        fn about_to_wait(&mut self, _event_loop: &dyn ActiveEventLoop) {
-            if let Some(surface) = self.surface.as_ref() {
-                surface.window().request_redraw();
+        fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+            if let Some(window) = self.window.as_ref() {
+                window.request_redraw();
             }
         }
 
-        fn can_create_surfaces(&mut self, event_loop: &dyn ActiveEventLoop) {
-            let window_attributes = WindowAttributes::default()
-                .with_title(format!("Fantastic window number {}!", self.idx))
-                .with_surface_size(winit::dpi::LogicalSize::new(128.0, 128.0));
+        fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+            let window_attributes = Window::default_attributes()
+                .with_title("Fantastic window number one!")
+                .with_inner_size(winit::dpi::LogicalSize::new(128.0, 128.0));
             let window = event_loop.create_window(window_attributes).unwrap();
             self.window_id = Some(window.id());
-
-            let surface = Surface::new(&self.context, window).unwrap();
-            self.surface = Some(surface);
+            self.window = Some(window);
         }
 
         fn window_event(
             &mut self,
-            event_loop: &dyn ActiveEventLoop,
+            event_loop: &ActiveEventLoop,
             window_id: WindowId,
             event: WindowEvent,
         ) {
             if event == WindowEvent::Destroyed && self.window_id == Some(window_id) {
-                info!("Window {} Destroyed", self.idx);
+                println!(
+                    "--------------------------------------------------------- Window {} Destroyed",
+                    self.idx
+                );
                 self.window_id = None;
                 event_loop.exit();
                 return;
             }
 
-            let Some(surface) = self.surface.as_mut() else {
-                return;
+            let window = match self.window.as_mut() {
+                Some(window) => window,
+                None => return,
             };
 
             match event {
                 WindowEvent::CloseRequested => {
-                    info!("Window {} CloseRequested", self.idx);
-                    self.surface = None;
+                    println!(
+                        "--------------------------------------------------------- Window {} \
+                         CloseRequested",
+                        self.idx
+                    );
+                    fill::cleanup_window(window);
+                    self.window = None;
                 },
                 WindowEvent::RedrawRequested => {
-                    fill::fill(surface);
+                    fill::fill_window(window);
                 },
                 _ => (),
             }
         }
     }
 
-    tracing::init();
+    tracing_subscriber::fmt::init();
 
     let mut event_loop = EventLoop::new().unwrap();
 
-    let context = Context::new(event_loop.owned_display_handle()).unwrap();
-    let mut app = App { context, idx: 1, surface: None, window_id: None };
+    let mut app = App { idx: 1, ..Default::default() };
     event_loop.run_app_on_demand(&mut app)?;
 
-    info!("Finished first loop");
-    info!("Waiting 5 seconds");
+    println!("--------------------------------------------------------- Finished first loop");
+    println!("--------------------------------------------------------- Waiting 5 seconds");
     std::thread::sleep(Duration::from_secs(5));
 
     app.idx += 1;
     event_loop.run_app_on_demand(&mut app)?;
-    info!("Finished second loop");
+    println!("--------------------------------------------------------- Finished second loop");
     Ok(())
 }
 
-#[cfg(not(any(
-    windows_platform,
-    macos_platform,
-    x11_platform,
-    wayland_platform,
-    orbital_platform
-)))]
+#[cfg(not(any(windows_platform, macos_platform, x11_platform, wayland_platform,)))]
 fn main() {
-    panic!("This example is not supported on this platform")
+    println!("This example is not supported on this platform");
 }

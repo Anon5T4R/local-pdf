@@ -168,6 +168,20 @@ pub use epi::*;
 
 pub(crate) mod stopwatch;
 
+#[cfg(any(target_arch = "wasm32", test))]
+mod web_keys;
+
+/// Position-only key for the web hidden text agent. Compiled for native tests too.
+#[cfg(any(target_arch = "wasm32", test))]
+mod web_caret_position;
+
+/// Local request admission and DOM composition-session guard, also tested natively.
+#[cfg(any(target_arch = "wasm32", test))]
+mod web_ime_reset;
+
+#[cfg(all(test, target_arch = "wasm32"))]
+wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
 // ----------------------------------------------------------------------------
 // When compiling for web
 
@@ -196,6 +210,10 @@ pub use native::macos::WindowChromeMetrics;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(any(feature = "glow", feature = "wgpu_no_default_features"))]
 pub use native::run::EframeWinitApplication;
+
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(any(feature = "glow", feature = "wgpu_no_default_features"))]
+pub use native::viewport_hooks::ViewportHooks;
 
 #[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
 #[cfg(any(feature = "glow", feature = "wgpu_no_default_features"))]
@@ -421,6 +439,8 @@ fn init_native(app_name: &str, native_options: &mut NativeOptions) -> Renderer {
     if native_options.viewport.app_id.is_none() {
         native_options.viewport.app_id = Some(app_name.to_owned());
     }
+
+    native::viewport_hooks::install(native_options.viewport_hooks.clone());
 
     let renderer = native_options.renderer;
 

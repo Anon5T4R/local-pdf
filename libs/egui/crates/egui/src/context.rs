@@ -11,7 +11,7 @@ use epaint::{
     mutex::RwLock,
     stats::PaintStats,
     tessellator,
-    text::{FontInsert, FontPriority, Fonts, FontsView, ViewportKey},
+    text::{FontInsert, FontPriority, Fonts, FontsView, LineBreaker, ViewportKey},
     vec2,
 };
 
@@ -405,6 +405,7 @@ struct ContextImpl {
     glyph_rasterizers: Vec<GlyphRasterizer>,
     font_providers: Vec<Arc<dyn FontProvider>>,
     missing_glyph_policy: MissingGlyphPolicy,
+    line_breaker: Option<Arc<dyn LineBreaker>>,
 
     /// Set when the rasterizers or providers change, acted on at the start of the next pass.
     ///
@@ -641,6 +642,9 @@ impl ContextImpl {
             fonts.set_glyph_rasterizers(self.glyph_rasterizers.clone());
             fonts
         });
+        if let Some(line_breaker) = &self.line_breaker {
+            fonts.set_line_breaker(Arc::clone(line_breaker));
+        }
 
         {
             profiling::scope!("Fonts::begin_pass");
@@ -905,6 +909,18 @@ impl Context {
         }
     }
 
+    /// Find where rows of text may end with this [`LineBreaker`],
+    /// e.g. one that knows where Thai words end, or the Japanese kinsoku rules.
+    ///
+    /// The default is [`crate::text::SimpleLineBreaker`].
+    ///
+    /// The line breaker takes effect at the start of the next pass.
+    pub fn set_line_breaker(&self, line_breaker: Arc<dyn LineBreaker>) {
+        self.write(|ctx| ctx.line_breaker = Some(line_breaker));
+        self.apply_font_changes_now_if_unused();
+        self.request_repaint();
+    }
+
     /// See [`Self::set_missing_glyph_policy`].
     pub fn missing_glyph_policy(&self) -> MissingGlyphPolicy {
         self.read(|ctx| ctx.missing_glyph_policy)
@@ -1145,6 +1161,21 @@ impl Context {
         output
     }
 
+    /// Request an ordered native IME cancellation fence for an application interruption.
+    ///
+    /// Call at the actual target/caret interruption and retain the returned id alongside that
+    /// target. Another interruption must request a new id, even for the same owner/generation.
+    /// Unpublished requests survive hidden/no-descriptor iterations; the next IME output for
+    /// this viewport carries the latest request once. Discarded passes retain it only for the
+    /// same final IME owner/context. This does not acknowledge cancellation.
+    ///
+    /// Process-unique token exhaustion returns `None`; keep stale-input protection in that case.
+    /// Unsupported integrations may never emit [`crate::Event::ImeResetCompleted`]. Do not use
+    /// idle time, ordinary empty preedit, or generic Enabled/Disabled as a substitute.
+    pub fn request_ime_reset(&self, viewport_id: ViewportId) -> Option<crate::ImeResetId> {
+        self.memory_mut(|memory| memory.request_ime_reset(viewport_id))
+    }
+
     /// Run app logic without showing any ui.
     ///
     /// Use this instead of [`Self::run_ui`] when nothing will be shown,
@@ -1190,14 +1221,23 @@ impl Context {
 
         logic(self);
 
-        self.write(|ctx| LogicOutput {
-            platform_output: core::mem::take(&mut ctx.viewport_for(viewport_id).output),
-            viewport_commands: ctx
-                .viewports
-                .iter_mut()
-                .filter(|(_, viewport)| !viewport.commands.is_empty())
-                .map(|(&id, viewport)| (id, core::mem::take(&mut viewport.commands)))
-                .collect(),
+        self.write(|ctx| {
+            let mut platform_output = core::mem::take(&mut ctx.viewport_for(viewport_id).output);
+            if let Some(ime) = &mut platform_output.ime
+                && let Some(request) = ctx.memory.take_ime_reset(viewport_id)
+            {
+                ime.reset_request = Some(request);
+                ime.should_interrupt_composition = true;
+            }
+            LogicOutput {
+                platform_output,
+                viewport_commands: ctx
+                    .viewports
+                    .iter_mut()
+                    .filter(|(_, viewport)| !viewport.commands.is_empty())
+                    .map(|(&id, viewport)| (id, core::mem::take(&mut viewport.commands)))
+                    .collect(),
+            }
         })
     }
 
@@ -1549,8 +1589,10 @@ impl Context {
             self.check_for_id_clash(w.id, w.rect, "widget");
         }
 
-        #[allow(clippy::allow_attributes, clippy::let_and_return)]
-        let res = self.get_response(w);
+        // Response inspection is also used to choose styling before a widget processes input.
+        // Apply click-away focus changes only when the widget is actually registered, so a
+        // TextEdit can preserve its selection for an action later in this pass (egui#8763).
+        let res = self.get_response_with_focus_policy(w, true);
 
         #[cfg(debug_assertions)]
         if res.contains_pointer() {
@@ -1712,6 +1754,14 @@ impl Context {
 
     /// Do all interaction for an existing widget, without (re-)registering it.
     pub(crate) fn get_response(&self, widget_rect: WidgetRect) -> Response {
+        self.get_response_with_focus_policy(widget_rect, false)
+    }
+
+    fn get_response_with_focus_policy(
+        &self,
+        widget_rect: WidgetRect,
+        apply_click_away: bool,
+    ) -> Response {
         use response::Flags;
 
         let WidgetRect {
@@ -1804,14 +1854,9 @@ impl Context {
             }
 
             let clicked = Some(id) == viewport.interact_widgets.clicked;
-            let mut any_press = false;
-
             for pointer_event in &input.pointer.pointer_events {
                 match pointer_event {
-                    PointerEvent::Moved(_) => {}
-                    PointerEvent::Pressed { .. } => {
-                        any_press = true;
-                    }
+                    PointerEvent::Moved(_) | PointerEvent::Pressed { .. } => {}
                     PointerEvent::Released { click, .. } => {
                         if enabled && sense.senses_click() && clicked && click.is_some() {
                             res.flags.set(Flags::CLICKED, true);
@@ -1841,15 +1886,15 @@ impl Context {
                 res.flags.set(Flags::HOVERED, false);
             }
 
-            let should_surrender_focus = match memory.options.input_options.surrender_focus_on {
-                SurrenderFocusOn::Presses => any_press,
-                SurrenderFocusOn::Clicks => input.pointer.any_click(),
-                SurrenderFocusOn::Never => false,
-            };
-
-            let pointer_clicked_elsewhere = should_surrender_focus && !res.hovered();
-            if pointer_clicked_elsewhere && memory.has_focus(id) {
-                memory.surrender_focus(id);
+            if apply_click_away && !res.hovered() {
+                let triggered = match memory.options.input_options.surrender_focus_on {
+                    SurrenderFocusOn::Presses => input.pointer.any_pressed(),
+                    SurrenderFocusOn::Clicks => input.pointer.any_click(),
+                    SurrenderFocusOn::Never => false,
+                };
+                if triggered && memory.has_focus(id) {
+                    memory.surrender_focus(id);
+                }
             }
         });
 
@@ -2595,6 +2640,25 @@ impl Context {
         self.options_mut(|opt| opt.theme_preference = theme_preference.into());
     }
 
+    /// The language of the user interface, as a BCP 47 tag.
+    ///
+    /// See [`Options::language`].
+    pub fn language(&self) -> Option<String> {
+        self.options(|opt| opt.language.clone())
+    }
+
+    /// Set the language of the user interface, as a BCP 47 tag (`"ar"`, `"pt-BR"`).
+    ///
+    /// See [`Options::language`].
+    ///
+    /// ```
+    /// # let ctx = egui::Context::default();
+    /// ctx.set_language(Some("ar".to_owned()));
+    /// ```
+    pub fn set_language(&self, language: Option<String>) {
+        self.options_mut(|opt| opt.language = language);
+    }
+
     /// The currently active [`Style`] used by all subsequent popups, menus, etc.
     pub fn global_style(&self) -> Arc<Style> {
         self.options(|opt| Arc::clone(opt.style()))
@@ -2941,10 +3005,7 @@ impl Context {
         self.sync_window_theme();
 
         #[cfg(debug_assertions)]
-        {
-            self.debug_painting();
-            crate::id::id_source::end_pass();
-        }
+        self.debug_painting();
 
         let mut output = self.write(|ctx| ctx.end_pass());
 
@@ -3173,16 +3234,27 @@ impl ContextImpl {
 
         let mut platform_output: PlatformOutput = core::mem::take(&mut viewport.output);
 
-        if self.memory.should_interrupt_ime()
-            && let Some(ime) = &mut platform_output.ime
-        {
-            ime.should_interrupt_composition = true;
+        if let Some(ime) = &mut platform_output.ime {
+            if self.memory.should_interrupt_ime() {
+                ime.should_interrupt_composition = true;
+            }
+            if let Some(request) = self.memory.take_ime_reset(ended_viewport_id) {
+                ime.reset_request = Some(request);
+                ime.should_interrupt_composition = true;
+            }
         }
 
         {
             profiling::scope!("accesskit");
             let state = viewport.this_pass.accesskit_state.take();
-            if let Some(state) = state {
+            if let Some(mut state) = state {
+                // Set here rather than when the root node is made, so a language set during
+                // the pass applies to it.
+                if let Some(language) = &self.memory.options.language
+                    && let Some(root) = state.nodes.get_mut(&crate::accesskit_root_id())
+                {
+                    root.set_language(language.clone());
+                }
                 let root_id = crate::accesskit_root_id().accesskit_id();
                 // A widget can have focus without a node, e.g. if it requested focus while invisible.
                 let focus_id = self
@@ -3293,9 +3365,15 @@ impl ContextImpl {
             .map(|(&id, viewport)| {
                 let parent = *self.viewport_parents.entry(id).or_default();
                 let commands = if is_last {
-                    // Let the primary immediate viewport handle the commands of its children too.
-                    // This can make things easier for the backend, as otherwise we may get commands
-                    // that affect a viewport while its egui logic is running.
+                    // The outermost pass handles every remaining command, including deferred
+                    // viewports and commands explicitly sent to another viewport.
+                    core::mem::take(&mut viewport.commands)
+                } else if id == ended_viewport_id {
+                    // Return the immediate viewport's own commands with its `FullOutput`.
+                    // Its renderer must be able to apply ordering-sensitive commands (such as
+                    // `IMEAllowed`) before handling that viewport's platform output. Do not take
+                    // the parent's or a sibling's queue: those commands still belong to their
+                    // own passes, and taking them here would duplicate or misroute them.
                     core::mem::take(&mut viewport.commands)
                 } else {
                     vec![]
@@ -3388,7 +3466,7 @@ impl Context {
                 tessellator::Tessellator::new(
                     pixels_per_point,
                     tessellation_options,
-                    texture_atlas.resolution(),
+                    texture_atlas.size(),
                     texture_atlas.prepared_discs(),
                 )
                 .tessellate_shapes(shapes)
@@ -3945,7 +4023,7 @@ impl Context {
         CollapsingHeader::new("🔠 Font texture")
             .default_open(false)
             .show(ui, |ui| {
-                let font_image_size = self.fonts(|f| f.font_image_resolution());
+                let font_image_size = self.fonts(|f| f.font_image_size());
                 crate::introspection::font_texture_ui(ui, font_image_size);
             });
 
@@ -4003,7 +4081,7 @@ impl Context {
                         .min_row_height(max_preview_size.y)
                         .show(ui, |ui| {
                             for (&texture_id, meta) in textures {
-                                let [w, h] = meta.resolution;
+                                let [w, h] = meta.size;
                                 let point_size = vec2(w as f32, h as f32) / pixels_per_point;
 
                                 let mut size = point_size;
@@ -5175,6 +5253,49 @@ mod test {
             ui.label("after");
         });
         output.drop_without_applying_deltas();
+    }
+
+    /// The line breaker set on the context decides where text wraps, from the next pass on.
+    #[test]
+    fn test_line_breaker_is_used_for_layout() {
+        use crate::text::{LineBreak, LineBreaker};
+        use epaint::{Color32, FontId};
+
+        /// Rows may only end before byte `self.0`.
+        struct OnlyAt(usize);
+
+        impl LineBreaker for OnlyAt {
+            fn line_breaks(&self, _text: &str, _language: Option<&str>, out: &mut Vec<LineBreak>) {
+                out.push(LineBreak::soft(self.0));
+            }
+        }
+
+        fn rows(ctx: &Context) -> Vec<String> {
+            let mut rows = Vec::new();
+            let output = ctx.run_ui(Default::default(), |ui| {
+                let font_id = FontId::default();
+                let width = ui.fonts_mut(|fonts| {
+                    let galley = fonts.layout_no_wrap(
+                        "abc def ".to_owned(),
+                        font_id.clone(),
+                        Color32::WHITE,
+                    );
+                    galley.size().x + 1.0
+                });
+                let galley = ui.fonts_mut(|fonts| {
+                    fonts.layout("abc def ghi".to_owned(), font_id, Color32::WHITE, width)
+                });
+                rows = galley.rows.iter().map(|row| row.row.text()).collect();
+            });
+            output.drop_without_applying_deltas();
+            rows
+        }
+
+        let ctx = Context::default();
+        ctx.set_fonts(FontDefinitions::empty());
+        assert_eq!(rows(&ctx), ["abc def ", "ghi"]);
+        ctx.set_line_breaker(alloc::sync::Arc::new(OnlyAt(3)));
+        assert_eq!(rows(&ctx), ["abc", " def ghi"]);
     }
 
     #[test]

@@ -163,7 +163,7 @@ impl Viewport {
         egui_winit.on_mouse_motion(delta).then(|| window.id())
     }
 
-    /// Apply the commands, or defer them until we have a window.
+    /// Apply the commands, or defer them until both the window and its state exist.
     fn process_commands(
         &mut self,
         egui_ctx: &egui::Context,
@@ -171,15 +171,20 @@ impl Viewport {
     ) {
         self.deferred_commands.append(&mut commands);
 
-        if let Some(window) = &self.window {
-            egui_winit::process_viewport_commands(
-                egui_ctx,
-                &mut self.info,
-                core::mem::take(&mut self.deferred_commands),
-                window,
-                &mut self.actions_requested,
-            );
-        }
+        // Commands that touch IME now need the owning `State`, not just the window. Keep the
+        // accumulated commands deferred until both exist.
+        let (Some(window), Some(state)) = (self.window.as_ref(), self.egui_winit.as_mut()) else {
+            return;
+        };
+
+        egui_winit::process_viewport_commands(
+            egui_ctx,
+            &mut self.info,
+            core::mem::take(&mut self.deferred_commands),
+            window,
+            state,
+            &mut self.actions_requested,
+        );
     }
 }
 
@@ -832,7 +837,7 @@ impl GlowWinitRunning<'_> {
             textures_delta,
             shapes,
             pixels_per_point,
-            viewport_output,
+            mut viewport_output,
         } = full_output;
         pending_deltas.append(textures_delta);
 
@@ -854,6 +859,23 @@ impl GlowWinitRunning<'_> {
         let window = viewport.window.clone().unwrap();
         let gl_surface = viewport.gl_surface.as_ref().unwrap();
         let egui_winit = viewport.egui_winit.as_mut().unwrap();
+
+        // eframe handles platform output before the generic viewport-command loop. Pull this
+        // viewport's IME permission commands forward so `IMEAllowed(false)` takes effect before
+        // any surrounding text from this pass is published. An `IMEAllowed(true)` only becomes a
+        // pending enable in the gate and is committed by this same platform-output pass if it
+        // carries a real descriptor.
+        let ime_commands = take_ime_allowed_commands(&mut viewport_output, viewport_id);
+        if !ime_commands.is_empty() {
+            egui_winit::process_viewport_commands(
+                &integration.egui_ctx,
+                &mut viewport.info,
+                ime_commands,
+                &window,
+                egui_winit,
+                &mut viewport.actions_requested,
+            );
+        }
 
         egui_winit.handle_platform_output_with_event_loop(&window, event_loop, platform_output);
 
@@ -897,26 +919,15 @@ impl GlowWinitRunning<'_> {
                             // Painting this frame is all it asked for.
                         }
                         ActionRequested::Cut => {
-                            egui_winit.egui_input_mut().events.push(egui::Event::Cut);
+                            egui_winit.request_cut(&window);
                         }
                         ActionRequested::Copy => {
-                            egui_winit.egui_input_mut().events.push(egui::Event::Copy);
+                            egui_winit.request_copy(&window);
                         }
                         ActionRequested::Paste => {
-                            if let Some(contents) = egui_winit.clipboard_text() {
-                                let contents = contents.replace("\r\n", "\n");
-                                if !contents.is_empty() {
-                                    egui_winit
-                                        .egui_input_mut()
-                                        .events
-                                        .push(egui::Event::Paste(contents));
-                                }
-                            } else if let Some(image) = egui_winit.clipboard_image() {
-                                egui_winit
-                                    .egui_input_mut()
-                                    .events
-                                    .push(egui::Event::PasteImage(std::sync::Arc::new(image)));
-                            }
+                            // On Wayland this starts the bounded asynchronous paste bridge
+                            // instead of a blocking `clipboard_text()`/image read.
+                            egui_winit.request_paste(&window);
                         }
                     }
                 }
@@ -1291,6 +1302,7 @@ impl GlutinWindowContext {
         let mut viewport_info = ViewportInfo::default();
         if let Some(window) = &window {
             viewport_from_window.insert(window.id(), ViewportId::ROOT);
+            super::viewport_hooks::with(|hooks| hooks.window_created(ViewportId::ROOT, window));
             window_from_viewport.insert(ViewportId::ROOT, window.id());
             egui_winit::update_viewport_info(&mut viewport_info, egui_ctx, window, true);
 
@@ -1464,7 +1476,10 @@ impl GlutinWindowContext {
             self.current_gl_context = Some(current_gl_context);
         }
 
-        self.viewport_from_window.insert(window.id(), viewport_id);
+        // This runs on every frame; report a window only when it is new for this viewport.
+        if self.viewport_from_window.insert(window.id(), viewport_id) != Some(viewport_id) {
+            super::viewport_hooks::with(|hooks| hooks.window_created(viewport_id, window));
+        }
         self.window_from_viewport.insert(viewport_id, window.id());
 
         Ok(())
@@ -1542,8 +1557,13 @@ impl GlutinWindowContext {
         }
 
         // GC old viewports
-        self.viewports
-            .retain(|id, _| viewport_output.contains_key(id));
+        self.viewports.retain(|id, _| {
+            let keep = viewport_output.contains_key(id);
+            if !keep {
+                super::viewport_hooks::with(|hooks| hooks.window_destroyed(*id));
+            }
+            keep
+        });
         self.viewport_from_window
             .retain(|_, id| viewport_output.contains_key(id));
         self.window_from_viewport
@@ -1602,6 +1622,27 @@ impl GlutinWindowContext {
 
         self.remove_viewports_not_in(viewport_output);
     }
+}
+
+/// Remove and return this viewport's `IMEAllowed` commands so they can be applied before
+/// platform output. Other commands keep their existing post-render processing order.
+fn take_ime_allowed_commands(
+    viewport_output: &mut OrderedViewportIdMap<ViewportOutput>,
+    viewport_id: ViewportId,
+) -> Vec<egui::ViewportCommand> {
+    let Some(output) = viewport_output.get_mut(&viewport_id) else {
+        return Vec::new();
+    };
+    let mut ime_commands = Vec::new();
+    output.commands.retain(|command| {
+        if matches!(command, egui::ViewportCommand::IMEAllowed(_)) {
+            ime_commands.push(command.clone());
+            false
+        } else {
+            true
+        }
+    });
+    ime_commands
 }
 
 fn initialize_or_update_viewport<'a>(
@@ -1765,6 +1806,7 @@ fn render_immediate_viewport(
             .map(|(id, viewport)| (*id, viewport.info.clone()))
             .collect();
         raw_input.time = Some(beginning.elapsed().as_secs_f64());
+        super::viewport_hooks::with(|hooks| hooks.raw_input(egui_ctx, &mut raw_input));
         raw_input
     };
 
@@ -1777,7 +1819,7 @@ fn render_immediate_viewport(
         textures_delta,
         shapes,
         pixels_per_point,
-        viewport_output,
+        mut viewport_output,
     } = egui_ctx.run_ui(input, |ui| {
         viewport_ui_cb(ui);
     });
@@ -1850,6 +1892,20 @@ fn render_immediate_viewport(
         if let Err(err) = gl_surface.swap_buffers(current_gl_context) {
             log::error!("swap_buffers failed: {err}");
         }
+    }
+
+    // As in the regular frame path, an `IMEAllowed` command must take effect before this
+    // pass publishes surrounding text.
+    let ime_commands = take_ime_allowed_commands(&mut viewport_output, viewport_id);
+    if !ime_commands.is_empty() {
+        egui_winit::process_viewport_commands(
+            egui_ctx,
+            &mut viewport.info,
+            ime_commands,
+            window,
+            egui_winit,
+            &mut viewport.actions_requested,
+        );
     }
 
     egui_winit.handle_platform_output(window, platform_output);

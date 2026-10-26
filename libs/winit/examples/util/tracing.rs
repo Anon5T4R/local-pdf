@@ -23,6 +23,3 @@ pub fn init() {
         )
         .init();
 }
-
-#[allow(unused_imports)]
-pub use ::tracing::*;

@@ -121,3 +121,6 @@ serde = { workspace = true, optional = true, features = ["derive", "rc"] }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 # For `DroppedFile::web_file`, which hands web apps a file handle instead of its contents.
 web-sys = { workspace = true, optional = true, features = ["File"] }
+
+[dev-dependencies]
+skrifa.workspace = true

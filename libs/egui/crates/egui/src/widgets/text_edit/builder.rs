@@ -579,6 +579,7 @@ impl<'t> TextEdit<'t> {
                 LayoutJob::simple_singleline(text, font_id.clone(), text_color)
             };
             layout_job.halign = align.x();
+            layout_job.language = ui.language();
             // We want to keep the trailing whitespace, since hiding it feels really weird when typing
             layout_job.keep_trailing_whitespace = true;
 
@@ -615,6 +616,30 @@ impl<'t> TextEdit<'t> {
         let mut prev_cursor_range = None;
 
         let owns_ime_events = ui.memory(|mem| mem.owns_ime_events(id));
+        // Change-cause accumulation is scoped to one viewport frame, including every discarded
+        // layout pass. The frame number is not the pass number.
+        let ime_frame_nr = ui.ctx().cumulative_frame_nr_for(ui.ctx().viewport_id());
+        if owns_ime_events && !state.cursor_purpose.preedit_matches(text.as_str()) {
+            // The application replaced or moved the buffer under this editor's live
+            // composition. Its old character range must not remove unrelated committed bytes
+            // from the new payload. Only the IME owner may request the viewport-global
+            // interrupt: a hidden, previously composed editor that is shown beside the real
+            // focused editor must not cancel that editor's composition.
+            ui.memory_mut(|memory| memory.interrupt_ime());
+            state.cursor_purpose = TextEditCursorPurpose::Selection;
+            state.note_ime_application_change(ime_frame_nr);
+        }
+        let ime_purpose = if password {
+            IMEPurpose::Password
+        } else {
+            IMEPurpose::Normal
+        };
+        let ime_context_generation = state.update_ime_context(
+            owns_ime_events && interactive && text.is_mutable(),
+            ui.memory(|mem| mem.gained_focus(id)),
+            ime_purpose,
+            ui.ctx().cumulative_pass_nr(),
+        );
         if !owns_ime_events {
             state.cursor_purpose = TextEditCursorPurpose::Selection;
             if !state.cursor.is_empty() {
@@ -641,6 +666,12 @@ impl<'t> TextEdit<'t> {
                 && text.is_mutable()
                 && let Some(value) = accesskit_set_text_request(ui, id)
             {
+                // A whole-value replacement is not part of the platform composition. Its
+                // old preedit range must not remove bytes from the replacement's payload.
+                if state.cursor_purpose.is_ime_composition() {
+                    ui.memory_mut(|memory| memory.interrupt_ime());
+                }
+                state.cursor_purpose = TextEditCursorPurpose::Selection;
                 let everything = CCursorRange::select_all_str(text.as_str());
                 let ccursor =
                     insert_replacing_selection(text, &everything, &value, multiline, char_limit);
@@ -648,6 +679,7 @@ impl<'t> TextEdit<'t> {
                 state
                     .cursor
                     .set_char_range(Some(CCursorRange::one(ccursor)));
+                state.note_ime_application_change(ime_frame_nr);
                 text_changed = true;
             }
 
@@ -669,6 +701,7 @@ impl<'t> TextEdit<'t> {
                     layouter,
                     &EventsOptions {
                         id,
+                        frame_nr: ime_frame_nr,
                         wrap_width,
                         multiline,
                         password,
@@ -843,7 +876,14 @@ impl<'t> TextEdit<'t> {
 
         // Don't send `OutputEvent::Clicked` when a user presses the space bar
         response.flags -= response::Flags::FAKE_PRIMARY_CLICKED;
-        let text_clip_rect = inner_rect;
+        // Clip horizontally, where single-line text scrolls, but keep glyphs that overshoot
+        // their row (Thai marks, stacked Vietnamese accents, Arabic marks) visible.
+        let overshoot_top = (galley.rect.top() - galley.mesh_bounds.top()).at_least(0.0);
+        let overshoot_bottom = (galley.mesh_bounds.bottom() - galley.rect.bottom()).at_least(0.0);
+        let text_clip_rect = Rect::from_min_max(
+            inner_rect.min - vec2(0.0, overshoot_top),
+            inner_rect.max + vec2(0.0, overshoot_bottom),
+        );
         let painter = ui.painter_at(text_clip_rect.expand(1.0)); // expand to avoid clipping cursor
 
         if interactive && let Some(pointer_pos) = response.interact_pointer_pos() {
@@ -878,7 +918,12 @@ impl<'t> TextEdit<'t> {
             );
 
             if did_interact || response.clicked() {
-                ui.memory_mut(|mem| mem.request_focus(response.id));
+                // The caret moves, so a composition in progress must end even
+                // when this field already has focus.
+                ui.memory_mut(|mem| {
+                    mem.request_focus(response.id);
+                    mem.interrupt_ime();
+                });
                 state.cursor_purpose = TextEditCursorPurpose::Selection;
 
                 state.last_interaction_time = ui.input(|i| i.time);
@@ -917,8 +962,12 @@ impl<'t> TextEdit<'t> {
                 .cursor
                 .set_char_range(Some(CCursorRange::one(ccursor)));
             state.cursor_purpose = TextEditCursorPurpose::Selection;
+            state.note_ime_application_change(ime_frame_nr);
             state.last_interaction_time = ui.input(|i| i.time);
-            ui.memory_mut(|mem| mem.request_focus(id));
+            ui.memory_mut(|mem| {
+                mem.request_focus(id);
+                mem.interrupt_ime();
+            });
 
             text_changed = true;
             ui.ctx().request_repaint(); // The galley is now stale
@@ -1029,7 +1078,7 @@ impl<'t> TextEdit<'t> {
                                     time_since_last_interaction,
                                 );
                             }
-                            TextEditCursorPurpose::ImeComposition { active_range } => {
+                            TextEditCursorPurpose::ImeComposition { active_range, .. } => {
                                 text_selection::visuals::paint_ime_preedit_text_visuals(
                                     galley_pos,
                                     ui,
@@ -1046,22 +1095,38 @@ impl<'t> TextEdit<'t> {
                             }
                         }
                     }
-                    if ui.memory(|mem| mem.owns_ime_events(id)) {
-                        // Set IME output (in screen coords) when text is editable and visible
+                    if ime_context_generation != 0 && ui.memory(|mem| mem.owns_ime_events(id)) {
+                        // Emit after applying this pass's edits and cursor changes. The payload is
+                        // built from committed text only; the current pre-edit is removed and
+                        // its byte offsets are remapped. This slices a bounded window and does
+                        // not clone the full document.
                         let to_global = ui
                             .ctx()
                             .layer_transform_to_global(ui.layer_id())
                             .unwrap_or_default();
+                        let surrounding_text = committed_surrounding_text(
+                            text,
+                            &cursor_range,
+                            &state.cursor_purpose,
+                            password,
+                        );
+                        let change_cause = state.observe_ime_committed(
+                            ime_frame_nr,
+                            ime_context_generation,
+                            &surrounding_text,
+                        );
+
                         ui.output_mut(|o| {
                             o.ime = Some(crate::output::IMEOutput {
-                                purpose: if password {
-                                    IMEPurpose::Password
-                                } else {
-                                    IMEPurpose::Normal
-                                },
+                                owner: id,
+                                context_generation: ime_context_generation,
+                                purpose: ime_purpose,
                                 rect: to_global * inner_rect,
                                 cursor_rect: to_global * primary_cursor_rect,
                                 should_interrupt_composition: false,
+                                reset_request: None,
+                                change_cause,
+                                surrounding_text,
                             });
                         });
                     }
@@ -1154,12 +1219,18 @@ impl<'t> TextEdit<'t> {
 }
 
 fn mask_if_password(is_password: bool, text: &str) -> String {
+    /// One bullet per grapheme cluster, so the cursor moves over the masked text
+    /// as over the real text. The rest of each cluster is invisible combining grapheme joiners,
+    /// which keeps every char index the same as in the real text.
     fn mask_password(text: &str) -> String {
-        core::iter::repeat_n(
-            epaint::text::PASSWORD_REPLACEMENT_CHAR,
-            text.chars().count(),
-        )
-        .collect::<String>()
+        use unicode_segmentation::UnicodeSegmentation as _;
+        const JOINER: char = '\u{34F}';
+        let mut masked = String::with_capacity(text.len());
+        for cluster in text.graphemes(true) {
+            masked.push(epaint::text::PASSWORD_REPLACEMENT_CHAR);
+            masked.extend(cluster.chars().skip(1).map(|_| JOINER));
+        }
+        masked
     }
 
     if is_password {
@@ -1175,6 +1246,7 @@ fn mask_if_password(is_password: bool, text: &str) -> String {
 /// `clippy::fn_params_excessive_bools`.
 struct EventsOptions {
     id: Id,
+    frame_nr: u64,
     wrap_width: f32,
     multiline: bool,
     password: bool,
@@ -1196,6 +1268,7 @@ fn events(
 ) -> (bool, CCursorRange) {
     let EventsOptions {
         id,
+        frame_nr,
         wrap_width,
         multiline,
         password,
@@ -1232,11 +1305,17 @@ fn events(
         ImeComposition {
             cursor_range: CCursorRange,
             active_range: Option<core::ops::Range<CCursor>>,
+            preedit_range: core::ops::Range<usize>,
         },
         ImeCompositionCursorRange(CCursorRange),
     }
 
     for event in &events {
+        // Set only by IME mutations that can change committed text. The matching `after`
+        // snapshot is captured after the mutation has been applied. Pre-edit changes never
+        // produce a receipt, so a composition and a pre-edit clear cannot poison the cause.
+        let mut ime_receipt_before = None;
+
         let did_mutate_text = match event {
             // First handle events that only changes the selection cursor, not the text:
             event if cursor_range.on_event(os, event, galley, id) => None,
@@ -1277,6 +1356,9 @@ fn events(
                 target_tree,
                 data: Some(accesskit::ActionData::Value(text_to_insert)),
             }) if *target_node == id.accesskit_id() && *target_tree == accesskit::TreeId::ROOT => {
+                if state.cursor_purpose.is_ime_composition() {
+                    ui.memory_mut(|memory| memory.interrupt_ime());
+                }
                 let ccursor = insert_replacing_selection(
                     text,
                     &cursor_range,
@@ -1458,15 +1540,23 @@ fn events(
                         } else {
                             let start_cursor = ccursor;
                             text.insert_text_at(&mut ccursor, preedit_text, char_limit);
+                            let preedit_range = start_cursor.index.0..ccursor.index.0;
                             Some(CursorMutation::ImeComposition {
                                 cursor_range: CCursorRange::two(start_cursor, ccursor),
                                 active_range: active_range_chars.clone().map(|range| {
                                     CCursor::new(range.start)..CCursor::new(range.end)
                                 }),
+                                preedit_range,
                             })
                         }
                     }
                     ImeEvent::Commit(commit_text) => {
+                        ime_receipt_before = Some(committed_surrounding_text(
+                            text,
+                            &cursor_range,
+                            &state.cursor_purpose,
+                            password,
+                        ));
                         state.cursor_purpose = TextEditCursorPurpose::Selection;
                         let mut ccursor = clear_preedit_text(text, &cursor_range);
 
@@ -1479,9 +1569,55 @@ fn events(
                     ImeEvent::DeleteSurrounding {
                         before_chars,
                         after_chars,
-                    } => Some(CursorMutation::ImeCompositionCursorRange(
-                        text.delete_surrounding_chars(cursor_range, *before_chars, *after_chars),
-                    )),
+                    } => {
+                        ime_receipt_before = Some(committed_surrounding_text(
+                            text,
+                            &cursor_range,
+                            &state.cursor_purpose,
+                            password,
+                        ));
+                        update_preedit_range_after_delete(
+                            &mut state.cursor_purpose,
+                            text.as_str(),
+                            &cursor_range,
+                            *before_chars,
+                            *after_chars,
+                        );
+                        Some(CursorMutation::ImeCompositionCursorRange(
+                            text.delete_surrounding_chars(
+                                cursor_range,
+                                *before_chars,
+                                *after_chars,
+                            ),
+                        ))
+                    }
+                    ImeEvent::DeleteSurroundingBytes {
+                        before_bytes,
+                        after_bytes,
+                    } => {
+                        let [before_chars, after_chars] = surrounding_bytes_to_chars(
+                            text.as_str(),
+                            &cursor_range,
+                            *before_bytes,
+                            *after_bytes,
+                        );
+                        ime_receipt_before = Some(committed_surrounding_text(
+                            text,
+                            &cursor_range,
+                            &state.cursor_purpose,
+                            password,
+                        ));
+                        update_preedit_range_after_delete(
+                            &mut state.cursor_purpose,
+                            text.as_str(),
+                            &cursor_range,
+                            before_chars,
+                            after_chars,
+                        );
+                        Some(CursorMutation::ImeCompositionCursorRange(
+                            text.delete_surrounding_chars(cursor_range, before_chars, after_chars),
+                        ))
+                    }
                 }
             }
 
@@ -1503,13 +1639,36 @@ fn events(
                 CursorMutation::ImeComposition {
                     cursor_range: new_cursor_range,
                     active_range,
+                    preedit_range,
                 } => {
                     cursor_range = new_cursor_range;
-                    state.cursor_purpose = TextEditCursorPurpose::ImeComposition { active_range };
+                    state.cursor_purpose = TextEditCursorPurpose::ImeComposition {
+                        active_range,
+                        preedit_range,
+                        preedit_text: String::new(),
+                    };
                 }
                 CursorMutation::ImeCompositionCursorRange(new_cursor_range) => {
                     cursor_range = new_cursor_range;
                 }
+            }
+            state.cursor_purpose.refresh_preedit_text(text.as_str());
+
+            if let Some(before) = ime_receipt_before {
+                // Compare the bounded committed snapshot around the accepted mutation. A no-op
+                // (empty commit, zero-count deletion, char-limit refusal) produces equal stamps
+                // and therefore no receipt.
+                let after = committed_surrounding_text(
+                    text,
+                    &cursor_range,
+                    &state.cursor_purpose,
+                    password,
+                );
+                state.note_ime_input_method_apply(frame_nr, before, after);
+            } else if !matches!(event, Event::Ime(_)) {
+                // Ordinary typing, paste, undo/redo, accessibility edits and mutating keys are
+                // application-origin. This signal dominates every later pass of the same frame.
+                state.note_ime_application_change(frame_nr);
             }
         }
     }
@@ -1522,6 +1681,138 @@ fn events(
     );
 
     (any_change, cursor_range)
+}
+
+/// Build the bounded committed snapshot used by both the outgoing IME payload and receipts.
+///
+/// The current pre-edit is removed by character range and both selection endpoints are remapped
+/// to UTF-8 byte offsets. A password field always reports
+/// [`crate::output::IMESurroundingText::Unavailable`]; the buffer is never inspected for a
+/// payload.
+fn committed_surrounding_text(
+    text: &dyn TextBuffer,
+    cursor_range: &CCursorRange,
+    cursor_purpose: &TextEditCursorPurpose,
+    password: bool,
+) -> crate::output::IMESurroundingText {
+    if password {
+        return crate::output::IMESurroundingText::Unavailable;
+    }
+
+    let preedit = match cursor_purpose {
+        TextEditCursorPurpose::ImeComposition { preedit_range, .. } => {
+            // `preedit_range` is in characters; surrounding-text offsets are UTF-8 bytes.
+            let start = text
+                .byte_index_from_char_index(epaint::text::CharIndex(preedit_range.start))
+                .0;
+            let end = text
+                .byte_index_from_char_index(epaint::text::CharIndex(preedit_range.end))
+                .0;
+            Some(start..end)
+        }
+        TextEditCursorPurpose::Selection => None,
+    };
+    let primary_byte = text
+        .byte_index_from_char_index(cursor_range.primary.index)
+        .0;
+    let secondary_byte = text
+        .byte_index_from_char_index(cursor_range.secondary.index)
+        .0;
+    crate::output::IMESurroundingText::from_text(
+        text.as_str(),
+        primary_byte,
+        secondary_byte,
+        preedit,
+    )
+}
+
+/// Keep the tracked pre-edit range valid when the IME deletes committed text around it.
+///
+/// Deletions outside the pre-edit (the normal case) are wholly before or after it and only
+/// shift character offsets. If the IME deletes part of the composition, clamp the pre-edit
+/// to the remaining characters.
+fn update_preedit_range_after_delete(
+    cursor_purpose: &mut TextEditCursorPurpose,
+    text: &str,
+    cursor_range: &CCursorRange,
+    before_chars: usize,
+    after_chars: usize,
+) {
+    let TextEditCursorPurpose::ImeComposition {
+        active_range,
+        preedit_range,
+        ..
+    } = cursor_purpose
+    else {
+        return;
+    };
+
+    let [min, max] = cursor_range.sorted_cursors();
+    let char_len = text.chars().count();
+    let before_start = min.index.0.saturating_sub(before_chars);
+    let after_end = max.index.0.saturating_add(after_chars).min(char_len);
+
+    let deleted_before = |position: usize| -> usize {
+        let before_deleted = if position <= before_start {
+            0
+        } else if position < min.index.0 {
+            position - before_start
+        } else {
+            min.index.0 - before_start
+        };
+        let after_deleted = if position <= max.index.0 {
+            0
+        } else if position < after_end {
+            position - max.index.0
+        } else {
+            after_end - max.index.0
+        };
+        before_deleted + after_deleted
+    };
+
+    let start = preedit_range.start - deleted_before(preedit_range.start);
+    let end = preedit_range.end - deleted_before(preedit_range.end);
+    // Active-range indices are relative to the preedit. Map through the same deletions
+    // in document coordinates, then return to the new preedit's coordinate system.
+    let map_active = |cursor: CCursor| {
+        let old_absolute = preedit_range
+            .start
+            .saturating_add(cursor.index.0)
+            .min(preedit_range.end);
+        let new_absolute = old_absolute - deleted_before(old_absolute);
+        CCursor::new(new_absolute.saturating_sub(start).min(end - start))
+    };
+    *active_range = active_range
+        .take()
+        .map(|range| map_active(range.start)..map_active(range.end));
+    *preedit_range = start..end;
+}
+
+/// The characters an input method deletes: those within `before_bytes` before the start of
+/// `cursor_range` and within `after_bytes` after its end. A count that ends inside a character
+/// leaves that character.
+fn surrounding_bytes_to_chars(
+    text: &str,
+    cursor_range: &CCursorRange,
+    before_bytes: usize,
+    after_bytes: usize,
+) -> [usize; 2] {
+    use text_selection::text_cursor_state::byte_index_from_char_index;
+
+    let [min, max] = cursor_range.sorted_cursors();
+    let min = byte_index_from_char_index(text, min.index).0;
+    let max = byte_index_from_char_index(text, max.index).0;
+    let from = min.saturating_sub(before_bytes);
+    let before = text[..min]
+        .char_indices()
+        .rev()
+        .take_while(|(index, _)| *index >= from)
+        .count();
+    let after = text[max..]
+        .char_indices()
+        .take_while(|(index, c)| index + c.len_utf8() <= after_bytes)
+        .count();
+    [before, after]
 }
 
 /// Replace the selection with `text_to_insert`, the way a paste does: single-line fields turn
@@ -1540,7 +1831,12 @@ fn insert_replacing_selection(
         let single_line = text_to_insert.replace(['\r', '\n'], " ");
         text.insert_text_at(&mut ccursor, &single_line, char_limit);
     }
-    ccursor
+    // Stick to the inserted text, so that where the direction changes the cursor stays
+    // where the next char typed in that direction goes.
+    CCursor {
+        prefer_next_row: false,
+        ..ccursor
+    }
 }
 
 /// The text of the last [`accesskit::Action::SetValue`] request for this widget, if any.
@@ -1630,5 +1926,93 @@ fn check_for_mutating_key_press(
         }
 
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use epaint::text::{CharIndex, grapheme};
+
+    use super::mask_if_password;
+
+    #[test]
+    fn composition_deletion_remaps_its_visual_active_range() {
+        use super::{
+            CCursor, CCursorRange, TextEditCursorPurpose, update_preedit_range_after_delete,
+        };
+        let mut purpose = TextEditCursorPurpose::ImeComposition {
+            active_range: Some(CCursor::new(1)..CCursor::new(3)),
+            preedit_range: 2..6,
+            preedit_text: "WXYZ".into(),
+        };
+        // ab[WXYZ]cd, caret after X; remove X and Y from the composition.
+        update_preedit_range_after_delete(
+            &mut purpose,
+            "abWXYZcd",
+            &CCursorRange::one(CCursor::new(4)),
+            1,
+            1,
+        );
+        let TextEditCursorPurpose::ImeComposition {
+            active_range,
+            preedit_range,
+            ..
+        } = purpose
+        else {
+            panic!("composition must remain active");
+        };
+        assert_eq!(preedit_range, 2..4);
+        let active = active_range.unwrap();
+        assert_eq!((active.start.index.0, active.end.index.0), (1, 1));
+    }
+
+    #[test]
+    fn oversized_composition_deletion_is_clamped_without_overflow() {
+        use super::{
+            CCursor, CCursorRange, TextEditCursorPurpose, update_preedit_range_after_delete,
+        };
+        let mut purpose = TextEditCursorPurpose::ImeComposition {
+            active_range: Some(CCursor::new(0)..CCursor::new(2)),
+            preedit_range: 1..3,
+            preedit_text: "XY".into(),
+        };
+        update_preedit_range_after_delete(
+            &mut purpose,
+            "aXYb",
+            &CCursorRange::one(CCursor::new(2)),
+            usize::MAX,
+            usize::MAX,
+        );
+        let TextEditCursorPurpose::ImeComposition {
+            active_range,
+            preedit_range,
+            ..
+        } = purpose
+        else {
+            panic!("composition remains represented");
+        };
+        assert_eq!(preedit_range, 0..0);
+        let active = active_range.unwrap();
+        assert_eq!((active.start.index.0, active.end.index.0), (0, 0));
+    }
+
+    /// The masked text must have the same chars and grapheme clusters as the real one,
+    /// or the cursor ends up inside a cluster of the buffer.
+    #[test]
+    fn password_mask_keeps_char_indices_and_clusters() {
+        for text in ["e\u{301}a", "ن\u{64E}ص", "👩\u{200D}🚀x", "abc", ""] {
+            let masked = mask_if_password(true, text);
+            let count = text.chars().count();
+            assert_eq!(masked.chars().count(), count, "{text:?}");
+            for i in 0..=count {
+                let i = CharIndex(i);
+                assert_eq!(
+                    grapheme::next_boundary(&masked, i),
+                    grapheme::next_boundary(text, i),
+                    "{text:?} at {i:?}"
+                );
+            }
+        }
+        assert_eq!(mask_if_password(true, "e\u{301}a").matches('•').count(), 2);
     }
 }

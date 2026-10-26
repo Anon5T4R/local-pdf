@@ -25,8 +25,36 @@ pub use winit;
 mod macos_scroll_momentum;
 
 pub mod clipboard;
+mod clipboard_bridge;
+#[cfg(all(
+    feature = "clipboard-image",
+    feature = "clipboard",
+    feature = "wayland",
+    any(
+        target_os = "linux",
+        target_os = "dragonfly",
+        target_os = "freebsd",
+        target_os = "netbsd",
+        target_os = "openbsd"
+    )
+))]
+mod clipboard_image;
+// Wayland surrounding-text bridge. Winit compiles its Wayland backend for free Unix
+// targets (Linux, the BSDs and the rest of winit's `wayland_platform` set), not only Linux.
 #[cfg(not(target_arch = "wasm32"))]
 mod dropped_file;
+mod held_keys;
+mod ime_reset;
+#[cfg(all(
+    feature = "wayland",
+    unix,
+    not(target_vendor = "apple"),
+    not(target_os = "android"),
+    not(target_os = "emscripten"),
+    not(target_os = "redox"),
+))]
+mod ime_surrounding;
+mod output_selector;
 mod safe_area;
 mod window_settings;
 
@@ -100,6 +128,8 @@ pub struct State {
     /// it onto per-event `modifiers` fields and emit [`egui::Event::ModifiersChanged`].
     modifiers: egui::Modifiers,
 
+    held_keys: held_keys::HeldKeys,
+
     pointer_pos_in_points: Option<egui::Pos2>,
     any_pointer_button_down: bool,
     current_cursor_icon: Option<egui::CursorIcon>,
@@ -113,6 +143,109 @@ pub struct State {
     current_custom_cursor: Option<(usize, CustomCursor)>,
 
     clipboard: clipboard::Clipboard,
+
+    /// Pending asynchronous clipboard reads for this window.
+    clipboard_paste: clipboard_bridge::PasteBridge,
+
+    /// Wakes this viewport when a clipboard transfer completes.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    clipboard_repaint_waker: clipboard_bridge::CompletionWaker,
+
+    /// The last PRIMARY text claimed for one input generation, so repeated output commands do
+    /// not re-claim an unchanged selection.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    last_primary_claim: Option<(u64, String)>,
+
+    /// Per-input-batch claim-origin lifecycle.
+    ///
+    /// Claimable events and explicit copy/cut requests only mark the batch as pending during
+    /// dispatch. The final input origin is captured once during [`Self::take_egui_input`], after
+    /// any click-to-focus keyboard enter has been processed. Platform output always consumes the
+    /// prepared slot, even without a winning clipboard command, so no token survives into a later
+    /// batch. This is a batch association, not per-command provenance: when both clipboard
+    /// families win from a merged `PlatformOutput`, both validate independent clones of this
+    /// token. A stale or failed capture is an explicit error; only `Absent` may use the legacy
+    /// latest-fresh fallback, and images never do.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    clipboard_claim_batch: clipboard_bridge::ClaimBatch<winit::platform::wayland::InputOriginToken>,
+
+    /// Clipboard requests or ownership claims rejected since this state was created.
+    ///
+    /// A rejected claim leaves the previous selection content in place; this counter makes the
+    /// otherwise invisible failure observable to the application.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    clipboard_failures: u64,
+
+    /// Dedicated regular-copy epoch. Unrelated typing, IME, pointer release or another
+    /// state's PRIMARY claim must not cancel a frozen image copy.
+    #[cfg(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    copy_epoch: u64,
+
+    /// One in-flight PNG copy encode and its exact winit reservation, if any.
+    #[cfg(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    pending_image_copy: Option<ImageCopyPending>,
 
     /// If `true`, mouse inputs will be treated as touches.
     /// Useful for debugging touch support in egui.
@@ -129,12 +262,38 @@ pub struct State {
     pub accesskit: Option<accesskit_winit::Adapter>,
 
     allow_ime: bool,
+    ime_reset: ime_reset::ResetBridge<winit::window::WindowId>,
 
     /// See [`Self::set_clipboard_shortcuts`].
     clipboard_shortcuts: bool,
 
     ime_cursor_rect_px: Option<egui::Rect>,
     old_ime_purpose: egui::IMEPurpose,
+
+    /// Outgoing text-input-v3 surrounding text, cached per window and IME owner.
+    #[cfg(all(
+        feature = "wayland",
+        unix,
+        not(target_vendor = "apple"),
+        not(target_os = "android"),
+        not(target_os = "emscripten"),
+        not(target_os = "redox"),
+    ))]
+    ime_surrounding: ime_surrounding::ImeSurroundingSync,
+
+    /// Durable window-focus and external `IMEAllowed` latch for enabling IME.
+    ///
+    /// egui keeps widget focus when the window loses focus, so a stale `PlatformOutput::ime`
+    /// must not re-enable IME or republish surrounding text while unfocused.
+    #[cfg(all(
+        feature = "wayland",
+        unix,
+        not(target_vendor = "apple"),
+        not(target_os = "android"),
+        not(target_os = "emscripten"),
+        not(target_os = "redox"),
+    ))]
+    ime_gate: ime_surrounding::ImeGate,
 
     // TODO(emilk): remove once we are on a winit with https://github.com/rust-windowing/winit/pull/4732
     #[cfg(target_os = "macos")]
@@ -145,6 +304,214 @@ pub struct State {
     /// for details.
     #[cfg(target_os = "windows")]
     pressed_processed_physical_keys: HashSet<winit::keyboard::PhysicalKey>,
+}
+
+/// Classify a winit event for pending-paste invalidation.
+///
+/// A later edit or focus/selection-changing action cancels a paste in flight. A release of the
+/// initiating shortcut, pointer release, repaint and unrelated events do not. A focus gain is
+/// special: on a click-to-focus compositor it can be the second half of the same middle-click
+/// that started a PRIMARY read.
+fn clipboard_input_kind(event: &winit::event::WindowEvent) -> clipboard_bridge::InputKind {
+    use crate::clipboard_bridge::InputKind;
+    use winit::event::WindowEvent;
+
+    match event {
+        WindowEvent::KeyboardInput {
+            event,
+            is_synthetic,
+            ..
+        } => clipboard_key_input_kind(event.state, *is_synthetic),
+        WindowEvent::MouseInput {
+            state: ElementState::Pressed,
+            ..
+        } => InputKind::PointerPress,
+        WindowEvent::Touch(touch) if touch.phase == winit::event::TouchPhase::Started => {
+            InputKind::PointerPress
+        }
+        WindowEvent::Ime(winit::event::Ime::Commit(_)) => InputKind::Edit,
+        WindowEvent::Focused(false) => InputKind::Focus,
+        WindowEvent::Focused(true) => InputKind::FocusGained,
+        WindowEvent::CloseRequested | WindowEvent::Destroyed => InputKind::Close,
+        WindowEvent::Occluded(true) => InputKind::Hide,
+        WindowEvent::MouseWheel { .. } => InputKind::Scroll,
+        _ => InputKind::NonInvalidating,
+    }
+}
+
+/// Classify a keyboard event without constructing a `winit::event::KeyEvent` (its
+/// platform-specific field is private to winit, so this is also the testable seam).
+fn clipboard_key_input_kind(
+    state: winit::event::ElementState,
+    is_synthetic: bool,
+) -> clipboard_bridge::InputKind {
+    use crate::clipboard_bridge::InputKind;
+
+    if is_synthetic || state != winit::event::ElementState::Pressed {
+        // Releasing the paste/copy shortcut must not cancel the request it started.
+        InputKind::NonInvalidating
+    } else {
+        InputKind::KeyPress
+    }
+}
+
+/// Whether an input action must discard this batch's pending/prepared claim origin.
+///
+/// A click-to-focus `Focused(true)` is deliberately not invalidating: it can be the second half
+/// of the same pointer press that made the batch claimable.
+fn clipboard_input_invalidates_claim_batch(kind: clipboard_bridge::InputKind) -> bool {
+    matches!(
+        kind,
+        clipboard_bridge::InputKind::Focus
+            | clipboard_bridge::InputKind::Close
+            | clipboard_bridge::InputKind::Hide
+    )
+}
+
+/// Whether this event is an input turn that winit may accept as an ownership claim trigger.
+///
+/// Keyboard presses and pointer presses/releases make the current input batch claimable. The
+/// token is looked up once during input preparation, not at dispatch or platform-output time.
+fn clipboard_input_claims_origin(event: &winit::event::WindowEvent) -> bool {
+    use winit::event::{ElementState, WindowEvent};
+
+    match event {
+        WindowEvent::KeyboardInput {
+            event,
+            is_synthetic,
+            ..
+        } => !*is_synthetic && event.state == ElementState::Pressed,
+        WindowEvent::MouseInput { .. } => true,
+        _ => false,
+    }
+}
+
+/// Batch origins resolved for output, or a marker that this build/display has no Wayland
+/// origin transport. Keeping this type available on every platform avoids cfg-dependent
+/// arguments to the command-processing helpers.
+#[derive(Default)]
+enum OutputClaimOrigins {
+    /// No winit Wayland transport is available for this output.
+    #[default]
+    NotWayland,
+    /// One captured-or-fallback origin per selected clipboard family.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    Wayland(clipboard_bridge::BatchClaimOrigins<winit::platform::wayland::InputOriginToken>),
+}
+
+/// One family's resolved origin after selection and batch-level resolution.
+#[derive(Default)]
+enum OutputClaimOrigin {
+    /// No winit Wayland transport is available for this output.
+    #[default]
+    NotWayland,
+    /// The exact token or permitted fallback to use for this family.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    Ready(winit::platform::wayland::InputOriginToken),
+    /// The family must fail explicitly without consulting another origin.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    Rejected(clipboard_bridge::ClaimOriginError),
+}
+
+/// Existing PRIMARY behavior: suppress an unchanged `(input generation, text)` claim.
+///
+/// This is the explicit exception to the no-cross-batch-deduplication rule. It is deliberately
+/// keyed by the input generation, not by a logical batch id; a new input generation may claim the
+/// same text again.
+fn unchanged_primary_is_suppressed(
+    last_claim: Option<&(u64, String)>,
+    generation: u64,
+    text: &str,
+) -> bool {
+    last_claim.is_some_and(|(last_generation, last_text)| {
+        *last_generation == generation && last_text == text
+    })
+}
+
+/// Clear the per-window IME latches when a window is destroyed.
+///
+/// This is deliberately independent of the Wayland-only bridge state: a reused [`State`] on
+/// Windows, macOS or X11 must also ask the new window for its cursor area and purpose, and must
+/// not skip the first `set_ime_allowed(true)`.
+fn reset_ime_window_latches(
+    allow_ime: &mut bool,
+    ime_cursor_rect_px: &mut Option<egui::Rect>,
+    old_ime_purpose: &mut egui::IMEPurpose,
+) {
+    *allow_ime = false;
+    *ime_cursor_rect_px = None;
+    *old_ime_purpose = egui::IMEPurpose::Normal;
+}
+
+/// One pending asynchronous PNG copy, its exact reserved input origin and delivery deadline.
+#[cfg(all(
+    feature = "clipboard-image",
+    feature = "clipboard",
+    feature = "wayland",
+    any(
+        target_os = "linux",
+        target_os = "dragonfly",
+        target_os = "freebsd",
+        target_os = "netbsd",
+        target_os = "openbsd"
+    )
+))]
+struct ImageCopyPending {
+    epoch: u64,
+    target_window: winit::window::WindowId,
+    deadline: std::time::Instant,
+    reservation: Option<winit::platform::wayland::ImageClaimReservation>,
+    request: clipboard_image::ImageCopyRequest,
+}
+
+#[cfg(all(
+    feature = "clipboard-image",
+    feature = "clipboard",
+    feature = "wayland",
+    any(
+        target_os = "linux",
+        target_os = "dragonfly",
+        target_os = "freebsd",
+        target_os = "netbsd",
+        target_os = "openbsd"
+    )
+))]
+impl Drop for ImageCopyPending {
+    fn drop(&mut self) {
+        // Dropping the state must not let a late encode install ownership.
+        self.request.cancel();
+        self.reservation.take();
+    }
 }
 
 impl State {
@@ -172,6 +539,22 @@ impl State {
             clipboard::Clipboard::new(display_target.display_handle().ok().map(|h| h.as_raw()))
         };
 
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        let clipboard_repaint_waker = {
+            let egui_ctx = egui_ctx.clone();
+            std::sync::Arc::new(move || egui_ctx.request_repaint_of(viewport_id))
+        };
+
         let mut slf = Self {
             viewport_id,
             start_time: web_time::Instant::now()
@@ -180,12 +563,88 @@ impl State {
             egui_ctx,
             egui_input,
             modifiers: egui::Modifiers::default(),
+            held_keys: held_keys::HeldKeys::default(),
             pointer_pos_in_points: None,
             any_pointer_button_down: false,
             current_cursor_icon: None,
             current_custom_cursor: None,
 
             clipboard,
+            clipboard_paste: clipboard_bridge::PasteBridge::new(viewport_id),
+            #[cfg(all(
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            ))]
+            clipboard_repaint_waker,
+            #[cfg(all(
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            ))]
+            last_primary_claim: None,
+            #[cfg(all(
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            ))]
+            clipboard_claim_batch: clipboard_bridge::ClaimBatch::default(),
+            #[cfg(all(
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            ))]
+            clipboard_failures: 0,
+            #[cfg(all(
+                feature = "clipboard-image",
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            ))]
+            copy_epoch: 0,
+            #[cfg(all(
+                feature = "clipboard-image",
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            ))]
+            pending_image_copy: None,
 
             simulate_touch_screen: false,
             pointer_touch_id: None,
@@ -194,14 +653,48 @@ impl State {
             accesskit: None,
 
             allow_ime: false,
+            ime_reset: Default::default(),
             clipboard_shortcuts: true,
             ime_cursor_rect_px: None,
             old_ime_purpose: egui::IMEPurpose::Normal,
+            #[cfg(all(
+                feature = "wayland",
+                unix,
+                not(target_vendor = "apple"),
+                not(target_os = "android"),
+                not(target_os = "emscripten"),
+                not(target_os = "redox"),
+            ))]
+            ime_surrounding: ime_surrounding::ImeSurroundingSync::default(),
+            #[cfg(all(
+                feature = "wayland",
+                unix,
+                not(target_vendor = "apple"),
+                not(target_os = "android"),
+                not(target_os = "emscripten"),
+                not(target_os = "redox"),
+            ))]
+            ime_gate: ime_surrounding::ImeGate::default(),
             #[cfg(target_os = "macos")]
             scroll_momentum_monitor: macos_scroll_momentum::ScrollMomentumMonitor::install(),
             #[cfg(target_os = "windows")]
             pressed_processed_physical_keys: HashSet::new(),
         };
+
+        #[cfg(all(
+            feature = "clipboard-image",
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        slf.clipboard_paste
+            .set_image_decoder(Some(clipboard_image::paste_decoder()));
 
         slf.egui_input
             .viewports
@@ -239,19 +732,1265 @@ impl State {
     }
 
     /// Fetches text from the clipboard and returns it.
+    ///
+    /// This is a bounded synchronous compatibility API; on Wayland it can block for up to
+    /// winit's transfer deadline. Input handling uses the asynchronous paste bridge instead.
     pub fn clipboard_text(&mut self) -> Option<String> {
         self.clipboard.get()
     }
 
     /// Fetches an image from the clipboard and returns it, if there is one and the platform
     /// backend supports it. Mirrors [`Self::clipboard_text`] for images.
+    ///
+    /// This is a synchronous compatibility API for non-Wayland backends. On Wayland authoritative
+    /// clipboard ownership belongs to winit, so this method explicitly refuses instead of
+    /// opening arboard/smithay or blocking the event loop. The supported Wayland image path is
+    /// the regular paste event (`Ctrl+V` or [`Self::request_paste`]), which performs a bounded
+    /// combined read and off-thread PNG decode.
     pub fn clipboard_image(&mut self) -> Option<egui::ColorImage> {
         self.clipboard.get_image()
     }
 
     /// Places the text onto the clipboard.
+    ///
+    /// This is the synchronous compatibility API without an input-origin token. The egui event
+    /// path uses a validated claim on the triggering input turn instead.
     pub fn set_clipboard_text(&mut self, text: String) {
         self.clipboard.set_text(text);
+    }
+
+    fn focused_widget_id(&self) -> Option<egui::Id> {
+        self.egui_ctx.memory(|memory| memory.focused())
+    }
+
+    /// Request a regular-clipboard paste from [`egui::ViewportCommand::RequestPaste`].
+    ///
+    /// On Wayland this starts the same bounded asynchronous bridge as the paste shortcut. It
+    /// never blocks the event path and never performs a synchronous arboard image read. Other
+    /// platforms keep their synchronous compatibility behavior.
+    pub fn request_paste(&mut self, window: &Window) {
+        self.rebind_clipboard_target(window);
+        self.begin_regular_clipboard_paste();
+    }
+
+    /// Forward an app-requested cut (`ViewportCommand::RequestCut`) through the normal egui path.
+    pub fn request_cut(&mut self, _window: &Window) {
+        self.note_claimable_clipboard_input();
+        self.egui_input.events.push(egui::Event::Cut);
+    }
+
+    /// Forward an app-requested copy (`ViewportCommand::RequestCopy`) through the normal egui path.
+    pub fn request_copy(&mut self, _window: &Window) {
+        self.note_claimable_clipboard_input();
+        self.egui_input.events.push(egui::Event::Copy);
+    }
+
+    /// Bind the paste bridge and claim batch to this native window.
+    ///
+    /// A target replacement cancels pending reads and discards any pending/prepared claim origin:
+    /// a token captured for one window must never be used by a reused `State` bound elsewhere.
+    fn rebind_clipboard_target(&mut self, window: &Window) {
+        let rebound = self.clipboard_paste.set_target_window(window.id());
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if rebound {
+            self.clipboard_claim_batch.invalidate();
+            self.cancel_pending_image_copy();
+        }
+        #[cfg(not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )))]
+        let _ = rebound;
+    }
+
+    /// Mark a claimable trigger, `RequestCopy` or `RequestCut` for this input batch.
+    ///
+    /// The token itself is captured once during [`Self::take_egui_input`], not at dispatch, so
+    /// click-to-focus keyboard-enter ordering and later events in the same batch are reflected.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn note_claimable_clipboard_input(&mut self) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        self.clipboard_claim_batch.note_claimable_input();
+    }
+
+    /// Drop claim-origin state that belongs to a hidden, unfocused or otherwise invalid batch.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn invalidate_clipboard_claim_batch(&mut self) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        self.clipboard_claim_batch.invalidate();
+    }
+
+    /// Capture this input batch's claim origin once, at input preparation.
+    ///
+    /// Preparation runs after all events for the batch (including a click-to-focus
+    /// `Focused(true)`) have been dispatched, and uses the then-current paste generation. The
+    /// prepared slot is independent of output selection and is always consumed by
+    /// `handle_platform_output`, even when no clipboard command wins.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn prepare_clipboard_claim_origin(&mut self, _window: &Window) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        {
+            let transport = self.clipboard.wayland_transport();
+            let generation = self.clipboard_paste.generation();
+            self.clipboard_claim_batch
+                .prepare(transport.as_ref(), _window.id(), generation);
+        }
+    }
+
+    /// Consume the prepared batch origin, even when this output has no clipboard winner.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    fn take_clipboard_claim_origin(
+        &mut self,
+    ) -> clipboard_bridge::CapturedClaimOrigin<winit::platform::wayland::InputOriginToken> {
+        self.clipboard_claim_batch.take_prepared()
+    }
+
+    #[cfg(not(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    )))]
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn take_clipboard_claim_origin(&mut self) {}
+
+    /// Resolve the captured batch origin once for the selected clipboard families.
+    ///
+    /// Only `Absent` regular text or PRIMARY may perform the legacy fallback lookup, and they
+    /// share one token. Images and stale/failed captures never call `input_origin`. The prepared
+    /// origin was already consumed by the caller, so a no-winner batch cannot leak it.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    fn resolve_output_claim_origins(
+        &self,
+        _window: &Window,
+        generation: u64,
+        captured: clipboard_bridge::CapturedClaimOrigin<winit::platform::wayland::InputOriginToken>,
+        regular: Option<clipboard_bridge::RegularClaimOriginPolicy>,
+        primary: bool,
+    ) -> OutputClaimOrigins {
+        if (regular.is_some() || primary)
+            && let Some(transport) = self.clipboard.wayland_transport()
+        {
+            return OutputClaimOrigins::Wayland(clipboard_bridge::resolve_batch_claim_origins(
+                &transport,
+                _window.id(),
+                generation,
+                captured,
+                regular,
+                primary,
+            ));
+        }
+
+        OutputClaimOrigins::NotWayland
+    }
+
+    #[cfg(not(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    )))]
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn resolve_output_claim_origins(
+        &mut self,
+        _window: &Window,
+        _generation: u64,
+        _captured: (),
+        _regular: Option<clipboard_bridge::RegularClaimOriginPolicy>,
+        _primary: bool,
+    ) -> OutputClaimOrigins {
+        OutputClaimOrigins::NotWayland
+    }
+
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut)
+    )]
+    fn take_regular_output_origin(origins: &mut OutputClaimOrigins) -> OutputClaimOrigin {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let OutputClaimOrigins::Wayland(origins) = origins {
+            return match origins.regular.take() {
+                Some(Ok(token)) => OutputClaimOrigin::Ready(token),
+                Some(Err(error)) => OutputClaimOrigin::Rejected(error),
+                None => OutputClaimOrigin::NotWayland,
+            };
+        }
+
+        #[cfg(not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )))]
+        let _ = origins;
+
+        OutputClaimOrigin::NotWayland
+    }
+
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut)
+    )]
+    fn take_primary_output_origin(origins: &mut OutputClaimOrigins) -> OutputClaimOrigin {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let OutputClaimOrigins::Wayland(origins) = origins {
+            return match origins.primary.take() {
+                Some(Ok(token)) => OutputClaimOrigin::Ready(token),
+                Some(Err(error)) => OutputClaimOrigin::Rejected(error),
+                None => OutputClaimOrigin::NotWayland,
+            };
+        }
+
+        #[cfg(not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )))]
+        let _ = origins;
+
+        OutputClaimOrigin::NotWayland
+    }
+
+    /// Existing PRIMARY behavior: do not re-claim the same text in one input generation.
+    ///
+    /// This is the explicit exception to the no-cross-batch-dedup rule. A new input generation
+    /// may claim the same text again.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::unused_self)
+    )]
+    fn primary_claim_is_suppressed(&self, generation: u64, text: &str) -> bool {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        let last_claim = self.last_primary_claim.as_ref();
+        #[cfg(not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )))]
+        let last_claim: Option<&(u64, String)> = None;
+
+        unchanged_primary_is_suppressed(last_claim, generation, text)
+    }
+
+    /// Retry a middle-click PRIMARY read that lost the click-to-focus ordering race.
+    // The Wayland implementation mutates the per-window protocol state.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn retry_deferred_primary(&mut self) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let Some(transport) = self.clipboard.wayland_transport()
+            && let Err(err) = self.clipboard_paste.retry_deferred_primary(&transport)
+        {
+            self.record_clipboard_failure("PRIMARY retry", &err.to_io_error());
+        }
+    }
+
+    /// Record a rejected request or claim and make non-routine failures visible in the log.
+    // The Wayland implementation mutates the per-window protocol state.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_ref_mut, clippy::unused_self)
+    )]
+    fn record_clipboard_failure(&mut self, action: &str, error: &std::io::Error) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        {
+            if error.kind() == std::io::ErrorKind::NotFound {
+                // Empty/non-text content is a mundane no-op, not a transport fault.
+                log::debug!("winit Wayland clipboard {action} failed: {error}");
+            } else {
+                self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+                log::warn!(
+                    "winit Wayland clipboard {action} failed ({} failures this session): {error}",
+                    self.clipboard_failures
+                );
+            }
+        }
+        #[cfg(not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )))]
+        let _ = (action, error);
+    }
+
+    /// Record an explicit stale/failed/missing origin rejection and count it as a clipboard
+    /// failure. Unlike a transport "not found" result, an origin rejection is never routine.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    fn record_claim_origin_failure(
+        &mut self,
+        action: &str,
+        error: &clipboard_bridge::ClaimOriginError,
+    ) {
+        self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+        log::warn!(
+            "winit Wayland clipboard {action} rejected the output origin ({} failures this session): {error}",
+            self.clipboard_failures
+        );
+    }
+
+    /// Number of Wayland clipboard requests or ownership claims rejected since construction.
+    ///
+    /// This includes admission failures (a full worker queue, a missing PRIMARY protocol or a
+    /// disconnected event loop) and rejected ownership claims. The previous selection content is
+    /// left in place when a claim is rejected.
+    #[cfg(all(
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    pub fn clipboard_failure_count(&self) -> u64 {
+        self.clipboard_failures
+    }
+
+    /// Cancel pending clipboard reads because the window was hidden, minimized or destroyed.
+    fn cancel_pending_clipboard_pastes(&mut self) {
+        self.clipboard_paste
+            .note_input(clipboard_bridge::InputKind::Hide);
+        self.invalidate_clipboard_claim_batch();
+        self.cancel_pending_image_copy();
+    }
+
+    /// Cancel one pending PNG copy and drop its exact winit reservation without waking.
+    #[cfg(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    fn cancel_pending_image_copy(&mut self) {
+        if let Some(mut pending) = self.pending_image_copy.take() {
+            pending.request.cancel();
+            pending.reservation.take();
+        }
+    }
+
+    #[cfg(not(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    )))]
+    #[expect(clippy::needless_pass_by_ref_mut)]
+    fn cancel_pending_image_copy(&mut self) {
+        let _ = self;
+    }
+
+    /// A new winning regular output supersedes any pending image encode before origin
+    /// resolution, even when that new attempt later fails.
+    #[cfg(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    fn invalidate_image_copy_for_regular_output(&mut self, window: &Window) {
+        self.copy_epoch = self.copy_epoch.wrapping_add(1);
+        self.cancel_pending_image_copy();
+        if let Some(transport) = self.clipboard.wayland_transport()
+            && let Err(error) = clipboard_bridge::ClipboardTransport::invalidate_image_reservations(
+                &transport,
+                window.id(),
+            )
+        {
+            self.record_clipboard_failure("image reservation invalidation", &error.to_io_error());
+        }
+    }
+
+    #[cfg(not(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    )))]
+    #[expect(clippy::needless_pass_by_ref_mut)]
+    fn invalidate_image_copy_for_regular_output(&mut self, _window: &Window) {
+        let _ = self;
+    }
+
+    /// Install a completed PNG encode exactly once, on the event-loop thread, using its original
+    /// reserved input serial. Focus, window, visibility, hide and deadline fences are rechecked
+    /// before winit validates the remaining seat/ownership epochs.
+    #[cfg(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    ))]
+    fn install_pending_image_copy(&mut self, window: &Window) {
+        let Some(pending) = self.pending_image_copy.as_ref() else {
+            return;
+        };
+        if pending.epoch != self.copy_epoch
+            || pending.target_window != window.id()
+            || std::time::Instant::now() >= pending.deadline
+        {
+            self.cancel_pending_image_copy();
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland image copy expired or was superseded before installation");
+            return;
+        }
+        let Some(result) = pending.request.try_take() else {
+            return;
+        };
+        let Some(mut pending) = self.pending_image_copy.take() else {
+            return;
+        };
+        if std::time::Instant::now() >= pending.deadline {
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland image copy expired before installation");
+            return;
+        }
+        let reservation = pending.reservation.take();
+        let png = match result {
+            Ok(png) => png,
+            Err(error) => {
+                self.record_clipboard_failure("image encode", &error.to_io_error());
+                return;
+            }
+        };
+        let Some(reservation) = reservation else {
+            self.record_clipboard_failure(
+                "image claim",
+                &std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "the image reservation was already consumed",
+                ),
+            );
+            return;
+        };
+        if !window.has_focus()
+            || window.is_visible() == Some(false)
+            || window.is_minimized() == Some(true)
+        {
+            drop(png);
+            drop(reservation);
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland image copy rejected after a focus/window/hide fence");
+            return;
+        }
+        let Some(transport) = self.clipboard.wayland_transport() else {
+            drop(png);
+            drop(reservation);
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland clipboard is unavailable; encoded image was not installed");
+            return;
+        };
+        if let Err(error) = transport.claim_reserved_image_png(png, reservation) {
+            self.record_clipboard_failure("image claim", &error.to_io_error());
+        }
+    }
+
+    #[cfg(not(all(
+        feature = "clipboard-image",
+        feature = "clipboard",
+        feature = "wayland",
+        any(
+            target_os = "linux",
+            target_os = "dragonfly",
+            target_os = "freebsd",
+            target_os = "netbsd",
+            target_os = "openbsd"
+        ),
+    )))]
+    #[expect(clippy::needless_pass_by_ref_mut)]
+    fn install_pending_image_copy(&mut self, _window: &Window) {
+        let _ = self;
+    }
+
+    /// Start a non-blocking regular-clipboard paste on Wayland, or use the platform's
+    /// synchronous compatibility path elsewhere.
+    fn begin_regular_clipboard_paste(&mut self) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let Some(transport) = self.clipboard.wayland_transport() {
+            let focused = self.focused_widget_id();
+            match self.clipboard_paste.begin_regular(
+                &transport,
+                focused,
+                std::sync::Arc::clone(&self.clipboard_repaint_waker),
+            ) {
+                Ok(()) => {}
+                Err(err) => {
+                    // Wayland image fallback is deliberately disabled until winit can carry an
+                    // image offer through a validated, bounded transfer. An absent or non-text
+                    // regular offer (including `InvalidData` from a stale self-source) is a
+                    // failed paste, never a synchronous arboard read on the event path.
+                    self.record_clipboard_failure("regular paste request", &err.to_io_error());
+                }
+            }
+            return;
+        }
+
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if self.clipboard.is_wayland() {
+            // No winit clipboard means no validated asynchronous transport. Do not substitute a
+            // blocking arboard/data-control read on the Wayland event path.
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland clipboard is unavailable; ignoring paste request");
+            return;
+        }
+
+        // Non-Wayland platforms retain their existing synchronous clipboard behavior.
+        if let Some(contents) = self.clipboard.get() {
+            let contents = contents.replace("\r\n", "\n");
+            if !contents.is_empty() {
+                self.egui_input.events.push(egui::Event::Paste(contents));
+            }
+        } else if let Some(image) = self.clipboard.get_image() {
+            // No usable text on the clipboard (e.g. an image was copied with
+            // mspaint/Snipping Tool, which never puts a text representation
+            // alongside it) — fall back to an image paste rather than doing
+            // nothing, mirroring `Event::Copy`/`OutputCommand::CopyImage`.
+            self.egui_input
+                .events
+                .push(egui::Event::PasteImage(std::sync::Arc::new(image)));
+        }
+    }
+
+    /// Start a non-blocking PRIMARY paste for a middle-click on Wayland.
+    fn begin_primary_clipboard_paste(&mut self, pos: egui::Pos2) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let Some(transport) = self.clipboard.wayland_transport() {
+            let focused = self.focused_widget_id();
+            let target_layer = self.egui_ctx.layer_id_at(pos);
+            if let Err(err) = self.clipboard_paste.begin_primary(
+                &transport,
+                focused,
+                pos,
+                target_layer,
+                std::sync::Arc::clone(&self.clipboard_repaint_waker),
+            ) {
+                self.record_clipboard_failure("PRIMARY request", &err.to_io_error());
+            }
+            return;
+        }
+
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if self.clipboard.is_wayland() {
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland clipboard is unavailable; ignoring PRIMARY request");
+            return;
+        }
+
+        if let Some(text) = self.clipboard.get_primary_text()
+            && !text.is_empty()
+        {
+            self.egui_input
+                .events
+                .push(egui::Event::MiddleClickPaste { pos, text });
+        }
+    }
+
+    /// Revalidate and emit completed clipboard reads exactly once.
+    fn drain_clipboard_pastes(&mut self, window: &Window) {
+        let focused = self.focused_widget_id();
+        let outcomes = {
+            // The bridge only mutably borrows its own field; the hit-test reads egui memory.
+            let egui_ctx = &self.egui_ctx;
+            self.clipboard_paste
+                .drain_with_layers(window.id(), focused, |pos| egui_ctx.layer_id_at(pos))
+        };
+        for outcome in outcomes {
+            match outcome {
+                clipboard_bridge::PasteOutcome::Regular(Ok(text)) => {
+                    // A present empty text is a successful read. Preserve egui's existing
+                    // no-op-for-empty paste behavior without treating it as absent content.
+                    let text = text.replace("\r\n", "\n");
+                    if !text.is_empty() {
+                        self.egui_input.events.push(egui::Event::Paste(text));
+                    }
+                }
+                clipboard_bridge::PasteOutcome::Regular(Err(err)) => {
+                    // No image fallback here: see `begin_regular_clipboard_paste`.
+                    self.record_clipboard_failure("regular paste", &err.to_io_error());
+                }
+                clipboard_bridge::PasteOutcome::RegularImage(decoded) => {
+                    let clipboard_bridge::DecodedPasteImage {
+                        image,
+                        retention: _retention,
+                    } = decoded;
+                    // The image moves into the event. `_retention` is dropped after handoff, so
+                    // the codec budget no longer claims to bound application-retained pastes.
+                    self.egui_input
+                        .events
+                        .push(egui::Event::PasteImage(std::sync::Arc::new(image)));
+                }
+                clipboard_bridge::PasteOutcome::Primary { pos, result } => match result {
+                    Ok(text) if !text.is_empty() => {
+                        self.egui_input
+                            .events
+                            .push(egui::Event::MiddleClickPaste { pos, text });
+                    }
+                    // PRESENT empty PRIMARY text is a success, not an absent offer.
+                    Ok(_) => {}
+                    Err(err) => {
+                        self.record_clipboard_failure("PRIMARY paste", &err.to_io_error());
+                    }
+                },
+            }
+        }
+    }
+
+    /// Put a selected regular text winner on the clipboard.
+    ///
+    /// `origin` was resolved once for the whole output batch. A rejected stale/failed capture
+    /// fails here without asking for another origin; the previous clipboard source is preserved.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_value)
+    )]
+    fn copy_text_output(&mut self, _window: &Window, text: String, origin: OutputClaimOrigin) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let Some(transport) = self.clipboard.wayland_transport() {
+            let generation = self.clipboard_paste.generation();
+            match origin {
+                OutputClaimOrigin::Ready(token) => {
+                    log::trace!("Wayland copy claim uses the captured batch origin");
+                    if let Err(err) = clipboard_bridge::claim(
+                        &transport,
+                        clipboard_bridge::PasteKind::Regular,
+                        &text,
+                        token,
+                        _window.id(),
+                        generation,
+                    ) {
+                        self.record_clipboard_failure("copy claim", &err.to_io_error());
+                    }
+                }
+                OutputClaimOrigin::Rejected(error) => {
+                    self.record_claim_origin_failure("copy claim", &error);
+                }
+                OutputClaimOrigin::NotWayland => {
+                    self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+                    log::warn!(
+                        "winit Wayland clipboard origin is unavailable; copy was not claimed"
+                    );
+                }
+            }
+            return;
+        }
+
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if self.clipboard.is_wayland() {
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland clipboard is unavailable; copy was not claimed");
+            return;
+        }
+
+        let _ = origin;
+        self.clipboard.set_text(text);
+    }
+
+    /// Put a selected image winner on the clipboard.
+    ///
+    /// The exact captured token is reserved synchronously, the caller-owned image is moved into
+    /// the bounded encode worker without cloning, and the reserved PNG is installed on the
+    /// event-loop thread after the encode completion repaint. A rejected origin, reservation,
+    /// encode or claim leaves the previously installed clipboard source unchanged.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_value)
+    )]
+    fn copy_image_output(
+        &mut self,
+        _window: &Window,
+        image: egui::ColorImage,
+        origin: OutputClaimOrigin,
+    ) {
+        #[cfg(all(
+            feature = "clipboard-image",
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if self.clipboard.is_wayland() {
+            match origin {
+                OutputClaimOrigin::Ready(token) => {
+                    if let Err(error) = clipboard_image::validate_color_image(&image) {
+                        self.record_clipboard_failure("image copy admission", &error.to_io_error());
+                        return;
+                    }
+                    let deadline =
+                        std::time::Instant::now() + clipboard_image::COPY_DELIVERY_BUDGET;
+                    let Some(transport) = self.clipboard.wayland_transport() else {
+                        self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+                        log::warn!(
+                            "winit Wayland clipboard is unavailable; image copy was not admitted"
+                        );
+                        return;
+                    };
+                    let reservation = match transport.reserve_image_claim(
+                        winit::platform::wayland::SelectionClaim {
+                            target_window: _window.id(),
+                            caller_generation: self.clipboard_paste.generation(),
+                            trigger: token,
+                        },
+                    ) {
+                        Ok(reservation) => reservation,
+                        Err(error) => {
+                            self.record_clipboard_failure(
+                                "image reservation",
+                                &error.to_io_error(),
+                            );
+                            return;
+                        }
+                    };
+                    // Defensively supersede any request that survived a prior output path.
+                    self.cancel_pending_image_copy();
+                    let request = match clipboard_image::ImageCopyRequest::start(
+                        image,
+                        std::sync::Arc::clone(&self.clipboard_repaint_waker),
+                    ) {
+                        Ok(request) => request,
+                        Err(error) => {
+                            drop(reservation);
+                            self.record_clipboard_failure(
+                                "image encode request",
+                                &error.to_io_error(),
+                            );
+                            return;
+                        }
+                    };
+                    self.pending_image_copy = Some(ImageCopyPending {
+                        epoch: self.copy_epoch,
+                        target_window: _window.id(),
+                        deadline,
+                        reservation: Some(reservation),
+                        request,
+                    });
+                }
+                OutputClaimOrigin::Rejected(error) => {
+                    self.record_claim_origin_failure("image copy", &error);
+                }
+                OutputClaimOrigin::NotWayland => {
+                    self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+                    log::warn!(
+                        "winit Wayland clipboard origin is unavailable; image copy was not admitted"
+                    );
+                }
+            }
+            return;
+        }
+
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            not(feature = "clipboard-image"),
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if self.clipboard.is_wayland() {
+            match origin {
+                OutputClaimOrigin::Rejected(error) => {
+                    self.record_claim_origin_failure("image copy", &error);
+                }
+                OutputClaimOrigin::Ready(_) | OutputClaimOrigin::NotWayland => {
+                    self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+                    log::warn!(
+                        "Wayland image copy requires the 'clipboard-image' feature; nothing was written"
+                    );
+                }
+            }
+            drop(image);
+            return;
+        }
+
+        let _ = origin;
+        self.clipboard.set_image(&image);
+        drop(image);
+    }
+
+    /// Put a selected settled selection on PRIMARY.
+    ///
+    /// Existing unchanged-selection suppression is handled before origin resolution in
+    /// [`Self::handle_platform_output_inner`], so this method consumes no origin when suppressed.
+    #[cfg_attr(
+        not(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        )),
+        expect(clippy::needless_pass_by_value)
+    )]
+    fn primary_selection_output(
+        &mut self,
+        _window: &Window,
+        text: String,
+        origin: OutputClaimOrigin,
+    ) {
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if let Some(transport) = self.clipboard.wayland_transport() {
+            let generation = self.clipboard_paste.generation();
+            match origin {
+                OutputClaimOrigin::Ready(token) => {
+                    log::trace!("Wayland PRIMARY claim uses the captured batch origin");
+                    match clipboard_bridge::claim(
+                        &transport,
+                        clipboard_bridge::PasteKind::Primary,
+                        &text,
+                        token,
+                        _window.id(),
+                        generation,
+                    ) {
+                        Ok(()) => {
+                            self.last_primary_claim = Some((generation, text));
+                        }
+                        Err(err) => {
+                            self.record_clipboard_failure("PRIMARY claim", &err.to_io_error());
+                        }
+                    }
+                }
+                OutputClaimOrigin::Rejected(error) => {
+                    self.record_claim_origin_failure("PRIMARY claim", &error);
+                }
+                OutputClaimOrigin::NotWayland => {
+                    self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+                    log::warn!(
+                        "winit Wayland clipboard origin is unavailable; PRIMARY was not claimed"
+                    );
+                }
+            }
+            return;
+        }
+
+        #[cfg(all(
+            feature = "clipboard",
+            feature = "wayland",
+            any(
+                target_os = "linux",
+                target_os = "dragonfly",
+                target_os = "freebsd",
+                target_os = "netbsd",
+                target_os = "openbsd"
+            ),
+        ))]
+        if self.clipboard.is_wayland() {
+            self.clipboard_failures = self.clipboard_failures.wrapping_add(1);
+            log::warn!("winit Wayland clipboard is unavailable; PRIMARY was not claimed");
+            return;
+        }
+
+        let _ = origin;
+        self.clipboard.set_primary_text(text);
     }
 
     /// Returns [`false`] or the last value that [`Window::set_ime_allowed()`] was called with, used for debouncing.
@@ -262,6 +2001,9 @@ impl State {
     /// Set the last value that [`Window::set_ime_allowed()`] was called with.
     pub fn set_allow_ime(&mut self, allow: bool) {
         self.allow_ime = allow;
+        if !allow {
+            self.ime_reset.invalidate();
+        }
     }
 
     /// Are clipboard keyboard shortcuts translated into clipboard events?
@@ -320,6 +2062,17 @@ impl State {
     pub fn take_egui_input(&mut self, window: &Window) -> egui::RawInput {
         profiling::function_scope!();
 
+        // Completed clipboard reads are revalidated and emitted exactly once here, before the
+        // input is handed to egui. A worker only wakes this viewport; it never inspects egui.
+        self.rebind_clipboard_target(window);
+        self.install_pending_image_copy(window);
+        self.drain_clipboard_pastes(window);
+
+        // All events for this batch have been dispatched by now, including any click-to-focus
+        // keyboard enter. Capture the final claimable input origin exactly once, using the
+        // generation current at preparation. The slot is consumed by platform output below.
+        self.prepare_clipboard_claim_origin(window);
+
         self.egui_input.time = Some(self.start_time.elapsed().as_secs_f64());
 
         // On Windows, a minimized window will have 0 width and height.
@@ -358,6 +2111,28 @@ impl State {
         #[cfg(feature = "accesskit")]
         if let Some(accesskit) = self.accesskit.as_mut() {
             accesskit.process_event(window, event);
+        }
+
+        // A new input generation invalidates a pending paste on an edit, focus/selection change
+        // or close. Releases and repaints deliberately leave it in flight.
+        self.rebind_clipboard_target(window);
+        let clipboard_input = clipboard_input_kind(event);
+        self.clipboard_paste.note_input(clipboard_input);
+        if clipboard_input_claims_origin(event) {
+            // Record the intent now; the token is captured once in `take_egui_input` so a
+            // click-to-focus keyboard-enter and any later event in the same batch are reflected.
+            self.note_claimable_clipboard_input();
+        }
+        if clipboard_input_invalidates_claim_batch(clipboard_input) {
+            // A token from an unfocused, hidden or destroyed window must not be used for output.
+            self.invalidate_clipboard_claim_batch();
+            // An in-flight image encode must not install ownership after focus/window loss.
+            self.cancel_pending_image_copy();
+        }
+        if matches!(event, winit::event::WindowEvent::Focused(true)) {
+            // A click-to-focus compositor may dispatch the middle-click press before
+            // `wl_keyboard.enter`. Retry the one deferred PRIMARY read once focus arrives.
+            self.retry_deferred_primary();
         }
 
         use winit::event::WindowEvent;
@@ -437,7 +2212,29 @@ impl State {
                 }
             }
 
+            WindowEvent::ImeResetCompleted { .. } => {
+                let forwarded = self.ime_reset.on_event(
+                    window.id(),
+                    self.viewport_id,
+                    event,
+                    &mut self.egui_input.events,
+                );
+                EventResponse {
+                    repaint: forwarded,
+                    consumed: false,
+                }
+            }
             WindowEvent::Ime(ime) => {
+                if matches!(ime, winit::event::Ime::Commit(_))
+                    && let Some((before_bytes, after_bytes)) = ime_delete_surrounding(window)
+                {
+                    self.egui_input.events.push(egui::Event::Ime(
+                        egui::ImeEvent::DeleteSurroundingBytes {
+                            before_bytes,
+                            after_bytes,
+                        },
+                    ));
+                }
                 self.on_ime(ime);
 
                 EventResponse {
@@ -491,9 +2288,31 @@ impl State {
                 };
 
                 self.egui_input.focused = focused;
+                #[cfg(all(
+                    feature = "wayland",
+                    unix,
+                    not(target_vendor = "apple"),
+                    not(target_os = "android"),
+                    not(target_os = "emscripten"),
+                    not(target_os = "redox"),
+                ))]
+                self.ime_gate.set_focused(focused);
                 if !focused {
+                    self.ime_reset.invalidate();
                     // Avoid sticky modifiers when focus is lost (egui clears its own copy too).
                     self.modifiers = egui::Modifiers::default();
+                    self.held_keys.clear();
+                    #[cfg(target_os = "windows")]
+                    self.pressed_processed_physical_keys.clear();
+                    #[cfg(all(
+                        feature = "wayland",
+                        unix,
+                        not(target_vendor = "apple"),
+                        not(target_os = "android"),
+                        not(target_os = "emscripten"),
+                        not(target_os = "redox"),
+                    ))]
+                    self.clear_ime_surrounding_on_focus_loss(window);
                 }
                 self.egui_input
                     .events
@@ -573,10 +2392,48 @@ impl State {
                 }
             }
 
+            WindowEvent::Destroyed => {
+                self.ime_reset.invalidate();
+                self.held_keys.clear();
+                self.modifiers = egui::Modifiers::default();
+                self.egui_input.focused = false;
+                self.egui_input
+                    .events
+                    .push(egui::Event::WindowFocused(false));
+                #[cfg(target_os = "windows")]
+                self.pressed_processed_physical_keys.clear();
+                // These latches describe the destroyed window, not just its Wayland protocol
+                // state. Reset them on every platform so a reused `State` cannot skip the new
+                // window's first cursor-area or purpose call, or believe IME is already enabled.
+                reset_ime_window_latches(
+                    &mut self.allow_ime,
+                    &mut self.ime_cursor_rect_px,
+                    &mut self.old_ime_purpose,
+                );
+                #[cfg(all(
+                    feature = "wayland",
+                    unix,
+                    not(target_vendor = "apple"),
+                    not(target_os = "android"),
+                    not(target_os = "emscripten"),
+                    not(target_os = "redox"),
+                ))]
+                {
+                    // A reused `State` must not retain this window's focus, external-veto or
+                    // pending-enable latches, nor believe that its surrounding text is still
+                    // cached. The window is gone, so there is nothing to disable on the platform.
+                    self.ime_gate.forget_window();
+                    self.ime_surrounding.forget_backend();
+                }
+                EventResponse {
+                    repaint: true,
+                    consumed: false,
+                }
+            }
+
             // Things that may require repaint:
             WindowEvent::RedrawRequested
             | WindowEvent::CursorEntered { .. }
-            | WindowEvent::Destroyed
             | WindowEvent::Occluded(_)
             | WindowEvent::Resized(_)
             | WindowEvent::Moved(_)
@@ -660,10 +2517,18 @@ impl State {
     ) -> Option<EventResponse> {
         if !self.allow_ime {
             None
-        } else if event.logical_key == winit::keyboard::NamedKey::Process {
-            // On Windows, the current version of `winit` (0.30.12) has a bug
-            // where `KeyboardInput` events processed by the IME are still
-            // emitted. [^1]
+        } else if event.state == ElementState::Pressed
+            && event.logical_key == winit::keyboard::NamedKey::Process
+        {
+            // On Windows, some `winit` versions have a bug where
+            // `KeyboardInput` events processed by the IME are still emitted. [^1]
+            //
+            // The pinned `craft/0.30.13` winit already drops `VK_PROCESSKEY`
+            // presses before they reach `egui-winit` (see
+            // `platform_impl/windows/keyboard.rs`), so this branch is now
+            // defensive compatibility for winit builds that still deliver
+            // `NamedKey::Process`. It only acts on presses: a Process release
+            // must not be mistaken for a fresh interception.
             //
             // As a workaround, we detect these events by checking whether their
             // `logical_key` is `winit::keyboard::NamedKey::Process`, and filter
@@ -678,10 +2543,10 @@ impl State {
             // See also [^5].
             // (I can't find a documentation page dedicated to this value.)
             //
-            // TODO(umajho): Remove this workaround once the `winit` bug is fixed
-            // and we've updated to a version that includes the fix. NOTE: Don't
-            // forget to also remove the `pressed_processed_physical_keys` field
-            // and its related code.
+            // Keep this defensive code while any supported `winit` build can
+            // still emit IME-processed presses. If a pin drops that behaviour
+            // entirely, `pressed_processed_physical_keys` and this method can
+            // be removed.
             //
             // [^1]: https://github.com/rust-windowing/winit/issues/4508
             // [^2]: https://github.com/rust-windowing/winit/blob/e9809ef54b18499bb4f2cac945719ecc2a61061b/src/platform_impl/windows/keyboard_layout.rs#L946
@@ -689,11 +2554,15 @@ impl State {
             // [^4]: https://learn.microsoft.com/en-us/windows/win32/api/imm/nf-imm-immgetvirtualkey#remarks
             // [^5]: https://learn.microsoft.com/en-us/windows/win32/learnwin32/keyboard-input#character-messages
 
+            // The IME may take over a key which already emitted an ordinary
+            // press. Retire that exact identity before filtering its release.
+            let before = self.egui_input.events.len();
+            self.release_keyboard_input(event.physical_key);
             self.pressed_processed_physical_keys
                 .insert(event.physical_key);
 
             Some(EventResponse {
-                repaint: false,
+                repaint: self.egui_input.events.len() != before,
                 consumed: egui_wants_keyboard_input,
             })
         } else if event.state == ElementState::Released
@@ -701,6 +2570,12 @@ impl State {
                 .pressed_processed_physical_keys
                 .remove(&event.physical_key)
         {
+            // If an ordinary press was emitted after the filtered Process press
+            // (for example a layout repeat), retire its exact identity as well.
+            // This is a no-op for the normal filtered press, which retired its
+            // identity when the marker was inserted.
+            let before = self.egui_input.events.len();
+            self.release_keyboard_input(event.physical_key);
             // Unlike key-presses, we can not tell whether a key-release event
             // is processed by the IME or not by looking at its `logical_key`,
             // because their `logical_key` is the original value (e.g.
@@ -713,7 +2588,7 @@ impl State {
             // [^1]: https://github.com/rust-windowing/winit/issues/4508
 
             Some(EventResponse {
-                repaint: false,
+                repaint: self.egui_input.events.len() != before,
                 consumed: egui_wants_keyboard_input,
             })
         } else {
@@ -781,9 +2656,29 @@ impl State {
 
         match ime {
             // [`winit::event::Ime::Enabled`] means different things in X11 and
-            // Wayland, but it doesn't matter to us.
+            // Wayland, but it does not affect event forwarding. Only the Wayland cache
+            // invalidation below is backend-specific.
             // See <https://github.com/rust-windowing/winit/issues/2498>
-            winit::event::Ime::Enabled | winit::event::Ime::Disabled => {}
+            winit::event::Ime::Enabled => {
+                // Enabling re-applies winit's cached snapshot, so our cache stays authoritative.
+            }
+            winit::event::Ime::Disabled => {
+                // A disable is the one lifecycle boundary that can drop winit's cached text
+                // without a platform-output pass of ours (for example an external
+                // `set_ime_allowed(false)`). Only invalidate the cache here; never call
+                // `set_ime_allowed` from this asynchronous event, which would create an
+                // event-driven enable/disable loop. The next platform-output pass republishes
+                // the authoritative snapshot once, if the window is still allowed and focused.
+                #[cfg(all(
+                    feature = "wayland",
+                    unix,
+                    not(target_vendor = "apple"),
+                    not(target_os = "android"),
+                    not(target_os = "emscripten"),
+                    not(target_os = "redox"),
+                ))]
+                self.ime_surrounding.forget_backend();
+            }
             winit::event::Ime::Preedit(text, active_range_bytes) => {
                 let active_range_chars = match *active_range_bytes {
                     Some((start_bytes, end_bytes)) => {
@@ -824,6 +2719,106 @@ impl State {
                 self.egui_input
                     .events
                     .push(egui::Event::Ime(egui::ImeEvent::Commit(text.clone())));
+            }
+        }
+    }
+
+    /// Clear and forget outgoing surrounding text when this Wayland window loses focus.
+    ///
+    /// Winit forgets its cached text when IME is disallowed, so disabling here is the committed
+    /// clear boundary. The durable [`ime_surrounding::ImeGate`] latch keeps later stale
+    /// `PlatformOutput::ime` passes from re-enabling IME or republishing text while the window
+    /// stays unfocused; focus regain commits one clean enable and a full resend.
+    #[cfg(all(
+        feature = "wayland",
+        unix,
+        not(target_vendor = "apple"),
+        not(target_os = "android"),
+        not(target_os = "emscripten"),
+        not(target_os = "redox"),
+    ))]
+    fn clear_ime_surrounding_on_focus_loss(&mut self, window: &Window) {
+        // An X11 window in the same winit build has no Wayland toplevel and no surrounding-text
+        // protocol state. Preserve its pre-existing IME behavior.
+        if self.allow_ime && ime_surrounding::is_wayland_window(window) {
+            self.allow_ime = false;
+            window.set_ime_allowed(false);
+        }
+        self.ime_surrounding.forget_backend();
+    }
+
+    /// Apply an external `ViewportCommand::IMEAllowed` to this window synchronously.
+    ///
+    /// This is the command-side owner of the same IME gate transition used by
+    /// [`Self::handle_platform_output_inner`]. `IMEAllowed(false)` commits immediately, so a
+    /// later platform output in the same frame cannot publish surrounding text first.
+    /// `IMEAllowed(true)` only clears the external veto and records a pending enable; the next
+    /// platform-output pass with a real IME descriptor and window focus commits the enable. That
+    /// single policy prevents a stale descriptor from enabling a window after its editor is gone.
+    /// Only a real platform transition forgets the surrounding-text cache. A redundant command
+    /// keeps it so a same-pass owner/generation change can still plan `ClearThenSet`.
+    ///
+    /// X11 windows in a Wayland-capable winit build, and all non-Wayland targets, keep the
+    /// pre-existing raw `set_ime_allowed` behavior.
+    // Reset admission changes on every platform; Wayland also updates protocol/cache state.
+    fn handle_external_ime_allowed(&mut self, window: &Window, allowed: bool) {
+        self.ime_reset.external_allowed(allowed);
+        #[cfg(all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        ))]
+        if ime_surrounding::is_wayland_window(window) {
+            self.ime_gate.set_external_ime_allowed(allowed);
+            let transition = self.ime_gate.external_transition(self.allow_ime);
+            self.allow_ime = transition.allow;
+            if transition.changed {
+                window.set_ime_allowed(transition.allow);
+                // Only a real platform transition invalidates winit's cached text. A redundant
+                // `IMEAllowed(true)` or `false` must preserve the bridge cache; otherwise an
+                // owner/generation change later in the same pass would look like an initial
+                // context and could skip the clear that cancels the previous composition.
+                self.ime_surrounding.forget_backend();
+            }
+            return;
+        }
+
+        window.set_ime_allowed(allowed);
+    }
+
+    /// Publish this pass's authoritative outgoing IME surrounding text on Wayland.
+    ///
+    /// The planner is pure and the window adapter is a sink. The cache is only committed after
+    /// every sink operation for the pass was applied; a locally suppressed write is forgotten,
+    /// not cached. Diagnostics only contain redacted lengths.
+    #[cfg(all(
+        feature = "wayland",
+        unix,
+        not(target_vendor = "apple"),
+        not(target_os = "android"),
+        not(target_os = "emscripten"),
+        not(target_os = "redox"),
+    ))]
+    fn sync_ime_surrounding_text(
+        &mut self,
+        window: &Window,
+        ime: Option<&egui::output::IMEOutput>,
+    ) {
+        let mut sink = ime_surrounding::WinitImeSurroundingSink::new(window, self.allow_ime);
+        let action = self.ime_surrounding.update(&mut sink, ime, self.allow_ime);
+
+        if action != ime_surrounding::ImeSurroundingAction::None {
+            if let Some(ime) = ime {
+                log::trace!(
+                    "IME surrounding text for owner {:?}, generation {}: {action:?}",
+                    ime.owner,
+                    ime.context_generation,
+                );
+            } else {
+                log::trace!("IME surrounding text cleared: {action:?}");
             }
         }
     }
@@ -884,15 +2879,10 @@ impl State {
                 modifiers: self.modifiers,
             });
 
-            // Middle-click pastes the PRIMARY selection on X11 and Wayland:
-            if pressed
-                && button == egui::PointerButton::Middle
-                && let Some(text) = self.clipboard.get_primary_text()
-                && !text.is_empty()
-            {
-                self.egui_input
-                    .events
-                    .push(egui::Event::MiddleClickPaste { pos, text });
+            // Middle-click pastes the PRIMARY selection on X11 and Wayland. On Wayland this
+            // starts a bounded asynchronous read; the paste event arrives when it completes.
+            if pressed && button == egui::PointerButton::Middle {
+                self.begin_primary_clipboard_paste(pos);
             }
 
             if self.simulate_touch_screen {
@@ -1076,6 +3066,78 @@ impl State {
         }
     }
 
+    /// Release the egui key that was actually emitted when this physical key
+    /// went down (if any), stamping the current modifiers and physical mapping.
+    fn release_keyboard_input(&mut self, physical: winit::keyboard::PhysicalKey) {
+        let physical_key = match physical {
+            winit::keyboard::PhysicalKey::Code(code) => key_from_key_code(code),
+            winit::keyboard::PhysicalKey::Unidentified(_) => None,
+        };
+        for key in self.held_keys.release(physical) {
+            self.egui_input.events.push(egui::Event::Key {
+                key,
+                physical_key,
+                pressed: false,
+                repeat: false,
+                modifiers: self.modifiers,
+            });
+        }
+    }
+
+    /// Emit an ordinary key press for a physical key, using the identity that
+    /// egui already received for it if it is still held (a repeat).
+    fn press_keyboard_input(
+        &mut self,
+        physical: winit::keyboard::PhysicalKey,
+        physical_key: Option<egui::Key>,
+        translated: Option<egui::Key>,
+    ) -> Option<egui::Key> {
+        let active_key = self.held_keys.press(physical, translated, true)?;
+        self.egui_input.events.push(egui::Event::Key {
+            key: active_key,
+            physical_key,
+            pressed: true,
+            repeat: false, // egui will fill this in for us!
+            modifiers: self.modifiers,
+        });
+        Some(active_key)
+    }
+
+    /// Translate a pressed key into a cut/copy/paste event if it is a clipboard
+    /// shortcut. The clipboard event is pushed before retiring any prior
+    /// identity for the physical key, and a `None` marker is recorded so the
+    /// matching release cannot clear another physical alias.
+    ///
+    /// Returns `true` if the event was a clipboard shortcut (and was consumed).
+    fn try_clipboard_shortcut(
+        &mut self,
+        physical: winit::keyboard::PhysicalKey,
+        translated: Option<egui::Key>,
+    ) -> bool {
+        let Some(active_key) = translated else {
+            return false;
+        };
+        if !self.clipboard_shortcuts {
+            return false;
+        }
+
+        if is_cut_command(self.modifiers, active_key) {
+            self.egui_input.events.push(egui::Event::Cut);
+        } else if is_copy_command(self.modifiers, active_key) {
+            self.egui_input.events.push(egui::Event::Copy);
+        } else if is_paste_command(self.modifiers, active_key) {
+            // On Wayland this only starts a transfer and requests a viewport repaint on
+            // completion; it never blocks the event path on the clipboard peer.
+            self.begin_regular_clipboard_paste();
+        } else {
+            return false;
+        }
+
+        self.release_keyboard_input(physical);
+        let _ = self.held_keys.press(physical, translated, false);
+        true
+    }
+
     fn on_keyboard_input(&mut self, event: &winit::event::KeyEvent) {
         let winit::event::KeyEvent {
             // Represents the position of a key independent of the currently active layout.
@@ -1110,7 +3172,30 @@ impl State {
             None
         };
 
-        let logical_key = key_from_winit_key(winit_logical_key);
+        let (latin_key, latin_char, prefer_latin) = latin_key(event, self.modifiers);
+        if prefer_latin && let (Some(physical_key), Some(latin_char)) = (physical_key, latin_char) {
+            self.egui_input
+                .latin_layout_chars
+                .push((physical_key, latin_char));
+        }
+        // The platforms winit reports Latin layouts on: X11 and Wayland.
+        #[cfg(all(
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+            any(feature = "x11", feature = "wayland")
+        ))]
+        {
+            use winit::platform::latin_layout::KeyEventExtLatinLayout as _;
+            self.egui_input.keyboard_layout_is_latin = Some(event.is_latin_layout());
+        }
+        let logical_key = letter_key(
+            key_from_winit_key(winit_logical_key),
+            latin_key,
+            prefer_latin,
+        );
 
         // Helpful logging to enable when adding new key support
         log::trace!(
@@ -1125,40 +3210,15 @@ impl State {
         // emit events as if the corresponding keys from the Latin layout were pressed. In this case, clipboard shortcuts
         // are mapped to the physical keys that normally contain C, X, V, etc.
         // See also: https://github.com/emilk/egui/issues/3653
-        if let Some(active_key) = logical_key.or(physical_key) {
-            if pressed && self.clipboard_shortcuts {
-                if is_cut_command(self.modifiers, active_key) {
-                    self.egui_input.events.push(egui::Event::Cut);
-                    return;
-                } else if is_copy_command(self.modifiers, active_key) {
-                    self.egui_input.events.push(egui::Event::Copy);
-                    return;
-                } else if is_paste_command(self.modifiers, active_key) {
-                    if let Some(contents) = self.clipboard.get() {
-                        let contents = contents.replace("\r\n", "\n");
-                        if !contents.is_empty() {
-                            self.egui_input.events.push(egui::Event::Paste(contents));
-                        }
-                    } else if let Some(image) = self.clipboard.get_image() {
-                        // No usable text on the clipboard (e.g. an image was copied with
-                        // mspaint/Snipping Tool, which never puts a text representation
-                        // alongside it) — fall back to an image paste rather than doing
-                        // nothing, mirroring `Event::Copy`/`OutputCommand::CopyImage`.
-                        self.egui_input
-                            .events
-                            .push(egui::Event::PasteImage(std::sync::Arc::new(image)));
-                    }
-                    return;
-                }
+        let translated = logical_key.or(physical_key);
+        if pressed {
+            if self.try_clipboard_shortcut(event.physical_key, translated) {
+                return;
             }
 
-            self.egui_input.events.push(egui::Event::Key {
-                key: active_key,
-                physical_key,
-                pressed,
-                repeat: false, // egui will fill this in for us!
-                modifiers: self.modifiers,
-            });
+            let _ = self.press_keyboard_input(event.physical_key, physical_key, translated);
+        } else {
+            self.release_keyboard_input(event.physical_key);
         }
 
         if let Some(text) = text
@@ -1185,6 +3245,16 @@ impl State {
     }
 
     /// Call with the output given by `egui`.
+    ///
+    /// Call this exactly once per accumulated logical batch (the `PlatformOutput` returned by
+    /// one `Context::run`/`run_ui` call, including all of its layout passes). Rust cannot enforce
+    /// that caller contract; submitting the same output twice legitimately duplicates an action.
+    ///
+    /// Within the batch, egui-winit executes only the last regular `CopyText`/`CopyImage` and,
+    /// independently, the last `TextSelectionSettled`. This is an explicit last-emitted-command
+    /// policy, not per-widget focus arbitration or exact per-command raw-input provenance. The
+    /// final claimable input event captured before preparation is associated with both winning
+    /// families; stale or failed captures fail explicitly.
     ///
     /// This will, if needed:
     /// * update the cursor
@@ -1236,17 +3306,80 @@ impl State {
             request_discard_reasons: _, // `egui::Context::run` handles this
         } = platform_output;
 
-        for command in commands {
+        let selection = output_selector::select_clipboard_commands(&commands);
+        let generation = self.clipboard_paste.generation();
+        let primary_suppressed = selection.primary.is_some_and(|index| {
+            let egui::OutputCommand::TextSelectionSettled(text) = &commands[index] else {
+                return false;
+            };
+            self.primary_claim_is_suppressed(generation, text)
+        });
+        let regular_origin_policy = selection.regular.map(|regular| match regular.kind {
+            output_selector::RegularClipboardKind::Text => {
+                clipboard_bridge::RegularClaimOriginPolicy::AllowFreshFallback
+            }
+            output_selector::RegularClipboardKind::Image => {
+                clipboard_bridge::RegularClaimOriginPolicy::RequireCapturedOrigin
+            }
+        });
+        // A winning regular output supersedes any older pending image encode before origin
+        // resolution. This happens even when the new attempt later fails. PRIMARY is independent.
+        if selection.regular.is_some() {
+            self.invalidate_image_copy_for_regular_output(window);
+        }
+        // Consume the prepared batch slot even if no clipboard command wins. Otherwise an unused
+        // token from this input batch could be mistaken for a later programmatic copy's origin.
+        #[cfg_attr(
+            not(all(
+                feature = "clipboard",
+                feature = "wayland",
+                any(
+                    target_os = "linux",
+                    target_os = "dragonfly",
+                    target_os = "freebsd",
+                    target_os = "netbsd",
+                    target_os = "openbsd"
+                ),
+            )),
+            expect(clippy::let_unit_value)
+        )]
+        let captured_claim_origin = self.take_clipboard_claim_origin();
+        let mut claim_origins = self.resolve_output_claim_origins(
+            window,
+            generation,
+            captured_claim_origin,
+            regular_origin_policy,
+            selection.primary.is_some() && !primary_suppressed,
+        );
+
+        for (index, command) in commands.into_iter().enumerate() {
             match command {
-                egui::OutputCommand::CopyText(text) => {
-                    self.clipboard.set_text(text);
+                egui::OutputCommand::CopyText(text)
+                    if selection
+                        .regular
+                        .is_some_and(|regular| regular.index == index) =>
+                {
+                    let origin = Self::take_regular_output_origin(&mut claim_origins);
+                    self.copy_text_output(window, text, origin);
                 }
-                egui::OutputCommand::TextSelectionSettled(text) => {
-                    self.clipboard.set_primary_text(text);
+                egui::OutputCommand::TextSelectionSettled(text)
+                    if selection.primary == Some(index) && !primary_suppressed =>
+                {
+                    let origin = Self::take_primary_output_origin(&mut claim_origins);
+                    self.primary_selection_output(window, text, origin);
                 }
-                egui::OutputCommand::CopyImage(image) => {
-                    self.clipboard.set_image(&image);
+                egui::OutputCommand::CopyImage(image)
+                    if selection
+                        .regular
+                        .is_some_and(|regular| regular.index == index) =>
+                {
+                    let origin = Self::take_regular_output_origin(&mut claim_origins);
+                    self.copy_image_output(window, image, origin);
                 }
+                // Superseded commands retain no payload or origin as a fallback.
+                egui::OutputCommand::CopyText(_)
+                | egui::OutputCommand::TextSelectionSettled(_)
+                | egui::OutputCommand::CopyImage(_) => {}
                 egui::OutputCommand::OpenUrl(open_url) => {
                     open_url_in_browser(&open_url.url);
                 }
@@ -1255,8 +3388,51 @@ impl State {
 
         self.apply_cursor(window, event_loop, cursor_icon, cursor_image.as_ref());
 
-        let allow_ime = ime.is_some();
-        let is_toggling_ime = self.allow_ime != allow_ime;
+        // The bridge cfg compiles for both Wayland and X11 windows in the same winit build.
+        // Only Wayland windows take part in the focus/external latch and surrounding-text cache.
+        #[cfg(all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        ))]
+        let wayland_ime_window = ime_surrounding::is_wayland_window(window);
+
+        let ime_requested = ime.is_some();
+        #[cfg(all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        ))]
+        let (allow_ime, is_toggling_ime) = if wayland_ime_window {
+            let transition = self.ime_gate.transition(ime_requested, self.allow_ime);
+            (transition.allow, transition.changed)
+        } else {
+            (ime_requested, self.allow_ime != ime_requested)
+        };
+        #[cfg(not(all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        )))]
+        let (allow_ime, is_toggling_ime) = (ime_requested, self.allow_ime != ime_requested);
+        #[cfg(all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        ))]
+        let mut ime_context_was_reset = is_toggling_ime;
         if is_toggling_ime {
             self.allow_ime = allow_ime;
             #[cfg(target_os = "windows")]
@@ -1273,15 +3449,38 @@ impl State {
             window.set_ime_allowed(allow_ime);
         }
 
-        if let Some(ime) = ime {
-            if !is_toggling_ime && ime.should_interrupt_composition {
-                // TODO(umajho): use a more proper way to interrupt composition
-                // if `winit` provides one in the future.
-
+        // This is settled output. Preparing a call does not synthesize an input marker.
+        let reset_request =
+            self.ime_reset
+                .prepare(window.id(), self.viewport_id, ime.as_ref(), self.allow_ime);
+        let stock_interrupt = reset_request.is_none()
+            && self.allow_ime
+            && !is_toggling_ime
+            && ime
+                .as_ref()
+                .is_some_and(|ime| ime.should_interrupt_composition && ime.reset_request.is_none());
+        if reset_request.is_some() || stock_interrupt {
+            if let Some(request) = reset_request {
+                window.reset_ime_with_request(request.as_u64());
+            } else {
+                // Preserve the stock untokened interruption operation and timing.
                 window.set_ime_allowed(false);
                 window.set_ime_allowed(true);
             }
+            #[cfg(all(
+                feature = "wayland",
+                unix,
+                not(target_vendor = "apple"),
+                not(target_os = "android"),
+                not(target_os = "emscripten"),
+                not(target_os = "redox"),
+            ))]
+            {
+                ime_context_was_reset = true;
+            }
+        }
 
+        if let Some(ime) = &ime {
             if ime.purpose != self.old_ime_purpose {
                 self.old_ime_purpose = ime.purpose;
                 window.set_ime_purpose(to_winit_ime_purpose(ime.purpose));
@@ -1307,6 +3506,22 @@ impl State {
             }
         } else {
             self.ime_cursor_rect_px = None;
+        }
+
+        #[cfg(all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        ))]
+        {
+            if ime_context_was_reset {
+                // Winit forgets its cached text on enable/disable and composition interrupt.
+                self.ime_surrounding.forget_backend();
+            }
+            self.sync_ime_surrounding_text(window, ime.as_ref());
         }
 
         #[cfg(feature = "accesskit")]
@@ -1570,6 +3785,195 @@ fn key_from_winit_key(key: &winit::keyboard::Key) -> Option<egui::Key> {
         winit::keyboard::Key::Character(str) => egui::Key::from_name(str.as_str()),
         winit::keyboard::Key::Unidentified(_) | winit::keyboard::Key::Dead(_) => None,
     }
+}
+
+/// A letter key's egui key, for shortcuts.
+///
+/// `latin_key` is the Latin key the platform gives this key: the Windows virtual-key letter,
+/// the macOS ⌘-table key, or the key on the first Latin layout on Linux. Its letter replaces
+/// what the layout types when `prefer_latin`, and when the layout doesn't type an A–Z letter
+/// there. Otherwise Latin layouts (Dvorak, AZERTY) keep the letters they type.
+///
+/// On layouts without Latin letters (Russian, Greek, Arabic, Hebrew, Thai) this makes Ctrl+C
+/// match the key the platform calls C, as it does in native apps. When `prefer_latin` and the
+/// Latin key is no letter, it stands in for a character egui has no key for: with Dvorak and
+/// Russian, the key that types `й` is Dvorak's `'`, not the Q of its position.
+fn letter_key(
+    logical_key: Option<egui::Key>,
+    latin_key: Option<egui::Key>,
+    prefer_latin: bool,
+) -> Option<egui::Key> {
+    let is_letter = |key: &egui::Key| {
+        let name = key.name();
+        name.len() == 1 && name.as_bytes()[0].is_ascii_alphabetic()
+    };
+    let latin_letter = latin_key.filter(is_letter);
+    if prefer_latin {
+        latin_letter.or(logical_key).or(latin_key)
+    } else {
+        logical_key
+            .filter(is_letter)
+            .or(latin_letter)
+            .or(logical_key)
+    }
+}
+
+/// The platform's Latin key for this key, the character it stands for when shortcuts follow it
+/// ([`egui::RawInput::latin_layout_chars`]), and whether it takes precedence over the letter the
+/// layout types (see [`letter_key`]).
+#[cfg(target_os = "windows")]
+fn latin_key(
+    event: &winit::event::KeyEvent,
+    _modifiers: egui::Modifiers,
+) -> (Option<egui::Key>, Option<char>, bool) {
+    (
+        windows_virtual_letter(windows_virtual_key(event.physical_key)),
+        None,
+        false,
+    )
+}
+
+/// The text around the cursor an input method deletes before the [`winit::event::Ime::Commit`]
+/// being handled, in bytes before and after the selection or pre-edit text.
+fn ime_delete_surrounding(window: &Window) -> Option<(usize, usize)> {
+    #[cfg(target_os = "macos")]
+    {
+        use winit::platform::macos::WindowExtMacOS as _;
+        window
+            .take_ime_delete_surrounding()
+            .map(|delete| (delete.before_bytes, delete.after_bytes))
+    }
+    #[cfg(all(
+        feature = "wayland",
+        unix,
+        not(target_vendor = "apple"),
+        not(target_os = "android"),
+        not(target_os = "emscripten"),
+        not(target_os = "redox"),
+    ))]
+    {
+        use winit::platform::wayland::WindowExtWayland as _;
+        window
+            .take_ime_delete_surrounding()
+            .map(|delete| (delete.before_bytes, delete.after_bytes))
+    }
+    #[cfg(not(any(
+        target_os = "macos",
+        all(
+            feature = "wayland",
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+        )
+    )))]
+    {
+        let _ = window;
+        None
+    }
+}
+
+/// With ⌘ held, letters come from the layout's ⌘ table, which differs from what the layout
+/// types on non-Latin layouts and on layouts like "Dvorak – QWERTY ⌘".
+#[cfg(target_os = "macos")]
+fn latin_key(
+    event: &winit::event::KeyEvent,
+    modifiers: egui::Modifiers,
+) -> (Option<egui::Key>, Option<char>, bool) {
+    use winit::platform::macos::KeyEventExtMacOS as _;
+    if modifiers.mac_cmd {
+        let key = event.key_with_command();
+        (key_from_winit_key(&key), key_char(&key), true)
+    } else {
+        (None, None, false)
+    }
+}
+
+/// On a non-Latin layout, letters come from the first Latin layout the user has configured.
+#[cfg(all(
+    unix,
+    not(target_vendor = "apple"),
+    not(target_os = "android"),
+    not(target_os = "emscripten"),
+    not(target_os = "redox"),
+    any(feature = "x11", feature = "wayland")
+))]
+fn latin_key(
+    event: &winit::event::KeyEvent,
+    _modifiers: egui::Modifiers,
+) -> (Option<egui::Key>, Option<char>, bool) {
+    use winit::platform::latin_layout::KeyEventExtLatinLayout as _;
+    let key = event.latin_key();
+    (
+        key.as_ref().and_then(key_from_winit_key),
+        key.as_ref().and_then(key_char),
+        !event.is_latin_layout(),
+    )
+}
+
+#[cfg(not(any(
+    target_os = "windows",
+    target_os = "macos",
+    all(
+        unix,
+        not(target_vendor = "apple"),
+        not(target_os = "android"),
+        not(target_os = "emscripten"),
+        not(target_os = "redox"),
+        any(feature = "x11", feature = "wayland")
+    )
+)))]
+fn latin_key(
+    _event: &winit::event::KeyEvent,
+    _modifiers: egui::Modifiers,
+) -> (Option<egui::Key>, Option<char>, bool) {
+    (None, None, false)
+}
+
+/// The character of a key that types exactly one.
+#[cfg_attr(
+    not(any(
+        target_os = "macos",
+        all(
+            unix,
+            not(target_vendor = "apple"),
+            not(target_os = "android"),
+            not(target_os = "emscripten"),
+            not(target_os = "redox"),
+            any(feature = "x11", feature = "wayland")
+        )
+    )),
+    expect(dead_code)
+)]
+fn key_char(key: &winit::keyboard::Key) -> Option<char> {
+    let mut chars = key.to_text()?.chars();
+    let c = chars.next()?;
+    chars.next().is_none().then_some(c)
+}
+
+/// The letter of a Windows virtual-key code: `VK_A` to `VK_Z` are the ASCII codes of 'A' to 'Z'.
+#[cfg(any(target_os = "windows", test))]
+fn windows_virtual_letter(virtual_key: Option<u32>) -> Option<egui::Key> {
+    let c = char::from_u32(virtual_key?).filter(char::is_ascii_uppercase)?;
+    egui::Key::from_name(c.encode_utf8(&mut [0; 4]))
+}
+
+/// The virtual-key code the current keyboard layout gives this physical key.
+#[cfg(target_os = "windows")]
+fn windows_virtual_key(physical_key: winit::keyboard::PhysicalKey) -> Option<u32> {
+    use windows_sys::Win32::UI::Input::KeyboardAndMouse::{
+        GetKeyboardLayout, MAPVK_VSC_TO_VK_EX, MapVirtualKeyExW,
+    };
+    use winit::platform::scancode::PhysicalKeyExtScancode as _;
+
+    let scancode = physical_key.to_scancode()?;
+    // SAFETY: neither call takes pointers. Keyboard events arrive on the window's
+    // thread, so `GetKeyboardLayout(0)` is the layout the key was typed with.
+    #[expect(unsafe_code)]
+    let virtual_key =
+        unsafe { MapVirtualKeyExW(scancode, MAPVK_VSC_TO_VK_EX, GetKeyboardLayout(0)) };
+    (virtual_key != 0).then_some(virtual_key)
 }
 
 fn key_from_named_key(named_key: winit::keyboard::NamedKey) -> Option<egui::Key> {
@@ -1924,21 +4328,37 @@ impl ActionRequested {
     }
 }
 
+/// Apply viewport commands to a window and its owning [`State`].
+///
+/// # Fork API difference
+///
+/// Upstream egui's helper takes only `window`. This fork requires `state` so an external
+/// [`ViewportCommand::IMEAllowed`] can update that window's IME gate and surrounding-text cache
+/// synchronously, without a process-global pending-command map or a later reconciliation pass.
+///
+/// # Migration
+///
+/// Pass the [`State`] created for this window after `window`, for example:
+/// `process_viewport_commands(ctx, &mut info, commands, &window, &mut state, &mut actions)`.
+/// Integrations must not process commands before both the window and its [`State`] exist. In
+/// particular, eframe keeps commands in `Viewport::deferred_commands` until both are present.
 pub fn process_viewport_commands(
     egui_ctx: &egui::Context,
     info: &mut ViewportInfo,
     commands: impl IntoIterator<Item = ViewportCommand>,
     window: &Window,
+    state: &mut State,
     actions_requested: &mut Vec<ActionRequested>,
 ) {
     for command in commands {
-        process_viewport_command(egui_ctx, window, command, info, actions_requested);
+        process_viewport_command(egui_ctx, window, state, command, info, actions_requested);
     }
 }
 
 fn process_viewport_command(
     egui_ctx: &egui::Context,
     window: &Window,
+    state: &mut State,
     command: ViewportCommand,
     info: &mut ViewportInfo,
     actions_requested: &mut Vec<ActionRequested>,
@@ -2010,7 +4430,13 @@ fn process_viewport_command(
             window.set_title(&title);
         }
         ViewportCommand::Transparent(v) => window.set_transparent(v),
-        ViewportCommand::Visible(v) => window.set_visible(v),
+        ViewportCommand::Visible(v) => {
+            window.set_visible(v);
+            if !v {
+                // A hidden window must not apply a paste that completes later.
+                state.cancel_pending_clipboard_pastes();
+            }
+        }
         ViewportCommand::OuterPosition(pos) => {
             window.set_outer_position(PhysicalPosition::new(
                 pixels_per_point * pos.x,
@@ -2055,6 +4481,10 @@ fn process_viewport_command(
         ViewportCommand::Minimized(v) => {
             window.set_minimized(v);
             info.minimized = Some(v);
+            if v {
+                // A minimized window must not apply a paste that completes later.
+                state.cancel_pending_clipboard_pastes();
+            }
         }
         ViewportCommand::Maximized(v) => {
             window.set_maximized(v);
@@ -2101,8 +4531,31 @@ fn process_viewport_command(
                 ),
             );
         }
-        ViewportCommand::IMEAllowed(v) => window.set_ime_allowed(v),
-        ViewportCommand::IMEPurpose(p) => window.set_ime_purpose(to_winit_ime_purpose(p)),
+        ViewportCommand::IMEAllowed(v) => {
+            state.handle_external_ime_allowed(window, v);
+        }
+        ViewportCommand::IMEPurpose(p) => {
+            if state
+                .ime_reset
+                .apply_purpose_command(&mut state.old_ime_purpose, p)
+            {
+                window.set_ime_purpose(to_winit_ime_purpose(p));
+                #[cfg(all(
+                    feature = "wayland",
+                    unix,
+                    not(target_vendor = "apple"),
+                    not(target_os = "android"),
+                    not(target_os = "emscripten"),
+                    not(target_os = "redox"),
+                ))]
+                if ime_surrounding::is_wayland_window(window) {
+                    // A changed purpose is a real context boundary. An unchanged command above
+                    // is a no-op and keeps the bridge cache, including a later owner/generation
+                    // transition's ability to plan `ClearThenSet`.
+                    state.ime_surrounding.forget_backend();
+                }
+            }
+        }
         ViewportCommand::Focus => {
             if !window.has_focus() {
                 window.focus_window();
@@ -2658,6 +5111,7 @@ pub fn short_window_event_description(event: &winit::event::WindowEvent) -> &'st
         WindowEvent::KeyboardInput { .. } => "WindowEvent::KeyboardInput",
         WindowEvent::ModifiersChanged { .. } => "WindowEvent::ModifiersChanged",
         WindowEvent::Ime { .. } => "WindowEvent::Ime",
+        WindowEvent::ImeResetCompleted { .. } => "WindowEvent::ImeResetCompleted",
         WindowEvent::CursorMoved { .. } => "WindowEvent::CursorMoved",
         WindowEvent::CursorEntered { .. } => "WindowEvent::CursorEntered",
         WindowEvent::CursorLeft { .. } => "WindowEvent::CursorLeft",
@@ -2674,5 +5128,250 @@ pub fn short_window_event_description(event: &winit::event::WindowEvent) -> &'st
         WindowEvent::ThemeChanged { .. } => "WindowEvent::ThemeChanged",
         WindowEvent::Occluded { .. } => "WindowEvent::Occluded",
         WindowEvent::PanGesture { .. } => "WindowEvent::PanGesture",
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn destroyed_window_resets_ime_cursor_purpose_and_allow_on_every_platform() {
+        let mut allow_ime = true;
+        let mut cursor_rect_px = Some(egui::Rect::from_min_size(
+            egui::pos2(10.0, 20.0),
+            egui::vec2(30.0, 40.0),
+        ));
+        let mut old_ime_purpose = egui::IMEPurpose::Password;
+
+        reset_ime_window_latches(&mut allow_ime, &mut cursor_rect_px, &mut old_ime_purpose);
+
+        assert!(!allow_ime, "a reused State must enable the new window");
+        assert_eq!(
+            cursor_rect_px, None,
+            "the new window needs its first cursor area"
+        );
+        assert_eq!(
+            old_ime_purpose,
+            egui::IMEPurpose::Normal,
+            "the new window starts with the default purpose"
+        );
+    }
+
+    #[test]
+    fn unchanged_primary_suppression_is_generation_scoped() {
+        let claim = (7, "selected".to_owned());
+        assert!(unchanged_primary_is_suppressed(Some(&claim), 7, "selected"));
+        assert!(!unchanged_primary_is_suppressed(Some(&claim), 7, "other"));
+        assert!(
+            !unchanged_primary_is_suppressed(Some(&claim), 8, "selected"),
+            "a new input generation may claim the same PRIMARY text again"
+        );
+        assert!(!unchanged_primary_is_suppressed(None, 7, "selected"));
+    }
+
+    #[test]
+    fn clipboard_input_classification_ignores_release_and_repaint() {
+        use crate::clipboard_bridge::InputKind;
+        use winit::event::{
+            DeviceId, ElementState, Ime, MouseButton, MouseScrollDelta, TouchPhase, WindowEvent,
+        };
+
+        let mouse = |state| WindowEvent::MouseInput {
+            device_id: DeviceId::dummy(),
+            state,
+            button: MouseButton::Middle,
+        };
+        assert_eq!(
+            clipboard_input_kind(&mouse(ElementState::Pressed)),
+            InputKind::PointerPress
+        );
+        assert_eq!(
+            clipboard_input_kind(&mouse(ElementState::Released)),
+            InputKind::NonInvalidating,
+            "the pointer release after middle-click must not cancel its paste"
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::RedrawRequested),
+            InputKind::NonInvalidating
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::CloseRequested),
+            InputKind::Close
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::Destroyed),
+            InputKind::Close
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::Focused(false)),
+            InputKind::Focus
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::Focused(true)),
+            InputKind::FocusGained,
+            "click-to-focus must not cancel the middle-click it completes"
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::Occluded(true)),
+            InputKind::Hide
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::Occluded(false)),
+            InputKind::NonInvalidating
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::MouseWheel {
+                device_id: DeviceId::dummy(),
+                delta: MouseScrollDelta::LineDelta(0.0, 1.0),
+                phase: TouchPhase::Moved,
+            }),
+            InputKind::Scroll
+        );
+        assert_eq!(
+            clipboard_input_kind(&WindowEvent::Ime(Ime::Commit("x".into()))),
+            InputKind::Edit
+        );
+
+        // The released initiating shortcut must not cancel the read it started. KeyEvent itself
+        // has a winit-private platform field, so the testable seam is the pure classifier.
+        assert_eq!(
+            clipboard_key_input_kind(ElementState::Released, false),
+            InputKind::NonInvalidating
+        );
+        assert_eq!(
+            clipboard_key_input_kind(ElementState::Pressed, false),
+            InputKind::KeyPress
+        );
+        assert_eq!(
+            clipboard_key_input_kind(ElementState::Pressed, true),
+            InputKind::NonInvalidating,
+            "synthetic key presses are not ownership or invalidation triggers"
+        );
+
+        assert!(clipboard_input_claims_origin(&mouse(ElementState::Pressed)));
+        assert!(clipboard_input_claims_origin(&mouse(
+            ElementState::Released
+        )));
+        assert!(!clipboard_input_claims_origin(
+            &WindowEvent::RedrawRequested
+        ));
+    }
+
+    #[test]
+    fn claim_batch_invalidation_follows_focus_loss_hide_and_close() {
+        use crate::clipboard_bridge::InputKind;
+
+        for kind in [InputKind::Focus, InputKind::Close, InputKind::Hide] {
+            assert!(clipboard_input_invalidates_claim_batch(kind));
+        }
+        for kind in [
+            InputKind::FocusGained,
+            InputKind::PointerPress,
+            InputKind::KeyPress,
+            InputKind::Edit,
+            InputKind::Scroll,
+            InputKind::NonInvalidating,
+        ] {
+            assert!(
+                !clipboard_input_invalidates_claim_batch(kind),
+                "must not invalidate the batch for {kind:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn letter_keys() {
+        use egui::Key;
+        const VK_RETURN: u32 = 0x0D;
+        const VK_OEM_2: u32 = 0xBF;
+        const VK_OEM_3: u32 = 0xC0;
+        let vk = |c: char| Some(c as u32);
+        let key = |text: &str| key_from_winit_key(&winit::keyboard::Key::Character(text.into()));
+
+        // Windows: (layout, typed, virtual-key code, expected key)
+        let windows = [
+            ("US", "c", vk('C'), Some(Key::C)),
+            ("Dvorak", "c", vk('C'), Some(Key::C)),
+            ("AZERTY", "a", vk('A'), Some(Key::A)),
+            ("German", "ö", Some(VK_OEM_3), None),
+            ("Russian", "с", vk('C'), Some(Key::C)),
+            ("Russian", "Ф", vk('A'), Some(Key::A)),
+            ("Russian", ".", Some(VK_OEM_2), Some(Key::Period)),
+            ("Russian", "1", vk('1'), Some(Key::Num1)),
+            ("Greek", "ψ", vk('C'), Some(Key::C)),
+            ("Hebrew", "ב", vk('C'), Some(Key::C)),
+            ("Arabic", "ؤ", vk('C'), Some(Key::C)),
+            ("Arabic AZERTY", "ض", vk('A'), Some(Key::A)),
+            ("Thai", "แ", vk('C'), Some(Key::C)),
+            ("Thai", "ฟ", None, None),
+        ];
+        for (layout, typed, virtual_key, expected) in windows {
+            let got = letter_key(key(typed), windows_virtual_letter(virtual_key), false);
+            assert_eq!(got, expected, "Windows {layout} {typed:?}");
+        }
+
+        // Linux: (layout, typed, `latin_key()`, `is_latin_layout()`, expected key)
+        let linux = [
+            ("US", "c", None, true, Some(Key::C)),
+            ("Dvorak", "j", None, true, Some(Key::J)),
+            ("AZERTY", "a", None, true, Some(Key::A)),
+            ("Russian", "с", Some("c"), false, Some(Key::C)),
+            ("Russian", "Ф", Some("a"), false, Some(Key::A)),
+            ("Russian", ".", None, false, Some(Key::Period)),
+            ("Russian, no Latin layout", "с", None, false, None),
+            ("Greek", "ψ", Some("c"), false, Some(Key::C)),
+            ("Hebrew", "ב", Some("c"), false, Some(Key::C)),
+            ("Arabic", "ؤ", Some("c"), false, Some(Key::C)),
+            ("Thai", "แ", Some("c"), false, Some(Key::C)),
+            ("Russian with Dvorak", "с", Some("j"), false, Some(Key::J)),
+            ("Dvorak, Russian", "й", Some("'"), false, Some(Key::Quote)),
+            ("Dvorak, Russian", "ч", Some("q"), false, Some(Key::Q)),
+            ("Dvorak, Russian", "1", Some("1"), false, Some(Key::Num1)),
+            ("Russian", ".", Some("/"), false, Some(Key::Period)),
+        ];
+        for (layout, typed, latin, is_latin_layout, expected) in linux {
+            let got = letter_key(key(typed), latin.and_then(key), !is_latin_layout);
+            assert_eq!(got, expected, "Linux {layout} {typed:?}");
+        }
+
+        // macOS: (layout, typed, `key_with_command()`, ⌘ held, expected key)
+        let macos = [
+            ("US", "c", "c", true, Some(Key::C)),
+            ("Dvorak", "j", "j", true, Some(Key::J)),
+            ("AZERTY", "a", "a", true, Some(Key::A)),
+            ("Dvorak – QWERTY ⌘", "j", "c", true, Some(Key::C)),
+            ("Dvorak – QWERTY ⌘", "j", "c", false, Some(Key::J)),
+            ("Russian", "с", "c", true, Some(Key::C)),
+            ("Russian", "с", "c", false, None),
+            ("Russian", "/", "/", true, Some(Key::Slash)),
+            ("Greek", "ψ", "c", true, Some(Key::C)),
+            ("Hebrew", "ב", "c", true, Some(Key::C)),
+            ("Arabic", "ؤ", "c", true, Some(Key::C)),
+            ("Thai", "แ", "c", true, Some(Key::C)),
+        ];
+        for (layout, typed, with_command, command, expected) in macos {
+            // Mirrors the macOS `latin_key`.
+            let (latin, prefer_latin) = if command {
+                (key(with_command), true)
+            } else {
+                (None, false)
+            };
+            let got = letter_key(key(typed), latin, prefer_latin);
+            assert_eq!(got, expected, "macOS {layout} {typed:?} ⌘ {command}");
+        }
+
+        // What shortcuts on Linux and macOS record per physical key.
+        let winit_key = |text: &str| winit::keyboard::Key::Character(text.into());
+        assert_eq!(key_char(&winit_key("'")), Some('\''));
+        assert_eq!(key_char(&winit_key("j")), Some('j'));
+        assert_eq!(key_char(&winit_key("ae")), None);
+
+        let enter = key_from_winit_key(&winit::keyboard::Key::Named(
+            winit::keyboard::NamedKey::Enter,
+        ));
+        let enter_vk = windows_virtual_letter(Some(VK_RETURN));
+        assert_eq!(letter_key(enter, enter_vk, false), Some(Key::Enter));
+        assert_eq!(letter_key(enter, None, true), Some(Key::Enter));
     }
 }

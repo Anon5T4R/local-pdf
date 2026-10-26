@@ -47,7 +47,7 @@ use web_sys::{Document, MediaQueryList, Node};
 use input::{
     button_from_mouse_event, modifiers_from_kb_event, modifiers_from_mouse_event,
     modifiers_from_wheel_event, pos_from_mouse_event, primary_touch_pos, push_touches,
-    text_from_keyboard_event, translate_key,
+    text_from_keyboard_event,
 };
 
 // ----------------------------------------------------------------------------
@@ -266,7 +266,7 @@ fn to_image(image: &egui::ColorImage) -> Result<image::RgbaImage, String> {
     image::RgbaImage::from_raw(
         image.width() as _,
         image.height() as _,
-        bytemuck::cast_slice(image.pixels()).to_vec(),
+        bytemuck::cast_slice(&image.pixels).to_vec(),
     )
     .ok_or_else(|| "Invalid IconData".to_owned())
 }

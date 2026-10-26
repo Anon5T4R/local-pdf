@@ -4,7 +4,7 @@ name: CI
 # Autossuficiente: não depende de workflows de outra organização.
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
   workflow_dispatch:
 
@@ -31,8 +31,11 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-      - name: Formatação
-        run: cargo fmt --all --check
+      - name: Formatação (só o nosso código; libs/ e vendor/ mantêm o estilo de origem)
+        shell: bash
+        run: |
+          files=$(git ls-files '*.rs' | grep -v -E '^(libs|vendor)/')
+          rustfmt --edition 2024 --check $files
       - name: Clippy
         run: cargo clippy --locked --all-targets -- -D warnings
       - name: Build --locked

@@ -1,73 +1,59 @@
 #![allow(clippy::single_match)]
 
 // Limit this example to only compatible platforms.
-#[cfg(any(
-    windows_platform,
-    macos_platform,
-    x11_platform,
-    wayland_platform,
-    android_platform,
-    orbital_platform,
-))]
+#[cfg(any(windows_platform, macos_platform, x11_platform, wayland_platform, android_platform,))]
 fn main() -> std::process::ExitCode {
     use std::process::ExitCode;
     use std::thread::sleep;
     use std::time::Duration;
 
-    use softbuffer::{Context, Surface};
-    use tracing::info;
     use winit::application::ApplicationHandler;
     use winit::event::WindowEvent;
-    use winit::event_loop::pump_events::{EventLoopExtPumpEvents, PumpStatus};
-    use winit::event_loop::{ActiveEventLoop, EventLoop, OwnedDisplayHandle};
-    use winit::window::{Window, WindowAttributes, WindowId};
+    use winit::event_loop::{ActiveEventLoop, EventLoop};
+    use winit::platform::pump_events::{EventLoopExtPumpEvents, PumpStatus};
+    use winit::window::{Window, WindowId};
 
     #[path = "util/fill.rs"]
     mod fill;
-    #[path = "util/tracing.rs"]
-    mod tracing;
 
-    #[derive(Default, Debug)]
+    #[derive(Default)]
     struct PumpDemo {
-        surface: Option<Surface<OwnedDisplayHandle, Box<dyn Window>>>,
+        window: Option<Window>,
     }
 
     impl ApplicationHandler for PumpDemo {
-        fn can_create_surfaces(&mut self, event_loop: &dyn ActiveEventLoop) {
-            let window_attributes = WindowAttributes::default().with_title("A fantastic window!");
-            let window = event_loop.create_window(window_attributes).unwrap();
-
-            let context = Context::new(event_loop.owned_display_handle()).unwrap();
-            self.surface = Some(Surface::new(&context, window).unwrap());
+        fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+            let window_attributes = Window::default_attributes().with_title("A fantastic window!");
+            self.window = Some(event_loop.create_window(window_attributes).unwrap());
         }
 
         fn window_event(
             &mut self,
-            event_loop: &dyn ActiveEventLoop,
+            event_loop: &ActiveEventLoop,
             _window_id: WindowId,
             event: WindowEvent,
         ) {
-            info!("{event:?}");
+            println!("{event:?}");
 
-            let surface = match self.surface.as_mut() {
-                Some(surface) => surface,
+            let window = match self.window.as_ref() {
+                Some(window) => window,
                 None => return,
             };
 
             match event {
                 WindowEvent::CloseRequested => event_loop.exit(),
                 WindowEvent::RedrawRequested => {
-                    fill::fill(surface);
-                    surface.window().request_redraw();
+                    fill::fill_window(window);
+                    window.request_redraw();
                 },
                 _ => (),
             }
         }
     }
 
-    tracing::init();
-
     let mut event_loop = EventLoop::new().unwrap();
+
+    tracing_subscriber::fmt::init();
 
     let mut app = PumpDemo::default();
 
@@ -83,12 +69,12 @@ fn main() -> std::process::ExitCode {
         //
         // Since `pump_events` doesn't block it will be important to
         // throttle the loop in the app somehow.
-        info!("Update()");
+        println!("Update()");
         sleep(Duration::from_millis(16));
     }
 }
 
-#[cfg(any(ios_platform, web_platform))]
+#[cfg(any(ios_platform, web_platform, orbital_platform))]
 fn main() {
-    panic!("This platform doesn't support pump_events.")
+    println!("This platform doesn't support pump_events.");
 }

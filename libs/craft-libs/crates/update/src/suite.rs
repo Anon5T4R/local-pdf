@@ -34,7 +34,7 @@ pub const SUITE: [App; 13] = [
     VECTORCRAFT,
     FILMCRAFT,
     LIGHTCRAFT,
-    PDFCRAFT,
+    LOCALPDF,
     EFFECTCRAFT,
     DESIGNCRAFT,
     FIGCRAFT,
@@ -65,6 +65,6 @@ mod tests {
             assert_eq!(a.name.to_lowercase(), a.id);
         }
         assert!(by_id(LAUNCHER.id).is_none());
-        assert_eq!(by_id("pdfcraft").map(|a| a.former_ids), Some(&["printcraft"][..]));
+        assert_eq!(by_id("localpdf").map(|a| a.former_ids), Some(&["printcraft"][..]));
     }
 }

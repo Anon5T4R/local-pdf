@@ -141,7 +141,7 @@ links = ["egui-winit/links"]
 
 ## Enables the `clipboard` feature on `egui-winit`, allowing to cut/copy/paste to OS clipboard.
 ## If disabled a clipboard will be simulated so you can still copy/paste within the egui app.
-clipboard = ["egui-winit/clipboard"]
+clipboard = ["egui-winit/clipboard", "egui-winit/clipboard-image"]
 
 [dependencies]
 egui = { workspace = true, default-features = false, features = ["bytemuck"] }
@@ -299,3 +299,7 @@ wgpu = { workspace = true, optional = true }
 # Native dev dependencies for testing
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 directories.workspace = true
+
+# Browser regression tests use the CLI matching the workspace wasm-bindgen version.
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "=0.3.76"

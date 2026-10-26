@@ -522,8 +522,15 @@ impl Painter {
 
         match &delta.image {
             egui::ImageData::Color(image) => {
-                let data: &[u8] = bytemuck::cast_slice(image.pixels());
-                self.upload_texture_srgb(delta.pos, image.resolution(), delta.options, data);
+                assert_eq!(
+                    image.width() * image.height(),
+                    image.pixels.len(),
+                    "Mismatch between texture size and texel count"
+                );
+
+                let data: &[u8] = bytemuck::cast_slice(image.pixels.as_ref());
+
+                self.upload_texture_srgb(delta.pos, image.size, delta.options, data);
             }
         }
     }

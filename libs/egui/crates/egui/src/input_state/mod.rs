@@ -496,6 +496,19 @@ impl InputState {
         }
     }
 
+    /// Does the active keyboard layout type Latin letters? See [`RawInput::keyboard_layout_is_latin()`].
+    #[inline]
+    pub fn keyboard_layout_is_latin(&self) -> Option<bool> {
+        self.raw.keyboard_layout_is_latin
+    }
+
+    /// The character `physical_key` types on the user's Latin layout, when it was pressed this
+    /// frame and its shortcuts follow that layout. See [`RawInput::latin_layout_chars`].
+    #[inline]
+    pub fn latin_layout_char(&self, physical_key: Key) -> Option<char> {
+        self.raw.latin_layout_char(physical_key)
+    }
+
     /// Info about the active viewport
     #[inline]
     pub fn viewport(&self) -> &ViewportInfo {

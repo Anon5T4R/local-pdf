@@ -47,7 +47,9 @@ impl AnimatedImage {
             + self
                 .frames
                 .iter()
-                .map(|image| size_of_val(image.pixels()) + size_of::<Duration>())
+                .map(|image| {
+                    image.pixels.len() * size_of::<egui::Color32>() + size_of::<Duration>()
+                })
                 .sum::<usize>()
     }
 

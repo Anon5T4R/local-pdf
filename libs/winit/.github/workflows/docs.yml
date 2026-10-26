@@ -19,7 +19,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -29,10 +29,10 @@ jobs:
         env:
           RUSTDOCFLAGS: --crate-version master --cfg=docsrs --cfg=unreleased_changelogs
         run: |
-          cargo doc --no-deps -Z rustdoc-map -Z rustdoc-scrape-examples --features=serde,mint,android-native-activity
+          cargo doc --no-deps -Z rustdoc-map -Z rustdoc-scrape-examples --features=rwh_04,rwh_05,rwh_06,serde,mint,android-native-activity
 
       - name: Setup Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v4
 
       - name: Fix permissions
         run: |
@@ -41,10 +41,10 @@ jobs:
           done
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: target/doc
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4

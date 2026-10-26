@@ -122,6 +122,10 @@ pub struct Memory {
     /// this pass.
     #[cfg_attr(feature = "persistence", serde(skip))]
     requested_interrupt_ime: bool,
+
+    /// Unpublished application requests survive hidden iterations and passes with no descriptor.
+    #[cfg_attr(feature = "persistence", serde(skip))]
+    requested_ime_resets: ViewportIdMap<crate::ImeResetId>,
 }
 
 impl Default for Memory {
@@ -140,6 +144,7 @@ impl Default for Memory {
             everything_is_visible: Default::default(),
             add_fonts: Default::default(),
             requested_interrupt_ime: Default::default(),
+            requested_ime_resets: Default::default(),
         };
         slf.interactions.entry(slf.viewport_id).or_default();
         slf.areas.entry(slf.viewport_id).or_default();
@@ -301,6 +306,17 @@ pub struct Options {
     /// which is supported by `eframe`.
     pub screen_reader: bool,
 
+    /// The language of the user interface, as a BCP 47 tag (`"ar"`, `"pt-BR"`).
+    ///
+    /// egui puts it on the root of the AccessKit tree, so screen readers pick a voice for it.
+    /// Integrations and widgets can read it too.
+    /// Content in another language can say so with [`crate::UiBuilder::language`]
+    /// or [`crate::Response::accessible_language`].
+    ///
+    /// Set it with [`crate::Context::set_language`]. Default: `None` (unknown).
+    #[cfg_attr(feature = "serde", serde(skip))]
+    pub language: Option<String>,
+
     /// Check reusing of [`Id`]s, and show a visual warning on screen when one is found.
     ///
     /// By default this is `true` in debug builds.
@@ -344,6 +360,7 @@ impl Default for Options {
             #[expect(clippy::unwrap_used)]
             max_passes: NonZeroUsize::new(2).unwrap(),
             screen_reader: false,
+            language: None,
             warn_on_id_clash: cfg!(debug_assertions),
 
             // Input:
@@ -403,6 +420,7 @@ impl Options {
             repaint_on_widget_change,
             max_passes,
             screen_reader: _, // needs to come from the integration
+            language: _,      // set by the app
             warn_on_id_clash,
             input_options,
             reduce_texture_memory,
@@ -793,6 +811,8 @@ impl Memory {
         self.interactions.retain(|id, _| viewports.contains(id));
         self.areas.retain(|id, _| viewports.contains(id));
         self.popups.retain(|id, _| viewports.contains(id));
+        self.requested_ime_resets
+            .retain(|id, _| viewports.contains(id));
 
         self.areas.entry(self.viewport_id).or_default();
 
@@ -918,17 +938,23 @@ impl Memory {
     /// Give keyboard focus to a specific widget.
     /// See also [`crate::Response::request_focus`].
     ///
-    /// Calling this will interrupt IME composition.
+    /// Moving focus to a different widget interrupts IME composition.
+    /// Requesting focus for the widget that already has it does not,
+    /// so this can be called every frame.
     #[inline(always)]
     pub fn request_focus(&mut self, id: Id) {
+        if self.focused() != Some(id) {
+            self.interrupt_ime();
+        }
         self.focus_mut().focused_widget = Some(FocusWidget::new(id));
-        self.interrupt_ime();
     }
 
     /// Defer focus until the next pass so an already rendered widget sees `gained_focus`.
     pub(crate) fn request_focus_next_frame(&mut self, id: Id) {
+        if self.focused() != Some(id) {
+            self.interrupt_ime();
+        }
         self.focus_mut().id_next_frame = Some(id);
-        self.interrupt_ime();
     }
 
     /// Surrender keyboard focus for a specific widget.
@@ -1077,6 +1103,16 @@ impl Memory {
     /// Interrupt the current IME composition, if any.
     pub fn interrupt_ime(&mut self) {
         self.requested_interrupt_ime = true;
+    }
+
+    pub(crate) fn request_ime_reset(&mut self, viewport: ViewportId) -> Option<crate::ImeResetId> {
+        let request = crate::ImeResetId::allocate(viewport)?;
+        self.requested_ime_resets.insert(viewport, request);
+        Some(request)
+    }
+
+    pub(crate) fn take_ime_reset(&mut self, viewport: ViewportId) -> Option<crate::ImeResetId> {
+        self.requested_ime_resets.remove(&viewport)
     }
 
     pub(crate) fn should_interrupt_ime(&self) -> bool {
@@ -1581,4 +1617,21 @@ fn set_state_makes_layer_hit_testable() {
 
     let (inside, _) = run_pass(false);
     assert_ne!(inside, Some(layer_id), "gone once no longer registered");
+}
+
+#[test]
+fn requested_ime_resets_are_isolated_per_viewport_and_do_not_replace_stock_interrupt() {
+    let mut memory = Memory::default();
+    let root = crate::ViewportId::ROOT;
+    let other = crate::ViewportId::from_hash_of("reset memory other");
+    let old = memory.request_ime_reset(root).unwrap();
+    let newer = memory.request_ime_reset(root).unwrap();
+    let separate = memory.request_ime_reset(other).unwrap();
+    assert_ne!(old, newer);
+    memory.interrupt_ime();
+    assert!(memory.should_interrupt_ime());
+    assert_eq!(memory.take_ime_reset(other), Some(separate));
+    assert_eq!(memory.take_ime_reset(root), Some(newer));
+    assert_eq!(memory.take_ime_reset(root), None);
+    assert_eq!(memory.take_ime_reset(other), None);
 }

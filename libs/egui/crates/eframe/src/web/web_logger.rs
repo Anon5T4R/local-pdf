@@ -123,7 +123,8 @@ fn shorten_file_path(file_path: &str) -> &str {
     }
 }
 
-#[test]
+#[cfg(test)]
+#[wasm_bindgen_test::wasm_bindgen_test]
 fn test_shorten_file_path() {
     for (before, after) in [
         (
@@ -137,6 +138,6 @@ fn test_shorten_file_path() {
         ),
         ("/weird/path/file.rs", "/weird/path/file.rs"),
     ] {
-        assert_eq!(shorten_file_path(before), after);
+        assert_eq!(shorten_file_path(before), after, "shorten path {before}");
     }
 }
