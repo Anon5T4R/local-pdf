@@ -27,27 +27,6 @@
 
 <br>
 
-<p align="center">
-  <img src="docs/images/localpdf-viewer.png" alt="LocalPDF with the LocalPDF Showcase cover page open, the All tools panel on the left and 20 threaded comments on the right" width="100%">
-  <br>
-</p>
-
-<p align="center">
-  <a href="#highlights">Highlights</a> ·
-  <a href="#read-anything-beautifully">Read</a> ·
-  <a href="#find-it-select-it-copy-it">Find</a> ·
-  <a href="#organize-pages-like-cards-on-a-table">Organize</a> ·
-  <a href="#combine-and-split-without-losing-a-thing">Combine &amp; split</a> ·
-  <a href="#open-protected-documents-and-respect-their-rules">Protect</a> ·
-  <a href="#comments-forms-layers-and-attachments">Forms &amp; layers</a> ·
-  <a href="#runs-everywhere-stays-yours">Everywhere</a> ·
-  <a href="#built-for-agents-too">Agents</a> ·
-  <a href="#how-its-built">How it's built</a> ·
-  <a href="#get-started">Get started</a> ·
-  <a href="#whats-next">What's next</a> ·
-  <a href="#downloads">Downloads</a> ·
-  <a href="#the-crafting-apps">Crafting Apps</a>
-</p>
 
 ---
 
