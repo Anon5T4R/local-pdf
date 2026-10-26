@@ -8,7 +8,7 @@ use localpdf_engine::Edit;
 use localpdf_engine::commands::{self, COMMANDS, CommandSpec, Shortcut};
 
 use crate::{
-    Dialog, Mode, LocalPDFApp, PropsTab, RightPanel, SaveTarget,
+    Dialog, LocalPDFApp, Mode, PropsTab, RightPanel, SaveTarget,
     theme::{ThemeKind, ThemePreference},
 };
 

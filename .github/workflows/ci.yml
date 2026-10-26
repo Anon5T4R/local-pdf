@@ -27,15 +27,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@nightly
         with:
-          components: rustfmt, clippy
+          components: rustfmt
       - uses: Swatinem/rust-cache@v2
-      - name: Formatação (só o nosso código; libs/ e vendor/ mantêm o estilo de origem)
+      - name: Formatação (nightly; só o nosso código — libs/ e vendor/ mantêm o estilo de origem)
         shell: bash
         run: |
           files=$(git ls-files '*.rs' | grep -v -E '^(libs|vendor)/')
-          rustfmt --edition 2024 --check $files
+          rustfmt +nightly --edition 2024 --check $files
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
       - name: Clippy
         run: cargo clippy --locked --all-targets -- -D warnings
       - name: Build --locked

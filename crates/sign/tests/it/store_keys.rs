@@ -2,9 +2,9 @@
 //! checked on every platform: which certificate keys it lists, and how a CNG signature becomes
 //! the one a CMS signature carries.
 
-use p256::ecdsa::signature::hazmat::PrehashSigner;
 use localpdf_sign::keys::{DigestAlg, Scheme, StoreKey};
 use localpdf_sign::{PublicKey, SignError};
+use p256::ecdsa::signature::hazmat::PrehashSigner;
 
 /// One key of every kind, with what the store must hold to sign for it.
 fn every_kind() -> Vec<(PublicKey, Option<StoreKey>)> {

@@ -562,9 +562,12 @@ pub fn local_logo(ui: &mut egui::Ui, height: f32) -> Response {
 /// The LocalPDF mark (the app icon's source SVG, works on light and dark), `size` points square.
 pub fn local_mark(ui: &mut egui::Ui, size: f32) -> Response {
     ui.add(
-        egui::Image::from_bytes("bytes://com.local.localpdf.svg", include_bytes!("../../../assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg"))
-            .fit_to_exact_size(vec2(size, size))
-            .alt_text("LocalPDF"),
+        egui::Image::from_bytes(
+            "bytes://com.local.localpdf.svg",
+            include_bytes!("../../../assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg"),
+        )
+        .fit_to_exact_size(vec2(size, size))
+        .alt_text("LocalPDF"),
     )
 }
 

@@ -11,7 +11,7 @@ use craft_ui::panes::{Edge, PaneContent, PaneHost, PaneLabels, PaneRequest, Pane
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-use crate::{Mode, LocalPDFApp};
+use crate::{LocalPDFApp, Mode};
 
 /// Default width of the Tools pane.
 pub const TOOLS_WIDTH: f32 = 272.0;

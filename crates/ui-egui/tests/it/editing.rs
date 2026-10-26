@@ -8,7 +8,7 @@ use egui::{Key, Modifiers};
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
 use localpdf_render::{PageRenderer, RenderRequest, RequestKind};
-use localpdf_ui_egui::{CloseRequest, Dialog, OpenOutcome, LocalPDFApp};
+use localpdf_ui_egui::{CloseRequest, Dialog, LocalPDFApp, OpenOutcome};
 
 use crate::gpu;
 

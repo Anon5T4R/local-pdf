@@ -7,8 +7,8 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
 };
 
-use lopdf::{Dictionary, Error, Object, ObjectId, Result};
 use localpdf_cos::{Document, Object as CosObject};
+use lopdf::{Dictionary, Error, Object, ObjectId, Result};
 
 pub(crate) trait Structure {
     fn trailer(&self) -> &Dictionary;
