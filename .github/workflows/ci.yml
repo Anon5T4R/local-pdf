@@ -23,8 +23,6 @@ jobs:
       matrix:
         os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
-    env:
-      PDFCRAFT_REQUIRE_WINRES: ${{ runner.os == 'Windows' && '1' || '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,6 +53,8 @@ jobs:
       - name: Build --locked
         run: cargo build --locked
       - name: Testes
+        env:
+          PDFCRAFT_REQUIRE_WINRES: ${{ runner.os == 'Windows' && '1' || '' }}
         run: cargo test --locked
 
   arch:
