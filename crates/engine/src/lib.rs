@@ -123,6 +123,10 @@ pub fn typed_signature_shape(at: [f64; 2], text: &str, height: f64, rotation: i6
     let contours = o.contours.iter().map(|c| c.iter().map(|p| to_user((p[0] - left) / width, (p[1] - bottom) / span)).collect()).collect();
     Some(Shape::TypedSignature { rect, contours })
 }
+/// The user-space point of a display-space point under the page's view matrix `[a b c d e f]`.
+fn view_point(m: [f64; 6], x: f64, y: f64) -> (f64, f64) {
+    (m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5])
+}
 /// `at` moved `right` and `up` points as displayed on a page turned by `rotation` (its `/Rotate`).
 pub fn displayed_offset(rotation: i64, at: [f64; 2], right: f64, up: f64) -> [f64; 2] {
     let [a, b, c, d, ..] = localpdf_model::view_matrix_for(rotation, [0.0; 4]);
@@ -2872,7 +2876,31 @@ fn run_edit(doc: &mut localpdf_cos::Document, edit: &Edit, cx: &mut EditCtx) -> 
             localpdf_edit::add_content(doc, *page, &AddedContent::Image(localpdf_edit::AddedImage::new(rect, image)))?;
         }
         Edit::UpdateContent { page, index, content } => localpdf_edit::update_content(doc, *page, *index, content)?,
-        Edit::DeleteContent { page, index } => localpdf_edit::delete_content(doc, *page, *index)?,
+        Edit::DeleteContent { page, index } => {
+            // The markup annots drawn over the item go with it: a highlight over deleted text is
+            // noise. The item's box is display space; the annots' /Rect is user space.
+            let rect = localpdf_edit::list_added(doc).into_iter().filter(|a| a.page == *page).nth(*index).map(|a| a.content.rect());
+            localpdf_edit::delete_content(doc, *page, *index)?;
+            if let Some(rect) = rect {
+                let page_dict = localpdf_model::pages(doc).get(*page).cloned();
+                if let Some(p) = page_dict {
+                    let m = p.view_matrix(doc);
+                    let corners = [
+                        view_point(m, rect[0], rect[1]),
+                        view_point(m, rect[2], rect[1]),
+                        view_point(m, rect[0], rect[3]),
+                        view_point(m, rect[2], rect[3]),
+                    ];
+                    let bbox = [
+                        corners.iter().map(|c| c.0).fold(f64::INFINITY, f64::min),
+                        corners.iter().map(|c| c.1).fold(f64::INFINITY, f64::min),
+                        corners.iter().map(|c| c.0).fold(f64::NEG_INFINITY, f64::max),
+                        corners.iter().map(|c| c.1).fold(f64::NEG_INFINITY, f64::max),
+                    ];
+                    localpdf_annot::delete_markup_over(doc, *page, bbox)?;
+                }
+            }
+        }
         Edit::ReplaceImage { page, index, name, bytes } => {
             let item = localpdf_edit::list_added(doc).into_iter().filter(|a| a.page == *page).nth(*index);
             let Some(AddedContent::Image(old)) = item.map(|a| a.content) else {

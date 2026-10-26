@@ -4,6 +4,7 @@ mod support {
     pub mod font_fixture;
 }
 
+mod delete_content_markup;
 mod document_fonts;
 mod form_rotation;
 mod marked_content_isolation;

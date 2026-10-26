@@ -1660,6 +1660,43 @@ fn touch(d: &mut Dict, meta: &Meta) {
     }
 }
 
+/// The markup subtypes whose ink sits over page content (Acrobat's commenting mark-up tools).
+fn is_markup_subtype(subtype: &[u8]) -> bool {
+    matches!(subtype, b"Highlight" | b"StrikeOut" | b"Squiggly" | b"Underline")
+}
+
+/// Delete every markup annotation (highlight, strike-out, squiggly, underline) on `page` whose
+/// `/Rect` intersects `rect` (user space). Returns how many went. Used when the page content an
+/// annotation was drawn over is deleted: the mark alone over nothing is noise, so it goes with
+/// its content. Locked annotations are left alone.
+pub fn delete_markup_over(doc: &mut Document, page: usize, rect: [f64; 4]) -> Result<usize, AnnotError> {
+    let p = page_ref(doc, page)?;
+    let list = annots(doc, p);
+    let mut kept = Vec::with_capacity(list.len());
+    let mut removed = 0usize;
+    for e in list {
+        let d = doc.resolve(&e).as_dict().cloned();
+        let markup = d.as_ref().and_then(|d| d.get(b"Subtype")).and_then(|s| doc.resolve(s).as_name().map(|n| n.to_vec())).is_some_and(|n| is_markup_subtype(&n));
+        let locked = d.as_ref().map(|d| d.get(b"F").and_then(|f| doc.resolve(f).as_int()).unwrap_or(0) & 128 != 0).unwrap_or(false);
+        let hits = d.as_ref().and_then(|d| d.get(b"Rect")).map(|r| doc.resolve(r)).and_then(|r| r.as_array().map(|a| a.iter().filter_map(Object::as_f64).collect::<Vec<_>>())).is_some_and(|r| {
+            r.len() == 4 && rects_intersect(rect, [r[0], r[1], r[2], r[3]])
+        });
+        if markup && !locked && hits {
+            removed += 1;
+            continue;
+        }
+        kept.push(e);
+    }
+    if removed > 0 {
+        set_annots(doc, p, kept)?;
+    }
+    Ok(removed)
+}
+
+/// Whether two axis-aligned rectangles `[x0, y0, x1, y1]` overlap (touching edges do not count).
+fn rects_intersect(a: [f64; 4], b: [f64; 4]) -> bool {
+    a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3]
+}
 /// Delete a comment together with its pop-up and its replies (and theirs), as Acrobat does.
 pub fn delete_annotation(doc: &mut Document, page: usize, index: usize) -> Result<(), AnnotError> {
     let p = page_ref(doc, page)?;
