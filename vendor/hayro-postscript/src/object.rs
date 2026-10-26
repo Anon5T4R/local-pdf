@@ -19,7 +19,7 @@ pub enum Object<'a> {
 }
 
 pub(crate) fn read<'a>(r: &mut Reader<'a>) -> Result<Object<'a>> {
-    // PdfCraft patch: `<<` and `>>` are skipped by looping instead of
+    // LocalPDF patch: `<<` and `>>` are skipped by looping instead of
     // recursing once per delimiter, so a long run cannot overflow the stack.
     loop {
         skip_whitespace_and_comments(r);
@@ -194,7 +194,7 @@ mod tests {
         assert!(read_one(b"% comment only\n").is_err());
     }
 
-    // PdfCraft patch: `<<` and `>>` runs are skipped without recursion.
+    // LocalPDF patch: `<<` and `>>` runs are skipped without recursion.
     #[test]
     fn long_open_dict_run_does_not_overflow() {
         let input = alloc::vec![b'<'; 1_000_000];

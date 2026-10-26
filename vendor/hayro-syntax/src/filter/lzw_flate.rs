@@ -10,14 +10,14 @@ pub(crate) mod flate {
 
     pub(crate) use fallback::FlateState;
 
-    /// PdfCraft patch: whether a Flate stream with `params` has no predictor, so that
+    /// LocalPDF patch: whether a Flate stream with `params` has no predictor, so that
     /// [`FlateState`] can produce it a piece at a time.
     pub(crate) fn is_plain(params: &Dict<'_>) -> bool {
         PredictorParams::from_params(params).predictor == 1
     }
     use crate::object::Dict;
 
-    /// PdfCraft patch: `limit` is the most bytes inflated (see `filter::decode_limit`).
+    /// LocalPDF patch: `limit` is the most bytes inflated (see `filter::decode_limit`).
     #[cfg(feature = "unsafe")]
     pub(crate) fn decode(data: &[u8], params: &Dict<'_>, limit: usize) -> Option<Vec<u8>> {
         use flate2::read::{DeflateDecoder, ZlibDecoder};
@@ -47,7 +47,7 @@ pub(crate) mod flate {
 
                 fallback::decode(data, limit)
             })?;
-        // PdfCraft patch: output cut at the limit is reported, never dropped silently.
+        // LocalPDF patch: output cut at the limit is reported, never dropped silently.
         if decoded.len() >= limit {
             warn!("flate stream stopped at its decode limit of {limit} bytes");
         }
@@ -58,7 +58,7 @@ pub(crate) mod flate {
     #[cfg(not(feature = "unsafe"))]
     pub(crate) fn decode(data: &[u8], params: &Dict<'_>, limit: usize) -> Option<Vec<u8>> {
         let decoded = fallback::decode(data, limit)?;
-        // PdfCraft patch: output cut at the limit is reported, never dropped silently.
+        // LocalPDF patch: output cut at the limit is reported, never dropped silently.
         if decoded.len() >= limit {
             warn!("flate stream stopped at its decode limit of {limit} bytes");
         }
@@ -84,7 +84,7 @@ pub(crate) mod flate {
             Some(output)
         }
 
-        /// PdfCraft patch: where a Flate stream is between two calls of [`FlateState::decode_into`].
+        /// LocalPDF patch: where a Flate stream is between two calls of [`FlateState::decode_into`].
         /// Decoding pauses at any output size and resumes where it stopped, so a stream can be
         /// produced a piece at a time without holding all of it.
         #[derive(Default)]
@@ -163,7 +163,7 @@ pub(crate) mod flate {
             }
         }
 
-        /// PdfCraft patch: the working state of one [`FlateState::decode_into`] call.
+        /// LocalPDF patch: the working state of one [`FlateState::decode_into`] call.
         struct FlateStream<'a> {
             data: &'a [u8],
             pos: usize,
@@ -176,12 +176,12 @@ pub(crate) mod flate {
             /// How many bytes were decoded before this call.
             total: usize,
             eof: bool,
-            /// PdfCraft patch: the most bytes in `output` (see `filter::decode_limit`).
+            /// LocalPDF patch: the most bytes in `output` (see `filter::decode_limit`).
             limit: usize,
             block: Block,
         }
 
-        /// PdfCraft patch: the block a Flate stream is in.
+        /// LocalPDF patch: the block a Flate stream is in.
         #[derive(Default)]
         enum Block {
             /// Between blocks, at a block header (or at the end of the data).
@@ -292,7 +292,7 @@ pub(crate) mod flate {
                     }
                 };
 
-                // PdfCraft patch: the final block ends the stream once it is decoded, not when its
+                // LocalPDF patch: the final block ends the stream once it is decoded, not when its
                 // header is read: a stored block still has its bytes to copy.
                 let last = (hdr & 1) != 0;
 
@@ -452,7 +452,7 @@ pub(crate) mod flate {
                         copy = None;
                     }
 
-                    // PdfCraft patch: one code adds at most 258 bytes; stop at the limit.
+                    // LocalPDF patch: one code adds at most 258 bytes; stop at the limit.
                     if self.output.len() >= self.limit {
                         self.block = Block::Coded {
                             lit: lit_code_table,
@@ -540,7 +540,7 @@ pub(crate) mod flate {
                 let Some(mut start) = len.checked_sub(distance).filter(|_| valid && distance > 0) else {
                     return if len < self.limit { 0 } else { left };
                 };
-                // PdfCraft patch: copy in runs of up to `distance` bytes. Each run reads only bytes
+                // LocalPDF patch: copy in runs of up to `distance` bytes. Each run reads only bytes
                 // already in the output, so the bytes are the ones a byte-at-a-time copy writes.
                 let copy = left.min(self.limit.saturating_sub(len));
                 let mut done = 0;
@@ -783,14 +783,14 @@ pub(crate) mod lzw {
     use alloc::vec;
     use alloc::vec::Vec;
 
-    /// Decode a LZW-encoded stream. PdfCraft patch: `limit` is the most bytes produced (see
+    /// Decode a LZW-encoded stream. LocalPDF patch: `limit` is the most bytes produced (see
     /// `filter::decode_limit`); with a full table every 12-bit code can repeat an entry of
     /// thousands of bytes.
     pub(crate) fn decode(data: &[u8], params: &Dict<'_>, limit: usize) -> Option<Vec<u8>> {
         let params = PredictorParams::from_params(params);
 
         let decoded = decode_impl(data, params.early_change, limit)?;
-        // PdfCraft patch: output cut at the limit is reported, never dropped silently.
+        // LocalPDF patch: output cut at the limit is reported, never dropped silently.
         if decoded.len() >= limit {
             warn!("LZW stream stopped at its decode limit of {limit} bytes");
         }
@@ -835,7 +835,7 @@ pub(crate) mod lzw {
                         return None;
                     }
 
-                    // PdfCraft patch: never past `limit`.
+                    // LocalPDF patch: never past `limit`.
                     let left = limit.saturating_sub(decoded.len());
                     if new < table.size() {
                         let entry = table.get(new)?;
@@ -943,7 +943,7 @@ struct PredictorParams {
 
 impl PredictorParams {
     fn row_length_in_bytes(&self) -> usize {
-        // PdfCraft patch: saturating, and in usize (colors × bits overflowed u8): a fuzzed
+        // LocalPDF patch: saturating, and in usize (colors × bits overflowed u8): a fuzzed
         // `/Columns 9223372036854775807` wrapped to a 2^61-byte row.
         self.columns
             .saturating_mul(usize::from(self.bits_per_component) * usize::from(self.colors))
@@ -990,7 +990,7 @@ fn apply_predictor(data: Vec<u8>, params: &PredictorParams) -> Option<Vec<u8>> {
                 row_len
             };
 
-            // PdfCraft patch: a zero-width row divided by zero below, and a row longer than the
+            // LocalPDF patch: a zero-width row divided by zero below, and a row longer than the
             // data was allocated before finding there is nothing to read (no rows: empty output,
             // as before).
             if row_len == 0 {
@@ -1011,7 +1011,7 @@ fn apply_predictor(data: Vec<u8>, params: &PredictorParams) -> Option<Vec<u8>> {
             let (bit_size, chunk_len) = if is_png_predictor {
                 (
                     8,
-                    // PdfCraft patch: in usize (the u8 product overflowed).
+                    // LocalPDF patch: in usize (the u8 product overflowed).
                     (usize::from(params.colors) * usize::from(params.bits_per_component)).div_ceil(8),
                 )
             } else {
@@ -1091,7 +1091,7 @@ fn apply_predictor(data: Vec<u8>, params: &PredictorParams) -> Option<Vec<u8>> {
                     return None;
                 }
 
-                // PdfCraft patch: packed TIFF samples can leave padding bits at the end
+                // LocalPDF patch: packed TIFF samples can leave padding bits at the end
                 // of a row. split_off requires byte alignment or the next row overwrites it.
                 writer.align();
                 let (data, new_writer) = writer.split_off();
@@ -1296,7 +1296,7 @@ mod tests {
         );
     }
 
-    /// PdfCraft patch: 300 zero bytes, zlib-compressed: one literal, then copies of distance 1 that
+    /// LocalPDF patch: 300 zero bytes, zlib-compressed: one literal, then copies of distance 1 that
     /// are longer than their distance.
     const ZEROS_300: [u8; 13] = [0x78, 0xda, 0x63, 0x60, 0x18, 0x05, 0xc4, 0x02, 0x00, 0x01, 0x2c, 0x00, 0x01];
 

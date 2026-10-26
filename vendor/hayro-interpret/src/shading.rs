@@ -49,7 +49,7 @@ impl ShadingFunction {
         }
     }
 
-    /// PdfCraft patch (backport of hayro 0.8): stitching breakpoints of all component functions.
+    /// LocalPDF patch (backport of hayro 0.8): stitching breakpoints of all component functions.
     pub(crate) fn stitching_bounds(&self) -> StitchingBounds {
         let mut bounds = StitchingBounds::new();
 
@@ -139,7 +139,7 @@ pub struct Shading {
 }
 
 impl Shading {
-    /// PdfCraft patch (38): a shading in a device space is drawn in its default colour space
+    /// LocalPDF patch (38): a shading in a device space is drawn in its default colour space
     /// from `defaults`, the resources it is painted with (ISO 32000-2 §8.6.5.6), and keyed by
     /// it as an image is.
     pub(crate) fn new(
@@ -387,7 +387,7 @@ impl Triangle {
         self.kurbo_tri.winding(pos) != 0
     }
 
-    /// PdfCraft patch (36): whether the point is inside the triangle or on one of its edges.
+    /// LocalPDF patch (36): whether the point is inside the triangle or on one of its edges.
     /// Two triangles of a mesh share an edge; a sample on it belongs to both (their colours
     /// agree there), where `contains_point` can give it to neither and leave a seam. A
     /// degenerate triangle covers nothing.
@@ -593,7 +593,7 @@ impl TensorProductPatch {
     }
 }
 
-/// PdfCraft patch: the most triangles a free-form or lattice mesh, and the most patches a
+/// LocalPDF patch: the most triangles a free-form or lattice mesh, and the most patches a
 /// patch mesh, may hold. Each was read without limit: a patch can be 19 bits, a triangle 216
 /// bytes in memory, so a small stream made gigabytes. Real meshes are far smaller (a 200 × 200
 /// gradient mesh is 40 thousand patches).
@@ -649,7 +649,7 @@ fn read_free_form_triangles(
             continue;
         }
 
-        // PdfCraft patch: see `MAX_MESH_TRIANGLES`.
+        // LocalPDF patch: see `MAX_MESH_TRIANGLES`.
         if triangles.len() >= MAX_MESH_TRIANGLES {
             warn!("free-form mesh has over {MAX_MESH_TRIANGLES} triangles; the rest is not drawn");
             break;
@@ -761,7 +761,7 @@ where
 {
     const GRID_SIZE: usize = 20;
     let mut grid = vec![vec![Point::ZERO; GRID_SIZE]; GRID_SIZE];
-    // PdfCraft patch (33): each grid point's colours, interpolated once. Every cell below
+    // LocalPDF patch (33): each grid point's colours, interpolated once. Every cell below
     // interpolated its four corners itself, so an inner point was interpolated four times
     // (1,444 interpolations a patch instead of 400) for the same values.
     let mut colors = vec![vec![ColorComponents::new(); GRID_SIZE]; GRID_SIZE];
@@ -824,7 +824,7 @@ where
                 triangle
             };
 
-            // PdfCraft patch (33): the second triangle takes the vertices the first copied.
+            // LocalPDF patch (33): the second triangle takes the vertices the first copied.
             buffer.push(inflate(Triangle::new(v00, v10.clone(), v01.clone())));
             buffer.push(inflate(Triangle::new(v10, v11, v01)));
         }
@@ -839,7 +839,7 @@ fn read_lattice_triangles(
     vertices_per_row: u32,
     decode: &[f32],
 ) -> Option<Vec<Triangle>> {
-    // PdfCraft patch: ISO 32000-2 8.7.4.5.6 requires at least two vertices per row; with none,
+    // LocalPDF patch: ISO 32000-2 8.7.4.5.6 requires at least two vertices per row; with none,
     // the loop below pushed empty rows for ever, and one row of 4294967295 read the whole stream
     // into memory before any cap (see `MAX_MESH_TRIANGLES`).
     if !(2..=(MAX_MESH_TRIANGLES / 2) as u32).contains(&vertices_per_row) {
@@ -867,7 +867,7 @@ fn read_lattice_triangles(
     };
 
     'outer: loop {
-        // PdfCraft patch: see `MAX_MESH_TRIANGLES` (two triangles per vertex at most).
+        // LocalPDF patch: see `MAX_MESH_TRIANGLES` (two triangles per vertex at most).
         if lattices.len().saturating_mul(vertices_per_row as usize) >= MAX_MESH_TRIANGLES / 2 {
             warn!("lattice-form mesh has too many vertices; the rest is not drawn");
             break;
@@ -961,7 +961,7 @@ where
     let mut patches = vec![];
 
     while let Some(flag) = reader.read(bpf) {
-        // PdfCraft patch: see `MAX_MESH_PATCHES`.
+        // LocalPDF patch: see `MAX_MESH_PATCHES`.
         if patches.len() >= MAX_MESH_PATCHES {
             warn!("patch mesh has over {MAX_MESH_PATCHES} patches; the rest is not drawn");
             break;

@@ -21,7 +21,7 @@ pub(crate) fn decode(data: &[u8], params: &ImageDecodeParams) -> Option<FilterRe
     use crate::object::stream::ImageColorSpace;
 
     let settings = DecodeSettings {
-        // PdfCraft patch: (#3179) with no /ColorSpace in the image dictionary the colours come from
+        // LocalPDF patch: (#3179) with no /ColorSpace in the image dictionary the colours come from
         // the JP2 header (ISO 32000-2 §7.4.9), so its palette (`pclr`) is applied here; with a
         // /ColorSpace the header colour data is ignored, and an /Indexed space takes the raw indices.
         // A /ColorSpace that does not resolve also leaves `num_components` unset: the header's
@@ -32,7 +32,7 @@ pub(crate) fn decode(data: &[u8], params: &ImageDecodeParams) -> Option<FilterRe
         target_resolution: params.target_dimension,
     };
 
-    // PdfCraft patch (21): a JP2 colour specification naming an enumerated colour space the
+    // LocalPDF patch (21): a JP2 colour specification naming an enumerated colour space the
     // decoder refuses (CIEJab, enum 19, in a veraPDF fixture; YCbCr, PhotoYCC, …) made the whole
     // image fail, so the page drew blank (#3306). Then it is decoded as if it had no colour
     // specification, as MuPDF and Poppler draw it: grey, RGB or CMYK by its component count.
@@ -47,7 +47,7 @@ pub(crate) fn decode(data: &[u8], params: &ImageDecodeParams) -> Option<FilterRe
 
     let width = image.width();
     let height = image.height();
-    // PdfCraft patch: (#3179) a resolved palette gives colours, decoded to 8 bits like every
+    // LocalPDF patch: (#3179) a resolved palette gives colours, decoded to 8 bits like every
     // sample; the codestream's precision is that of the indices (1 bit, say), and rescaling the
     // colours to it kept only 0 or 255 per channel (review on #3184).
     let palette_resolved = settings.resolve_palette_indices && has_palette(data);
@@ -110,7 +110,7 @@ pub(crate) fn decode(data: &[u8], params: &ImageDecodeParams) -> Option<FilterRe
     })
 }
 
-/// PdfCraft patch: (#3179) whether JP2 file `data` has a palette box (`pclr`) in its header box
+/// LocalPDF patch: (#3179) whether JP2 file `data` has a palette box (`pclr`) in its header box
 /// (`jp2h`, ISO 15444-1 I.5.3.4). A raw codestream has none.
 fn has_palette(data: &[u8]) -> bool {
     boxes(data)
@@ -123,7 +123,7 @@ fn has_palette(data: &[u8]) -> bool {
 /// handles: CMYK, CIELab, sRGB, greyscale, sYCC, e-sRGB and ROMM-RGB.
 const DECODED_ENUMERATED: [u32; 7] = [12, 14, 16, 17, 18, 20, 21];
 
-/// PdfCraft patch (21): a copy of JP2 file `data` whose colour specification boxes (`colr`, in
+/// LocalPDF patch (21): a copy of JP2 file `data` whose colour specification boxes (`colr`, in
 /// the `jp2h` header box) that name an enumerated colour space outside [`DECODED_ENUMERATED`]
 /// name the space the decoder assumes without one instead: greyscale, sRGB or CMYK for 1, 3 or
 /// 4 components (`ihdr`). `None` when there is nothing to change or the boxes can't be read.
@@ -211,7 +211,7 @@ fn scale(
         return None;
     }
 
-    // PdfCraft patch: normalize all supported bit widths without an overflowing
+    // LocalPDF patch: normalize all supported bit widths without an overflowing
     // shift or floating-point endpoint rounding, including no_std builds.
     let max_sample = u64::from(bit_mask(bit_per_component));
 

@@ -62,8 +62,10 @@ jobs:
         run: cargo build --locked
       - name: PKGBUILD válido (makepkg -o)
         run: |
+          useradd -m builder
+          chown -R builder:builder .
           cd packaging/arch
-          makepkg -o --noconfirm
+          sudo -u builder makepkg -o --noconfirm
 
   git-sources:
     name: Sem dependências git remotas

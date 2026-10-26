@@ -190,7 +190,7 @@ impl TrueTypeFont {
         }
 
         match &self.kind {
-            // PdfCraft patch (#3169): a name outside the glyph list reads by the glyph list
+            // LocalPDF patch (#3169): a name outside the glyph list reads by the glyph list
             // specification's full mapping (`f_i`, `hyphen.case`).
             Kind::Embedded(e) => e.code_to_unicode_name(code as u8).and_then(|name| {
                 glyph_name_to_unicode(name).map(BfString::Char).or_else(|| glyph_name_to_text(name))
@@ -278,7 +278,7 @@ impl EmbeddedKind {
             .or_else(|| standard::get(code))
     }
 
-    /// PdfCraft patch: the glyph name text extraction reads a code as. Without a base encoding
+    /// LocalPDF patch: the glyph name text extraction reads a code as. Without a base encoding
     /// a TrueType font's codes are read as WinAnsi, matching pdftotext's output, not as
     /// Standard: OCR engines write the text layer of a scan with WinAnsi codes and no
     /// `/Encoding`, and Standard has no name for ü, ö or ß and gives é (0xE9) as Ø. Glyph
@@ -287,7 +287,7 @@ impl EmbeddedKind {
         self.differences
             .get(&code)
             .map(|s| s.as_str())
-            // PdfCraft patch: an Annex D.2 alias code reads as the ordinary character; see
+            // LocalPDF patch: an Annex D.2 alias code reads as the ordinary character; see
             // `Encoding::text_alias`.
             .or_else(|| self.encoding.text_alias(code))
             .or_else(|| self.encoding.map_code(code))
@@ -360,7 +360,7 @@ impl EmbeddedKind {
                 }
             }
         } else if let Ok(cmap) = self.base_font.font_ref().cmap() {
-            // PdfCraft patch (#4156): the Windows (3, 0) subtable comes first, and the (1, 0) one
+            // LocalPDF patch (#4156): the Windows (3, 0) subtable comes first, and the (1, 0) one
             // only for codes it doesn't map (ISO 32000-2 §9.6.5.4: "If the font contains a (3, 0)
             // subtable" it is used; "Otherwise, if the font contains a (1, 0) subtable"). The
             // records are listed by platform ID, so Macintosh came before Windows and a wrong
@@ -429,7 +429,7 @@ pub(crate) fn read_widths(dict: &Dict<'_>, descriptor: &Dict<'_>) -> Option<(Vec
     let missing_width = descriptor.get::<f32>(MISSING_WIDTH).unwrap_or(0.0);
 
     if let (Some(fc), Some(lc), Some(w)) = (first_char, last_char, widths_arr) {
-        // PdfCraft patch: simple-font codes are single bytes, so only codes up to 255 get an
+        // LocalPDF patch: simple-font codes are single bytes, so only codes up to 255 get an
         // entry (one per code below /FirstChar was pushed: 4294967295 asked for 34 GB). An
         // entry that isn't a number leaves its code missing instead of ending the array, and a
         // /LastChar below /FirstChar means no widths rather than no font.

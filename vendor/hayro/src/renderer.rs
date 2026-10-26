@@ -23,17 +23,17 @@ use vello_cpu::{
     Image, ImageSource, Mask, PaintType, Pixmap, RenderContext, RenderSettings, peniko,
 };
 
-/// PdfCraft patch: largest image drawn, in pixels (2^28 ≈ 268 MP, well above real page images).
+/// LocalPDF patch: largest image drawn, in pixels (2^28 ≈ 268 MP, well above real page images).
 const MAX_IMAGE_PIXELS: u64 = 1 << 28;
 
-/// PdfCraft patch: source axes allowed into CatmullRom planning. Unlike the final pixmap,
+/// LocalPDF patch: source axes allowed into CatmullRom planning. Unlike the final pixmap,
 /// sources need not fit u16: a 65536-pixel strip can safely shrink to a 16-pixel image.
 /// This resource cap follows the existing CCITT column limit; the filter-work estimate below
 /// additionally bounds tables/scratch before entering the opaque PicScale planner.
 const MAX_RESAMPLING_SOURCE_SIDE: u32 = 1 << 20;
 const MAX_RESAMPLING_PLAN_BYTES: usize = 128 << 20;
 
-/// PdfCraft patch: source, intermediate and RGBA byte lengths, independent of backend sides.
+/// LocalPDF patch: source, intermediate and RGBA byte lengths, independent of backend sides.
 fn source_byte_len(width: u32, height: u32, channels: usize, max_pixels: u64) -> Option<usize> {
     if width == 0 || height == 0 || !matches!(channels, 1 | 3 | 4) {
         return None;
@@ -50,7 +50,7 @@ fn source_byte_len(width: u32, height: u32, channels: usize, max_pixels: u64) ->
     pixels.checked_mul(channels)
 }
 
-/// PdfCraft patch: only final pixmaps/padded glyphs need to fit the backend's u16 sides.
+/// LocalPDF patch: only final pixmaps/padded glyphs need to fit the backend's u16 sides.
 fn image_byte_len(width: u32, height: u32, channels: usize, max_pixels: u64) -> Option<usize> {
     if width > u32::from(u16::MAX) || height > u32::from(u16::MAX) {
         return None;
@@ -58,7 +58,7 @@ fn image_byte_len(width: u32, height: u32, channels: usize, max_pixels: u64) -> 
     source_byte_len(width, height, channels, max_pixels)
 }
 
-/// PdfCraft patch: conservative CatmullRom planning work for one axis in PicScale 0.7.12.
+/// LocalPDF patch: conservative CatmullRom planning work for one axis in PicScale 0.7.12.
 /// Its four-tap kernel grows on downscaling. Include float/32-aligned i16 weights, temporary
 /// float/f64/usize tap arrays and two copies of the bounds. This is a size estimate, not a
 /// fallible reserve inside PicScale or a bound on total renderer memory.
@@ -84,7 +84,7 @@ fn filter_plan_bytes(source: u32, target: u32) -> Option<usize> {
         .checked_add(bounds)
 }
 
-/// PdfCraft patch: alpha-aware RGBA plans also need source-sized premultiplication scratch.
+/// LocalPDF patch: alpha-aware RGBA plans also need source-sized premultiplication scratch.
 /// Bound the combined scratch before planning, including a conservative crossed intermediate
 /// (or four rows for a short target) when both convolution axes change.
 fn resampling_scratch_byte_len(
@@ -114,7 +114,7 @@ fn resampling_scratch_byte_len(
     Some(len)
 }
 
-/// PdfCraft patch: validate output, crossed intermediate and filter-work bounds before planning.
+/// LocalPDF patch: validate output, crossed intermediate and filter-work bounds before planning.
 /// Source width × target height also bounds PicScale's smaller single-threaded four-row scratch.
 /// Nearest-neighbour (`!interpolate`) has none of those: it copies source pixels into the target,
 /// so only the source and target buffers are bounded.
@@ -146,8 +146,8 @@ fn resampling_byte_len(
     Some(target_len)
 }
 
-/// PdfCraft patch: image dimensions selected before allocating resampling buffers.
-/// Exported for PdfCraft's small, metadata-only regression tests. `None` rejects invalid
+/// LocalPDF patch: image dimensions selected before allocating resampling buffers.
+/// Exported for LocalPDF's small, metadata-only regression tests. `None` rejects invalid
 /// sources/scales or an over-budget target/intermediate; the caller may retain a valid source.
 /// `interpolate` selects the Catmull-Rom limits; nearest-neighbour (`false`) skips them.
 #[doc(hidden)]
@@ -186,14 +186,14 @@ pub fn image_resampling_size(
     Some(target)
 }
 
-/// PdfCraft patch: allocation failures in image conversion/resampling keep the renderer alive.
+/// LocalPDF patch: allocation failures in image conversion/resampling keep the renderer alive.
 fn image_buffer(len: usize) -> Option<Vec<u8>> {
     let mut out = Vec::new();
     out.try_reserve_exact(len).ok()?;
     Some(out)
 }
 
-/// PdfCraft patch (#624): the source index that PicScale's nearest-neighbour plan copies for
+/// LocalPDF patch (#624): the source index that PicScale's nearest-neighbour plan copies for
 /// destination `index` of `dst` samples taken from `src`. It is the same fixed-point centre
 /// sampling as `ResampleNearestPlan`, so these are the samples a nearest resize would copy.
 fn nearest_source_index(src: u32, dst: u32, index: u32) -> usize {
@@ -201,7 +201,7 @@ fn nearest_source_index(src: u32, dst: u32, index: u32) -> usize {
     ((u64::from(index) * step + (step >> 1)) >> 32) as usize
 }
 
-/// PdfCraft patch (#624): nearest-resizes a colour image and its same-sized soft mask straight
+/// LocalPDF patch (#624): nearest-resizes a colour image and its same-sized soft mask straight
 /// into premultiplied RGBA of `target` size. Colour and mask come from the same source pixel, so
 /// this equals a nearest resize of the expanded RGBA followed by premultiplying each pixel.
 fn nearest_premultiplied_rgba(
@@ -236,7 +236,7 @@ fn nearest_premultiplied_rgba(
     Some(out)
 }
 
-/// PdfCraft patch: most pieces one dashed stroke may be cut into. Stroke expansion keeps every
+/// LocalPDF patch: most pieces one dashed stroke may be cut into. Stroke expansion keeps every
 /// dash, so a pattern that is tiny next to its path asks for billions: a fuzzed `/D [[11] 0]` on
 /// a line from x = 92234775807 allocated over 5 GB, and `[0.000001] 0 d` on a 20 pt line over
 /// 10 GB. Measured in release builds: a stroke cut into 250,000 pieces renders in about 16 ms and
@@ -244,7 +244,7 @@ fn nearest_premultiplied_rgba(
 /// stay far below this.
 const MAX_DASHES_PER_STROKE: f64 = 250_000.0;
 
-/// PdfCraft patch: the dash pattern to stroke `path` with. Empty (a solid line) when the pattern
+/// LocalPDF patch: the dash pattern to stroke `path` with. Empty (a solid line) when the pattern
 /// is invalid, or when it could cut the path into more than [`MAX_DASHES_PER_STROKE`] pieces.
 /// ISO 32000-2 §8.4.3.6 requires nonnegative entries that are not all zero; a pattern whose
 /// period isn't positive (`[-1 -1] 0 d`) made kurbo's search for the starting dash loop for ever.
@@ -272,7 +272,7 @@ fn usable_dash_pattern(path: &BezPath, dashes: &[f32]) -> Vec<f64> {
     dashes.iter().map(|d| f64::from(*d)).collect()
 }
 
-/// PdfCraft patch: the length of `path`'s control polygon, which a curve never exceeds, and how
+/// LocalPDF patch: the length of `path`'s control polygon, which a curve never exceeds, and how
 /// many times kurbo restarts a dash pattern along it (each `MoveTo` and `ClosePath`).
 fn control_polygon_length(path: &BezPath) -> (f64, usize) {
     let (mut length, mut restarts) = (0.0, 0usize);
@@ -305,29 +305,29 @@ fn control_polygon_length(path: &BezPath) -> (f64, usize) {
     (length, restarts)
 }
 
-/// PdfCraft patch: how far, in user space, drawing may place geometry outside a path's exact
+/// LocalPDF patch: how far, in user space, drawing may place geometry outside a path's exact
 /// outline. vello expands strokes to a tolerance of at most 0.25 user units (`TOL / max(|a|, |d|,
 /// 1)` in vello_common's `flatten::stroke`), and kurbo approximates round joins and caps to 1e-3.
 /// Fills are flattened into chords, which stay inside the outline's bounds.
 const DRAW_SLACK: f64 = 0.5;
 
-/// PdfCraft patch: previews skip images below this target area in device pixels: redrawing
+/// LocalPDF patch: previews skip images below this target area in device pixels: redrawing
 /// them at full detail costs a decode and a resample each for pixels nobody can see.
 const PREVIEW_MIN_IMAGE_AREA: u32 = 16;
 
 thread_local! {
-    /// PdfCraft patch: whether [`may_paint_canvas`] may skip paths on this thread. Turned off
-    /// only by PdfCraft's regression test, which renders each tile with and without skipping.
+    /// LocalPDF patch: whether [`may_paint_canvas`] may skip paths on this thread. Turned off
+    /// only by LocalPDF's regression test, which renders each tile with and without skipping.
     static SKIP_OFFSCREEN_PATHS: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
 }
 
-/// PdfCraft patch: exported for its regression test (see [`SKIP_OFFSCREEN_PATHS`]).
+/// LocalPDF patch: exported for its regression test (see [`SKIP_OFFSCREEN_PATHS`]).
 #[doc(hidden)]
 pub fn set_skip_offscreen_paths(skip: bool) {
     SKIP_OFFSCREEN_PATHS.with(|s| s.set(skip));
 }
 
-/// PdfCraft patch: whether a device-space box can paint a pixel of a `width` × `height`
+/// LocalPDF patch: whether a device-space box can paint a pixel of a `width` × `height`
 /// canvas. A box whose bounds miss the canvas is skipped without changing a pixel.
 /// Bounds that aren't finite are drawn as before.
 fn paints_canvas(device: Rect, width: u16, height: u16) -> bool {
@@ -344,7 +344,7 @@ fn paints_canvas(device: Rect, width: u16, height: u16) -> bool {
             && device.y1 > 0.0)
 }
 
-/// PdfCraft patch: whether a path drawn with `transform` can paint a pixel of a `width` ×
+/// LocalPDF patch: whether a path drawn with `transform` can paint a pixel of a `width` ×
 /// `height` canvas. `reach` is how far its paint extends beyond the path, in user space: 0 for a
 /// fill; for a stroke, half its width times the larger of its miter limit (kurbo draws a miter
 /// only when its tip is within `limit × width / 2` of the vertex) and √2 (square caps). The box
@@ -389,7 +389,7 @@ fn may_paint_canvas(
     paints_canvas(device, width, height)
 }
 
-/// PdfCraft patch: whether a `rect` drawn with `transform` can paint a pixel of a `width` ×
+/// LocalPDF patch: whether a `rect` drawn with `transform` can paint a pixel of a `width` ×
 /// `height` canvas. Used for images: decoded data can only shrink against the stream-size box
 /// (subsampled `scale_factors`), so the box over-approximates what is drawn and skipping it
 /// never changes a pixel, while a tile of an image-heavy page no longer decodes, resamples and
@@ -401,7 +401,7 @@ fn may_paint_rect(rect: Rect, transform: Affine, width: u16, height: u16) -> boo
     paints_canvas(device, width, height)
 }
 
-/// PdfCraft patch: the whole-pixel device rectangle of a shrunk, axis-aligned image, as
+/// LocalPDF patch: the whole-pixel device rectangle of a shrunk, axis-aligned image, as
 /// `(width, height, x0, y0)`. `transform` maps source pixels to device pixels and `planned` is the
 /// size [`image_resampling_size`] chose; `None` (draw as before) for rotated, skewed or flipped
 /// images, non-finite geometry, or a snapped size that strays more than a pixel from `planned`
@@ -427,7 +427,7 @@ fn snap_minified_image(
     (w.abs_diff(planned.0) <= 1 && h.abs_diff(planned.1) <= 1).then_some((w, h, x0, y0))
 }
 
-/// PdfCraft patch (19): what `Renderer::set_paint` found out: the clip path to apply while
+/// LocalPDF patch (19): what `Renderer::set_paint` found out: the clip path to apply while
 /// painting (if any), or that the paint touches no pixel of the canvas, so the caller skips
 /// the fill or stroke (a mesh shading whose triangles all lie outside the path or canvas).
 #[must_use]
@@ -438,21 +438,21 @@ enum PaintSetup {
 
 pub(crate) struct Renderer {
     pub(crate) ctx: RenderContext,
-    /// PdfCraft patch: when set, solid text and line-art paint colours are remapped
+    /// LocalPDF patch: when set, solid text and line-art paint colours are remapped
     /// while rendering (the "reading colours" view setting).
     color_replacement: Option<ColorReplacement>,
-    /// PdfCraft patch (17): while the page's annotations are being drawn, paints keep their
+    /// LocalPDF patch (17): while the page's annotations are being drawn, paints keep their
     /// colours — reading colours replace document colours, never annotation colours.
     in_annotations: bool,
-    /// PdfCraft patch (22): one entry per transparency group pushed, whether it is a knockout
+    /// LocalPDF patch (22): one entry per transparency group pushed, whether it is a knockout
     /// group (`Device::set_knockout`).
     knockout: Vec<bool>,
-    /// PdfCraft patch (22): inside a knockout erase pass (`Device::begin_knockout_erase`), and
+    /// LocalPDF patch (22): inside a knockout erase pass (`Device::begin_knockout_erase`), and
     /// how many transparency groups were skipped in it (nothing is layered while erasing).
     erasing: bool,
     erase_groups: usize,
     pub(crate) inside_pattern: bool,
-    /// Soft masks drawn during this render. PdfCraft note: it belongs to one `Renderer` (one
+    /// Soft masks drawn during this render. LocalPDF note: it belongs to one `Renderer` (one
     /// render, every nested renderer starting empty) and so to one `preview` setting: a mask
     /// drawn for a preview, which may leave out tiny images, never reaches a final render.
     pub(crate) soft_mask_cache: HashMap<u128, Mask>,
@@ -460,7 +460,7 @@ pub(crate) struct Renderer {
     pub(crate) cur_mask: Option<Mask>,
     pub(crate) in_type3_glyph: bool,
     pub(crate) scaler: Scaler,
-    /// PdfCraft patch: low-detail preview render (see `InterpreterSettings::preview`).
+    /// LocalPDF patch: low-detail preview render (see `InterpreterSettings::preview`).
     pub(crate) preview: bool,
     // TODO: Remove this once vello_cpu bug with non-transparent images is fixed
     image_transparency_stack: Vec<bool>,
@@ -474,7 +474,7 @@ enum ImagePixelFormat {
 }
 
 impl Renderer {
-    /// PdfCraft patch (22): whether the innermost transparency group is a knockout group.
+    /// LocalPDF patch (22): whether the innermost transparency group is a knockout group.
     fn in_knockout(&self) -> bool {
         self.knockout.last().copied().unwrap_or(false)
     }
@@ -505,7 +505,7 @@ impl Renderer {
         }
     }
 
-    /// PdfCraft patch: returns the stroke's reach for [`may_paint_canvas`].
+    /// LocalPDF patch: returns the stroke's reach for [`may_paint_canvas`].
     fn set_stroke_properties(
         &mut self,
         stroke_props: &StrokeProps,
@@ -527,7 +527,7 @@ impl Renderer {
             line_width *= threshold;
         }
 
-        // PdfCraft patch: a stroke far wider than the canvas looks the same as one a few canvases
+        // LocalPDF patch: a stroke far wider than the canvas looks the same as one a few canvases
         // wide, but its geometry grows with the width: a fuzzed `/LW 9223372036854775807`
         // allocated 10 GB in stroke expansion.
         let widest = 4.0 * (f32::from(self.ctx.width()) + f32::from(self.ctx.height()));
@@ -541,7 +541,7 @@ impl Renderer {
             miter_limit: stroke_props.miter_limit as f64,
             start_cap: stroke_props.line_cap,
             end_cap: stroke_props.line_cap,
-            // PdfCraft patch: see `usable_dash_pattern`.
+            // LocalPDF patch: see `usable_dash_pattern`.
             dash_pattern: usable_dash_pattern(path, &stroke_props.dash_array).into(),
             dash_offset: if stroke_props.dash_offset.is_finite() {
                 stroke_props.dash_offset as f64
@@ -556,7 +556,7 @@ impl Renderer {
     }
 
     fn draw_image_with_alpha_mask(&mut self, image_data: ImageData, mut alpha_data: LumaData) {
-        // PdfCraft patch: mismatched masks need a dummy RGB staging image. Validate and
+        // LocalPDF patch: mismatched masks need a dummy RGB staging image. Validate and
         // reserve it before creating/pushing any mask, so failure skips the whole image.
         let Some(len) = source_byte_len(alpha_data.width, alpha_data.height, 3, MAX_IMAGE_PIXELS)
         else {
@@ -576,7 +576,7 @@ impl Renderer {
                     image_data.width() as f64 / alpha_data.width as f64,
                     image_data.height() as f64 / alpha_data.height as f64,
                 );
-            // PdfCraft patch (#1649): a mask that differs in size from its image carries the
+            // LocalPDF patch (#1649): a mask that differs in size from its image carries the
             // shape on its own (Word saves text as a tiny black image with a glyph-bitmap mask).
             // Shrunk by nearest-neighbour it keeps one sample in N and drops every stroke thinner
             // than N mask pixels, so a shrunk mask is filtered whatever its `/Interpolate`, which
@@ -591,7 +591,7 @@ impl Renderer {
                     self.ctx.height(),
                     derive_settings(self.ctx.render_settings()),
                 ),
-                // PdfCraft patch: this renders an image's alpha mask, which must keep its
+                // LocalPDF patch: this renders an image's alpha mask, which must keep its
                 // original values, so it is never remapped by the reading-colours setting.
                 color_replacement: None,
                 in_annotations: false,
@@ -643,7 +643,7 @@ impl Renderer {
         pixel_format: ImagePixelFormat,
         interpolate: bool,
     ) -> (Vec<u8>, u32, u32) {
-        // PdfCraft patch (#624): `/Interpolate` governs the pre-minification pass too. Using
+        // LocalPDF patch (#624): `/Interpolate` governs the pre-minification pass too. Using
         // Catmull-Rom here for an image that did not request interpolation blends hard edges
         // before ImageQuality::Low gets a chance to sample it. Keep the pre-resize (and its
         // bounded memory/performance behaviour), but use nearest-neighbour when interpolation
@@ -714,7 +714,7 @@ impl Renderer {
             ImageSize,
         ) -> Result<Arc<Resampling<u8, N>>, PicScaleError>,
     ) -> Result<Vec<u8>, Vec<u8>> {
-        // PdfCraft patch: validate before constructing a plan or allocating its output/scratch.
+        // LocalPDF patch: validate before constructing a plan or allocating its output/scratch.
         // Returning the owned input preserves both its pixels and dimensions on any failure.
         let resized = (|| {
             let len = resampling_byte_len(
@@ -763,9 +763,9 @@ impl Renderer {
     }
 
     /// The size an image of `width` x `height` samples is decoded at to be drawn with
-    /// `transform`, or `None` if `draw_image` skips it: off the canvas (PdfCraft patch: see
+    /// `transform`, or `None` if `draw_image` skips it: off the canvas (LocalPDF patch: see
     /// `may_paint_rect`; checked before decoding, so a tile no longer decodes every image on its
-    /// page), or, in a preview, covering only a few device pixels (PdfCraft patch; final renders
+    /// page), or, in a preview, covering only a few device pixels (LocalPDF patch; final renders
     /// always draw them). The tiny-image test measures axis lengths: the size returned maps a
     /// point, so it includes the translation and only suits the decode hint.
     fn image_draw_size(&self, width: u32, height: u32, transform: Affine) -> Option<(u32, u32)> {
@@ -802,7 +802,7 @@ impl Renderer {
             let (x, y) = x_y_advances(&cur_transform);
             (x.length() as f32, y.length() as f32)
         };
-        // PdfCraft patch: do not send non-finite or collapsed geometry to the rasterizer.
+        // LocalPDF patch: do not send non-finite or collapsed geometry to the rasterizer.
         if !cur_transform.as_coeffs().iter().all(|v| v.is_finite())
             || !x_scale.is_finite()
             || !y_scale.is_finite()
@@ -873,12 +873,12 @@ impl Renderer {
                 (source_width, source_height)
             }
         };
-        // PdfCraft patch (#624): High is bicubic and would blend the nearest pre-resize of an image
+        // LocalPDF patch (#624): High is bicubic and would blend the nearest pre-resize of an image
         // that did not request interpolation, so only interpolated glyph images are promoted.
         if requested_resize && self.in_type3_glyph && interpolate {
             quality = ImageQuality::High;
         }
-        // PdfCraft patch: an axis-aligned, interpolated image that is shrunk lands on whole device
+        // LocalPDF patch: an axis-aligned, interpolated image that is shrunk lands on whole device
         // pixels. It is shrunk once to exactly its snapped device rectangle and drawn 1:1 at the
         // snapped corner. Otherwise the shrunk raster (rounded up to a whole size) is sampled a
         // second time at a fractional scale and offset, which blurs scans and photos.
@@ -894,7 +894,7 @@ impl Renderer {
         let (new_width, new_height) = snapped.map_or((new_width, new_height), |s| (s.0, s.1));
         let needs_resize = (new_width, new_height) != (source_width, source_height);
 
-        // PdfCraft patch (#624): a minified image with a soft mask that is not interpolated is
+        // LocalPDF patch (#624): a minified image with a soft mask that is not interpolated is
         // nearest-sampled straight into premultiplied target RGBA. That skips the full-resolution
         // RGBA copy below and the premultiply pass after it.
         let direct = match &alpha_data {
@@ -1075,14 +1075,14 @@ impl Renderer {
             .fill_rect(&Rect::new(0.0, 0.0, width as f64, height as f64));
     }
 
-    /// PdfCraft patch: remaps a solid paint colour through `color_replacement`, if one is
+    /// LocalPDF patch: remaps a solid paint colour through `color_replacement`, if one is
     /// set. `Paint::Pattern` (images, shadings, tiling patterns) always passes through
     /// untouched.
     fn replaced<'a>(&self, paint: &Paint<'a>, is_text: bool) -> Paint<'a> {
         let Some(replacement) = self.color_replacement else {
             return paint.clone();
         };
-        // PdfCraft patch (17): annotations keep the colours they were given; reading colours
+        // LocalPDF patch (17): annotations keep the colours they were given; reading colours
         // replace document colours only (issue #1548).
         if self.in_annotations {
             return paint.clone();
@@ -1101,7 +1101,7 @@ impl Renderer {
 
     #[must_use]
     fn set_paint(&mut self, paint: &Paint<'_>, path: &BezPath, is_stroke: bool) -> PaintSetup {
-        // PdfCraft patch (22): in a knockout erase pass every paint clears what is under its
+        // LocalPDF patch (22): in a knockout erase pass every paint clears what is under its
         // shape (a transparent fill with `Compose::Copy`, weighted by coverage).
         if self.erasing {
             self.ctx.set_blend_mode(knockout_blend_mode());
@@ -1117,7 +1117,7 @@ impl Renderer {
         }
         let mut paint_transform = Affine::IDENTITY;
         let mut clip_path = None;
-        // PdfCraft patch (19): `Extend::Repeat` tiles the texture over the path; a mesh texture
+        // LocalPDF patch (19): `Extend::Repeat` tiles the texture over the path; a mesh texture
         // covers its triangles alone and must not repeat outside them.
         let mut extend = peniko::Extend::Repeat;
 
@@ -1148,11 +1148,11 @@ impl Renderer {
                             self.ctx.height() as f64,
                         ));
 
-                        // PdfCraft patch: mesh shadings are sampled only inside `bbox` (and a
+                        // LocalPDF patch: mesh shadings are sampled only inside `bbox` (and a
                         // pixel around it: texels at a fractional edge look one pixel further).
                         let encoded = s.encode_within(Some(bbox.inflate(1.0, 1.0)));
 
-                        // PdfCraft patch (19): a mesh paints only where its triangles are. The
+                        // LocalPDF patch (19): a mesh paints only where its triangles are. The
                         // texture below used to cover the whole path (the canvas, for `sh`)
                         // and was sampled pixel by pixel: 310 one-triangle meshes on a plan
                         // cost 310 full tiles per tile, and the watchdog gave the page up. It
@@ -1174,11 +1174,11 @@ impl Renderer {
                             extend = peniko::Extend::Pad;
                         }
 
-                        // PdfCraft patch (backport of hayro 0.8): axial and radial shadings
+                        // LocalPDF patch (backport of hayro 0.8): axial and radial shadings
                         // become native gradients instead of a texture sampled pixel by pixel.
                         // Upstream also shifts by half a pixel for vello_cpu 0.3; 0.0.8 already
                         // evaluates gradients at pixel centres, like the texture below.
-                        // PdfCraft patch (#2128): vello_cpu 0.0.8 copies an opaque gradient
+                        // LocalPDF patch (#2128): vello_cpu 0.0.8 copies an opaque gradient
                         // over fully covered tiles without applying the mask or blend mode, and
                         // a gradient can't be flagged transparent like the texture below, so
                         // under a soft mask or blend mode the shading is sampled instead.
@@ -1235,7 +1235,7 @@ impl Renderer {
                         };
                         xs = xs.max(min_x_scale).min(max_x_scale);
                         ys = ys.max(min_y_scale).min(max_y_scale);
-                        // PdfCraft patch (20): a step too large for a cell pixmap, where what is
+                        // LocalPDF patch (20): a step too large for a cell pixmap, where what is
                         // painted can only show the first cell (PowerPoint writes `/XStep
                         // 2147480100` for a picture fill drawn once, #3349): the cell's `/BBox` is
                         // drawn at full scale with a transparent border and padded, not tiled.
@@ -1297,12 +1297,12 @@ impl Renderer {
                             self.ctx.set_paint(PaintType::Image(image));
                             return PaintSetup::Clip(clip_path);
                         }
-                        // PdfCraft patch: the cell pixmap is `step × scale` pixels, which only the
+                        // LocalPDF patch: the cell pixmap is `step × scale` pixels, which only the
                         // u16 cast below bounded (a fuzzed /XStep far beyond /BBox gave 65535² cells).
                         xs = tiling_cell_scale(xs, t.x_step, MAX_PIXMAP_SIZE);
                         ys = tiling_cell_scale(ys, t.y_step, MAX_PIXMAP_SIZE);
 
-                        // PdfCraft patch (25): the cell pixmap repeats every `pix_width` pixels,
+                        // LocalPDF patch (25): the cell pixmap repeats every `pix_width` pixels,
                         // so one step must be exactly that many pixels. The cell is drawn at the
                         // scale that makes it so, and the paint transform below maps the pixmap
                         // back onto pattern space: cells sit at whole multiples of the step at
@@ -1321,7 +1321,7 @@ impl Renderer {
                                 pix_height,
                                 derive_settings(self.ctx.render_settings()),
                             ),
-                            // PdfCraft patch: a pattern cell is painted as one artwork, so its
+                            // LocalPDF patch: a pattern cell is painted as one artwork, so its
                             // content is never remapped by the reading-colours setting.
                             color_replacement: None,
                             in_annotations: false,
@@ -1391,12 +1391,12 @@ impl Renderer {
     ) {
         self.ctx.set_transform(transform);
         let reach = self.set_stroke_properties(stroke_props, is_text, path);
-        // PdfCraft patch: see `may_paint_canvas`.
+        // LocalPDF patch: see `may_paint_canvas`.
         if !may_paint_canvas(path, transform, reach, self.ctx.width(), self.ctx.height()) {
             return;
         }
 
-        // PdfCraft patch: apply the reading-colours mapping before painting.
+        // LocalPDF patch: apply the reading-colours mapping before painting.
         let paint = self.replaced(paint, is_text);
         let PaintSetup::Clip(clip_path) = self.set_paint(&paint, path, true) else { return };
         if let Some(clip_path) = clip_path.as_ref() {
@@ -1414,18 +1414,18 @@ impl Renderer {
         transform: Affine,
         paint: &Paint<'_>,
         fill_rule: FillRule,
-        // PdfCraft patch: distinguishes glyph fills from plain line art for the
+        // LocalPDF patch: distinguishes glyph fills from plain line art for the
         // reading-colours mapping.
         is_text: bool,
     ) {
         self.ctx.set_fill_rule(convert_fill_rule(fill_rule));
         self.ctx.set_transform(transform);
-        // PdfCraft patch: see `may_paint_canvas`.
+        // LocalPDF patch: see `may_paint_canvas`.
         if !may_paint_canvas(path, transform, 0.0, self.ctx.width(), self.ctx.height()) {
             return;
         }
 
-        // PdfCraft patch: apply the reading-colours mapping before painting.
+        // LocalPDF patch: apply the reading-colours mapping before painting.
         let paint = self.replaced(paint, is_text);
         let PaintSetup::Clip(clip_path) = self.set_paint(&paint, path, false) else { return };
         if let Some(clip_path) = clip_path.as_ref() {
@@ -1455,12 +1455,12 @@ impl Renderer {
                     transform * glyph_transform,
                     paint,
                     FillRule::NonZero,
-                    // PdfCraft patch: glyph outlines are text for the reading-colours mapping.
+                    // LocalPDF patch: glyph outlines are text for the reading-colours mapping.
                     true,
                 );
             }
             Glyph::Type3(s) => {
-                // PdfCraft patch: a type 3 glyph's content stream keeps painting as line art
+                // LocalPDF patch: a type 3 glyph's content stream keeps painting as line art
                 // (its internal ops reach `fill_path`/`stroke_path` with `is_text: false`), so
                 // reading colours remap it only when line-art replacement is on.
                 self.in_type3_glyph = true;
@@ -1521,7 +1521,7 @@ impl Renderer {
 
 impl<'a> Device<'a> for Renderer {
     fn draw_image(&mut self, image: hayro_interpret::Image<'a, '_>, mut transform: Affine) {
-        // PdfCraft patch (22): an erase pass paints nothing; an unmasked image's rectangle was
+        // LocalPDF patch (22): an erase pass paints nothing; an unmasked image's rectangle was
         // cleared by `knockout_shape`, and a masked image's shape is left alone.
         if self.erasing {
             return;
@@ -1543,7 +1543,7 @@ impl<'a> Device<'a> for Renderer {
                             stencil.scale_factors.1 as f64,
                         );
 
-                        // PdfCraft patch: a stencil mask is line art in disguise, so its solid
+                        // LocalPDF patch: a stencil mask is line art in disguise, so its solid
                         // paint goes through the reading-colours mapping (line-art gate) like
                         // every other solid fill; baked in raw, its ink would stay at its
                         // original colour and vanish into a mapped background.
@@ -1618,7 +1618,7 @@ impl<'a> Device<'a> for Renderer {
                                             height,
                                             derive_settings(self.ctx.render_settings()),
                                         ),
-                                        // PdfCraft patch: a stencil mask must keep its original
+                                        // LocalPDF patch: a stencil mask must keep its original
                                         // coverage values, so its content is never remapped by
                                         // the reading-colours setting.
                                         color_replacement: None,
@@ -1655,7 +1655,7 @@ impl<'a> Device<'a> for Renderer {
                                 );
                                 self.ctx.set_transform(transform);
 
-                                // PdfCraft patch: a stencil mask is painted with the fill
+                                // LocalPDF patch: a stencil mask is painted with the fill
                                 // (non-stroking) paint; `true` drew an uncoloured tiling pattern
                                 // in its stroke colour (black by default) (#2975).
                                 if let PaintSetup::Clip(clip_path) =
@@ -1703,7 +1703,7 @@ impl<'a> Device<'a> for Renderer {
         mask: Option<SoftMask<'_>>,
         blend_mode: BlendMode,
     ) {
-        // PdfCraft patch (22): nothing is layered in a knockout erase pass.
+        // LocalPDF patch (22): nothing is layered in a knockout erase pass.
         if self.erasing {
             self.erase_groups += 1;
             return;
@@ -1751,7 +1751,7 @@ impl<'a> Device<'a> for Renderer {
         self.ctx.pop_layer();
     }
 
-    /// PdfCraft patch (22): the group just pushed is a knockout group. Its elements are drawn
+    /// LocalPDF patch (22): the group just pushed is a knockout group. Its elements are drawn
     /// with `Compose::Copy`, which (weighted by coverage) replaces what earlier elements drew
     /// where the element's shape is, so each element composites with the group's initial
     /// backdrop (transparent: an isolated group, and the non-isolated approximation every
@@ -1768,7 +1768,7 @@ impl<'a> Device<'a> for Renderer {
         }
     }
 
-    /// PdfCraft patch (22): in a knockout group, clear what the group drew under `shape` (a
+    /// LocalPDF patch (22): in a knockout group, clear what the group drew under `shape` (a
     /// transparent fill with `Compose::Copy`, weighted by coverage) before an element drawn into
     /// a layer of its own composites there, so the element replaces it.
     fn knockout_erase_wanted(&mut self) -> bool {
@@ -1857,12 +1857,12 @@ impl<'a> Device<'a> for Renderer {
         }
     }
 
-    /// PdfCraft patch (17): the reading-colours mapping is suspended for annotations.
+    /// LocalPDF patch (17): the reading-colours mapping is suspended for annotations.
     fn begin_annotations(&mut self) {
         self.in_annotations = true;
     }
 
-    /// PdfCraft patch (17): back to document content; reading colours apply again.
+    /// LocalPDF patch (17): back to document content; reading colours apply again.
     fn end_annotations(&mut self) {
         self.in_annotations = false;
     }
@@ -1879,12 +1879,12 @@ impl<'a> Device<'a> for Renderer {
             PathDrawMode::Fill(fill_rule) => {
                 self.ctx.set_fill_rule(convert_fill_rule(*fill_rule));
                 self.ctx.set_transform(transform);
-                // PdfCraft patch: see `may_paint_canvas`.
+                // LocalPDF patch: see `may_paint_canvas`.
                 if !may_paint_canvas(&path, transform, 0.0, self.ctx.width(), self.ctx.height()) {
                     return;
                 }
 
-                // PdfCraft patch: apply the reading-colours mapping before painting.
+                // LocalPDF patch: apply the reading-colours mapping before painting.
                 let paint = self.replaced(paint, false);
                 let PaintSetup::Clip(clip_path) = self.set_paint(&paint, &path, false) else { return };
                 if let Some(clip_path) = clip_path.as_ref() {
@@ -1919,13 +1919,13 @@ impl<'a> Device<'a> for Renderer {
                 Self::stroke_glyph(self, glyph, transform, glyph_transform, paint, s);
             }
             GlyphDrawMode::Invisible | GlyphDrawMode::Clip => {
-                // PdfCraft patch: neither mode paints; clipping was installed by the interpreter.
+                // LocalPDF patch: neither mode paints; clipping was installed by the interpreter.
             }
         }
     }
 
     fn set_blend_mode(&mut self, blend_mode: BlendMode) {
-        // PdfCraft patch (22): inside a knockout group every element replaces what it covers.
+        // LocalPDF patch (22): inside a knockout group every element replaces what it covers.
         let mode = if self.in_knockout() {
             knockout_blend_mode()
         } else {
@@ -1935,11 +1935,11 @@ impl<'a> Device<'a> for Renderer {
     }
 }
 
-/// PdfCraft patch (backport of hayro 0.8): largest per-channel error allowed when approximating
+/// LocalPDF patch (backport of hayro 0.8): largest per-channel error allowed when approximating
 /// a shading function by gradient stops.
 const NATIVE_GRADIENT_TOLERANCE: f32 = 0.01;
 
-/// PdfCraft patch (backport of hayro 0.8): a `vello_cpu` gradient for an approximated shading.
+/// LocalPDF patch (backport of hayro 0.8): a `vello_cpu` gradient for an approximated shading.
 fn native_gradient(native: hayro_interpret::gradient::SvgGradient) -> PaintType {
     use hayro_interpret::gradient::SvgGradientKind;
 
@@ -2011,7 +2011,7 @@ fn render_shading_texture(
 fn draw_soft_mask(mask: &SoftMask<'_>, settings: RenderSettings, width: u16, height: u16, preview: bool) -> Mask {
     let mut renderer = Renderer {
         ctx: RenderContext::new_with(width, height, derive_settings(&settings)),
-        // PdfCraft patch: a soft mask must keep its original luminance values, so its
+        // LocalPDF patch: a soft mask must keep its original luminance values, so its
         // content is never remapped by the reading-colours setting.
         color_replacement: None,
         in_annotations: false,
@@ -2112,7 +2112,7 @@ fn convert_fill_rule(fill_rule: FillRule) -> Fill {
     }
 }
 
-/// PdfCraft patch (22): how an element of a knockout group is drawn (see `set_knockout`).
+/// LocalPDF patch (22): how an element of a knockout group is drawn (see `set_knockout`).
 fn knockout_blend_mode() -> peniko::BlendMode {
     peniko::BlendMode::new(Mix::Normal, Compose::Copy)
 }
@@ -2140,7 +2140,7 @@ fn convert_blend_mode(blend_mode: BlendMode) -> peniko::BlendMode {
     peniko::BlendMode::new(mix, Compose::SrcOver)
 }
 
-/// PdfCraft patch: how far a stroke's paint reaches past its path, in user units: half the width
+/// LocalPDF patch: how far a stroke's paint reaches past its path, in user units: half the width
 /// times the larger of the miter limit and √2 (a miter join or a square cap). A miter limit that
 /// isn't finite leaves miters unbounded, so the reach is too.
 fn stroke_reach(stroke: &kurbo::Stroke) -> f64 {
@@ -2153,14 +2153,14 @@ fn stroke_reach(stroke: &kurbo::Stroke) -> f64 {
         }
 }
 
-/// PdfCraft patch (20): whether a cell's scale can draw it at full size: finite and positive. A
+/// LocalPDF patch (20): whether a cell's scale can draw it at full size: finite and positive. A
 /// `/BBox` too thin to divide by (1e-40 wide passes the zero-area check) gives an infinite scale,
 /// which would send non-finite geometry to the cell renderer; such a cell keeps the old path.
 pub fn usable_cell_scale(xs: f32, ys: f32) -> bool {
     xs.is_finite() && ys.is_finite() && xs > 0.0 && ys > 0.0
 }
 
-/// PdfCraft patch (20): whether `path` (drawn with `path_transform`, its paint reaching `reach`
+/// LocalPDF patch (20): whether `path` (drawn with `path_transform`, its paint reaching `reach`
 /// device pixels past it), mapped into the space of a tiling pattern with matrix `matrix`, can
 /// only meet the first cell's `/BBox`: every other cell's content lies a whole step or more
 /// away. False when the matrix can't be inverted or the bounds aren't finite.
@@ -2180,7 +2180,7 @@ pub(crate) fn shows_one_cell(matrix: &Affine, path_transform: &Affine, path: &Be
         && bounds.y0 > bbox.y1 - sy
 }
 
-/// PdfCraft patch: the scale for a tiling cell, lowered so that the cell pixmap (`|step| ×
+/// LocalPDF patch: the scale for a tiling cell, lowered so that the cell pixmap (`|step| ×
 /// scale` pixels a side) stays within `max_pixels`. Geometry is unchanged (the pattern transform
 /// is derived from the scale); an over-large step only renders at lower resolution.
 pub fn tiling_cell_scale(scale: f32, step: f32, max_pixels: f32) -> f32 {
@@ -2192,7 +2192,7 @@ pub fn tiling_cell_scale(scale: f32, step: f32, max_pixels: f32) -> f32 {
     }
 }
 
-/// PdfCraft patch (25): the side of a tiling cell pixmap in pixels, and the scale to draw the
+/// LocalPDF patch (25): the side of a tiling cell pixmap in pixels, and the scale to draw the
 /// cell at so that one `step` spans exactly that many pixels. The pixmap repeats every whole
 /// number of pixels; drawing the cell at `scale` itself would repeat it at `round(scale × step)`
 /// instead of `scale × step`, a fraction of a pixel off at every step (ISO 32000-2 8.7.3.1: cells

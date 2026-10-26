@@ -20,12 +20,12 @@ use std::rc::Rc;
 
 /// Maximum nesting depth for interpreting `XObject`'s/patterns/streams.
 pub(crate) const MAX_NESTED_INTERPRETATION_DEPTH: u32 = 50;
-/// PdfCraft patch: maximum nesting for content that is painted recursively by the device
+/// LocalPDF patch: maximum nesting for content that is painted recursively by the device
 /// (tiling patterns, Type 3 glyphs). Either can refer back to itself through resources it
 /// inherits, which recursed until the stack overflowed (found by fuzzing).
 pub(crate) const MAX_PAINT_NESTING: u32 = 16;
 
-/// PdfCraft patch: how many nested paints (a form inside a form, a Type 3 glyph or tiling
+/// LocalPDF patch: how many nested paints (a form inside a form, a Type 3 glyph or tiling
 /// pattern painted from inside another one) one page may do. Nesting depth alone doesn't bound
 /// the work: a glyph that shows ten glyphs of its own font, nested sixteen deep, is 10^16
 /// paints (a fuzzed file hung). Ordinary pages stay far below this.
@@ -34,12 +34,12 @@ pub(crate) const MAX_NESTED_PAINTS: u32 = 50_000;
 std::thread_local! {
     static NESTED_PAINTS: core::cell::Cell<u32> = const { core::cell::Cell::new(0) };
     static CONTENT_LEFT: core::cell::Cell<usize> = const { core::cell::Cell::new(MAX_PAGE_CONTENT) };
-    // PdfCraft patch (18): whether this page's content budget ran out, reported as
+    // LocalPDF patch (18): whether this page's content budget ran out, reported as
     // `InterpreterWarning::ContentTruncated`.
     static CONTENT_TRUNCATED: core::cell::Cell<bool> = const { core::cell::Cell::new(false) };
 }
 
-/// PdfCraft patch: decoded content-stream bytes one page may hold at once: its contents, and
+/// LocalPDF patch: decoded content-stream bytes one page may hold at once: its contents, and
 /// the forms, tiling patterns and Type 3 glyph procedures being painted. Each stream already
 /// stops at `MAX_DECODED_STREAM`, but forms nest fifty deep and every level keeps its content
 /// while the next one runs: a form painting itself around a stream that inflates to 256 MiB
@@ -47,7 +47,7 @@ std::thread_local! {
 /// painted again and again doesn't use the budget up. Ordinary pages hold a few megabytes.
 pub(crate) const MAX_PAGE_CONTENT: usize = 512 << 20;
 
-/// PdfCraft patch: a content stream decoded within the page's [`MAX_PAGE_CONTENT`]. The bytes
+/// LocalPDF patch: a content stream decoded within the page's [`MAX_PAGE_CONTENT`]. The bytes
 /// it decoded count against the budget until it is dropped; a stream without filters is
 /// borrowed from the file and costs nothing.
 pub(crate) struct DecodedContent<'a> {
@@ -68,7 +68,7 @@ impl Drop for DecodedContent<'_> {
     }
 }
 
-/// PdfCraft patch: decode a content stream within what is left of this page's
+/// LocalPDF patch: decode a content stream within what is left of this page's
 /// [`MAX_PAGE_CONTENT`]. `None` once the budget is spent (the content is skipped).
 pub(crate) fn decode_content<'a>(stream: &Stream<'a>) -> Option<DecodedContent<'a>> {
     let left = CONTENT_LEFT.with(core::cell::Cell::get);
@@ -86,17 +86,17 @@ pub(crate) fn decode_content<'a>(stream: &Stream<'a>) -> Option<DecodedContent<'
     Some(DecodedContent { data, held })
 }
 
-/// PdfCraft patch: count `len` bytes held for the rest of the page (its own contents).
+/// LocalPDF patch: count `len` bytes held for the rest of the page (its own contents).
 pub(crate) fn charge_content(len: usize) {
     CONTENT_LEFT.with(|c| c.set(c.get().saturating_sub(len)));
 }
 
-/// PdfCraft patch (18): whether content was skipped because the page's budget ran out.
+/// LocalPDF patch (18): whether content was skipped because the page's budget ran out.
 pub(crate) fn content_was_truncated() -> bool {
     CONTENT_TRUNCATED.with(core::cell::Cell::get)
 }
 
-/// PdfCraft patch: count a paint at `depth` (top-level ones are free); `false` once this
+/// LocalPDF patch: count a paint at `depth` (top-level ones are free); `false` once this
 /// page's budget is spent, and the paint is skipped.
 pub(crate) fn take_nested_paint(depth: u32) -> bool {
     if depth < 2 {
@@ -120,7 +120,7 @@ pub(crate) fn take_nested_paint(depth: u32) -> bool {
 pub struct InterpreterCache<'a> {
     pub(crate) font_cache: Rc<RefCell<HashMap<u128, Option<Font<'a>>>>>,
     pub(crate) object_cache: Cache,
-    /// PdfCraft patch: decoded images, shared by every render through this cache so a tile
+    /// LocalPDF patch: decoded images, shared by every render through this cache so a tile
     /// no longer decodes its page's images again.
     pub(crate) decoded_cache: DecodedImageCache,
 }
@@ -141,13 +141,13 @@ impl<'a> InterpreterCache<'a> {
         }
     }
 
-    /// PdfCraft patch (32): how many images were decoded through this cache (its misses, not
+    /// LocalPDF patch (32): how many images were decoded through this cache (its misses, not
     /// counting images that are never cached), for diagnostics and tests.
     pub fn decoded_image_decodes(&self) -> usize {
         self.decoded_cache.decodes()
     }
 
-    /// PdfCraft patch (48): how many `/ICCBased` profiles were read through this cache, for
+    /// LocalPDF patch (48): how many `/ICCBased` profiles were read through this cache, for
     /// diagnostics and tests. A profile used again, by the same stream object or by a copy with
     /// the same dictionary and bytes, is read once.
     pub fn icc_profile_reads(&self) -> usize {
@@ -169,21 +169,21 @@ pub struct Context<'a> {
     pub(crate) xref: &'a XRef,
     pub(crate) ocg_state: OcgState,
     nesting_depth: u32,
-    /// PdfCraft patch: estimated bytes held by saved states, and for each `q` not saved because
+    /// LocalPDF patch: estimated bytes held by saved states, and for each `q` not saved because
     /// a limit was reached, the clip count to return to at its `Q`.
     saved_bytes: usize,
     skipped_saves: Vec<usize>,
-    // PdfCraft patch (63).
+    // LocalPDF patch (63).
     /// This is the content of a luminosity soft mask whose group colour space is `/DeviceCMYK`,
     /// so a `/DeviceCMYK` fill or stroke colour paints as its gray (ISO 32000-2 §11.5.3,
     /// §10.4.2.3) rather than through the CMYK profile used for display.
     pub(crate) luminosity_in_device_cmyk: bool,
 }
 
-/// PdfCraft patch: most graphics states saved at once. Every `q` copies the current state, dash
+/// LocalPDF patch: most graphics states saved at once. Every `q` copies the current state, dash
 /// array and clip list included, so without a limit short operators multiply one large state.
 const MAX_SAVED_STATES: usize = 4096;
-/// PdfCraft patch: most bytes all saved states may hold together.
+/// LocalPDF patch: most bytes all saved states may hold together.
 const MAX_SAVED_STATE_BYTES: usize = 64 << 20;
 
 /// Roughly what a saved copy of `state` holds.
@@ -210,11 +210,11 @@ impl<'a> Context<'a> {
         settings: InterpreterSettings,
     ) -> Self {
         let state = State::new(initial_transform);
-        // PdfCraft patch: a page (or other top-level content) starts with fresh budgets.
+        // LocalPDF patch: a page (or other top-level content) starts with fresh budgets.
         NESTED_PAINTS.with(|n| n.set(0));
         CONTENT_LEFT.with(|c| c.set(MAX_PAGE_CONTENT));
         CONTENT_TRUNCATED.with(|truncated| truncated.set(false));
-        // PdfCraft patch (55): a fallback left over from another page is not this page's.
+        // LocalPDF patch (55): a fallback left over from another page is not this page's.
         crate::color::take_color_fallback();
         crate::encode::reset_mesh_budget();
 
@@ -236,7 +236,7 @@ impl<'a> Context<'a> {
                 .map(|catalog| OcgState::from_catalog(&catalog))
                 .unwrap_or_default()
         };
-        // PdfCraft patch: apply viewer layer toggles.
+        // LocalPDF patch: apply viewer layer toggles.
         for (num, generation, visible) in settings.ocg_overrides.iter() {
             ocg_state.set_active(hayro_syntax::object::ObjectIdentifier::new(*num, *generation), *visible);
         }
@@ -266,7 +266,7 @@ impl<'a> Context<'a> {
             return;
         };
 
-        // PdfCraft patch: past either limit the `q` is recorded but nothing is copied. Its `Q`
+        // LocalPDF patch: past either limit the `q` is recorded but nothing is copied. Its `Q`
         // still removes the clips added since; other changes made in between are kept.
         let bytes = state_bytes(cur);
         if !self.skipped_saves.is_empty()
@@ -358,7 +358,7 @@ impl<'a> Context<'a> {
     }
 
     pub(crate) fn restore_state(&mut self, device: &mut impl Device<'a>) {
-        // PdfCraft patch: a save that was not kept is the most recent one.
+        // LocalPDF patch: a save that was not kept is the most recent one.
         if let Some(target_clips) = self.skipped_saves.pop() {
             while self.get().clips.len() > target_clips {
                 self.pop_clip_path(device);
@@ -382,7 +382,7 @@ impl<'a> Context<'a> {
         // The first state should never be popped.
         if self.states.len() > 1 {
             self.states.pop();
-            // PdfCraft patch: the state now on top is the copy that was charged when saved.
+            // LocalPDF patch: the state now on top is the copy that was charged when saved.
             if let Some(top) = self.states.last() {
                 self.saved_bytes = self.saved_bytes.saturating_sub(state_bytes(top));
             }
@@ -457,7 +457,7 @@ impl<'a> Context<'a> {
     }
 
     pub(crate) fn num_states(&self) -> usize {
-        // PdfCraft patch: saves not kept still count, so callers restore back past them.
+        // LocalPDF patch: saves not kept still count, so callers restore back past them.
         self.states.len().saturating_add(self.skipped_saves.len())
     }
 
@@ -517,7 +517,7 @@ pub(crate) fn path_as_rect(path: &BezPath) -> Option<Rect> {
         return None;
     }
 
-    // PdfCraft patch: the points have to trace the rectangle, not merely reach its corners. The
+    // LocalPDF patch: the points have to trace the rectangle, not merely reach its corners. The
     // length check above admits one MoveTo and four LineTo as well as the intended one MoveTo,
     // three LineTo and one ClosePath, and asking only that each corner of the bounding box was
     // visited says nothing about the order or the steps between: a five-point polyline whose
@@ -581,7 +581,7 @@ pub(crate) fn path_as_rect(path: &BezPath) -> Option<Rect> {
     Some(path.fast_bounding_box())
 }
 
-/// PdfCraft patch tests (ported from craft-libs): the graphics-state stack is bounded by count
+/// LocalPDF patch tests (ported from craft-libs): the graphics-state stack is bounded by count
 /// and by bytes, and every `q` still pairs with its `Q`.
 #[cfg(test)]
 mod saved_state_tests {

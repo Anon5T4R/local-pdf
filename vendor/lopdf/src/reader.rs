@@ -493,7 +493,7 @@ pub const MAX_BRACKET: usize = 100;
 
 pub const MAX_NESTING_DEPTH: usize = 100;
 
-/// PdfCraft patch: a valid stream /Length resolves in at most three lookups (the length, the object stream holding
+/// LocalPDF patch: a valid stream /Length resolves in at most three lookups (the length, the object stream holding
 /// it, and that stream's own /Length); longer lookup chains overflowed the stack.
 const MAX_LOOKUP_DEPTH: usize = 16;
 
@@ -1161,7 +1161,7 @@ impl Reader<'_> {
             _ => return Err(Error::MissingXrefEntry),
         };
 
-        // PdfCraft patch: require an in-file container (PDF 7.5.7) and retain the caller's cycle history through
+        // LocalPDF patch: require an in-file container (PDF 7.5.7) and retain the caller's cycle history through
         // indirect stream /Length lookups; `get_object` caps the depth of that history.
         if !matches!(
             self.document.reference_table.get(container_id),
@@ -1179,7 +1179,7 @@ impl Reader<'_> {
     }
 
     pub fn get_object(&self, id: ObjectId, already_seen: &mut HashSet<ObjectId>) -> Result<Object> {
-        // PdfCraft patch: each top-level lookup starts with an empty set and every nested lookup adds one object, so
+        // LocalPDF patch: each top-level lookup starts with an empty set and every nested lookup adds one object, so
         // the set's size is the depth of the lookup chain.
         if already_seen.len() >= MAX_LOOKUP_DEPTH {
             warn!("lookup chain deeper than {MAX_LOOKUP_DEPTH} at object {} {}", id.0, id.1);
@@ -1630,7 +1630,7 @@ impl Reader<'_> {
     /// Newest backwards-scanned `trailer` whose `/Root` references a scanned object, one whose
     /// `/Root` is the catalog first.
     fn find_latest_trailer(&self, xref: &Xref) -> Option<(usize, Dictionary)> {
-        // PdfCraft patch: (#2365) an in-file /Root must also match its generation, as
+        // LocalPDF patch: (#2365) an in-file /Root must also match its generation, as
         // `get_offset` requires when the root is loaded.
         let usable = |dict: &Dictionary| {
             dict.get(b"Root")
@@ -1640,7 +1640,7 @@ impl Reader<'_> {
                     entry => entry.is_some(),
                 })
         };
-        // PdfCraft patch: (#2365) a candidate whose /Root is the catalog (`/Type /Catalog` or
+        // LocalPDF patch: (#2365) a candidate whose /Root is the catalog (`/Type /Catalog` or
         // `/Pages`) beats one whose /Root is another dictionary, such as /Info, wherever it is;
         // the other kind is still taken when nothing better is there (an FDF's /Root).
         let is_catalog = |dict: &Dictionary| {
@@ -1683,7 +1683,7 @@ impl Reader<'_> {
                 }
             }
         }
-        // PdfCraft patch: (#2365) a file whose only trailer is a cross-reference stream has
+        // LocalPDF patch: (#2365) a file whose only trailer is a cross-reference stream has
         // no `trailer` keyword, so the scan above found nothing and the rebuild failed; its
         // /Info and /ID were then lost. Such a stream's dictionary is the trailer, and the
         // latest one in the file wins, as a later `trailer` keyword would.

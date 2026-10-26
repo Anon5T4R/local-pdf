@@ -50,10 +50,10 @@ use smallvec::SmallVec;
 // 6 operands are used for example for ctm or cubic curves,
 // but anything above should be pretty rare (only for example for
 // DeviceN color spaces, or invalid PDF files). So we settle on 10.
-// PdfCraft patch (28): this is now only how many operands are held inline; see `MAX_OPERANDS`.
+// LocalPDF patch (28): this is now only how many operands are held inline; see `MAX_OPERANDS`.
 const OPERANDS_THRESHOLD: usize = 10;
 
-/// PdfCraft patch (28): the most operands one instruction keeps. The stack held ten, and the
+/// LocalPDF patch (28): the most operands one instruction keeps. The stack held ten, and the
 /// eleventh operand of an instruction ended the whole content stream, so a DeviceN colour of
 /// eleven or more inks (ISO 32000-2 §8.6.6.5 allows "an arbitrary number of colour
 /// components") blanked the rest of the page (#4260). An `SCN`/`scn` for the largest DeviceN
@@ -101,7 +101,7 @@ impl<'a> Readable<'a> for Operator<'a> {
     }
 }
 
-/// PdfCraft patch: how many `EI` candidates an inline image examines, and how far past each
+/// LocalPDF patch: how many `EI` candidates an inline image examines, and how far past each
 /// one the end-of-data heuristic looks, before taking the current candidate. Unbounded, the
 /// heuristic re-parsed the rest of the stream for every candidate, and each re-parse ran the
 /// heuristic again on the inline images it met: a fuzzed file hung for minutes.
@@ -126,17 +126,17 @@ pub struct UntypedIter<'a> {
     reader: Reader<'a>,
     stack: Stack<'a>,
     operator: Option<Operator<'a>>,
-    /// PdfCraft patch: this iterator only checks whether data reads as content (the
+    /// LocalPDF patch: this iterator only checks whether data reads as content (the
     /// end-of-data heuristic below); inline images it meets end at their first `EI`.
     lookahead: bool,
-    /// PdfCraft patch: whether `reader` holds the whole content stream. The end of a window of a
+    /// LocalPDF patch: whether `reader` holds the whole content stream. The end of a window of a
     /// longer stream can fall inside an instruction, so nothing that reads up to it is decided
     /// (see `needs_more`).
     complete: bool,
-    /// PdfCraft patch: set when `next` stopped because the window ran out before the next
+    /// LocalPDF patch: set when `next` stopped because the window ran out before the next
     /// instruction was decided. The caller reads more data and resumes at `committed`.
     needs_more: bool,
-    /// PdfCraft patch: the offset just after the instruction `next` returned last.
+    /// LocalPDF patch: the offset just after the instruction `next` returned last.
     committed: usize,
 }
 
@@ -146,7 +146,7 @@ impl<'a> UntypedIter<'a> {
         Self::new_window(data, true)
     }
 
-    /// PdfCraft patch: an iterator over `data`, which is the whole stream when `complete`, and
+    /// LocalPDF patch: an iterator over `data`, which is the whole stream when `complete`, and
     /// otherwise the start of a longer one.
     pub(crate) fn new_window(data: &'a [u8], complete: bool) -> Self {
         Self {
@@ -247,11 +247,11 @@ impl<'a> UntypedIter<'a> {
                     let stream_data = self.reader.tail()?;
                     let start_offset = self.reader.offset();
                     let mut candidates = 0;
-                    // PdfCraft patch: set when a look-ahead below ran into the end of the window.
+                    // LocalPDF patch: set when a look-ahead below ran into the end of the window.
                     let mut lookahead_touched = false;
                     let mut accepted = false;
 
-                    // PdfCraft patch: an unfiltered inline image's byte length is determined by
+                    // LocalPDF patch: an unfiltered inline image's byte length is determined by
                     // its parameters (and `/L` or `/Length` when present and consistent), so
                     // `EI` inside its samples does not cut the image short (#3107).
                     match unfiltered_image_end(
@@ -306,7 +306,7 @@ impl<'a> UntypedIter<'a> {
                             // new we don't bother trying to read it.
                             let tail = &self.reader.tail()?[2..];
                             let mut find_reader = Reader::new(tail);
-                            // PdfCraft patch: bounded (see `MAX_EI_CANDIDATES`).
+                            // LocalPDF patch: bounded (see `MAX_EI_CANDIDATES`).
                             candidates += 1;
                             let mut steps = 0;
                             let heuristic = !self.lookahead && candidates <= MAX_EI_CANDIDATES;
@@ -335,7 +335,7 @@ impl<'a> UntypedIter<'a> {
                                 find_reader.read_bytes(next_pos)?;
 
                                 if is_ei {
-                                    // PdfCraft patch: a byte above 0x7F between the two "EI"s
+                                    // LocalPDF patch: a byte above 0x7F between the two "EI"s
                                     // used to reject the candidate ("binary data in-between, so
                                     // we for sure have not reached the end"). When the candidate
                                     // is the real end, those bytes are the content stream that
@@ -416,7 +416,7 @@ impl<'a> UntypedIter<'a> {
                                 find_reader.read_byte()?;
                             }
 
-                            // PdfCraft patch: the end is only certain if no look-ahead needed bytes
+                            // LocalPDF patch: the end is only certain if no look-ahead needed bytes
                             // past the window. Otherwise read more and decide again.
                             if !self.complete
                                 && (lookahead_touched || self.reader.looked_past_end())
@@ -436,7 +436,7 @@ impl<'a> UntypedIter<'a> {
                         }
                     }
 
-                    // PdfCraft patch: without an accepted "EI" the image may still end in later data.
+                    // LocalPDF patch: without an accepted "EI" the image may still end in later data.
                     if !accepted && !self.complete {
                         self.needs_more = true;
                         return None;
@@ -445,7 +445,7 @@ impl<'a> UntypedIter<'a> {
 
                 self.operator = Some(operator);
                 self.committed = self.reader.offset();
-                // PdfCraft patch (28): operands in reading order, if some were dropped.
+                // LocalPDF patch (28): operands in reading order, if some were dropped.
                 self.stack.settle();
                 return Some(Instruction {
                     operands: &self.stack,
@@ -456,7 +456,7 @@ impl<'a> UntypedIter<'a> {
             self.reader.skip_white_spaces_and_comments();
         }
 
-        // PdfCraft patch: the window ended between instructions, and another may follow.
+        // LocalPDF patch: the window ended between instructions, and another may follow.
         if !self.complete {
             self.needs_more = true;
         }
@@ -464,7 +464,7 @@ impl<'a> UntypedIter<'a> {
         None
     }
 
-    /// PdfCraft patch: skips the blanks and comments before an instruction, as
+    /// LocalPDF patch: skips the blanks and comments before an instruction, as
     /// `skip_white_spaces_and_comments` does, and returns where a window may be cut: the start of a
     /// comment that runs into the end of the window, or else where the skipping stopped.
     fn skip_blanks_and_comments(&mut self) -> usize {
@@ -484,7 +484,7 @@ impl<'a> UntypedIter<'a> {
         open_comment.unwrap_or(self.reader.offset())
     }
 
-    /// PdfCraft patch: whether the instruction being read ran into the end of a window, so it
+    /// LocalPDF patch: whether the instruction being read ran into the end of a window, so it
     /// cannot be decided yet. Records that more data is needed.
     fn undecided(&mut self) -> bool {
         if !self.complete && self.reader.looked_past_end() {
@@ -519,7 +519,7 @@ impl<'a> TypedIter<'a, UntypedIter<'a>> {
         }
     }
 
-    /// PdfCraft patch: an iterator over a window of a content stream: the whole stream when
+    /// LocalPDF patch: an iterator over a window of a content stream: the whole stream when
     /// `complete`, and otherwise the start of a longer one (see [`TypedIter::needs_more`]).
     pub fn new_window(data: &'a [u8], complete: bool) -> Self {
         Self {
@@ -528,14 +528,14 @@ impl<'a> TypedIter<'a, UntypedIter<'a>> {
         }
     }
 
-    /// PdfCraft patch: whether the last `next` returned `None` only because the window ran out
+    /// LocalPDF patch: whether the last `next` returned `None` only because the window ran out
     /// before the next instruction was decided. Read more of the stream, then resume at
     /// [`TypedIter::committed`] in a window that starts there.
     pub fn needs_more(&self) -> bool {
         self.untyped.needs_more
     }
 
-    /// PdfCraft patch: the offset in the window just after the last instruction `next` returned.
+    /// LocalPDF patch: the offset in the window just after the last instruction `next` returned.
     pub fn committed(&self) -> usize {
         self.untyped.committed
     }
@@ -605,12 +605,12 @@ impl<'b, 'a> Instruction<'b, 'a> {
 pub struct Stack<'a> {
     // TODO: Explore using an object pool to avoid repeatedly
     // allocating/deallocating objects.
-    // PdfCraft patch (28): up to `MAX_OPERANDS` operands, the first `OPERANDS_THRESHOLD` inline.
+    // LocalPDF patch (28): up to `MAX_OPERANDS` operands, the first `OPERANDS_THRESHOLD` inline.
     data: SmallVec<[Object<'a>; OPERANDS_THRESHOLD]>,
-    /// PdfCraft patch (28): once `data` is full, the slot of its oldest operand, which the next
+    /// LocalPDF patch (28): once `data` is full, the slot of its oldest operand, which the next
     /// operand replaces. Always 0 while the stack is not full, and after `settle`.
     oldest: usize,
-    /// PdfCraft patch (28): whether operands were dropped since the stack was last settled.
+    /// LocalPDF patch (28): whether operands were dropped since the stack was last settled.
     dropped: bool,
 }
 
@@ -630,7 +630,7 @@ impl<'a> Stack<'a> {
         }
     }
 
-    /// PdfCraft patch (28): push an operand, dropping the oldest once `MAX_OPERANDS` are held
+    /// LocalPDF patch (28): push an operand, dropping the oldest once `MAX_OPERANDS` are held
     /// (see `MAX_OPERANDS`). Never fails: it used to, and the failure ended the content stream.
     fn push(&mut self, operand: Object<'a>) -> Option<()> {
         if self.data.len() < MAX_OPERANDS {
@@ -646,7 +646,7 @@ impl<'a> Stack<'a> {
         Some(())
     }
 
-    /// PdfCraft patch (28): put the operands back in the order they were read, oldest first,
+    /// LocalPDF patch (28): put the operands back in the order they were read, oldest first,
     /// after `push` dropped some. Called before the instruction is handed out.
     fn settle(&mut self) {
         if self.dropped {
@@ -703,7 +703,7 @@ impl Debug for Stack<'_> {
 
 impl Clone for Stack<'_> {
     fn clone(&self) -> Self {
-        // PdfCraft patch (28): a plain copy (pushing each operand again could no longer fail).
+        // LocalPDF patch (28): a plain copy (pushing each operand again could no longer fail).
         Self {
             data: self.data.clone(),
             oldest: self.oldest,
@@ -923,7 +923,7 @@ mod macros {
     pub(crate) use op6;
 }
 
-/// PdfCraft patch: outcome of checking an unfiltered inline image's deterministic byte length.
+/// LocalPDF patch: outcome of checking an unfiltered inline image's deterministic byte length.
 enum UnfilteredEnd {
     /// Deterministic end found: `(end_data, end_after_ei)`.
     Found(usize, usize),
@@ -933,7 +933,7 @@ enum UnfilteredEnd {
     Fallback,
 }
 
-/// PdfCraft patch: an unfiltered inline image's sample byte count, including byte padding per row,
+/// LocalPDF patch: an unfiltered inline image's sample byte count, including byte padding per row,
 /// and `/Length` or `/L` when present and consistent (#3107).
 fn unfiltered_image_len(dict: &Dict<'_>) -> Option<usize> {
     for key in [b"Filter".as_slice(), b"F"] {
@@ -1020,7 +1020,7 @@ fn unfiltered_image_len(dict: &Dict<'_>) -> Option<usize> {
     row.checked_mul(height)
 }
 
-/// PdfCraft patch: locate the deterministic `EI` terminator of an unfiltered inline image (#3107).
+/// LocalPDF patch: locate the deterministic `EI` terminator of an unfiltered inline image (#3107).
 fn unfiltered_image_end(data: &[u8], dict: &Dict<'_>, complete: bool, header_bytes: usize) -> UnfilteredEnd {
     let Some(end_data) = unfiltered_image_len(dict) else {
         return UnfilteredEnd::Fallback;

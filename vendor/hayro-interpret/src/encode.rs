@@ -18,7 +18,7 @@ pub struct EncodedShadingPattern {
     pub(crate) shading_type: EncodedShadingType,
     pub(crate) opacity: f32,
     pub(crate) transfer_function: Option<ActiveTransferFunction>,
-    /// PdfCraft patch (35): where the shading can paint at all, in device space: for a mesh
+    /// LocalPDF patch (35): where the shading can paint at all, in device space: for a mesh
     /// (types 4–7), the pixels its triangles touched when it was encoded (empty when none
     /// lies in the area); `None` for the shading types that paint everywhere (function-based,
     /// axial, radial). The renderer samples a texture only there, and skips a mesh that
@@ -53,11 +53,11 @@ impl ShadingPattern {
         self.encode_within(None)
     }
 
-    /// PdfCraft patch: encode the shading pattern for drawing inside `area` (device space) only.
+    /// LocalPDF patch: encode the shading pattern for drawing inside `area` (device space) only.
     /// Mesh shadings are sampled pixel by pixel, and only there (see `TriangleSampler`).
     pub fn encode_within(&self, area: Option<kurbo::Rect>) -> EncodedShadingPattern {
         let base_transform;
-        // PdfCraft patch (35): see `EncodedShadingPattern::extent`.
+        // LocalPDF patch (35): see `EncodedShadingPattern::extent`.
         let mut extent = None;
 
         let shading_type = match self.shading.shading_type.as_ref() {
@@ -101,7 +101,7 @@ impl ShadingPattern {
                 }
             }
             ShadingType::CoonsPatchMesh { patches, function } => {
-                // PdfCraft patch: one patch's triangles at a time (each is 722); collecting all
+                // LocalPDF patch: one patch's triangles at a time (each is 722); collecting all
                 // of them first held 150 KB per patch before any limit applied.
                 let full_transform = self.matrix;
                 let mut sampler = TriangleSampler::new(area);
@@ -127,7 +127,7 @@ impl ShadingPattern {
                 }
             }
             ShadingType::TensorProductPatchMesh { patches, function } => {
-                // PdfCraft patch: one patch's triangles at a time, as for Coons patches.
+                // LocalPDF patch: one patch's triangles at a time, as for Coons patches.
                 let full_transform = self.matrix;
                 let mut sampler = TriangleSampler::new(area);
                 let mut triangles = vec![];
@@ -225,7 +225,7 @@ fn encode_axial_shading(
     )
 }
 
-/// PdfCraft patch: pixel visits one mesh shading may make, per pixel of the area it is drawn in
+/// LocalPDF patch: pixel visits one mesh shading may make, per pixel of the area it is drawn in
 /// and per triangle. Sampling walks each triangle's bounding box (rounded out to whole pixels),
 /// so triangles far off the page (a fuzzed patch decoded onto ±40000) asked for 65536 × 65536
 /// samples, and many triangles covering the same pixels repeat the work. A triangle's box is
@@ -233,10 +233,10 @@ fn encode_axial_shading(
 const MESH_VISITS_PER_PIXEL: u64 = 8;
 const MESH_VISITS_PER_TRIANGLE: u64 = 4;
 
-/// PdfCraft patch: the visits allowed when no area is given (the public `encode`).
+/// LocalPDF patch: the visits allowed when no area is given (the public `encode`).
 const MESH_VISITS_WITHOUT_AREA: u64 = 1 << 24;
 
-/// PdfCraft patch: mesh triangles one page may sample in all, across every shading painted on
+/// LocalPDF patch: mesh triangles one page may sample in all, across every shading painted on
 /// it. A shading is triangulated again each time it is painted (2^16 patches are 47 million
 /// triangles, several seconds), so painting one a thousand times took hours. A 200 × 200
 /// gradient mesh is 29 million triangles.
@@ -247,24 +247,24 @@ std::thread_local! {
         const { core::cell::Cell::new(MAX_PAGE_MESH_TRIANGLES) };
 }
 
-/// PdfCraft patch: a page starts with a fresh mesh triangle budget (called from
+/// LocalPDF patch: a page starts with a fresh mesh triangle budget (called from
 /// `Context::new`).
 pub(crate) fn reset_mesh_budget() {
     MESH_TRIANGLES_LEFT.with(|n| n.set(MAX_PAGE_MESH_TRIANGLES));
 }
 
-/// PdfCraft patch: `false` once this page's mesh triangle budget is spent.
+/// LocalPDF patch: `false` once this page's mesh triangle budget is spent.
 fn mesh_budget_left() -> bool {
     MESH_TRIANGLES_LEFT.with(|n| n.get() > 0)
 }
 
-/// PdfCraft patch: samples mesh triangles into a map with one entry per pixel, only inside
+/// LocalPDF patch: samples mesh triangles into a map with one entry per pixel, only inside
 /// `area` (device space), within the visit budget above.
 struct TriangleSampler {
     map: FxHashMap<(u16, u16), ColorComponents>,
     area: kurbo::Rect,
     visits_left: u64,
-    /// PdfCraft patch (35): the pixels sampled so far, as `(x0, y0, x1, y1)` inclusive.
+    /// LocalPDF patch (35): the pixels sampled so far, as `(x0, y0, x1, y1)` inclusive.
     touched: Option<(u16, u16, u16, u16)>,
 }
 
@@ -284,7 +284,7 @@ impl TriangleSampler {
         }
     }
 
-    /// PdfCraft patch (35): the device-space rectangle covering every pixel sampled so far
+    /// LocalPDF patch (35): the device-space rectangle covering every pixel sampled so far
     /// (whole pixels), or an empty rectangle when no triangle touched the area.
     fn extent(&self) -> kurbo::Rect {
         match self.touched {
@@ -313,7 +313,7 @@ impl TriangleSampler {
         })
     }
 
-    /// PdfCraft patch (33): [`Self::sample`] for triangles made for this sampling alone (a
+    /// LocalPDF patch (33): [`Self::sample`] for triangles made for this sampling alone (a
     /// patch's), moving their vertices instead of copying each one's colours (`triangles` is
     /// left empty).
     fn sample_owned(&mut self, triangles: &mut Vec<Triangle>, transform: Affine) -> bool {
@@ -358,7 +358,7 @@ impl TriangleSampler {
                     self.map.insert((x, y), t.interpolate(corner));
                     true
                 } else if t.covers(Point::new(x as f64 + 0.5, y as f64 + 0.5)) {
-                    // PdfCraft patch (36): a pixel whose corner no triangle holds strictly (it
+                    // LocalPDF patch (36): a pixel whose corner no triangle holds strictly (it
                     // lies on an edge two triangles share, or on the mesh's side) still belongs
                     // to the triangle that covers its centre, edges included. Testing only the
                     // corner left a white seam along every shared edge. Such a pixel takes the

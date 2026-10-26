@@ -59,7 +59,7 @@ struct Repr<'a> {
     transfer_function: Option<TransferFunction>,
     settings: InterpreterSettings,
     background: Color,
-    // PdfCraft patch (63).
+    // LocalPDF patch (63).
     /// A luminosity mask whose group colour space is `/DeviceCMYK`.
     luminosity_in_device_cmyk: bool,
     xref: &'a XRef,
@@ -107,14 +107,14 @@ impl<'a> SoftMask<'a> {
         let obj_id = dict.get_ref(G)?.into();
         let group_stream = dict.get::<Stream<'_>>(G)?;
         let group = FormXObject::new(&group_stream)?;
-        // PdfCraft patch: the group's /CS is optional (ISO 32000-2 §11.6.5.2; Chrome/Skia omit
+        // LocalPDF patch: the group's /CS is optional (ISO 32000-2 §11.6.5.2; Chrome/Skia omit
         // it). Upstream returned None here, silently dropping the whole soft mask. Fall back to
         // DeviceRGB, the blending space our renderer composites in.
         let cs_object = group
             .dict
             .get::<Dict<'_>>(GROUP)
             .and_then(|g| g.get::<Object<'_>>(CS));
-        // PdfCraft patch (63): the group is composited in `/DeviceCMYK` itself. An ICC-based
+        // LocalPDF patch (63): the group is composited in `/DeviceCMYK` itself. An ICC-based
         // or calibrated group space keeps its own conversion.
         let group_in_device_cmyk = cs_object
             .as_ref()
@@ -132,7 +132,7 @@ impl<'a> SoftMask<'a> {
                 let color = dict
                     .get::<ColorComponents>(BC)
                     .map(|c| {
-                        // PdfCraft patch (63): a DeviceCMYK backdrop's luminosity is its gray
+                        // LocalPDF patch (63): a DeviceCMYK backdrop's luminosity is its gray
                         // (ISO 32000-2 §11.5.3), as for the group's content.
                         if group_in_device_cmyk && c.len() == 4 {
                             Color::new(

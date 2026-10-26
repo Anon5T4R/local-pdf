@@ -165,7 +165,7 @@ impl OutlineGlyph {
         self.id
     }
 
-    /// PdfCraft patch: whether this glyph belongs to a vertical-writing Type0 font.
+    /// LocalPDF patch: whether this glyph belongs to a vertical-writing Type0 font.
     /// The glyph outline stays upright; text extraction must follow the font's advance axis.
     pub fn is_vertical(&self) -> bool {
         matches!(&self.font, OutlineFont::Type0(font) if !font.is_horizontal())
@@ -223,7 +223,7 @@ impl<'a> Type3Glyph<'a> {
         self.font.char_code_to_unicode(self.char_code)
     }
 
-    /// PdfCraft patch: the advance width in glyph space (1000 units per em), from `/Widths`.
+    /// LocalPDF patch: the advance width in glyph space (1000 units per em), from `/Widths`.
     pub fn advance_width(&self) -> Option<f32> {
         u8::try_from(self.char_code).ok().map(|c| self.font.glyph_width(c))
     }
@@ -445,7 +445,7 @@ impl Encoding {
         }
     }
 
-    /// PdfCraft patch: the glyph name an Annex D.2 *alias code* reads as when the glyph is taken
+    /// LocalPDF patch: the glyph name an Annex D.2 *alias code* reads as when the glyph is taken
     /// as text rather than looked up in a font program; `None` for every other code.
     ///
     /// Annex D.2 gives WinAnsiEncoding codes 0xA0 and 0xAD the glyph names `space` and `hyphen`,
@@ -567,7 +567,7 @@ impl FallbackFontQuery {
         Self::with_descriptor(dict, dict.get::<Dict<'_>>(FONT_DESC))
     }
 
-    /// PdfCraft patch: the query for the font `dict` names, with its style read from
+    /// LocalPDF patch: the query for the font `dict` names, with its style read from
     /// `descriptor`. A Type 0 font has no font descriptor of its own; its descendant CIDFont
     /// has it (ISO 32000-2 §9.7.4.1, §9.7.6.1).
     pub(crate) fn with_descriptor(dict: &Dict<'_>, descriptor: Option<Dict<'_>>) -> Self {
@@ -676,7 +676,7 @@ pub(crate) fn glyph_name_to_unicode(name: &str) -> Option<char> {
     })
 }
 
-/// PdfCraft patch: the text of a glyph name `glyph_name_to_unicode` doesn't know, by the
+/// LocalPDF patch: the text of a glyph name `glyph_name_to_unicode` doesn't know, by the
 /// Adobe Glyph List Specification's full mapping: drop everything from the first `.`
 /// (`hyphen.case`, `a.sc`), split the rest on `_` into components (`f_i`, `f_f_l`), and map each
 /// one through the glyph list, as `uniXXXX[XXXX…]` (BMP values, four hex digits each) or as

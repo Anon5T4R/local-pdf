@@ -152,7 +152,7 @@ f
         assert!(iter.next().is_none());
     }
 
-    /// PdfCraft patch (28): a twelve-ink DeviceN colour's `scn` keeps all twelve operands, and
+    /// LocalPDF patch (28): a twelve-ink DeviceN colour's `scn` keeps all twelve operands, and
     /// the instructions after it are still read (#4260). The eleventh operand ended the stream.
     #[test]
     fn scn_with_twelve_components_keeps_them_all() {
@@ -171,7 +171,7 @@ f
         assert!(iter.next().is_none());
     }
 
-    /// PdfCraft patch (28): past the operand cap the oldest operands are dropped, in order, and
+    /// LocalPDF patch (28): past the operand cap the oldest operands are dropped, in order, and
     /// the operator reads the ones nearest to it.
     #[test]
     fn operands_past_the_cap_keep_the_latest_in_order() {

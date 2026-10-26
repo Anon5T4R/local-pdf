@@ -554,7 +554,7 @@ impl PartitionedRanges {
         }
     }
 
-    // PdfCraft patch: needed by the truncated-stream guard in parse.rs.
+    // LocalPDF patch: needed by the truncated-stream guard in parse.rs.
     pub(crate) fn is_empty(&self) -> bool {
         self.buckets.iter().all(|b| b.is_empty())
     }
@@ -737,7 +737,7 @@ endcodespacerange
         CMap::parse(&data, |_| None).unwrap()
     }
 
-    /// PdfCraft patch test: a binary CMap whose `usecmap` names itself stops at the nesting limit.
+    /// LocalPDF patch test: a binary CMap whose `usecmap` names itself stops at the nesting limit.
     #[cfg(feature = "embed-cmaps")]
     #[test]
     fn self_referencing_binary_usecmap_stops_at_the_nesting_limit() {
@@ -1107,7 +1107,7 @@ endbfchar
         );
     }
 
-    // PdfCraft patch: malformed pieces of a CMap are skipped, not fatal - the reading
+    // LocalPDF patch: malformed pieces of a CMap are skipped, not fatal - the reading
     // path used to discard the whole CMap and fall back to the font encoding for every
     // code, so search and search-redaction missed text the edit layer could see (#3177).
 

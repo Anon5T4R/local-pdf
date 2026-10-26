@@ -126,7 +126,7 @@ impl Type1Font {
         if let Some(c) = found {
             return Some(BfString::Char(c));
         }
-        // PdfCraft patch (#3169, #3170): a name outside the glyph list still reads by the
+        // LocalPDF patch (#3169, #3170): a name outside the glyph list still reads by the
         // glyph list specification's full mapping (`f_i`, `hyphen.case`). A name that only
         // numbers the glyph (`C39`, `c251`) says nothing about the character and reads as
         // nothing: the code's StandardEncoding character would be a guess, wrong wherever the
@@ -254,7 +254,7 @@ impl Type1Kind {
     }
 
     fn char_code_to_unicode(&self, code: u8) -> Option<char> {
-        // PdfCraft patch: an Annex D.2 alias code reads as the ordinary character; see
+        // LocalPDF patch: an Annex D.2 alias code reads as the ordinary character; see
         // `Encoding::text_alias`. `code_to_ps_name` is shared with glyph lookup and stays as it
         // is, so the alias is applied here, after `/Differences` has had its say.
         if !self.encodings.contains_key(&code)
@@ -359,7 +359,7 @@ impl CffKind {
     }
 
     fn char_code_to_unicode(&self, code: u8) -> Option<char> {
-        // PdfCraft patch: an Annex D.2 alias code reads as the ordinary character; see
+        // LocalPDF patch: an Annex D.2 alias code reads as the ordinary character; see
         // `Encoding::text_alias`. `code_to_ps_name` is shared with glyph lookup and stays as it
         // is, so the alias is applied here, after `/Differences` has had its say.
         if !self.encodings.contains_key(&code)

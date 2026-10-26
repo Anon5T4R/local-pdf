@@ -8,7 +8,7 @@ use alloc::vec::Vec;
 use crate::error::{ParseError, Result, SegmentError, bail, err};
 use crate::reader::Reader;
 
-/// PdfCraft patch: the most segments one segment may refer to. A long-form header can claim a
+/// LocalPDF patch: the most segments one segment may refer to. A long-form header can claim a
 /// 29-bit count, which `Vec::with_capacity` below would turn into a multi-gigabyte reservation
 /// before a single referred-to number is read; the allocation failure aborts the process. Real
 /// files refer to a handful of segments.
@@ -189,7 +189,7 @@ pub(crate) fn parse_segment_header(reader: &mut Reader<'_>) -> Result<SegmentHea
         u32::from_be_bytes([count_and_retention & 0x1F, rest[0], rest[1], rest[2]])
     };
 
-    // PdfCraft patch: refuse an oversized count before reserving memory for it and before
+    // LocalPDF patch: refuse an oversized count before reserving memory for it and before
     // skipping the retention-flag bytes it claims.
     if referred_to_count > MAX_REFERRED_TO_SEGMENTS {
         bail!(SegmentError::InvalidReferredCount);
@@ -429,7 +429,7 @@ mod tests {
         assert_eq!(header.data_length, Some(32));
     }
 
-    /// PdfCraft patch test (ported from craft-libs): a long-form referred-to count over
+    /// LocalPDF patch test (ported from craft-libs): a long-form referred-to count over
     /// `MAX_REFERRED_TO_SEGMENTS` is refused before its retention bytes are read.
     #[test]
     fn test_referred_to_count_is_capped() {

@@ -274,7 +274,7 @@ const DUMMY_XREF: XRef = XRef(Inner::Dummy);
 pub struct XRef(Inner);
 
 impl XRef {
-    // PdfCraft patch: keep the bounded dictionary-index cache local to this PDF.
+    // LocalPDF patch: keep the bounded dictionary-index cache local to this PDF.
     pub(crate) fn with_dict_cache<T>(&self, f: impl FnOnce(&mut DictCache) -> T) -> Option<T> {
         let Inner::Some(repr) = &self.0 else {
             return None;
@@ -289,7 +289,7 @@ impl XRef {
         Some(f(&mut cache))
     }
 
-    /// PdfCraft patch: (hayro-syntax (22)) run `f` on this PDF's parsed object stream indexes
+    /// LocalPDF patch: (hayro-syntax (22)) run `f` on this PDF's parsed object stream indexes
     /// ([`ObjectStreamIndexes`]). `None` when there is none to use (the dummy xref, or a no_std
     /// cache already borrowed), and the caller then parses the index without it. A poisoned lock
     /// is still used: entries are complete `Arc`s inserted in one step, so a panic elsewhere
@@ -645,7 +645,7 @@ impl XRef {
                     return None;
                 }
 
-                // PdfCraft patch: (hayro-syntax (22)) the stream's index of `objnum offset` pairs
+                // LocalPDF patch: (hayro-syntax (22)) the stream's index of `objnum offset` pairs
                 // is parsed once and kept, as its decoded data is: parsed again for every object
                 // fetched from it, reading all of a stream of N objects took N² steps (one
                 // Firefox page kept 65,542 objects in one stream and took 37 s to draw).
@@ -808,10 +808,10 @@ fn populate_xref_impl<'a>(data: &'a [u8], pos: usize, xref_map: &mut XrefMap) ->
 }
 
 /// The offset of the previous xref section (`Prev`).
-// PdfCraft patch: (#2366) some writers give `Prev` as a reference `N G R`. When this section's
+// LocalPDF patch: (#2366) some writers give `Prev` as a reference `N G R`. When this section's
 // own entries (`own`) place that object and it holds an offset (iText's `indirectPrev.pdf`), that
 // is the offset; otherwise its object number is (tiff2pdf, in JHOVE's PDF-HUL-157 files), as
-// `pdfcraft-cos` and other readers take it.
+// `localpdf-cos` and other readers take it.
 fn prev_offset(data: &[u8], trailer: &Dict<'_>, own: &XrefMap) -> Option<usize> {
     if let Some(prev) = trailer.get::<i32>(PREV) {
         return usize::try_from(prev).ok();
@@ -910,7 +910,7 @@ fn populate_from_xref_table<'a>(
     reader.skip_white_spaces();
 
     let mut max_obj = 0;
-    // PdfCraft patch: (#2366) this section's entries are read first, for `prev_offset`.
+    // LocalPDF patch: (#2366) this section's entries are read first, for `prev_offset`.
     let mut own = XrefMap::default();
 
     while let Some(header) = reader.read_without_context::<SubsectionHeader>() {
@@ -965,7 +965,7 @@ fn populate_from_xref_stream<'a>(
 
     let [f1_len, f2_len, f3_len] = stream.dict().get::<[u8; 3]>(W)?;
 
-    // PdfCraft patch: the type field is read at its full width, so it is bounded like the offset.
+    // LocalPDF patch: the type field is read at its full width, so it is bounded like the offset.
     if f1_len > size_of::<u64>() as u8 || f2_len > size_of::<u64>() as u8 {
         error!("xref field length is larger than the allowed limit");
 
@@ -973,7 +973,7 @@ fn populate_from_xref_stream<'a>(
     }
 
     let xref_data = stream.decoded().ok()?;
-    // PdfCraft patch: (#2366) this section's entries are read first, for `prev_offset`.
+    // LocalPDF patch: (#2366) this section's entries are read first, for `prev_offset`.
     let mut own = XrefMap::default();
     let mut xref_reader = Reader::new(xref_data.as_ref());
 
@@ -1038,7 +1038,7 @@ fn xref_stream_subsection<'a>(
     f3_len: u8,
     insert_map: &mut XrefMap,
 ) -> Option<()> {
-    // PdfCraft patch: every entry must be backed by stream bytes. With all widths zero an entry
+    // LocalPDF patch: every entry must be backed by stream bytes. With all widths zero an entry
     // reads nothing, so a tiny stream could declare billions of entries; and a count past the
     // decoded data is refused before any of it is inserted.
     let width = f1_len as usize + f2_len as usize + f3_len as usize;
@@ -1062,12 +1062,12 @@ fn xref_stream_subsection<'a>(
         let f_type = if f1_len == 0 {
             1
         } else {
-            // PdfCraft patch: the type field is read big-endian at its full `/W[0]` width.
+            // LocalPDF patch: the type field is read big-endian at its full `/W[0]` width.
             let bytes = xref_reader.read_bytes(f1_len as usize)?;
             bytes.iter().fold(0u64, |acc, b| (acc << 8) | u64::from(*b))
         };
 
-        // PdfCraft patch: object numbers are stored as `i32`; a subsection running past
+        // LocalPDF patch: object numbers are stored as `i32`; a subsection running past
         // `i32::MAX` is refused instead of overflowing or turning negative.
         let obj_number = i32::try_from(start.checked_add(i)?).ok()?;
 
@@ -1163,7 +1163,7 @@ fn get_decryptor(trailer_dict: &Dict<'_>, password: &[u8]) -> Result<Decryptor, 
     }
 }
 
-/// PdfCraft patch: (hayro-syntax (22)) each object stream's parsed `(object number, offset)`
+/// LocalPDF patch: (hayro-syntax (22)) each object stream's parsed `(object number, offset)`
 /// pairs ([`read_object_stream_index`]) by the stream's identifier, `None` for pairs that don't
 /// parse. Never cleared, like the decoded stream data they index (`Data`), which a repair keeps
 /// too. Bounded by that data: every pair takes at least three of its bytes.
@@ -1187,7 +1187,7 @@ fn read_object_stream_index(
         let obj_num = r.read_without_context::<u32>()?;
         r.skip_white_spaces_and_comments();
         let relative_offset = r.read_without_context::<usize>()?;
-        // PdfCraft patch: (hayro-syntax (22)) an offset past `usize` is malformed (it wrapped).
+        // LocalPDF patch: (hayro-syntax (22)) an offset past `usize` is malformed (it wrapped).
         offsets.push((obj_num, first_offset.checked_add(relative_offset)?));
     }
 
@@ -1209,7 +1209,7 @@ impl<'a> ObjectStream<'a> {
         Some(Self::with_offsets(data, ctx, Arc::new(offsets)))
     }
 
-    /// PdfCraft patch: (hayro-syntax (22)) an object stream whose index is already parsed.
+    /// LocalPDF patch: (hayro-syntax (22)) an object stream whose index is already parsed.
     fn with_offsets(
         data: &'a [u8],
         ctx: &ReaderContext<'a>,
@@ -1267,7 +1267,7 @@ fn parse_metadata(info_dict: &Dict<'_>) -> Metadata {
 mod tests {
     use super::*;
 
-    // PdfCraft patch tests (ported from craft-libs): xref stream entries are bounded by the
+    // LocalPDF patch tests (ported from craft-libs): xref stream entries are bounded by the
     // decoded data, and the type field is read at its full width.
     #[test]
     fn xref_stream_entries_need_backing_bytes() {
@@ -1632,7 +1632,7 @@ mod tests {
         assert!(read_xref_table_trailer(&mut reader, &ReaderContext::dummy()).is_none());
     }
 
-    /// PdfCraft patch: (hayro-syntax (22)) an object's offset past `usize` is malformed: a plain
+    /// LocalPDF patch: (hayro-syntax (22)) an object's offset past `usize` is malformed: a plain
     /// `+` there panics in a debug build and wraps in a release one.
     #[test]
     fn an_object_stream_offset_past_usize_is_malformed_not_a_panic() {

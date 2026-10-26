@@ -26,13 +26,13 @@ use std::sync::{Arc, LazyLock, OnceLock};
 pub type ColorComponents = SmallVec<[f32; 4]>;
 
 std::thread_local! {
-    // PdfCraft patch (34): see `tint_transform_runs`.
+    // LocalPDF patch (34): see `tint_transform_runs`.
     static TINT_TRANSFORM_RUNS: core::cell::Cell<u64> = const { core::cell::Cell::new(0) };
-    // PdfCraft patch (55): see `note_color_fallback`.
+    // LocalPDF patch (55): see `note_color_fallback`.
     static COLOR_FALLBACK: core::cell::Cell<bool> = const { core::cell::Cell::new(false) };
 }
 
-/// PdfCraft patch (55): record that a colour could not be computed and was painted in a
+/// LocalPDF patch (55): record that a colour could not be computed and was painted in a
 /// fallback colour, reported as `InterpreterWarning::ColorFallback` when the content stream
 /// being interpreted ends. Per thread, like the page's other budgets: one page is interpreted
 /// on one thread.
@@ -40,13 +40,13 @@ pub(crate) fn note_color_fallback() {
     COLOR_FALLBACK.with(|fell_back| fell_back.set(true));
 }
 
-/// PdfCraft patch (55): whether a colour fell back since the last call (or since the page
+/// LocalPDF patch (55): whether a colour fell back since the last call (or since the page
 /// started), clearing it, so each fallback is reported once.
 pub(crate) fn take_color_fallback() -> bool {
     COLOR_FALLBACK.with(|fell_back| fell_back.replace(false))
 }
 
-/// PdfCraft patch (34): how many colours this thread has run through a Separation or DeviceN
+/// LocalPDF patch (34): how many colours this thread has run through a Separation or DeviceN
 /// tint transform, for diagnostics and tests. An image converted through patch (28)'s lookup
 /// table runs it once per possible sample value, not once per pixel. Per thread, so a caller
 /// counting its own render is not disturbed by renders on other threads.
@@ -54,7 +54,7 @@ pub fn tint_transform_runs() -> u64 {
     TINT_TRANSFORM_RUNS.with(core::cell::Cell::get)
 }
 
-/// PdfCraft patch (34): count `colours` runs of a tint transform (called once per batch).
+/// LocalPDF patch (34): count `colours` runs of a tint transform (called once per batch).
 fn count_tint_transform_runs(colours: usize) {
     let colours = u64::try_from(colours).unwrap_or(u64::MAX);
     TINT_TRANSFORM_RUNS.with(|runs| runs.set(runs.get().saturating_add(colours)));
@@ -138,7 +138,7 @@ pub(crate) enum ColorSpaceType {
     DeviceN(DeviceN),
 }
 
-/// PdfCraft patch (48): what the colour space read from an `/ICCBased` profile stream is cached
+/// LocalPDF patch (48): what the colour space read from an `/ICCBased` profile stream is cached
 /// by. hayro keyed it by the stream dictionary's bytes alone, so two different profiles with the
 /// same `/N` and `/Length` shared whichever was read first, and colours in the second were
 /// drawn through the first.
@@ -154,7 +154,7 @@ enum IccProfileKey<'a> {
     Content { dict: u128, data: &'a [u8] },
 }
 
-/// PdfCraft patch (48): the object of the `/ICCBased` profile `stream` that `array` names, or
+/// LocalPDF patch (48): the object of the `/ICCBased` profile `stream` that `array` names, or
 /// `None` for a stream written directly in the array (its dictionary lies within the array's
 /// bytes). Such a stream has no object of its own: its dictionary reports the object that
 /// holds the array, which every other stream written there reports too.
@@ -184,7 +184,7 @@ impl ColorSpaceType {
                     let dict = icc_stream.dict();
                     let num_components = dict.get::<usize>(N)?;
 
-                    // PdfCraft patch (48): cached by what the profile is read from (see
+                    // LocalPDF patch (48): cached by what the profile is read from (see
                     // `IccProfileKey`), not by the stream dictionary's bytes alone.
                     let read = || {
                         let data = icc_stream.raw_data();
@@ -391,7 +391,7 @@ impl ColorSpace {
         matches!(self.0.as_ref(), ColorSpaceType::DeviceGray)
     }
 
-    // PdfCraft patch (63).
+    // LocalPDF patch (63).
     /// Whether this is `/DeviceCMYK` itself, not an ICC-based or default colour space that
     /// stands in for it.
     pub(crate) fn is_device_cmyk(&self) -> bool {
@@ -421,7 +421,7 @@ impl ColorSpace {
             .unwrap_or(AlphaColor::BLACK)
     }
 
-    /// PdfCraft patch (38): whether this space can be the default colour space of `family`
+    /// LocalPDF patch (38): whether this space can be the default colour space of `family`
     /// (ISO 32000-2 §8.6.5.6): it has as many components as the device space and is not a
     /// Lab, Indexed or Pattern space. Nor is a device space: a default that names one is
     /// ignored, so substitution never recurses.
@@ -438,7 +438,7 @@ impl ColorSpace {
     }
 }
 
-/// PdfCraft patch (38): a device colour space (ISO 32000-2 §8.6.4), which the resources'
+/// LocalPDF patch (38): a device colour space (ISO 32000-2 §8.6.4), which the resources'
 /// default colour space for it replaces wherever content selects it (§8.6.5.6).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum DeviceFamily {
@@ -500,7 +500,7 @@ impl DeviceFamily {
     }
 }
 
-/// PdfCraft patch (38): the default colour spaces (`/DefaultGray`, `/DefaultRGB` and
+/// LocalPDF patch (38): the default colour spaces (`/DefaultGray`, `/DefaultRGB` and
 /// `/DefaultCMYK`, ISO 32000-2 §8.6.5.6) of the resources content is drawn with, each read the
 /// first time the content selects its device space. Like any named resource, a default comes
 /// from those resources' `/ColorSpace` or from the resources they inherit: a form XObject
@@ -940,7 +940,7 @@ impl ToRgb for Lab {
         let [xw, yw, zw] = white_point;
 
         for (input, output) in input.chunks_exact(3).zip(output.chunks_exact_mut(3)) {
-            // PdfCraft patch: `manual_scale` means the components arrive
+            // LocalPDF patch: `manual_scale` means the components arrive
             // normalised to [0, 1] (an `/Indexed` palette over Lab looks its
             // bytes up as `byte / 255`). Map them linearly onto L* 0..100 and
             // the a*/b* /Range (ISO 32000-2 §8.6.6.3) before converting.
@@ -1053,15 +1053,15 @@ impl ToRgb for Indexed {
 #[derive(Debug, Clone)]
 pub(crate) struct Separation {
     alternate_space: ColorSpace,
-    /// PdfCraft patch (55): `None` when the tint transform cannot be read (see
+    /// LocalPDF patch (55): `None` when the tint transform cannot be read (see
     /// `eval_tint_transform`).
     tint_transform: Option<Function>,
     is_none_separation: bool,
-    /// PdfCraft patch (66): the colourant is the special name `All`.
+    /// LocalPDF patch (66): the colourant is the special name `All`.
     is_all: bool,
 }
 
-/// PdfCraft patch (55): `tint_transform` run on the tints of one colour, or, when it cannot be
+/// LocalPDF patch (55): `tint_transform` run on the tints of one colour, or, when it cannot be
 /// read or evaluated, the initial colour of `alternate_space` (black in every device space), with
 /// the fallback recorded. hayro already fell back this way when evaluation failed, silently; a
 /// transform it could not read made the whole colour space unreadable, and the space's
@@ -1086,11 +1086,11 @@ impl Separation {
         let _ = iter.next::<Name<'_>>()?;
         let name = iter.next::<Name<'_>>()?;
         let alternate_space = ColorSpace::new(iter.next::<Object<'_>>()?, cache)?;
-        // PdfCraft patch (55): an unreadable tint transform keeps the space (see
+        // LocalPDF patch (55): an unreadable tint transform keeps the space (see
         // `eval_tint_transform`).
         let tint_transform = iter.next::<Object<'_>>().and_then(|f| Function::new(&f));
         let is_none_separation = name.as_str() == "None";
-        // PdfCraft patch (66): `All` names every colourant of the output device at once
+        // LocalPDF patch (66): `All` names every colourant of the output device at once
         // (ISO 32000-2 §8.6.6.4), so its tints never go through the alternate space.
         let is_all = name.as_str() == "All";
 
@@ -1106,7 +1106,7 @@ impl Separation {
 impl ToRgb for Separation {
     fn convert_f32(&self, input: &[f32], output: &mut [u8], _: bool) -> Option<()> {
         if self.is_all {
-            // PdfCraft patch (66): §8.6.6.4: the tint applies to every colourant, and on an
+            // LocalPDF patch (66): §8.6.6.4: the tint applies to every colourant, and on an
             // additive device it is complemented first, so tint t is the gray 1 − t on each of
             // R, G and B whatever the alternate space and tint transform say.
             for (tint, rgb) in input.iter().zip(output.chunks_exact_mut(3)) {
@@ -1117,7 +1117,7 @@ impl ToRgb for Separation {
             return Some(());
         }
         count_tint_transform_runs(input.len());
-        // PdfCraft patch (55): see `eval_tint_transform`.
+        // LocalPDF patch (55): see `eval_tint_transform`.
         let evaluated = input
             .iter()
             .flat_map(|n| {
@@ -1140,7 +1140,7 @@ impl ToRgb for Separation {
 pub(crate) struct DeviceN {
     alternate_space: ColorSpace,
     num_components: u8,
-    /// PdfCraft patch (55): `None` when the tint transform cannot be read (see
+    /// LocalPDF patch (55): `None` when the tint transform cannot be read (see
     /// `eval_tint_transform`).
     tint_transform: Option<Function>,
     is_none: bool,
@@ -1159,7 +1159,7 @@ impl DeviceN {
         let num_components = u8::try_from(names.len()).ok()?;
         let all_none = names.iter().all(|n| n.as_str() == "None");
         let alternate_space = ColorSpace::new(iter.next::<Object<'_>>()?, cache)?;
-        // PdfCraft patch (55): an unreadable tint transform keeps the space (see
+        // LocalPDF patch (55): an unreadable tint transform keeps the space (see
         // `eval_tint_transform`).
         let tint_transform = iter.next::<Object<'_>>().and_then(|f| Function::new(&f));
 
@@ -1180,7 +1180,7 @@ impl ToRgb for DeviceN {
     fn convert_f32(&self, input: &[f32], output: &mut [u8], _: bool) -> Option<()> {
         let colours = input.len().checked_div(usize::from(self.num_components));
         count_tint_transform_runs(colours.unwrap_or(0));
-        // PdfCraft patch (55): see `eval_tint_transform`.
+        // LocalPDF patch (55): see `eval_tint_transform`.
         let evaluated = input
             .chunks_exact(self.num_components as usize)
             .flat_map(|n| {
@@ -1349,7 +1349,7 @@ fn f32_to_u8(val: f32) -> u8 {
     (val * 255.0 + 0.5) as u8
 }
 
-// PdfCraft patch (63).
+// LocalPDF patch (63).
 /// The `/DeviceCMYK` to `/DeviceGray` conversion of ISO 32000-2 §10.4.2.3,
 /// `gray = 1.0 - min(1.0, 0.3 c + 0.59 m + 0.11 y + k)`, which §11.5.3 also gives for the
 /// luminosity of a soft mask whose group is in `/DeviceCMYK`. A missing component counts as
@@ -1379,7 +1379,7 @@ pub struct Color {
 }
 
 impl Color {
-    /// PdfCraft patch (46): the same colour, fully opaque (see `Pattern::without_opacity`).
+    /// LocalPDF patch (46): the same colour, fully opaque (see `Pattern::without_opacity`).
     pub(crate) fn opaque(mut self) -> Self {
         self.opacity = 1.0;
         self

@@ -4,7 +4,7 @@ use std::collections::HashSet;
 
 pub(crate) struct OcgState {
     inactive_ocgs: HashSet<ObjectIdentifier>,
-    /// PdfCraft patch (40): every group the document lists in `/OCProperties /OCGs`, so a
+    /// LocalPDF patch (40): every group the document lists in `/OCProperties /OCGs`, so a
     /// visibility expression naming anything else is known to be malformed.
     known_ocgs: HashSet<ObjectIdentifier>,
     visibility_stack: Vec<bool>,
@@ -86,7 +86,7 @@ impl OcgState {
     }
 
     pub(crate) fn begin_ocmd(&mut self, ocmd: &Dict<'_>) {
-        // PdfCraft patch (40): a visibility expression takes precedence over /OCGs and /P
+        // LocalPDF patch (40): a visibility expression takes precedence over /OCGs and /P
         // (ISO 32000-2 §8.11.2.2); a malformed one is ignored and they decide instead.
         if let Some(visible) = ocmd.get::<Array<'_>>(VE).and_then(|ve| self.visibility_expression(&ve, 0)) {
             let visible = self.is_visible() && visible;
@@ -126,7 +126,7 @@ impl OcgState {
         self.visibility_stack.push(visible);
     }
 
-    /// PdfCraft patch (40): evaluate a visibility expression (`/VE`, PDF 1.6): `[/And e…]`,
+    /// LocalPDF patch (40): evaluate a visibility expression (`/VE`, PDF 1.6): `[/And e…]`,
     /// `[/Or e…]` or `[/Not e]`, each `e` an optional content group (by reference) or a nested
     /// expression. `None` for a malformed expression: an unknown operator, a `/Not` without
     /// exactly one operand, an `/And` or `/Or` without any, an operand that is neither (a
@@ -182,7 +182,7 @@ impl OcgState {
         self.visibility_stack.pop();
     }
 
-    /// PdfCraft patch: override one group's state (viewer layer toggles).
+    /// LocalPDF patch: override one group's state (viewer layer toggles).
     pub(crate) fn set_active(&mut self, id: ObjectIdentifier, active: bool) {
         if active {
             self.inactive_ocgs.remove(&id);
@@ -202,7 +202,7 @@ impl Default for OcgState {
     }
 }
 
-/// PdfCraft patch (40): how deep visibility expressions may nest; deeper ones are malformed.
+/// LocalPDF patch (40): how deep visibility expressions may nest; deeper ones are malformed.
 const MAX_VISIBILITY_EXPRESSION_DEPTH: usize = 32;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]

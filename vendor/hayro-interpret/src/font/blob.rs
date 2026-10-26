@@ -52,7 +52,7 @@ impl Type1FontBlob {
 #[derive(Clone)]
 pub(crate) struct CffFontBlob(Arc<CffFontYoke>, Arc<OnceLock<GlyphNames>>);
 
-/// PdfCraft patch: (see vendor/README.md hayro-interpret (50)) glyph name to glyph id, built on
+/// LocalPDF patch: (see vendor/README.md hayro-interpret (50)) glyph name to glyph id, built on
 /// first use.
 type GlyphNames = HashMap<Box<[u8]>, GlyphId>;
 
@@ -194,7 +194,7 @@ impl OpenTypeFontBlob {
         let f = FontRef::from_index(data.as_ref().as_ref(), index).ok()?;
         // Reject fonts with invalid post table version, fixes pdf.js issue 9462. Not sure if there
         // is a better fix, for some reason skrifa accepts the font which is completely invalid.
-        // PdfCraft patch: also accept 1.0, 2.0 and 3.0 with the two 16-bit halves swapped
+        // LocalPDF patch: also accept 1.0, 2.0 and 3.0 with the two 16-bit halves swapped
         // (`00 00 00 03` for 3.0), as ScanSoft PDF Create! writes it into every font it embeds
         // (#2946). Rejecting those fonts drew their text with a substitute that has no such glyphs.
         let invalid = f.post().is_ok_and(|p| {
@@ -271,7 +271,7 @@ impl OpenTypeFontBlob {
             return glyph_names;
         };
 
-        // PdfCraft patch: a version written with its halves swapped (`00 00 00 02`, accepted in
+        // LocalPDF patch: a version written with its halves swapped (`00 00 00 02`, accepted in
         // `new`) is read as the version it means, from a copy of the table with the version
         // written correctly: read-fonts reads a 2.0 table's name index only under version 2.0,
         // so otherwise its glyph names were never found (#2946).

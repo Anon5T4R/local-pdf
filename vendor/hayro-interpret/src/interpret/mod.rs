@@ -105,17 +105,17 @@ pub struct InterpreterSettings {
     /// Note that this feature is currently not fully implemented yet, so some
     /// annotations might be missing.
     pub render_annotations: bool,
-    /// PdfCraft patch: hide comments (markup annotations) but keep form fields (`/Widget`)
+    /// LocalPDF patch: hide comments (markup annotations) but keep form fields (`/Widget`)
     /// and links, for the viewer's "Hide all comments".
     pub hide_comments: bool,
-    /// PdfCraft patch: viewer overrides for optional content groups (object number, generation,
+    /// LocalPDF patch: viewer overrides for optional content groups (object number, generation,
     /// visible), applied on top of the document's default configuration (Layers panel toggles).
     pub ocg_overrides: Arc<Vec<(i32, i32, bool)>>,
-    /// PdfCraft patch: once this is `true`, interpretation stops before the next content
+    /// LocalPDF patch: once this is `true`, interpretation stops before the next content
     /// operator. What was drawn is then incomplete, so only set it when the output will be
     /// thrown away (a viewer's render whose result nobody can receive any more).
     pub cancelled: Option<Arc<AtomicBool>>,
-    /// PdfCraft patch: a low-detail render for previews (page backdrops, thumbnails). Images
+    /// LocalPDF patch: a low-detail render for previews (page backdrops, thumbnails). Images
     /// that would cover only a few device pixels are skipped: redrawing them at full detail
     /// costs a decode and a resample each for pixels nobody can see. Never set it for a final
     /// render (tiles, whole pages, print, export).
@@ -155,9 +155,9 @@ pub enum InterpreterWarning {
     UnsupportedFont,
     /// An image failed to decode.
     ImageDecodeFailure,
-    /// PdfCraft patch (18): a page content stream was skipped after exhausting its safety budget.
+    /// LocalPDF patch (18): a page content stream was skipped after exhausting its safety budget.
     ContentTruncated,
-    /// PdfCraft patch (55): a colour could not be computed (a colour space that cannot be
+    /// LocalPDF patch (55): a colour could not be computed (a colour space that cannot be
     /// read, or a Separation or DeviceN tint transform that cannot be evaluated) and was painted
     /// in a fallback colour. Reported at most once per content stream.
     ColorFallback,
@@ -171,7 +171,7 @@ pub fn interpret_page<'a>(
 ) {
     let resources = page.resources();
     let mut content = page.content_reader();
-    // PdfCraft patch: the page's own contents count against its content budget too, where they
+    // LocalPDF patch: the page's own contents count against its content budget too, where they
     // are decoded whole. Streamed content is only ever held a window at a time.
     crate::context::charge_content(content.materialized_len());
     interpret_content(&mut content, resources, context, device);
@@ -179,18 +179,18 @@ pub fn interpret_page<'a>(
     if context.settings.render_annotations
         && let Some(annot_arr) = page.raw().get::<Array<'_>>(ANNOTS)
     {
-        // PdfCraft patch (29): bracket the annotations so devices can tell their paints from
+        // LocalPDF patch (29): bracket the annotations so devices can tell their paints from
         // the document's own (the reading-colours setting recolours the document, not comments).
         device.begin_annotations();
         for annot in annot_arr.iter::<Dict<'_>>() {
             let flags = annot.get::<u32>(F).unwrap_or(0);
 
             // Annotation should be hidden (Hidden = bit 2, NoView = bit 6).
-            // PdfCraft patch: NoView was not honoured upstream.
+            // LocalPDF patch: NoView was not honoured upstream.
             if flags & (2 | 32) != 0 {
                 continue;
             }
-            // PdfCraft patch (56): Invisible (bit 1) hides an annotation of a type that isn't one
+            // LocalPDF patch (56): Invisible (bit 1) hides an annotation of a type that isn't one
             // of the standard ones (ISO 32000-2 Table 167), and a popup has no appearance of its
             // own (§12.5.6.14): the viewer shows it as a window for its parent, not on the page.
             let subtype = annot.get::<hayro_syntax::object::Name<'_>>(SUBTYPE);
@@ -199,14 +199,14 @@ pub fn interpret_page<'a>(
             {
                 continue;
             }
-            // PdfCraft patch: "Hide all comments" keeps widgets and links.
+            // LocalPDF patch: "Hide all comments" keeps widgets and links.
             if context.settings.hide_comments
                 && !matches!(annot.get::<hayro_syntax::object::Name<'_>>(SUBTYPE).as_deref(), Some(b"Widget" | b"Link"))
             {
                 continue;
             }
 
-            // PdfCraft patch: `/N` may be a stream or a dictionary of appearance states selected
+            // LocalPDF patch: `/N` may be a stream or a dictionary of appearance states selected
             // by `/AS` (checkboxes, radio buttons, …). Upstream only handled the stream form.
             let normal = annot.get::<Dict<'_>>(AP).and_then(|ap| {
                 ap.get::<Stream<'_>>(N).or_else(|| {
@@ -248,7 +248,7 @@ pub fn interpret_page<'a>(
                 // corner with the greatest x and y coordinates) of the
                 // transformed appearance box to the corresponding corners
                 // of the annotation’s rectangle.
-                // PdfCraft patch: the translation is taken after scaling (it was
+                // LocalPDF patch: the translation is taken after scaling (it was
                 // `/Rect.x0 - box.x0`, right only for a box at the origin or a scale of 1).
                 let (sx, sy) = (
                     annot_rect.width() / transformed_rect.width(),
@@ -262,7 +262,7 @@ pub fn interpret_page<'a>(
                     annot_rect.x0 - sx * transformed_rect.x0,
                     annot_rect.y0 - sy * transformed_rect.y0,
                 ]);
-                // PdfCraft patch (59): NoRotate (bit 5) keeps the appearance upright as the page is
+                // LocalPDF patch (59): NoRotate (bit 5) keeps the appearance upright as the page is
                 // displayed (ISO 32000-2 §12.5.3).
                 let affine = if flags & 16 != 0 && no_rotate_applies(&annot) {
                     no_rotate_turn(page.rotation(), &annot_rect) * affine
@@ -270,7 +270,7 @@ pub fn interpret_page<'a>(
                     affine
                 };
 
-                // PdfCraft patch: a /BBox or /Matrix that collapses the appearance box to a line
+                // LocalPDF patch: a /BBox or /Matrix that collapses the appearance box to a line
                 // or a point leaves nothing to map onto /Rect: the scales above divide by zero,
                 // and the infinite or NaN matrix reached the device with everything the
                 // appearance draws. Clipped to such a box the appearance shows nothing, so skip
@@ -294,7 +294,7 @@ pub fn interpret_page<'a>(
                 context.pop_root_transform();
                 context.restore_state(device);
             } else if annot.get::<hayro_syntax::object::Name<'_>>(SUBTYPE).as_deref() == Some(b"Highlight") {
-                // PdfCraft patch: a Highlight without a usable normal appearance was not drawn.
+                // LocalPDF patch: a Highlight without a usable normal appearance was not drawn.
                 draw_highlight_without_appearance(&annot, context, device);
             }
         }
@@ -302,7 +302,7 @@ pub fn interpret_page<'a>(
     }
 }
 
-/// PdfCraft patch (56): whether `subtype` is one of the standard annotation types of
+/// LocalPDF patch (56): whether `subtype` is one of the standard annotation types of
 /// ISO 32000-2 Table 171.
 fn is_standard_annotation_type(subtype: &[u8]) -> bool {
     matches!(
@@ -338,8 +338,8 @@ fn is_standard_annotation_type(subtype: &[u8]) -> bool {
     )
 }
 
-/// PdfCraft patch (59): whether the NoRotate flag turns this annotation's appearance. Form fields
-/// and links are left in `/Rect`: PdfCraft takes their click targets from it.
+/// LocalPDF patch (59): whether the NoRotate flag turns this annotation's appearance. Form fields
+/// and links are left in `/Rect`: LocalPDF takes their click targets from it.
 fn no_rotate_applies(annot: &Dict<'_>) -> bool {
     !matches!(
         annot.get::<hayro_syntax::object::Name<'_>>(SUBTYPE).as_deref(),
@@ -347,7 +347,7 @@ fn no_rotate_applies(annot: &Dict<'_>) -> bool {
     )
 }
 
-/// PdfCraft patch (59): the user-space turn that keeps a NoRotate annotation upright on a page
+/// LocalPDF patch (59): the user-space turn that keeps a NoRotate annotation upright on a page
 /// with `/Rotate`. The page is shown turned clockwise, so the appearance (already fitted to
 /// `/Rect`) is turned as far counterclockwise about the rectangle's upper-left corner, which stays
 /// where it is on the page (ISO 32000-2 §12.5.3). Its width then runs across the displayed page
@@ -363,8 +363,8 @@ fn no_rotate_turn(rotation: Rotation, rect: &kurbo::Rect) -> Affine {
     Affine::new([cos, sin, -sin, cos, x - (cos * x - sin * y), y - (sin * x + cos * y)])
 }
 
-/// PdfCraft patch: the normal appearance of a Highlight annotation that has none (ISO 32000-2
-/// §12.5.6.10), drawn as PdfCraft draws its own highlights (pdfcraft-annot): each /QuadPoints
+/// LocalPDF patch: the normal appearance of a Highlight annotation that has none (ISO 32000-2
+/// §12.5.6.10), drawn as LocalPDF draws its own highlights (localpdf-annot): each /QuadPoints
 /// quadrilateral filled with /C at /CA opacity, blended with Multiply so the marked-up content
 /// stays legible. /QuadPoints that aren't groups of eight numbers, or a /C that isn't a gray, RGB
 /// or CMYK colour (absent or empty means transparent), draw nothing.
@@ -417,7 +417,7 @@ fn draw_highlight_without_appearance<'a>(
     context.restore_state(device);
 }
 
-/// PdfCraft patch (38): the colour space `cs` or `CS` selects by `name`: a device space, else
+/// LocalPDF patch (38): the colour space `cs` or `CS` selects by `name`: a device space, else
 /// the `/ColorSpace` resource `name`. A device space, named directly or by a resource, is
 /// replaced by its default from `defaults` (ISO 32000-2 §8.6.5.6).
 fn named_color_space<'a>(
@@ -450,31 +450,31 @@ fn interpret_window<'a>(
     context: &mut Context<'a>,
     device: &mut impl Device<'a>,
 ) {
-    // PdfCraft patch (38): the resources' DefaultGray, DefaultRGB and DefaultCMYK replace the
+    // LocalPDF patch (38): the resources' DefaultGray, DefaultRGB and DefaultCMYK replace the
     // device spaces that colour operators and images select (ISO 32000-2 §8.6.5.6).
     let defaults = DefaultColorSpaces::new(resources, &context.interpreter_cache.object_cache);
     while let Some(op) = ops.next() {
-        // PdfCraft patch: stop when the caller cancelled (see `InterpreterSettings::cancelled`).
+        // LocalPDF patch: stop when the caller cancelled (see `InterpreterSettings::cancelled`).
         if context.settings.cancelled.as_ref().is_some_and(|c| c.load(Ordering::Relaxed)) {
             break;
         }
         match op {
             TypedInstruction::SaveState(_) => context.save_state(),
             TypedInstruction::StrokeColorDeviceRgb(s) => {
-                // PdfCraft patch (38): DeviceRGB, or the DefaultRGB that replaces it.
+                // LocalPDF patch (38): DeviceRGB, or the DefaultRGB that replaces it.
                 context.get_mut().graphics_state.stroke_cs = defaults.device(DeviceFamily::Rgb);
                 context.get_mut().graphics_state.stroke_color =
                     smallvec![s.0.as_f32(), s.1.as_f32(), s.2.as_f32()];
                 context.get_mut().graphics_state.stroke_pattern = None;
             }
             TypedInstruction::StrokeColorDeviceGray(s) => {
-                // PdfCraft patch (38): DeviceGray, or the DefaultGray that replaces it.
+                // LocalPDF patch (38): DeviceGray, or the DefaultGray that replaces it.
                 context.get_mut().graphics_state.stroke_cs = defaults.device(DeviceFamily::Gray);
                 context.get_mut().graphics_state.stroke_color = smallvec![s.0.as_f32()];
                 context.get_mut().graphics_state.stroke_pattern = None;
             }
             TypedInstruction::StrokeColorCmyk(s) => {
-                // PdfCraft patch (38): DeviceCMYK, or the DefaultCMYK that replaces it.
+                // LocalPDF patch (38): DeviceCMYK, or the DefaultCMYK that replaces it.
                 context.get_mut().graphics_state.stroke_cs = defaults.device(DeviceFamily::Cmyk);
                 context.get_mut().graphics_state.stroke_color =
                     smallvec![s.0.as_f32(), s.1.as_f32(), s.2.as_f32(), s.3.as_f32()];
@@ -539,20 +539,20 @@ fn interpret_window<'a>(
                 fill_stroke_path(context, device, FillRule::NonZero);
             }
             TypedInstruction::NonStrokeColorDeviceGray(s) => {
-                // PdfCraft patch (38): DeviceGray, or the DefaultGray that replaces it.
+                // LocalPDF patch (38): DeviceGray, or the DefaultGray that replaces it.
                 context.get_mut().graphics_state.none_stroke_cs = defaults.device(DeviceFamily::Gray);
                 context.get_mut().graphics_state.non_stroke_color = smallvec![s.0.as_f32()];
                 context.get_mut().graphics_state.non_stroke_pattern = None;
             }
             TypedInstruction::NonStrokeColorDeviceRgb(s) => {
-                // PdfCraft patch (38): DeviceRGB, or the DefaultRGB that replaces it.
+                // LocalPDF patch (38): DeviceRGB, or the DefaultRGB that replaces it.
                 context.get_mut().graphics_state.none_stroke_cs = defaults.device(DeviceFamily::Rgb);
                 context.get_mut().graphics_state.non_stroke_color =
                     smallvec![s.0.as_f32(), s.1.as_f32(), s.2.as_f32()];
                 context.get_mut().graphics_state.non_stroke_pattern = None;
             }
             TypedInstruction::NonStrokeColorCmyk(s) => {
-                // PdfCraft patch (38): DeviceCMYK, or the DefaultCMYK that replaces it.
+                // LocalPDF patch (38): DeviceCMYK, or the DefaultCMYK that replaces it.
                 context.get_mut().graphics_state.none_stroke_cs = defaults.device(DeviceFamily::Cmyk);
                 context.get_mut().graphics_state.non_stroke_color =
                     smallvec![s.0.as_f32(), s.1.as_f32(), s.2.as_f32(), s.3.as_f32()];
@@ -642,8 +642,8 @@ fn interpret_window<'a>(
                 // Ignore for now.
             }
             TypedInstruction::ColorSpaceStroke(c) => {
-                // PdfCraft patch (38): see `named_color_space`.
-                // PdfCraft patch (55): a space that cannot be read is drawn in DeviceGray, as
+                // LocalPDF patch (38): see `named_color_space`.
+                // LocalPDF patch (55): a space that cannot be read is drawn in DeviceGray, as
                 // before, and the fallback is reported.
                 let cs = named_color_space(c.0, resources, &defaults, context)
                     .unwrap_or_else(|| {
@@ -658,8 +658,8 @@ fn interpret_window<'a>(
                 context.get_mut().graphics_state.stroke_cs = cs;
             }
             TypedInstruction::ColorSpaceNonStroke(c) => {
-                // PdfCraft patch (38): see `named_color_space`.
-                // PdfCraft patch (55): a space that cannot be read is drawn in DeviceGray, as
+                // LocalPDF patch (38): see `named_color_space`.
+                // LocalPDF patch (55): a space that cannot be read is drawn in DeviceGray, as
                 // before, and the fallback is reported.
                 let cs = named_color_space(c.0, resources, &defaults, context)
                     .unwrap_or_else(|| {
@@ -736,7 +736,7 @@ fn interpret_window<'a>(
 
                 device.begin_marked_content(bdc.0, mcid);
 
-                // PdfCraft patch (25): hand the device the sequence's `/ActualText`, from an inline
+                // LocalPDF patch (25): hand the device the sequence's `/ActualText`, from an inline
                 // property list or one named in the resources' `/Properties`.
                 let actual = dict_or_stream(bdc.1)
                     .map(|(props, _)| props.clone())
@@ -897,7 +897,7 @@ fn interpret_window<'a>(
             TypedInstruction::ShapeGlyph(_) => {}
             TypedInstruction::XObject(x) => {
                 let cache = context.interpreter_cache.object_cache.clone();
-                // PdfCraft patch: decoded images are cached per quality (preview or final).
+                // LocalPDF patch: decoded images are cached per quality (preview or final).
                 let decoded_cache = context
                     .interpreter_cache
                     .decoded_cache
@@ -910,7 +910,7 @@ fn interpret_window<'a>(
                         &cache,
                         Some(&decoded_cache),
                         transfer_function.clone(),
-                        // PdfCraft patch (38): an image in a device space draws in its default.
+                        // LocalPDF patch (38): an image in a device space draws in its default.
                         &defaults,
                     )
                 }) {
@@ -921,8 +921,8 @@ fn interpret_window<'a>(
                 let warning_sink = context.settings.warning_sink.clone();
                 let transfer_function = context.get().graphics_state.transfer_function.clone();
                 let cache = context.interpreter_cache.object_cache.clone();
-                // PdfCraft patch: inline images are not cached (see `DecodedImageKey`).
-                // PdfCraft patch (38): an inline image in a device space, named directly or by a
+                // LocalPDF patch: inline images are not cached (see `DecodedImageKey`).
+                // LocalPDF patch (38): an inline image in a device space, named directly or by a
                 // resource, draws in its default.
                 if let Some(x_object) = ImageXObject::new(
                     i.0,
@@ -951,7 +951,7 @@ fn interpret_window<'a>(
                     .get_shading(s.0)
                     .and_then(|o| {
                         let (dict, stream) = dict_or_stream(&o)?;
-                        // PdfCraft patch (38): a shading in a device space draws in its default.
+                        // LocalPDF patch (38): a shading in a device space draws in its default.
                         Shading::new(
                             dict,
                             stream,
@@ -1019,21 +1019,21 @@ pub fn interpret<'a>(
     while context.num_states() > num_states {
         context.restore_state(device);
     }
-    // PdfCraft patch (18): say that content was skipped, so a truncated page isn't a clean render.
+    // LocalPDF patch (18): say that content was skipped, so a truncated page isn't a clean render.
     if crate::context::content_was_truncated() {
         (context.settings.warning_sink)(InterpreterWarning::ContentTruncated);
     }
-    // PdfCraft patch (55): and that a colour was painted in a fallback colour.
+    // LocalPDF patch (55): and that a colour was painted in a fallback colour.
     if crate::color::take_color_fallback() {
         (context.settings.warning_sink)(InterpreterWarning::ColorFallback);
     }
 }
 
-/// PdfCraft patch: the bytes of a window of page content. A window grows only while an instruction
+/// LocalPDF patch: the bytes of a window of page content. A window grows only while an instruction
 /// at its end is incomplete.
 const CONTENT_WINDOW: usize = 64 << 10;
 
-/// PdfCraft patch: interprets the content of a page a window at a time, so the decoded content is
+/// LocalPDF patch: interprets the content of a page a window at a time, so the decoded content is
 /// never all in memory (see `ContentReader`). A window ends at an instruction that is not complete
 /// yet: its bytes are kept, and the next window starts with them.
 fn interpret_content<'a>(
@@ -1081,11 +1081,11 @@ fn interpret_content<'a>(
     while context.num_states() > num_states {
         context.restore_state(device);
     }
-    // PdfCraft patch (18): say that content was skipped, so a truncated page isn't a clean render.
+    // LocalPDF patch (18): say that content was skipped, so a truncated page isn't a clean render.
     if cut || content.truncated() || crate::context::content_was_truncated() {
         (context.settings.warning_sink)(InterpreterWarning::ContentTruncated);
     }
-    // PdfCraft patch (55): and that a colour was painted in a fallback colour.
+    // LocalPDF patch (55): and that a colour was painted in a fallback colour.
     if crate::color::take_color_fallback() {
         (context.settings.warning_sink)(InterpreterWarning::ColorFallback);
     }

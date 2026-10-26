@@ -36,7 +36,7 @@ pub(crate) fn fill_stroke_path<'a>(
     context.path_mut().truncate(0);
 }
 
-/// PdfCraft patch: a clip set by `W` / `W*` takes effect once the path-painting operator that
+/// LocalPDF patch: a clip set by `W` / `W*` takes effect once the path-painting operator that
 /// ends the path has painted it, whichever operator that is (ISO 32000-2 §8.5.4). Upstream
 /// applied it only on `n`, and otherwise left it pending for some later, unrelated `n`.
 pub(crate) fn apply_pending_clip<'a>(context: &mut Context<'a>, device: &mut impl Device<'a>) {
@@ -159,7 +159,7 @@ pub(crate) fn get_paint<'a>(context: &Context<'a>, is_stroke: bool) -> Paint<'a>
                 pattern.set_transfer_function(tf.clone());
             }
 
-            // PdfCraft patch: `CA`/`ca` can be set by a `gs` after the pattern colour operator, so use the alpha current at paint time.
+            // LocalPDF patch: `CA`/`ca` can be set by a `gs` after the pattern colour operator, so use the alpha current at paint time.
             pattern.set_alpha(data.alpha);
             pattern.pre_concat_transform(context.root_transform());
 
@@ -169,7 +169,7 @@ pub(crate) fn get_paint<'a>(context: &Context<'a>, is_stroke: bool) -> Paint<'a>
             Paint::Color(Color::new(ColorSpace::device_gray(), smallvec![0.0], 0.0))
         }
     } else {
-        // PdfCraft patch (63): see `Context::luminosity_in_device_cmyk`.
+        // LocalPDF patch (63): see `Context::luminosity_in_device_cmyk`.
         let color = if context.luminosity_in_device_cmyk && data.color_space.is_device_cmyk() {
             let gray = device_cmyk_to_gray(&data.color);
             Color::new(ColorSpace::device_gray(), smallvec![gray], data.alpha)

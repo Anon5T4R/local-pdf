@@ -49,14 +49,14 @@ pub(crate) fn parse_inner<'a>(
     let mut writing_mode = None;
     let mut last_name: Option<Vec<u8>> = None;
 
-    // PdfCraft patch: track whether the scan was cut short. A CMap with an
+    // LocalPDF patch: track whether the scan was cut short. A CMap with an
     // unparseable tail, including one that ends inside a `begin…` block,
     // keeps the entries read so far (the block parsers push into the shared
     // lists as they go) instead of being discarded wholesale; one that
     // yielded nothing still reports failure.
     let mut truncated = false;
 
-    // PdfCraft patch: track a `usecmap` reference that could not be resolved
+    // LocalPDF patch: track a `usecmap` reference that could not be resolved
     // or parsed. When the stream yields no mappings of its own, the caller
     // must see failure rather than an empty map, so its encoding fallback
     // paths run exactly as they did before the tolerant-usecmap change.
@@ -138,7 +138,7 @@ pub(crate) fn parse_inner<'a>(
                     }
                 }
                 Some("usecmap") => {
-                    // PdfCraft patch: an unresolvable or unparseable `usecmap`
+                    // LocalPDF patch: an unresolvable or unparseable `usecmap`
                     // reference drops only the base, not the whole CMap, but
                     // is remembered so a stream that then yields no mappings
                     // at all still reports failure.
@@ -185,7 +185,7 @@ pub(crate) fn parse_inner<'a>(
         writing_mode,
     };
 
-    // PdfCraft patch: a CMap that was cut short or whose `usecmap` base could
+    // LocalPDF patch: a CMap that was cut short or whose `usecmap` base could
     // not be resolved, and that yielded no mappings of its own, still reports
     // failure, so callers fall back to the font's own encoding exactly as
     // before.
@@ -236,7 +236,7 @@ fn parse_codespace_range<F>(
             return Some(());
         }
 
-        // PdfCraft patch: a malformed codespace entry is skipped, not fatal.
+        // LocalPDF patch: a malformed codespace entry is skipped, not fatal.
         let Some(low) = extract_u32_code(&obj, &mut ctx.buf) else { continue };
         let Ok(n_bytes) = u8::try_from(ctx.buf.len()) else { continue };
         let Some(high) = read_u32_code(scanner, &mut ctx.buf) else { continue };
@@ -266,7 +266,7 @@ fn parse_range<F>(
             return Some(());
         }
 
-        // PdfCraft patch: a malformed range entry is skipped, not fatal.
+        // LocalPDF patch: a malformed range entry is skipped, not fatal.
         let Some(start) = extract_u32_code(&obj, &mut ctx.buf) else { continue };
         let byte_len = ctx.buf.len();
         let Some(end) = read_u32_code(scanner, &mut ctx.buf) else { continue };
@@ -295,7 +295,7 @@ fn parse_char<F>(
             return Some(());
         }
 
-        // PdfCraft patch: a malformed char entry is skipped, not fatal.
+        // LocalPDF patch: a malformed char entry is skipped, not fatal.
         let Some(code) = extract_u32_code(&obj, &mut ctx.buf) else { continue };
         let byte_len = ctx.buf.len();
         let Some(cid_start) = scanner.parse_number().ok().and_then(|n| u32::try_from(n.as_i32()).ok()) else { continue };
@@ -325,7 +325,7 @@ fn parse_bf_char<F>(
             return Some(());
         }
 
-        // PdfCraft patch: a malformed bfchar entry (e.g. a non-hex destination)
+        // LocalPDF patch: a malformed bfchar entry (e.g. a non-hex destination)
         // is skipped, not fatal - the entries after it still apply.
         let Some(code) = extract_u32_code(&obj, &mut ctx.buf) else {
             // The malformed code is still followed by its destination
@@ -359,7 +359,7 @@ fn parse_bf_range<F>(
             return Some(());
         }
 
-        // PdfCraft patch: a malformed bfrange entry is skipped, not fatal.
+        // LocalPDF patch: a malformed bfrange entry is skipped, not fatal.
         let Some(start) = extract_u32_code(&obj, &mut ctx.buf) else {
             // Skip the range's end and destination objects too, so later
             // entries stay aligned.

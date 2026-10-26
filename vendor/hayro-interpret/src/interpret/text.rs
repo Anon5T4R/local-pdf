@@ -69,10 +69,10 @@ pub(crate) fn show_glyph<'a>(
     device.set_blend_mode(ctx.get().graphics_state.blend_mode);
     let stroke_props = ctx.stroke_props();
 
-    // PdfCraft patch: text in a Type 3 font is rendered from its glyph descriptions in every mode
+    // LocalPDF patch: text in a Type 3 font is rendered from its glyph descriptions in every mode
     // but 3 and 7 (ISO 32000-2 §9.3.6). Stroking ran the glyph procedure a second time, so
     // `2 Tr` made bitmap fonts look bold.
-    // PdfCraft patch (64): in modes 3 and 7 the text "shall not be rendered" (§9.3.6); `7 Tr`
+    // LocalPDF patch (64): in modes 3 and 7 the text "shall not be rendered" (§9.3.6); `7 Tr`
     // painted the glyphs in the fill colour. It is still reported as clipping text, but in
     // modes 4 to 7 "nothing shall be added to the clipping path" (`clip_glyph`).
     let render_mode = match (glyph, ctx.get().text_state.render_mode) {
@@ -130,7 +130,7 @@ pub(crate) fn show_glyph<'a>(
         }
         TextRenderingMode::Clip => {
             clip_glyph(ctx, glyph, glyph_transform);
-            // PdfCraft patch: report clipping text separately from invisible OCR text.
+            // LocalPDF patch: report clipping text separately from invisible OCR text.
             // Extraction filters must retain text that is filled through its
             // clipping path without rendering devices drawing it directly.
             device.draw_glyph(
@@ -191,7 +191,7 @@ pub(crate) fn clip_glyph(context: &mut Context<'_>, glyph: &Glyph<'_>, transform
                 context.get_mut().text_state.clip_paths.extend(outline);
             }
         }
-        // PdfCraft patch (64): a Type 3 glyph adds nothing to the clipping path in modes 4 to 7
+        // LocalPDF patch (64): a Type 3 glyph adds nothing to the clipping path in modes 4 to 7
         // (ISO 32000-2 §9.3.6), so text shown only in a Type 3 font leaves no clip at `ET`.
         Glyph::Type3(_) => {}
     }

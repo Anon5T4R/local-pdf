@@ -70,7 +70,7 @@ impl Number {
 impl Skippable for Number {
     fn skip(r: &mut Reader<'_>, _: bool) -> Option<()> {
         let has_sign = r.forward_if(|b| b == b'+' || b == b'-').is_some();
-        // PdfCraft patch: one more sign, so that skipping a number covers what `read_inner`
+        // LocalPDF patch: one more sign, so that skipping a number covers what `read_inner`
         // reads. `--280` was already covered by the `b'-'` arm below, but `-+280` and `++280`
         // were not, and a skip that fails where a read succeeds puts the reader back where it
         // started (#3630 review).
@@ -120,7 +120,7 @@ impl Readable<'_> for Number {
 
 #[inline(always)]
 fn read_inner(r: &mut Reader<'_>) -> Option<Number> {
-    // PdfCraft patch: a doubled sign is one number, not two. `--280` left `negative` set with no
+    // LocalPDF patch: a doubled sign is one number, not two. `--280` left `negative` set with no
     // digits read, so it returned 0 and the reader stopped on `-280`, which became a second
     // number: a `cm` with it got seven operands, kept the last six, and the matrix
     // `0 0 1 0 -280 10` hid everything drawn under it (#3565). `Number::skip` above already
@@ -139,7 +139,7 @@ fn read_inner(r: &mut Reader<'_>) -> Option<Number> {
         signs += 1;
     }
 
-    // PdfCraft patch: high-precision float mantissa overflow (jsPDF double-precision coordinates).
+    // LocalPDF patch: high-precision float mantissa overflow (jsPDF double-precision coordinates).
     // Digits that don't fit in `mantissa` are dropped: past the dot they are only precision;
     // before it, each one scales the value by ten (`extra_int_digits`).
     let mut mantissa: u64 = 0;
@@ -362,7 +362,7 @@ mod tests {
     use crate::reader::Reader;
     use crate::reader::ReaderExt;
 
-    /// PdfCraft patch: a doubled sign is one number. `--280` returned 0 and left `-280` to be
+    /// LocalPDF patch: a doubled sign is one number. `--280` returned 0 and left `-280` to be
     /// read as a second number, so a `cm` carrying it got seven operands and a degenerate matrix
     /// (#3565). The COS lexer reads these the same way since #3299.
     #[test]
