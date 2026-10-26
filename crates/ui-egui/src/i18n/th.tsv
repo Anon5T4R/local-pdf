@@ -153,17 +153,17 @@
 	Next page	หน้าถัดไป
 	Previous page	หน้าก่อนหน้า
 	Current page — type a page number or label (such as iv) and press Enter	หน้าปัจจุบัน — พิมพ์เลขหน้าหรือป้ายหน้า (เช่น iv) แล้วกด Enter
-	Welcome to PdfCraft	ยินดีต้อนรับสู่ PdfCraft
+	Welcome to LocalPDF	ยินดีต้อนรับสู่ LocalPDF
 	An open-source PDF workbench — local, private, and scriptable.	โต๊ะทำงาน PDF แบบโอเพนซอร์ส — ทำงานในเครื่อง เป็นส่วนตัว และเขียนสคริปต์ได้
-	Join the ArtCraft community	เข้าร่วมชุมชน ArtCraft
+	Join the Local community	เข้าร่วมชุมชน Local
 	Get help, share feedback and follow development on Discord.	ขอความช่วยเหลือ ส่งความคิดเห็น และติดตามการพัฒนาได้ที่ Discord
 	Recommended tools	เครื่องมือแนะนำ
 	Use now	ใช้ตอนนี้
 	Open file	เปิดไฟล์
 	Recent	ล่าสุด
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	ไฟล์ที่คุณเปิดใน PdfCraft จะแสดงที่นี่ วาง PDF ที่ใดก็ได้เพื่อเปิด
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	ไฟล์ที่คุณเปิดใน LocalPDF จะแสดงที่นี่ วาง PDF ที่ใดก็ได้เพื่อเปิด
 	Privacy	ความเป็นส่วนตัว
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft ทำงานแบบออฟไลน์ ไม่มีการเก็บข้อมูลการใช้งาน ไม่ต้องมีบัญชี และไม่ประมวลผลบนคลาวด์ เว้นแต่คุณจะเพิ่มผู้ให้บริการเอง
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF ทำงานแบบออฟไลน์ ไม่มีการเก็บข้อมูลการใช้งาน ไม่ต้องมีบัญชี และไม่ประมวลผลบนคลาวด์ เว้นแต่คุณจะเพิ่มผู้ให้บริการเอง
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	สคริปต์ทำงานในแซนด์บ็อกซ์ที่เข้าถึงไฟล์และเครือข่ายไม่ได้ เมื่อปิด JavaScript ฟังก์ชันมาตรฐานของ Acrobat สำหรับจัดรูปแบบ ตรวจสอบ และคำนวณยังคงทำงานได้
 	Back to all tools	กลับไปที่เครื่องมือทั้งหมด
 	Close panel	ปิดแผง
@@ -310,12 +310,12 @@
 	Split document…	แบ่งเอกสาร…
 	Number pages…	ใส่เลขหน้า…
 	Keyboard shortcuts	แป้นพิมพ์ลัด
-	Join the ArtCraft Discord	เข้าร่วม Discord ของ ArtCraft
-	PdfCraft web page	หน้าเว็บ PdfCraft
-	PdfCraft on GitHub	PdfCraft บน GitHub
-	ArtCraft website	เว็บไซต์ ArtCraft
+	Join the Local Discord	เข้าร่วม Discord ของ Local
+	LocalPDF web page	หน้าเว็บ LocalPDF
+	LocalPDF on GitHub	LocalPDF บน GitHub
+	Local website	เว็บไซต์ Local
 	Check for updates…	ตรวจหาการอัปเดต…
-	About PdfCraft	เกี่ยวกับ PdfCraft
+	About LocalPDF	เกี่ยวกับ LocalPDF
 	Export a PDF	ส่งออก PDF
 	Export to	ส่งออกเป็น
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -771,9 +771,9 @@
 	Check for updates	ตรวจหาการอัปเดต
 	No check has run yet.	ยังไม่ได้ตรวจสอบ
 	Checking for a newer version…	กำลังตรวจหารุ่นที่ใหม่กว่า…
-	PdfCraft {v} is available.	มี PdfCraft {v} ให้ใช้งานแล้ว
+	LocalPDF {v} is available.	มี LocalPDF {v} ให้ใช้งานแล้ว
 	You have version {c}. Download the new version from its release page.	คุณใช้รุ่น {c} ดาวน์โหลดรุ่นใหม่ได้จากหน้ารุ่นที่เผยแพร่
-	PdfCraft {c} is up to date.	PdfCraft {c} เป็นรุ่นล่าสุดแล้ว
+	LocalPDF {c} is up to date.	LocalPDF {c} เป็นรุ่นล่าสุดแล้ว
 	Couldn't check for updates: {e}	ตรวจหาการอัปเดตไม่ได้: {e}
 	You have version {c}. All releases are listed at {page}.	คุณใช้รุ่น {c} รายการรุ่นทั้งหมดอยู่ที่ {page}
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	ถาม GitHub ว่ามีรุ่นล่าสุดหรือไม่ จะไม่มีการดาวน์โหลดหรือติดตั้งโดยอัตโนมัติ
@@ -886,8 +886,8 @@
 	No changes allowed	ไม่อนุญาตให้เปลี่ยนแปลง
 	Annotations, form fill-in, and digital signatures	คำอธิบายประกอบ การกรอกแบบฟอร์ม และลายเซ็นดิจิทัล
 	Form fill-in and digital signatures	การกรอกแบบฟอร์มและลายเซ็นดิจิทัล
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	กุญแจอยู่ใน Keychain ของ macOS ซึ่งอาจถามเพื่ออนุญาตให้ PdfCraft ใช้งาน
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	กุญแจอยู่ในที่เก็บใบรับรองของ Windows ซึ่งอาจถามเพื่ออนุญาตให้ PdfCraft ใช้งาน
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	กุญแจอยู่ใน Keychain ของ macOS ซึ่งอาจถามเพื่ออนุญาตให้ LocalPDF ใช้งาน
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	กุญแจอยู่ในที่เก็บใบรับรองของ Windows ซึ่งอาจถามเพื่ออนุญาตให้ LocalPDF ใช้งาน
 	Digital ID password	รหัสผ่าน Digital ID
 	Back	ย้อนกลับ
 	Validate all	ตรวจสอบทั้งหมด
@@ -1246,7 +1246,7 @@
 	Downsample to	ลดความละเอียดเป็น
 	Also recognize pages that already have text	รู้จำหน้าที่มีข้อความอยู่แล้วด้วย
 	Pictures on those pages are recognized too; words already in the page's text are not added again	รูปภาพในหน้าเหล่านั้นจะถูกรู้จำด้วย คำที่มีอยู่แล้วในข้อความของหน้าจะไม่ถูกเพิ่มซ้ำ
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	ยังไม่ได้ติดตั้งการรู้จำข้อความ: ไม่พบไฟล์โมเดล โปรดติดตั้ง PdfCraft ใหม่ หรือตั้ง PDFCRAFT_MODELS ไปยังโฟลเดอร์ที่มีไฟล์เหล่านั้น
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	ยังไม่ได้ติดตั้งการรู้จำข้อความ: ไม่พบไฟล์โมเดล โปรดติดตั้ง LocalPDF ใหม่ หรือตั้ง PDFCRAFT_MODELS ไปยังโฟลเดอร์ที่มีไฟล์เหล่านั้น
 	Settings	การตั้งค่า
 	Optional	ไม่บังคับ
 	Planned · {m}	วางแผนไว้ · {m}
@@ -1390,7 +1390,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	ทุกคนที่เปิดเอกสารจะต้องใช้รหัสผ่านนี้ รหัสผ่านจะมีผลเมื่อคุณบันทึก
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	เอกสารเปิดได้โดยไม่ต้องใช้รหัสผ่าน รหัสผ่านนี้ใช้สำหรับเปลี่ยนข้อจำกัด และจะมีผลเมื่อคุณบันทึก
 	Recover unsaved documents?	กู้คืนเอกสารที่ยังไม่ได้บันทึกหรือไม่
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft ปิดตัวลงอย่างไม่ปกติ เอกสารเหล่านี้มีการเปลี่ยนแปลงที่ถูกบันทึกอัตโนมัติไว้:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF ปิดตัวลงอย่างไม่ปกติ เอกสารเหล่านี้มีการเปลี่ยนแปลงที่ถูกบันทึกอัตโนมัติไว้:
 	just now	เมื่อสักครู่
 	{n} min ago	{n} นาทีที่แล้ว
 	{n} h ago	{n} ชม. ที่แล้ว
@@ -1548,10 +1548,10 @@
 	On the web, open or drop an image to convert it	บนเว็บ ให้เปิดหรือวางรูปภาพเพื่อแปลง
 	Couldn't optimize the file: {e}	ปรับไฟล์ให้เหมาะสมไม่ได้: {e}
 	Couldn't write {path}: {e}	เขียน {path} ไม่ได้: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	แบบฟอร์มขอให้ส่งไปที่ {u} แต่ PdfCraft ไม่ส่งข้อมูลแบบฟอร์ม บันทึกเอกสารเพื่อเก็บสิ่งที่คุณกรอก
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	แบบฟอร์มขอให้ส่งไปที่ {u} แต่ LocalPDF ไม่ส่งข้อมูลแบบฟอร์ม บันทึกเอกสารเพื่อเก็บสิ่งที่คุณกรอก
 	This PDF uses the unsupported {s} action.	PDF นี้ใช้การทำงาน {s} ที่ไม่รองรับ
 	{name}: the {other} action isn't supported yet	{name}: ยังไม่รองรับการทำงาน {other}
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} จะส่งแบบฟอร์มไปที่ {url} แต่ PdfCraft ไม่ส่งข้อมูลแบบฟอร์ม บันทึกเอกสารเพื่อเก็บสิ่งที่คุณกรอก
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} จะส่งแบบฟอร์มไปที่ {url} แต่ LocalPDF ไม่ส่งข้อมูลแบบฟอร์ม บันทึกเอกสารเพื่อเก็บสิ่งที่คุณกรอก
 	Export stopped: {e}	การส่งออกหยุดลง: {e}
 	Exported 1 image	ส่งออกแล้ว 1 รูป
 	Exported {n} images	ส่งออกแล้ว {n} รูป
@@ -1713,7 +1713,7 @@
 	Couldn't open {name}: {e}	เปิด {name} ไม่ได้: {e}
 	Couldn't read {name}: {e}	อ่าน {name} ไม่ได้: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	โหมดพกพาปิดอยู่: เขียนลงใน {folder} ไม่ได้ ({error}) การตั้งค่าจะถูกเก็บในโฟลเดอร์ผู้ใช้ของคุณแทน
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft กำลังวาดโดยไม่ใช้หน่วยประมวลผลกราฟิก จึงอาจทำงานช้า การอัปเดตไดรเวอร์กราฟิกอาจช่วยได้
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF กำลังวาดโดยไม่ใช้หน่วยประมวลผลกราฟิก จึงอาจทำงานช้า การอัปเดตไดรเวอร์กราฟิกอาจช่วยได้
 	Couldn't save: {e}	บันทึกไม่ได้: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	การดาวน์โหลดไฟล์แนบบนเว็บจะมาใน M3.10 (พร้อมแล้ว {n} ไบต์)
 	`{command}` {when}	`{command}` {when}
@@ -1787,9 +1787,9 @@
 	Signed and all signatures are valid.	เซ็นแล้วและลายเซ็นทั้งหมดถูกต้อง
 	At least one signature has problems.	มีลายเซ็นอย่างน้อยหนึ่งรายการที่มีปัญหา
 	This document is secured. Some changes are restricted by its security settings.	เอกสารนี้มีการรักษาความปลอดภัย การเปลี่ยนแปลงบางอย่างถูกจำกัดโดยการตั้งค่าความปลอดภัย
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	นี่เป็นแบบฟอร์ม XFA แบบไดนามิก ซึ่ง PdfCraft ยังแสดงไม่ได้ สิ่งที่คุณเห็นคือหน้าตัวแทนของไฟล์
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	นี่เป็นแบบฟอร์ม XFA แบบไดนามิก ซึ่ง LocalPDF ยังแสดงไม่ได้ สิ่งที่คุณเห็นคือหน้าตัวแทนของไฟล์
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	สคริปต์ของแบบฟอร์มนี้ถูกปิดเพราะมีสคริปต์ทำงานนานเกินไป เปิดเอกสารใหม่เพื่อรันอีกครั้ง
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	แบบฟอร์มนี้มีข้อมูล XFA ด้วย ซึ่ง PdfCraft ยังอ่านไม่ได้ คุณกรอกช่องได้ แต่ Acrobat อาจแสดงค่าของ XFA แทน
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	แบบฟอร์มนี้มีข้อมูล XFA ด้วย ซึ่ง LocalPDF ยังอ่านไม่ได้ คุณกรอกช่องได้ แต่ Acrobat อาจแสดงค่าของ XFA แทน
 	This document contains {n} interactive form fields.	เอกสารนี้มีช่องแบบฟอร์มแบบโต้ตอบ {n} ช่อง
 	This file was damaged and has been repaired. Saving keeps the repaired version.	ไฟล์นี้เสียหายและได้รับการซ่อมแซมแล้ว การบันทึกจะเก็บรุ่นที่ซ่อมแซมไว้
 	Dismiss	ปิดข้อความ
@@ -1838,7 +1838,7 @@
 	there are no pages to print	ไม่มีหน้าให้พิมพ์
 	the document has no tags	เอกสารไม่มีแท็ก
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	ยังไม่ได้ติดตั้งโมเดลการรู้จำข้อความ (ติดตั้ง PdfCraft ใหม่ หรือตั้ง PDFCRAFT_MODELS ไปยังโฟลเดอร์ที่มีไฟล์เหล่านั้น)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	ยังไม่ได้ติดตั้งโมเดลการรู้จำข้อความ (ติดตั้ง LocalPDF ใหม่ หรือตั้ง PDFCRAFT_MODELS ไปยังโฟลเดอร์ที่มีไฟล์เหล่านั้น)
 	the image is empty	รูปภาพว่างเปล่า
 	this file isn't XFDF, FDF, XML or text form data	ไฟล์นี้ไม่ใช่ข้อมูลแบบฟอร์มชนิด XFDF, FDF, XML หรือข้อความ
 	nothing in the file matches this document	ไม่มีอะไรในไฟล์ที่ตรงกับเอกสารนี้
@@ -2049,11 +2049,11 @@
 	Couldn't import the signature image: {e}	นำเข้ารูปลายเซ็นไม่ได้: {e}
 	Go to page…	ไปที่หน้า…
 	For page sizes and margins.	สำหรับขนาดหน้าและระยะขอบ
-	Reopen the files that were open when PdfCraft last closed	เปิดไฟล์ที่เปิดค้างไว้ตอนปิด PdfCraft ครั้งล่าสุดอีกครั้ง
+	Reopen the files that were open when LocalPDF last closed	เปิดไฟล์ที่เปิดค้างไว้ตอนปิด LocalPDF ครั้งล่าสุดอีกครั้ง
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	แบบอักษรข้อความของ PDF วาด “{c}” ({code}) ไม่ได้ โปรดเลือกข้อความที่รองรับ
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	แบบอักษรมาตรฐานวาด “{c}” ({code}) ไม่ได้ ตอนนี้เพิ่มเป็นข้อความได้เฉพาะอักขระยุโรปตะวันตก
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	แบบอักษรของช่องนี้วาด “{c}” ({code}) ไม่ได้ PdfCraft จึงแสดง ? แทน ค่าถูกบันทึกไว้ และโปรแกรมอ่าน PDF อื่นจะวาดช่องใหม่จากค่านั้น
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	แบบอักษรที่ PdfCraft ใช้เขียนวาด “{c}” ({code}) ไม่ได้ จึงแสดงเป็น ? ในโปรแกรมอ่าน PDF ทุกตัว ข้อความถูกบันทึกไว้แล้ว
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	แบบอักษรของช่องนี้วาด “{c}” ({code}) ไม่ได้ LocalPDF จึงแสดง ? แทน ค่าถูกบันทึกไว้ และโปรแกรมอ่าน PDF อื่นจะวาดช่องใหม่จากค่านั้น
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	แบบอักษรที่ LocalPDF ใช้เขียนวาด “{c}” ({code}) ไม่ได้ จึงแสดงเป็น ? ในโปรแกรมอ่าน PDF ทุกตัว ข้อความถูกบันทึกไว้แล้ว
 	Open arrow	ลูกศรเปิด
 	Closed arrow	ลูกศรปิด
 	Butt	ปลายตัด
@@ -2171,8 +2171,8 @@
 	Write this email?	เขียนอีเมลนี้หรือไม่
 	XFA form: its fields and its XFA data are kept in step, so other viewers show what you fill in.	แบบฟอร์ม XFA: ช่องและข้อมูล XFA ถูกปรับให้ตรงกันเสมอ โปรแกรมอ่านอื่นจึงแสดงสิ่งที่คุณกรอก
 	{n} contributors · {c} commits	ผู้ร่วมพัฒนา {n} คน · {c} คอมมิต
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who}ในเอกสารนี้พยายามเปิดที่อยู่ที่ PdfCraft จะไม่เปิด: {e}
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who}ในเอกสารนี้พยายามเปิดที่อยู่ที่ PdfCraft จะไม่เปิด: {e} เอกสารเปิดได้เฉพาะลิงก์เว็บ (http, https) และอีเมล (mailto)
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who}ในเอกสารนี้พยายามเปิดที่อยู่ที่ LocalPDF จะไม่เปิด: {e}
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who}ในเอกสารนี้พยายามเปิดที่อยู่ที่ LocalPDF จะไม่เปิด: {e} เอกสารเปิดได้เฉพาะลิงก์เว็บ (http, https) และอีเมล (mailto)
 	{who} in this document wants to open this address in your browser:	{who}ในเอกสารนี้ต้องการเปิดที่อยู่นี้ในเบราว์เซอร์ของคุณ:
 	{who} in this document wants to open your email app with this address:	{who}ในเอกสารนี้ต้องการเปิดแอปอีเมลของคุณด้วยที่อยู่นี้:
 	ΔLOC	ΔLOC
@@ -2302,7 +2302,7 @@ animation effects	Off	ปิด
 	no unused output name	ไม่มีชื่อผลลัพธ์ที่ยังไม่ถูกใช้
 	no output folder was chosen	ยังไม่ได้เลือกโฟลเดอร์ผลลัพธ์
 	Scan	สแกน
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	เซ็นชื่อบนกระดาษขาวแล้วถ่ายรูปในที่สว่างสม่ำเสมอ (ใช้แฟลช) เลือกรูปถ่ายหรือวางที่นี่ PdfCraft จะหาลายเซ็นและเอาพื้นกระดาษออก
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	เซ็นชื่อบนกระดาษขาวแล้วถ่ายรูปในที่สว่างสม่ำเสมอ (ใช้แฟลช) เลือกรูปถ่ายหรือวางที่นี่ LocalPDF จะหาลายเซ็นและเอาพื้นกระดาษออก
 	Choose photo…	เลือกรูปถ่าย…
 	No photo chosen	ยังไม่ได้เลือกรูปถ่าย
 	Photo	รูปถ่าย
@@ -2381,7 +2381,7 @@ action wizard	Start	เริ่ม
 	The signature's byte range does not exclude exactly its contents.	ช่วงไบต์ของลายเซ็นไม่ได้เว้นเฉพาะเนื้อหาของลายเซ็นพอดี
 	The signature contents are not hexadecimal.	เนื้อหาลายเซ็นไม่ใช่เลขฐานสิบหก
 	The signature could not be read ({}).	อ่านลายเซ็นไม่ได้ ({})
-	PdfCraft can't check this signature yet: {}.	PdfCraft ยังตรวจสอบลายเซ็นนี้ไม่ได้: {}
+	LocalPDF can't check this signature yet: {}.	LocalPDF ยังตรวจสอบลายเซ็นนี้ไม่ได้: {}
 	The signature uses the legacy adbe.x509.rsa_sha1 format.	ลายเซ็นใช้รูปแบบเก่า adbe.x509.rsa_sha1
 	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	ลายเซ็นเข้ารหัสแบบ BER (ความยาวไม่กำหนด) แทน DER จึงอ่านแบบผ่อนปรน
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	เนื้อหาที่เซ็นเป็น OCTET STRING แบบแบ่งส่วนตามที่ BER อนุญาต แต่ยังอ่านได้
@@ -2403,7 +2403,7 @@ action wizard	Start	เริ่ม
 	The signer's certificate was not valid at the time of signing.	ใบรับรองของผู้เซ็นไม่ถูกต้อง ณ เวลาที่เซ็น
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	ใบรับรองของผู้เซ็นไม่อนุญาตให้ใช้กับลายเซ็นดิจิทัล (key usage ไม่มีทั้ง digital signature และ non-repudiation)
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	ใบรับรองของผู้เซ็นไม่ได้ออกให้สำหรับเซ็นเอกสาร (extended key usage ไม่มีวัตถุประสงค์การเซ็นเอกสาร)
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	ใบรับรองของผู้เซ็นมีส่วนขยายสำคัญที่ PdfCraft ไม่รู้จัก ({})
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	ใบรับรองของผู้เซ็นมีส่วนขยายสำคัญที่ LocalPDF ไม่รู้จัก ({})
 	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	ใบรับรองของ {} ไม่ใช่ใบรับรอง CA ที่ออกใบรับรองได้ จึงไม่ถูกใช้รับรอง {}
 	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	ใบรับรองของ {} ไม่อนุญาตให้มีใบรับรอง CA อยู่ใต้ลงไปมากเท่านี้ (ความยาวเส้นทาง) จึงไม่ถูกใช้รับรอง {}
 	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	ใบรับรองของ {} ไม่ถูกต้อง ณ เวลาที่เซ็น จึงไม่ถูกใช้รับรอง {}

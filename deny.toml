@@ -32,15 +32,9 @@ allow-wildcard-paths = true
 [sources]
 unknown-registry = "deny"
 unknown-git = "deny"
-# Shared UI components and spooler; Cargo.toml pins the immutable revision. craft-print pins
-# storytold's winprint fork (Windows printing, #1107) to an immutable revision of its own.
-allow-git = [
-    "https://github.com/Anon5T4R/local-deps",
-    "https://github.com/storytold/winprint.rs",
-    # The reviewed egui 0.37 and winit 0.30.13 fork revisions (immutable pins in Cargo.toml).
-    "https://github.com/libs/egui (vendored)",
-    "https://github.com/libs/winit (vendored)",
-]
+# Nenhuma dependência git: tudo vem do crates.io (pinado pelo lock) ou de libs/ e
+# vendor/ (vendored, path deps). O CI recusa qualquer fonte git+ no Cargo.lock.
+allow-git = []
 
 [advisories]
 yanked = "warn"

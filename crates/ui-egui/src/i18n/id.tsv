@@ -1,7 +1,7 @@
 # Indonesian (id) catalog. Columns, separated by a TAB:  context <TAB> source <TAB> translation
 #
-# Clean-room translations of PdfCraft's English UI labels. Use standard Indonesian computing
-# terms; keep product and format names (PdfCraft, PDF, PDF/A, OCR, XFA, Word...) unchanged.
+# Clean-room translations of LocalPDF's English UI labels. Use standard Indonesian computing
+# terms; keep product and format names (LocalPDF, PDF, PDF/A, OCR, XFA, Word...) unchanged.
 # Indonesian does not inflect nouns for number, so @plural entries list one form.
 	Menu	Menu
 	Edit	Edit
@@ -137,7 +137,7 @@
 	Accessibility	Aksesibilitas
 	Help…	Bantuan…
 	Check for updates…	Periksa pembaruan…
-	About PdfCraft	Tentang PdfCraft
+	About LocalPDF	Tentang LocalPDF
 	Automatically	Otomatis
 	Never	Tidak pernah
 	Always	Selalu
@@ -549,7 +549,7 @@
 	Files are combined from top to bottom. Leave Pages empty to take every page.	File digabungkan dari atas ke bawah. Biarkan Halaman kosong untuk mengambil semua halaman.
 	Files are combined in the order shown. Drag them to change it.	File digabungkan sesuai urutan yang ditampilkan. Seret untuk mengubah urutannya.
 	Files for {name}	File untuk {name}
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	File yang Anda buka di PdfCraft akan muncul di sini. Jatuhkan PDF di mana saja untuk membukanya.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	File yang Anda buka di LocalPDF akan muncul di sini. Jatuhkan PDF di mana saja untuk membukanya.
 	Fill & Sign dates	Tanggal Isi & Tanda Tangani
 	Fill & Sign signature	Tanda tangan Isi & Tanda Tangani
 	Fill Color:	Warna Isian:
@@ -656,7 +656,7 @@
 	JavaScript is turned off (Preferences ▸ JavaScript).	JavaScript dimatikan (Preferensi > JavaScript).
 	JavaScript, e.g. getField("total").value	JavaScript, misalnya getField("total").value
 	Join our Discord	Gabung ke Discord kami
-	Join the ArtCraft community	Gabung ke komunitas ArtCraft
+	Join the Local community	Gabung ke komunitas Local
 	Justify	Ratakan kanan-kiri
 	Keep source fonts	Pertahankan font sumber
 	Keep tool selected	Pertahankan alat terpilih
@@ -857,10 +857,10 @@
 	Pattern	Pola
 	Patterns	Pola
 	Patterns (graphics objects)	Pola (objek grafis)
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft tidak berhenti secara normal. Dokumen-dokumen ini memiliki perubahan yang disimpan otomatis:
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft bekerja secara luring. Tidak ada telemetri, tidak ada akun, dan tidak ada pemrosesan awan kecuali Anda menambahkan penyedia.
-	PdfCraft {c} is up to date.	PdfCraft {c} sudah terbaru.
-	PdfCraft {v} is available.	PdfCraft {v} tersedia.
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF tidak berhenti secara normal. Dokumen-dokumen ini memiliki perubahan yang disimpan otomatis:
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF bekerja secara luring. Tidak ada telemetri, tidak ada akun, dan tidak ada pemrosesan awan kecuali Anda menambahkan penyedia.
+	LocalPDF {c} is up to date.	LocalPDF {c} sudah terbaru.
+	LocalPDF {v} is available.	LocalPDF {v} tersedia.
 	Percentage	Persentase
 	Permissions password	Kata sandi izin
 	Permitted actions after certifying	Tindakan yang diizinkan setelah disertifikasi
@@ -936,7 +936,7 @@
 	Remove {n} files	Hapus {n} file
 	Remove {n} pages	Hapus {n} halaman
 	Reopen Closed Tab	Buka Ulang Tab yang Ditutup
-	Reopen the files that were open when PdfCraft last closed	Buka kembali file yang terbuka saat PdfCraft terakhir ditutup
+	Reopen the files that were open when LocalPDF last closed	Buka kembali file yang terbuka saat LocalPDF terakhir ditutup
 	Repair log	Log perbaikan
 	Repeat overlay text	Ulangi teks hamparan
 	Replace Image…	Ganti Gambar…
@@ -1123,7 +1123,7 @@
 	Text alignment:	Perataan teks:
 	Text in images isn't found; recognise text (OCR) first.	Teks dalam gambar tidak ditemukan; lakukan pengenalan teks (OCR) terlebih dahulu.
 	Text is compared word by word; the differences are shown on the new file.	Teks dibandingkan kata demi kata; perbedaan ditampilkan pada file baru.
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Pengenalan teks belum terpasang: file modelnya hilang. Pasang ulang PdfCraft, atau atur PDFCRAFT_MODELS ke folder yang memuatnya.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Pengenalan teks belum terpasang: file modelnya hilang. Pasang ulang LocalPDF, atau atur PDFCRAFT_MODELS ke folder yang memuatnya.
 	Text to find	Teks yang dicari
 	Text to insert	Teks yang disisipkan
 	Text used as a clipping path cannot be moved with this selection.	Teks yang dipakai sebagai jalur pemotongan tidak dapat dipindahkan dengan pilihan ini.
@@ -1138,9 +1138,9 @@
 	The document's security settings don't allow copying text and images	Pengaturan keamanan dokumen tidak mengizinkan penyalinan teks dan gambar
 	The document's security settings don't allow this change	Pengaturan keamanan dokumen tidak mengizinkan perubahan ini
 	The existing action will be preserved.	Tindakan yang ada akan dipertahankan.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Font yang dipakai PdfCraft tidak dapat menggambar “{c}” ({code}), sehingga teks itu tampil sebagai ? di setiap penampil PDF. Teks tetap tersimpan.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Kunci berada di penyimpanan sertifikat Windows, yang mungkin meminta izin untuk memakai PdfCraft.
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Kunci berada di Keychain macOS, yang mungkin meminta izin untuk memakai PdfCraft.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Font yang dipakai LocalPDF tidak dapat menggambar “{c}” ({code}), sehingga teks itu tampil sebagai ? di setiap penampil PDF. Teks tetap tersimpan.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	Kunci berada di penyimpanan sertifikat Windows, yang mungkin meminta izin untuk memakai LocalPDF.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	Kunci berada di Keychain macOS, yang mungkin meminta izin untuk memakai LocalPDF.
 	The newest {n} of {total} PDFs	{n} PDF terbaru dari {total}
 	The password is only used to read the file; it isn't saved.	Kata sandi hanya dipakai untuk membaca file; kata sandi tidak disimpan.
 	The printer driver's own settings for this print: paper tray, paper type, finishing and more.	Pengaturan milik driver printer sendiri untuk cetakan ini: baki kertas, jenis kertas, finishing, dan lainnya.
@@ -1181,7 +1181,7 @@
 	This file was damaged and has been repaired. Saving keeps the repaired version.	File ini rusak dan telah diperbaiki. Menyimpan mempertahankan versi yang sudah diperbaiki.
 	This folder isn't available right now. It may have moved, or its drive or cloud sync is offline.	Folder ini sedang tidak tersedia. Folder mungkin telah berpindah, atau drive atau sinkronisasi cloud-nya sedang luring.
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	Skrip formulir ini dinonaktifkan karena salah satunya berjalan terlalu lama. Buka kembali dokumen untuk menjalankannya lagi.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Ini adalah formulir XFA dinamis, yang belum dapat ditampilkan oleh PdfCraft. Yang Anda lihat adalah halaman placeholder milik file tersebut.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	Ini adalah formulir XFA dinamis, yang belum dapat ditampilkan oleh LocalPDF. Yang Anda lihat adalah halaman placeholder milik file tersebut.
 	This measurement needs at least {n} points.	Pengukuran ini memerlukan minimal {n} titik.
 	This page contains objects that cannot be selected together.	Halaman ini berisi objek yang tidak dapat dipilih bersama-sama.
 	This page couldn't be displayed.\n{e}	Halaman ini tidak dapat ditampilkan.\n{e}
@@ -1259,7 +1259,7 @@
 	Visible Rectangle	Persegi Terlihat
 	Visual	Visual
 	Warnings	Peringatan
-	Welcome to PdfCraft	Selamat datang di PdfCraft
+	Welcome to LocalPDF	Selamat datang di LocalPDF
 	What word or phrase would you like to search for?	Kata atau frasa apa yang ingin Anda cari?
 	Whole words only	Hanya kata utuh
 	Width:	Lebar:
@@ -1336,7 +1336,7 @@
 	Archive documents	Arsipkan dokumen
 	Area	Luas
 	Arrow	Panah
-	ArtCraft website	Situs ArtCraft
+	Local website	Situs Local
 	Ask about this document	Tanyakan tentang dokumen ini
 	Attach a file	Lampirkan file
 	Attach file	Lampirkan file
@@ -1475,7 +1475,7 @@
 	Insert text	Sisipkan teks
 	JavaScript	JavaScript
 	JavaScript console…	Konsol JavaScript…
-	Join the ArtCraft Discord	Gabung ke Discord ArtCraft
+	Join the Local Discord	Gabung ke Discord Local
 	Light gray	Abu-abu muda
 	Line	Garis
 	Link	Tautan
@@ -1506,8 +1506,8 @@
 	Page options	Opsi halaman
 	Page transitions	Transisi halaman
 	Paste pages	Tempel halaman
-	PdfCraft on GitHub	PdfCraft di GitHub
-	PdfCraft web page	Halaman web PdfCraft
+	LocalPDF on GitHub	LocalPDF di GitHub
+	LocalPDF web page	Halaman web LocalPDF
 	Perimeter	Keliling
 	Pin folder to Home…	Sematkan folder ke Beranda…
 	PostScript / EPS	PostScript / EPS
@@ -1665,7 +1665,7 @@
 	Page {} has additional actions	Halaman {} memiliki tindakan tambahan
 	Panel layout could not be restored: {error}	Tata letak panel tidak dapat dipulihkan: {error}
 	Panel move was not applied: {error}	Pemindahan panel tidak diterapkan: {error}
-	PdfCraft can't check this signature yet: {}.	PdfCraft belum dapat memeriksa tanda tangan ini: {}.
+	LocalPDF can't check this signature yet: {}.	LocalPDF belum dapat memeriksa tanda tangan ini: {}.
 	Previous (⇧⌘G)	Sebelumnya (⇧⌘G)
 	Print (⌘P)	Cetak (⌘P)
 	Producer	Produsen
@@ -1729,7 +1729,7 @@
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	Konten yang ditandatangani adalah OCTET STRING tersusun (bersegmen), sebagaimana diizinkan BER; tetap dibaca.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	Sertifikat penanda tangan tidak mengizinkan tanda tangan digital (penggunaan kuncinya tidak memuat digital signature maupun non-repudiation).
 	The signer's certificate has been revoked ({}).	Sertifikat penanda tangan telah dicabut ({}).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	Sertifikat penanda tangan memiliki ekstensi kritis yang tidak dikenali PdfCraft ({}).
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	Sertifikat penanda tangan memiliki ekstensi kritis yang tidak dikenali LocalPDF ({}).
 	The signer's certificate is not in the signature.	Sertifikat penanda tangan tidak ada di dalam tanda tangan.
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	Sertifikat penanda tangan tidak diterbitkan untuk menandatangani dokumen (penggunaan kunci ekstensifnya tidak memuat tujuan penandatanganan dokumen).
 	The signer's certificate was not valid at the time of signing.	Sertifikat penanda tangan tidak valid pada saat penandatanganan.
@@ -2173,7 +2173,7 @@ comment menu	Edit	Edit
 	Passed	Lulus
 	Password protection will be applied when you save	Perlindungan kata sandi akan diterapkan saat Anda menyimpan
 	Path	Jalur
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft sedang menggambar tanpa akselerator grafis, jadi mungkin lambat. Memperbarui driver grafis mungkin membantu.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF sedang menggambar tanpa akselerator grafis, jadi mungkin lambat. Memperbarui driver grafis mungkin membantu.
 	People may need more time to respond. Check that nothing has a time limit.	Orang mungkin membutuhkan lebih banyak waktu untuk merespons. Pastikan tidak ada yang memiliki batas waktu.
 	Phone Number	Nomor Telepon
 	Phone Numbers	Nomor Telepon
@@ -2329,7 +2329,7 @@ comment menu	Edit	Edit
 	The document's security settings don't allow filling in form fields	Pengaturan keamanan dokumen tidak mengizinkan pengisian kolom formulir
 	The field properties could not be changed.	Properti kolom tidak dapat diubah.
 	The field properties dialog is no longer open.	Dialog properti kolom tidak lagi terbuka.
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Formulir diminta untuk dikirim ke {u}; PdfCraft tidak mengirim data formulir. Simpan dokumen untuk mempertahankan isi Anda.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	Formulir diminta untuk dikirim ke {u}; LocalPDF tidak mengirim data formulir. Simpan dokumen untuk mempertahankan isi Anda.
 	The form asks viewers to make appearances (NeedAppearances)	Formulir meminta penampil untuk membuat tampilan (NeedAppearances)
 	The linked PDF opened, but its named destination was not applied.	PDF tertaut terbuka, tetapi tujuan bernama tidak diterapkan.
 	The linked PDF opened, but its page destination was out of range.	PDF tertaut terbuka, tetapi tujuan halamannya di luar rentang.
@@ -2350,7 +2350,7 @@ comment menu	Edit	Edit
 	This document has no form fields.	Dokumen ini tidak memiliki kolom formulir.
 	This document has no layers.	Dokumen ini tidak memiliki lapisan.
 	This file is already as small as it can be made ({size}). No copy was saved.	File ini sudah sekecil mungkin ({size}). Tidak ada salinan yang disimpan.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Formulir ini juga berisi data XFA, yang belum dibaca PdfCraft. Anda dapat mengisi kolomnya, tetapi Acrobat mungkin menampilkan nilai XFA sebagai gantinya.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Formulir ini juga berisi data XFA, yang belum dibaca LocalPDF. Anda dapat mengisi kolomnya, tetapi Acrobat mungkin menampilkan nilai XFA sebagai gantinya.
 	Thumbnails	Thumbnail
 	Timed responses	Respons berjadwal
 	Type Password	Ketik Kata Sandi
@@ -2403,7 +2403,7 @@ comment menu	Edit	Edit
 	the document is protected by a password	dokumen dilindungi kata sandi
 	the image is empty	gambarnya kosong
 	the password is incorrect	kata sandinya salah
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	model pengenalan teks belum terpasang (pasang ulang PdfCraft, atau atur PDFCRAFT_MODELS ke folder yang memuatnya)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	model pengenalan teks belum terpasang (pasang ulang LocalPDF, atau atur PDFCRAFT_MODELS ke folder yang memuatnya)
 	the title must not be empty	judul tidak boleh kosong
 	there are no pages to print	tidak ada halaman untuk dicetak
 	there are no redaction marks to apply	tidak ada tanda penyensoran untuk diterapkan
@@ -2416,19 +2416,19 @@ comment menu	Edit	Edit
 	{label} failed: {e}	{label} gagal: {e}
 	{name} has no action	{name} tidak memiliki tindakan
 	{name} is too large for a word list (at most 1 MB).	{name} terlalu besar untuk daftar kata (maksimal 1 MB).
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} mengirim formulir ke {url}; PdfCraft tidak mengirim data formulir. Simpan dokumen untuk mempertahankan isi Anda.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} mengirim formulir ke {url}; LocalPDF tidak mengirim data formulir. Simpan dokumen untuk mempertahankan isi Anda.
 	{name}: choosing images arrives on the web with file pickers for images	{name}: memilih gambar Herrera ke situs web dengan pemilih file untuk gambar
 	{name}: the {other} action isn't supported yet	{name}: tindakan {other} belum didukung
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} dalam dokumen ini mencoba membuka alamat yang tidak akan dibuka PdfCraft: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} dalam dokumen ini mencoba membuka alamat yang tidak akan dibuka PdfCraft: {e}. Hanya tautan web (http, https) dan email (mailto) yang terbuka dari dokumen.
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who} dalam dokumen ini mencoba membuka alamat yang tidak akan dibuka LocalPDF: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} dalam dokumen ini mencoba membuka alamat yang tidak akan dibuka LocalPDF: {e}. Hanya tautan web (http, https) dan email (mailto) yang terbuka dari dokumen.
 animation effects	Off	Nonaktif
 animation effects	On	Aktif
 	View more	Lihat lebih banyak
 	View less	Lihat lebih sedikit
 	Only continue if you trust this document. An address can carry information from the document, such as what you typed into its form.	Lanjutkan hanya jika Anda memercayai dokumen ini. Alamat dapat membawa informasi dari dokumen, seperti yang Anda ketik ke formulirnya.
 	Print single-sided. Keep the sheets in order, cut at the marks, then stack the piles left to right, top to bottom.	Cetak satu sisi. Pertahankan urutan lembarnya, potong pada tanda, lalu tumpuk tumpukan dari kiri ke kanan, dari atas ke bawah.
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Tandatangani selembar kertas putih dan ambil fotonya dengan cahaya terang dan merata (gunakan blitz). Pilih foto atau jatuhkan di sini: PdfCraft menemukan tanda tangan dan menghapus kertasnya.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Font kolom ini tidak dapat menggambar “{c}” ({code}), jadi PdfCraft menampilkan ? sebagai gantinya. Nilainya disimpan, dan penampil PDF lain menggambar ulang kolom dari nilai itu.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	Tandatangani selembar kertas putih dan ambil fotonya dengan cahaya terang dan merata (gunakan blitz). Pilih foto atau jatuhkan di sini: LocalPDF menemukan tanda tangan dan menghapus kertasnya.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Font kolom ini tidak dapat menggambar “{c}” ({code}), jadi LocalPDF menampilkan ? sebagai gantinya. Nilainya disimpan, dan penampil PDF lain menggambar ulang kolom dari nilai itu.
 	{chars} can't be written into the PDF yet: Fill & Sign text is Western European only. Pick a numeric format such as dd.mm.yyyy.	{chars} belum dapat ditulis ke PDF: teks Isi & Tanda Tangani hanya untuk Western European. Pilih format angka seperti dd.mm.yyyy.
 	January	Januari
 	February	Februari

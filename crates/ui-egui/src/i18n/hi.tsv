@@ -143,17 +143,17 @@
 	Next page	अगला पृष्ठ
 	Previous page	पिछला पृष्ठ
 	Current page — type a page number or label (such as iv) and press Enter	वर्तमान पृष्ठ — पृष्ठ संख्या या लेबल (जैसे iv) टाइप करें और Enter दबाएँ
-	Welcome to PdfCraft	PdfCraft में आपका स्वागत है
+	Welcome to LocalPDF	LocalPDF में आपका स्वागत है
 	An open-source PDF workbench — local, private, and scriptable.	एक ओपन-सोर्स पीडीएफ़ वर्कबेंच — स्थानीय, निजी और स्क्रिप्टेबल।
-	Join the ArtCraft community	ArtCraft समुदाय से जुड़ें
+	Join the Local community	Local समुदाय से जुड़ें
 	Get help, share feedback and follow development on Discord.	Discord पर सहायता प्राप्त करें, प्रतिक्रिया साझा करें और विकास पर नज़र रखें।
 	Recommended tools	अनुशंसित टूल
 	Use now	अभी उपयोग करें
 	Open file	फ़ाइल खोलें
 	Recent	हाल की फ़ाइलें
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	आप PdfCraft में जो फ़ाइलें खोलते हैं वे यहाँ दिखाई देती हैं। खोलने के लिए पीडीएफ़ कहीं भी छोड़ दें।
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	आप LocalPDF में जो फ़ाइलें खोलते हैं वे यहाँ दिखाई देती हैं। खोलने के लिए पीडीएफ़ कहीं भी छोड़ दें।
 	Privacy	गोपनीयता
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft ऑफ़लाइन काम करता है। जब तक आप कोई प्रोवाइडर न जोड़ें, न टेलीमेट्री है, न खाता और न ही क्लाउड प्रोसेसिंग।
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF ऑफ़लाइन काम करता है। जब तक आप कोई प्रोवाइडर न जोड़ें, न टेलीमेट्री है, न खाता और न ही क्लाउड प्रोसेसिंग।
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	स्क्रिप्ट ऐसे सैंडबॉक्स में चलती हैं जिसमें फ़ाइल या नेटवर्क एक्सेस नहीं होता। JavaScript बंद होने पर भी Acrobat के मानक format, validate और calculate फ़ंक्शन काम करते हैं।
 	Back to all tools	सभी टूल पर वापस जाएँ
 	Close panel	पैनल बंद करें
@@ -300,12 +300,12 @@
 	Split document…	दस्तावेज़ विभाजित करें…
 	Number pages…	पृष्ठों पर नंबर लगाएँ…
 	Keyboard shortcuts	कीबोर्ड शॉर्टकट
-	Join the ArtCraft Discord	ArtCraft Discord से जुड़ें
-	PdfCraft web page	PdfCraft वेबपेज
-	PdfCraft on GitHub	GitHub पर PdfCraft
-	ArtCraft website	ArtCraft वेबसाइट
+	Join the Local Discord	Local Discord से जुड़ें
+	LocalPDF web page	LocalPDF वेबपेज
+	LocalPDF on GitHub	GitHub पर LocalPDF
+	Local website	Local वेबसाइट
 	Check for updates…	अपडेट की जाँच करें…
-	About PdfCraft	PdfCraft के बारे में
+	About LocalPDF	LocalPDF के बारे में
 	Export a PDF	पीडीएफ़ निर्यात करें
 	Export to	इसमें निर्यात करें
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -760,9 +760,9 @@
 	Check for updates	अपडेट के लिए जाँचें
 	No check has run yet.	अभी तक कोई जाँच नहीं चली है।
 	Checking for a newer version…	नए संस्करण की जाँच हो रही है…
-	PdfCraft {v} is available.	PdfCraft {v} उपलब्ध है।
+	LocalPDF {v} is available.	LocalPDF {v} उपलब्ध है।
 	You have version {c}. Download the new version from its release page.	आपके पास संस्करण {c} है। नया संस्करण इसके रिलीज़ पृष्ठ से डाउनलोड करें।
-	PdfCraft {c} is up to date.	PdfCraft {c} अद्यतन है।
+	LocalPDF {c} is up to date.	LocalPDF {c} अद्यतन है।
 	Couldn't check for updates: {e}	अपडेट की जाँच नहीं हो सकी: {e}
 	You have version {c}. All releases are listed at {page}.	आपके पास संस्करण {c} है। सभी रिलीज़ {page} पर सूचीबद्ध हैं।
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	GitHub से नवीनतम रिलीज़ की क्वेरी करता है। कुछ भी स्वतः डाउनलोड या इंस्टॉल नहीं होता।
@@ -875,8 +875,8 @@
 	No changes allowed	कोई बदलाव की अनुमति नहीं
 	Annotations, form fill-in, and digital signatures	एनोटेशन, फ़ॉर्म भरना और डिजिटल हस्ताक्षर
 	Form fill-in and digital signatures	फ़ॉर्म भरना और डिजिटल हस्ताक्षर
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	कुंजी macOS Keychain में है, जो PdfCraft को उसका उपयोग करने की अनुमति माँग सकती है।
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	कुंजी Windows प्रमाणपत्र स्टोर में है, जो PdfCraft को उसका उपयोग करने की अनुमति माँग सकता है।
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	कुंजी macOS Keychain में है, जो LocalPDF को उसका उपयोग करने की अनुमति माँग सकती है।
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	कुंजी Windows प्रमाणपत्र स्टोर में है, जो LocalPDF को उसका उपयोग करने की अनुमति माँग सकता है।
 	Digital ID password	डिजिटल आईडी पासवर्ड
 	Back	पीछे
 	Validate all	सभी सत्यापित करें
@@ -1235,7 +1235,7 @@
 	Downsample to	इस तक डाउनसैंपल करें
 	Also recognize pages that already have text	उन पृष्ठों को भी पहचानें जिन पर पहले से टेक्स्ट है
 	Pictures on those pages are recognized too; words already in the page's text are not added again	उन पृष्ठों की तस्वीरें भी पहचानी जाती हैं; पृष्ठ के टेक्स्ट में पहले से मौजूद शब्द दोबारा नहीं जोड़े जाते
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	टेक्स्ट पहचान इंस्टॉल नहीं है: इसकी मॉडल फ़ाइलें मौजूद नहीं हैं। PdfCraft दोबारा इंस्टॉल करें, या PDFCRAFT_MODELS को उस फ़ोल्डर पर सेट करें जिसमें वे रखी हैं।
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	टेक्स्ट पहचान इंस्टॉल नहीं है: इसकी मॉडल फ़ाइलें मौजूद नहीं हैं। LocalPDF दोबारा इंस्टॉल करें, या PDFCRAFT_MODELS को उस फ़ोल्डर पर सेट करें जिसमें वे रखी हैं।
 	Settings	सेटिंग्स
 	Optional	वैकल्पिक
 	Planned · {m}	नियोजित · {m}
@@ -1379,7 +1379,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	दस्तावेज़ खोलने वाले हर व्यक्ति को यह पासवर्ड चाहिए। यह सहेजने पर लागू होता है।
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	दस्तावेज़ बिना पासवर्ड खुलता है; पाबंदियाँ बदलने के लिए यह पासवर्ड चाहिए। यह सहेजने पर लागू होता है।
 	Recover unsaved documents?	असहेजे दस्तावेज़ पुनर्प्राप्त करें?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft सही ढंग से बंद नहीं हुआ। इन दस्तावेज़ों के बदलाव स्वतः सहेजे गए थे:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF सही ढंग से बंद नहीं हुआ। इन दस्तावेज़ों के बदलाव स्वतः सहेजे गए थे:
 	just now	अभी-अभी
 	{n} min ago	{n} मिनट पहले
 	{n} h ago	{n} घंटे पहले
@@ -1537,10 +1537,10 @@
 	On the web, open or drop an image to convert it	वेब पर, इसे बदलने के लिए कोई तस्वीर खोलें या छोड़ें
 	Couldn't optimize the file: {e}	फ़ाइल ऑप्टिमाइज़ नहीं की जा सकी: {e}
 	Couldn't write {path}: {e}	{path} नहीं लिखा जा सका: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	फ़ॉर्म {u} पर जमा होने का अनुरोध करता है; PdfCraft फ़ॉर्म डेटा नहीं भेजता। अपनी भरी हुई जानकारी बनाए रखने के लिए दस्तावेज़ सहेजें।
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	फ़ॉर्म {u} पर जमा होने का अनुरोध करता है; LocalPDF फ़ॉर्म डेटा नहीं भेजता। अपनी भरी हुई जानकारी बनाए रखने के लिए दस्तावेज़ सहेजें।
 	This PDF uses the unsupported {s} action.	यह पीडीएफ़ असमर्थित {s} क्रिया उपयोग करता है।
 	{name}: the {other} action isn't supported yet	{name}: {other} क्रिया अभी समर्थित नहीं है
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} फ़ॉर्म {url} पर भेजता है; PdfCraft फ़ॉर्म डेटा नहीं भेजता। अपनी भरी हुई जानकारी बनाए रखने के लिए दस्तावेज़ सहेजें।
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} फ़ॉर्म {url} पर भेजता है; LocalPDF फ़ॉर्म डेटा नहीं भेजता। अपनी भरी हुई जानकारी बनाए रखने के लिए दस्तावेज़ सहेजें।
 	Export stopped: {e}	निर्यात रुक गया: {e}
 	Exported 1 image	1 तस्वीर निर्यात की गई
 	Exported {n} images	{n} तस्वीरें निर्यात की गईं
@@ -1765,8 +1765,8 @@
 	Signed and all signatures are valid.	हस्ताक्षरित, और सभी हस्ताक्षर मान्य हैं।
 	At least one signature has problems.	कम से कम एक हस्ताक्षर में समस्याएँ हैं।
 	This document is secured. Some changes are restricted by its security settings.	यह दस्तावेज़ सुरक्षित है। इसकी सुरक्षा सेटिंग्स कुछ बदलाव प्रतिबंधित करती हैं।
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	यह एक डायनामिक XFA फ़ॉर्म है, जिसे PdfCraft अभी दिखा नहीं सकता। आप जो देख रहे हैं वह फ़ाइल का प्लेसहोल्डर पृष्ठ है।
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	इस फ़ॉर्म में XFA डेटा भी है, जिसे PdfCraft अभी नहीं पढ़ता। आप इसके फ़ील्ड भर सकते हैं, लेकिन Acrobat इसके बजाय XFA मान दिखा सकता है।
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	यह एक डायनामिक XFA फ़ॉर्म है, जिसे LocalPDF अभी दिखा नहीं सकता। आप जो देख रहे हैं वह फ़ाइल का प्लेसहोल्डर पृष्ठ है।
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	इस फ़ॉर्म में XFA डेटा भी है, जिसे LocalPDF अभी नहीं पढ़ता। आप इसके फ़ील्ड भर सकते हैं, लेकिन Acrobat इसके बजाय XFA मान दिखा सकता है।
 	This document contains {n} interactive form fields.	इस दस्तावेज़ में {n} इंटरैक्टिव फ़ॉर्म फ़ील्ड हैं।
 	This file was damaged and has been repaired. Saving keeps the repaired version.	यह फ़ाइल क्षतिग्रस्त थी और उसे मरम्मत कर दिया गया है। सहेजने पर मरम्मत किया हुआ संस्करण ही रहेगा।
 	Dismiss	छिपाएँ
@@ -1815,7 +1815,7 @@
 	there are no pages to print	छपाई के लिए कोई पृष्ठ नहीं हैं
 	the document has no tags	दस्तावेज़ में कोई टैग नहीं हैं
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	टेक्स्ट पहचान मॉडल इंस्टॉल नहीं हैं (PdfCraft दोबारा इंस्टॉल करें, या PDFCRAFT_MODELS को उस फ़ोल्डर पर सेट करें जिसमें वे मौजूद हैं)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	टेक्स्ट पहचान मॉडल इंस्टॉल नहीं हैं (LocalPDF दोबारा इंस्टॉल करें, या PDFCRAFT_MODELS को उस फ़ोल्डर पर सेट करें जिसमें वे मौजूद हैं)
 	the image is empty	छवि ख़ाली है
 	this file isn't XFDF, FDF, XML or text form data	यह फ़ाइल XFDF, FDF, XML या टेक्स्ट फ़ॉर्म डेटा नहीं है
 	nothing in the file matches this document	फ़ाइल में कुछ भी इस दस्तावेज़ से मेल नहीं खाता
@@ -2069,7 +2069,7 @@
 	Couldn't optimize the file	फ़ाइल ऑप्टिमाइज़ नहीं हो सकी
 	Files are combined in this order. Leave Pages empty to take every page.	फ़ाइलें इसी क्रम में जुड़ती हैं। सभी पृष्ठ लेने के लिए “पृष्ठ” ख़ाली छोड़ दें।
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	पोर्टेबल मोड बंद है: {folder} में लिखा नहीं जा सकता ({error})। सेटिंग्स इसके बजाय आपके यूज़र फ़ोल्डर में रखी जाती हैं।
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft बिना ग्राफ़िक्स प्रोसेसर के चित्र बना रहा है, इसलिए धीमा चल सकता है। ग्राफ़िक्स ड्राइवर अपडेट करने से मदद मिल सकती है।
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF बिना ग्राफ़िक्स प्रोसेसर के चित्र बना रहा है, इसलिए धीमा चल सकता है। ग्राफ़िक्स ड्राइवर अपडेट करने से मदद मिल सकती है।
 	Show	दिखाएँ
 	Sort	क्रमबद्ध करें
 	Reverse the order	क्रम उल्टा करें
@@ -2127,7 +2127,7 @@ calendar date	September	सितंबर
 calendar date	October	अक्तूबर
 calendar date	November	नवंबर
 calendar date	December	दिसंबर
-	Reopen the files that were open when PdfCraft last closed	PdfCraft के बंद होने के समय जो फ़ाइलें खुली थीं, उन्हें दोबारा खोलें
+	Reopen the files that were open when LocalPDF last closed	LocalPDF के बंद होने के समय जो फ़ाइलें खुली थीं, उन्हें दोबारा खोलें
 	Clear Recent Files	हाल की फ़ाइलें साफ़ करें
 	Remove from Recent	हाल की फ़ाइलों से हटाएँ
 	Remove {name} from Recent	{name} को हाल की फ़ाइलों से हटाएँ
@@ -2139,8 +2139,8 @@ calendar date	December	दिसंबर
 	A link	एक लिंक
 	A button	एक बटन
 	A script	एक स्क्रिप्ट
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	इस दस्तावेज़ में {who} ने एक ऐसा पता खोलने की कोशिश की जो PdfCraft नहीं खोलता: {e}।
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	इस दस्तावेज़ में {who} ने एक ऐसा पता खोलने की कोशिश की जो PdfCraft नहीं खोलता: {e}। दस्तावेज़ों से केवल वेब (http, https) और ईमेल (mailto) लिंक खुलते हैं।
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	इस दस्तावेज़ में {who} ने एक ऐसा पता खोलने की कोशिश की जो LocalPDF नहीं खोलता: {e}।
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	इस दस्तावेज़ में {who} ने एक ऐसा पता खोलने की कोशिश की जो LocalPDF नहीं खोलता: {e}। दस्तावेज़ों से केवल वेब (http, https) और ईमेल (mailto) लिंक खुलते हैं।
 	Another file dialog is still open. Finish with it first.	एक और फ़ाइल संवाद अभी खुला है। पहले उससे काम पूरा करें।
 	Couldn't show the file picker. Please try again.	फ़ाइल चुनने वाला संवाद नहीं दिखाया जा सका। कृपया दोबारा कोशिश करें।
 	The document changed while you were choosing a file, so nothing was changed.	आप फ़ाइल चुन रहे थे, तभी दस्तावेज़ बदल गया, इसलिए कुछ नहीं बदला गया।
@@ -2176,8 +2176,8 @@ calendar date	December	दिसंबर
 	Slash	स्लैश
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	पीडीएफ़ टेक्स्ट फ़ॉन्ट “{c}” ({code}) नहीं बना सकते। समर्थित टेक्स्ट चुनें।
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	मानक फ़ॉन्ट “{c}” ({code}) नहीं बना सकते। फ़िलहाल टेक्स्ट के रूप में केवल पश्चिमी यूरोपीय अक्षर ही जोड़े जा सकते हैं।
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	इस फ़ील्ड का फ़ॉन्ट “{c}” ({code}) नहीं बना सकता, इसलिए PdfCraft उसकी जगह ? दिखाता है। मान सहेजा गया है, और दूसरे पीडीएफ़ व्यूअर उसी से फ़ील्ड दोबारा बनाते हैं।
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	जिन फ़ॉन्ट से PdfCraft लिखता है, वे “{c}” ({code}) नहीं बना सकते, इसलिए हर पीडीएफ़ व्यूअर में वह ? की तरह दिखता है। टेक्स्ट सहेजा गया है।
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	इस फ़ील्ड का फ़ॉन्ट “{c}” ({code}) नहीं बना सकता, इसलिए LocalPDF उसकी जगह ? दिखाता है। मान सहेजा गया है, और दूसरे पीडीएफ़ व्यूअर उसी से फ़ील्ड दोबारा बनाते हैं।
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	जिन फ़ॉन्ट से LocalPDF लिखता है, वे “{c}” ({code}) नहीं बना सकते, इसलिए हर पीडीएफ़ व्यूअर में वह ? की तरह दिखता है। टेक्स्ट सहेजा गया है।
 	Larger pages	बड़े पृष्ठ
 	Smaller pages	छोटे पृष्ठ
 	Reset page size	पृष्ठ आकार रीसेट करें
@@ -2327,7 +2327,7 @@ animation effects	Off	बंद
 	no output folder was chosen	आउटपुट फ़ोल्डर नहीं चुना गया
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	{n} पीडीएफ़ डाउनलोड हुए
 	Scan	स्कैन करें
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	सफ़ेद काग़ज़ के एक टुकड़े पर हस्ताक्षर करें और तेज़, एकसार रोशनी में उसकी फ़ोटो लें (फ़्लैश लगाएँ)। फ़ोटो चुनें या यहाँ छोड़ दें: PdfCraft हस्ताक्षर ढूँढ लेगा और काग़ज़ हटा देगा।
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	सफ़ेद काग़ज़ के एक टुकड़े पर हस्ताक्षर करें और तेज़, एकसार रोशनी में उसकी फ़ोटो लें (फ़्लैश लगाएँ)। फ़ोटो चुनें या यहाँ छोड़ दें: LocalPDF हस्ताक्षर ढूँढ लेगा और काग़ज़ हटा देगा।
 	Choose photo…	फ़ोटो चुनें…
 	No photo chosen	कोई फ़ोटो नहीं चुना गया
 	Photo	फ़ोटो
@@ -2446,7 +2446,7 @@ animation effects	Off	बंद
 	Page {} has additional actions	पृष्ठ {} में अतिरिक्त क्रियाएँ हैं
 	Panel layout could not be restored: {error}	पैनल लेआउट पुनर्स्थापित नहीं किया जा सका: {error}
 	Panel move was not applied: {error}	पैनल का स्थानांतरण लागू नहीं हुआ: {error}
-	PdfCraft can't check this signature yet: {}.	PdfCraft अभी इस हस्ताक्षर की जाँच नहीं कर सकता: {}।
+	LocalPDF can't check this signature yet: {}.	LocalPDF अभी इस हस्ताक्षर की जाँच नहीं कर सकता: {}।
 	Previous (⇧⌘G)	पिछला (⇧⌘G)
 	Print (⌘P)	प्रिंट करें (⌘P)
 	Producer	प्रोड्यूसर
@@ -2509,7 +2509,7 @@ animation effects	Off	बंद
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	हस्ताक्षरित सामग्री एक निर्मित (खंडित) OCTET STRING है, जैसा BER में अनुमत है; फिर भी इसे पढ़ लिया गया।
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	हस्ताक्षरकर्ता का प्रमाणपत्र डिजिटल हस्ताक्षर की अनुमति नहीं देता (उसके की-यूसेज में न डिजिटल हस्ताक्षर है, न अस्वीकार-निषेध)।
 	The signer's certificate has been revoked ({}).	हस्ताक्षरकर्ता का प्रमाणपत्र निरस्त कर दिया गया है ({})।
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	हस्ताक्षरकर्ता के प्रमाणपत्र में क्रिटिकल एक्सटेंशन हैं जिन्हें PdfCraft नहीं पहचानता ({})।
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	हस्ताक्षरकर्ता के प्रमाणपत्र में क्रिटिकल एक्सटेंशन हैं जिन्हें LocalPDF नहीं पहचानता ({})।
 	The signer's certificate is not in the signature.	हस्ताक्षरकर्ता का प्रमाणपत्र हस्ताक्षर में मौजूद नहीं है।
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	हस्ताक्षरकर्ता का प्रमाणपत्र दस्तावेज़ों पर हस्ताक्षर के लिए जारी नहीं किया गया है (उसके एक्सटेंडेड की-यूसेज में दस्तावेज़-हस्ताक्षर का उद्देश्य नहीं है)।
 	The signer's certificate was not valid at the time of signing.	हस्ताक्षरकर्ता का प्रमाणपत्र हस्ताक्षर के समय मान्य नहीं था।

@@ -13,7 +13,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Central Kurdish (Sorani) computing vocabulary. No proprietary localisation resource, string table
 # or product UI (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay in Latin letters;
+# Product and technology names (LocalPDF, PDF, Acrobat JavaScript ...) stay in Latin letters;
 # the trailing "…" of dialog commands is kept. Digits are Western (0-9).
 #
 # Write every entry in logical (typing) order. Catalogs stay logical: epaint shapes and
@@ -165,17 +165,17 @@
 	Previous page	پەڕەی پێشوو
 	Current page — type a page number or label (such as iv) and press Enter	پەڕەی ئێستا — ژمارەی پەڕەیەک یان نیشانەکەی بنووسە (وەک iv) و Enter دابگرە
 	Zoom — type a percentage and press Enter	زووم — ڕێژەیەکی سەدی بنووسە و Enter دابگرە
-	Welcome to PdfCraft	بەخێربێیت بۆ PdfCraft
+	Welcome to LocalPDF	بەخێربێیت بۆ LocalPDF
 	An open-source PDF workbench — local, private, and scriptable.	مێزێکی کاری سەرچاوەکراوە بۆ PDF — ناوخۆیی، تایبەت و بەرنامەڕێژکراو.
-	Join the ArtCraft community	بەشداریکردن لە کۆمەڵگەی ArtCraft
+	Join the Local community	بەشداریکردن لە کۆمەڵگەی Local
 	Get help, share feedback and follow development on Discord.	یارمەتی وەربگرە، بۆچوونەکانت بڵاو بکەرەوە و بەدوای پەرەپێداندا بکەوە لە Discord.
 	Recommended tools	ئامرازی پێشنیارکراو
 	Use now	ئێستا بەکاری بهێنە
 	Open file	کردنەوەی فایل
 	Recent	دواییەکان
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	ئەو فایلانەی لە PdfCraft دەیانکەیتەوە لێرە دەردەکەون. PDFێک لە هەرکوێ دابنێ بۆ کردنەوەی.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	ئەو فایلانەی لە LocalPDF دەیانکەیتەوە لێرە دەردەکەون. PDFێک لە هەرکوێ دابنێ بۆ کردنەوەی.
 	Privacy	تایبەتێتی
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft بەبێ ئینتەرنێت کار دەکات. نە پێوانەی دوورەوە، نە هەژمار و نە پێواژۆی هەور هەیە مەگەر دابینکەرێک زیاد بکەیت.
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF بەبێ ئینتەرنێت کار دەکات. نە پێوانەی دوورەوە، نە هەژمار و نە پێواژۆی هەور هەیە مەگەر دابینکەرێک زیاد بکەیت.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	سکریپتەکان لە ژینگەیەکی جیاکراوەدا جێبەجێ دەبن بەبێ دەستگەیشتن بە فایل یان تۆڕ. کاتێک JavaScript دابخرێت، فەرمانە ستانداردەکانی Acrobat بۆ فۆرمات، پشتڕاستکردنەوە و ژمێرکاریکردن هێشتا کار دەکەن.
 	Back to all tools	گەڕانەوە بۆ هەموو ئامرازەکان
 	Close panel	داخستنی پانێڵ
@@ -322,12 +322,12 @@
 	Split document…	دابەشکردنی بەڵگەنامە…
 	Number pages…	ژمارەدان بە پەڕەکان…
 	Keyboard shortcuts	کورتەڕێگاکانی تەختەکلیل
-	Join the ArtCraft Discord	بەشداریکردن لە Discordی ArtCraft
-	PdfCraft web page	لاپەڕەی وێبی PdfCraft
-	PdfCraft on GitHub	PdfCraft لە GitHub
-	ArtCraft website	ماڵپەڕی ArtCraft
+	Join the Local Discord	بەشداریکردن لە Discordی Local
+	LocalPDF web page	لاپەڕەی وێبی LocalPDF
+	LocalPDF on GitHub	LocalPDF لە GitHub
+	Local website	ماڵپەڕی Local
 	Check for updates…	پشکنین بۆ نوێکردنەوەکان…
-	About PdfCraft	دەربارەی PdfCraft
+	About LocalPDF	دەربارەی LocalPDF
 	Export a PDF	هەناردەکردنی PDFێک
 	Export to	هەناردەکردن بۆ
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -787,9 +787,9 @@
 	Check for updates	پشکنین بۆ نوێکردنەوەکان
 	No check has run yet.	هێشتا هیچ پشکنینێک نەکراوە.
 	Checking for a newer version…	پشکنین بۆ وەشانێکی نوێتر…
-	PdfCraft {v} is available.	PdfCraft {v} بەردەستە.
+	LocalPDF {v} is available.	LocalPDF {v} بەردەستە.
 	You have version {c}. Download the new version from its release page.	وەشانی {c} هەیە. وەشانە نوێیەکە لە پەڕەی وەشانەکەیەوە دابگرە.
-	PdfCraft {c} is up to date.	PdfCraft {c} نوێکراوەتەوە.
+	LocalPDF {c} is up to date.	LocalPDF {c} نوێکراوەتەوە.
 	Couldn't check for updates: {e}	پشکنین بۆ نوێکردنەوە نەکرا: {e}
 	You have version {c}. All releases are listed at {page}.	وەشانی {c} هەیە. هەموو وەشانەکان لە {page} پێڕست کراون.
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	لە GitHub دەپرسێت بۆ نوێترین وەشان. هیچ شتێک بە شێوەی خۆکار داگیر ناکرێت یان دادەمەزرێنرێت.
@@ -909,8 +909,8 @@
 	No changes allowed	هیچ گۆڕانکارییەک ڕێگەپێدراو نییە
 	Annotations, form fill-in, and digital signatures	تێبینییەکان، پڕکردنەوەی فۆڕم و واژووە دیجیتاڵییەکان
 	Form fill-in and digital signatures	پڕکردنەوەی فۆڕم و واژووە دیجیتاڵییەکان
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	کلیلەکە لە Keychain ی macOS ـدایە، کە ڕەنگە داوای ڕێگەدان بکات بۆ ئەوەی PdfCraft بەکاری بهێنێت.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	کلیلەکە لە کۆگای بڕوانامەکانی Windows ـدایە، کە ڕەنگە داوای ڕێگەدان بکات بۆ ئەوەی PdfCraft بەکاری بهێنێت.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	کلیلەکە لە Keychain ی macOS ـدایە، کە ڕەنگە داوای ڕێگەدان بکات بۆ ئەوەی LocalPDF بەکاری بهێنێت.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	کلیلەکە لە کۆگای بڕوانامەکانی Windows ـدایە، کە ڕەنگە داوای ڕێگەدان بکات بۆ ئەوەی LocalPDF بەکاری بهێنێت.
 	Digital ID password	وشەی نهێنیی ناسنامەی دیجیتاڵی
 	Back	گەڕانەوە
 	Validate all	پشتڕاستکردنەوەی هەموو
@@ -1270,7 +1270,7 @@
 	Downsample to	کەمکردنەوەی ڕوونی بۆ
 	Also recognize pages that already have text	هەروەها ئەو پەڕانە بناسەوە کە خۆیان دەقیان هەیە
 	Pictures on those pages are recognized too; words already in the page's text are not added again	وێنەکانی ئەو پەڕانەش دەناسرێنەوە؛ ئەو وشانەی پێشتر لە دەقی پەڕەکەدان دووبارە زیاد ناکرێن
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	ناسینەوەی دەق دانەمەزراوە: فایلەکانی مۆدێلەکەی نین. PdfCraft دووبارە دامەزرێنە، یان PDFCRAFT_MODELS بکە بە ئەو فۆڵدەرەی کە لەخۆی دەگرێت.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	ناسینەوەی دەق دانەمەزراوە: فایلەکانی مۆدێلەکەی نین. LocalPDF دووبارە دامەزرێنە، یان PDFCRAFT_MODELS بکە بە ئەو فۆڵدەرەی کە لەخۆی دەگرێت.
 	Settings	ڕێکخستنەکان
 	Optional	بەدڵی خۆت
 	Planned · {m}	پلانگیراو · {m}
@@ -1415,7 +1415,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	هەر کەسێک بەڵگەنامەکە بکاتەوە پێویستی بەم وشە نهێنییە دەبێت. لە کاتی پاشەکەوتکردن جێبەجێ دەکرێت.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	بەڵگەنامەکە بەبێ وشەی نهێنی دەکرێتەوە؛ ئەم وشە نهێنییە بۆ گۆڕینی سنووردارکردنەکان پێویستە. لە کاتی پاشەکەوتکردن جێبەجێ دەکرێت.
 	Recover unsaved documents?	گەڕاندنەوەی بەڵگەنامە پاشەکەوتنەکراوەکان؟
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft بە شێوەی ئاسایی دانەخرا. ئەم بەڵگەنامانە گۆڕانکارییان هەبوو کە بە شێوەی خۆکار پاشەکەوت کرابوون:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF بە شێوەی ئاسایی دانەخرا. ئەم بەڵگەنامانە گۆڕانکارییان هەبوو کە بە شێوەی خۆکار پاشەکەوت کرابوون:
 	just now	ئێستا
 	{n} min ago	{n} خولەک لەمەوبەر
 	{n} h ago	{n} کاتژمێر لەمەوبەر
@@ -1576,10 +1576,10 @@
 	On the web, open or drop an image to convert it	لە وێبدا، وێنەیەک بکەرەوە یان فڕێی بدە بۆ گۆڕینی
 	Couldn't optimize the file: {e}	نەتوانرا فایلەکە باشتر بکرێت: {e}
 	Couldn't write {path}: {e}	نەتوانرا لە {path} بنووسرێت: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	فۆڕمەکە داوای ناردن دەکات بۆ {u}؛ PdfCraft داتای فۆڕم نانێرێت. بەڵگەنامەکە پاشەکەوت بکە بۆ پاراستنی تۆمارەکانت.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	فۆڕمەکە داوای ناردن دەکات بۆ {u}؛ LocalPDF داتای فۆڕم نانێرێت. بەڵگەنامەکە پاشەکەوت بکە بۆ پاراستنی تۆمارەکانت.
 	This PDF uses the unsupported {s} action.	ئەم PDFە کرداری {s}ی پشتگیرینەکراو بەکار دەهێنێت.
 	{name}: the {other} action isn't supported yet	{name}: کرداری {other} هێشتا پشتگیری نەکراوە
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} فۆڕمەکە دەنێرێت بۆ {url}؛ PdfCraft داتای فۆڕم نانێرێت. بەڵگەنامەکە پاشەکەوت بکە بۆ پاراستنی تۆمارەکانت.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} فۆڕمەکە دەنێرێت بۆ {url}؛ LocalPDF داتای فۆڕم نانێرێت. بەڵگەنامەکە پاشەکەوت بکە بۆ پاراستنی تۆمارەکانت.
 	Export stopped: {e}	هەناردەکردن وەستا: {e}
 	Exported 1 image	1 وێنە هەناردەکرا
 	Exported {n} images	{n} وێنە هەناردەکرا
@@ -1807,8 +1807,8 @@
 	Signed and all signatures are valid.	واژوو کراوە و هەموو واژووەکان دروستن.
 	At least one signature has problems.	لانیکەم واژوویەک کێشەی هەیە.
 	This document is secured. Some changes are restricted by its security settings.	ئەم بەڵگەنامەیە پارێزراوە. هەندێک گۆڕانکاری بە ڕێکخستنەکانی ئاسایشەکەی سنووردار کراوە.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	ئەمە فۆڕمی داینامیکی XFA یە، کە PdfCraft هێشتا ناتوانێت پیشانی بدات. ئەوەی دەیبینیت پەڕەی جێگرەوەی فایلەکەیە.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	ئەم فۆڕمە هەروەها داتای XFA ی تێدایە، کە PdfCraft هێشتا نایخوێنێتەوە. دەتوانیت خانەکانی پڕ بکەیتەوە، بەڵام Acrobat ڕەنگە بەهاکانی XFA پیشان بدات لە جیاتیان.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	ئەمە فۆڕمی داینامیکی XFA یە، کە LocalPDF هێشتا ناتوانێت پیشانی بدات. ئەوەی دەیبینیت پەڕەی جێگرەوەی فایلەکەیە.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	ئەم فۆڕمە هەروەها داتای XFA ی تێدایە، کە LocalPDF هێشتا نایخوێنێتەوە. دەتوانیت خانەکانی پڕ بکەیتەوە، بەڵام Acrobat ڕەنگە بەهاکانی XFA پیشان بدات لە جیاتیان.
 	This document contains {n} interactive form fields.	ئەم بەڵگەنامەیە {n} خانەی فۆڕمی کارلێکی تێدایە.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	ئەم فایلە تێکچووبوو و چاککرایەوە. پاشەکەوتکردن وەشانە چاککراوەکە دەپارێزێت.
 	Dismiss	پشتگوێخستن
@@ -1857,7 +1857,7 @@
 	there are no pages to print	هیچ پەڕەیەک نییە بۆ چاپکردن
 	the document has no tags	بەڵگەنامەکە هیچ تاگێکی نییە
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	مۆدێلەکانی ناسینەوەی دەق دانەمەزراون (PdfCraft دابمەزرێنەرەوە، یان PDFCRAFT_MODELS بکە بە فۆڵدەرەکەی کە لەخۆی دەگرێت)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	مۆدێلەکانی ناسینەوەی دەق دانەمەزراون (LocalPDF دابمەزرێنەرەوە، یان PDFCRAFT_MODELS بکە بە فۆڵدەرەکەی کە لەخۆی دەگرێت)
 	the image is empty	وێنەکە بەتاڵە
 	this file isn't XFDF, FDF, XML or text form data	ئەم فایلە داتای فۆڕمی XFDF یان FDF یان XML یان دەق نییە
 	nothing in the file matches this document	هیچ شتێک لە فایلەکەدا لەگەڵ ئەم بەڵگەنامەیە ناگونجێت
@@ -2111,7 +2111,7 @@
 	Couldn't optimize the file	نەتوانرا فایلەکە باشتر بکرێت
 	Files are combined in this order. Leave Pages empty to take every page.	فایلەکان بەم ڕیزبەندییە تێکەڵ دەکرێن. پەڕەکان بەتاڵ بهێڵەوە بۆ وەرگرتنی هەموو پەڕەیەک.
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	دۆخی گەڕۆک کوژاوەتەوە: ناتوانرێت لە {folder} بنووسرێت ({error}). لە جیاتی ئەوە ڕێکخستنەکان لە فۆڵدەری بەکارهێنەرەکەتدا دەهێڵدرێنەوە.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft بەبێ پڕۆسێسەری گرافیک وێنە دەکێشێت، بۆیە لەوانەیە هێواش بێت. نوێکردنەوەی درایڤەری گرافیک لەوانەیە یارمەتیدەر بێت.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF بەبێ پڕۆسێسەری گرافیک وێنە دەکێشێت، بۆیە لەوانەیە هێواش بێت. نوێکردنەوەی درایڤەری گرافیک لەوانەیە یارمەتیدەر بێت.
 	Show	پیشاندان
 	Sort	ڕیزکردن
 	Reverse the order	پێچەوانەکردنەوەی ڕیزبەندەکە
@@ -2169,7 +2169,7 @@ calendar date	September	ئەیلوول
 calendar date	October	تشرینی یەکەم
 calendar date	November	تشرینی دووەم
 calendar date	December	کانوونی یەکەم
-	Reopen the files that were open when PdfCraft last closed	دووبارە کردنەوەی ئەو فایلانەی کاتی کۆتا داخستنی PdfCraft کراوە بوون
+	Reopen the files that were open when LocalPDF last closed	دووبارە کردنەوەی ئەو فایلانەی کاتی کۆتا داخستنی LocalPDF کراوە بوون
 	Clear Recent Files	پاککردنەوەی فایلە نوێیەکان
 	Remove from Recent	لابردن لە نوێیەکان
 	Remove {name} from Recent	لابردنی {name} لە نوێیەکان
@@ -2181,8 +2181,8 @@ calendar date	December	کانوونی یەکەم
 	A link	بەستەر
 	A button	دوگمە
 	A script	سکریپت
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} لەم بەڵگەنامەیەدا هەوڵیدا ناونیشانێک بکاتەوە کە PdfCraft نایکاتەوە: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} لەم بەڵگەنامەیەدا هەوڵیدا ناونیشانێک بکاتەوە کە PdfCraft نایکاتەوە: {e}. تەنها بەستەری وێب (http, https) و ئیمەیڵ (mailto) لە بەڵگەنامەکانەوە دەکرێنەوە.
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who} لەم بەڵگەنامەیەدا هەوڵیدا ناونیشانێک بکاتەوە کە LocalPDF نایکاتەوە: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} لەم بەڵگەنامەیەدا هەوڵیدا ناونیشانێک بکاتەوە کە LocalPDF نایکاتەوە: {e}. تەنها بەستەری وێب (http, https) و ئیمەیڵ (mailto) لە بەڵگەنامەکانەوە دەکرێنەوە.
 	Another file dialog is still open. Finish with it first.	دیالۆگێکی تری فایل هێشتا کراوەیە. سەرەتا کارەکەی تەواو بکە.
 	Couldn't show the file picker. Please try again.	نەتوانرا هەڵبژێرەری فایل پیشان بدرێت. تکایە دووبارە هەوڵ بدەرەوە.
 	The document changed while you were choosing a file, so nothing was changed.	بەڵگەنامەکە گۆڕا لە کاتێکدا تۆ فایلێکت هەڵدەبژارد، بۆیە هیچ شتێک نەگۆڕدرا.
@@ -2218,8 +2218,8 @@ calendar date	December	کانوونی یەکەم
 	Slash	خەتی لار
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	فۆنتەکانی دەقی PDF ناتوانن «{c}» بکێشن ({code}). دەقی پشتگیریکراو هەڵبژێرە.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	فۆنتە ستانداردەکان ناتوانن «{c}» بکێشن ({code}). بۆ ئێستا تەنها پیتی ئەوروپای ڕۆژئاوا دەتوانرێت وەک دەق زیاد بکرێت.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	فۆنتی ئەم خانەیە ناتوانێت «{c}» بکێشێت ({code})، بۆیە PdfCraft لە جێگاکەیدا ? پیشان دەدات. بەهاکە پاشەکەوتکراوە، و بینەرەکانی تری PDF خانەکە لەسەر ئەو دووبارە دەکێشنەوە.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	ئەو فۆنتانەی PdfCraft پێیان دەنووسێت ناتوانن «{c}» بکێشن ({code})، بۆیە لە هەموو بینەرێکی PDFدا وەک ? دەردەکەوێت. دەقەکە پاشەکەوتکراوە.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	فۆنتی ئەم خانەیە ناتوانێت «{c}» بکێشێت ({code})، بۆیە LocalPDF لە جێگاکەیدا ? پیشان دەدات. بەهاکە پاشەکەوتکراوە، و بینەرەکانی تری PDF خانەکە لەسەر ئەو دووبارە دەکێشنەوە.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	ئەو فۆنتانەی LocalPDF پێیان دەنووسێت ناتوانن «{c}» بکێشن ({code})، بۆیە لە هەموو بینەرێکی PDFدا وەک ? دەردەکەوێت. دەقەکە پاشەکەوتکراوە.
 	Larger pages	پەڕە گەورەترەکان
 	Smaller pages	پەڕە بچووکترەکان
 	Reset page size	ڕێکخستنەوەی قەبارەی پەڕە
@@ -2381,7 +2381,7 @@ animation effects	Off	ناچالاک
 	no output folder was chosen	هیچ فۆڵدەرێک بۆ دەرهاویشتە هەڵنەبژێردرا
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	{n} PDF دابەزێنرا|{n} PDF دابەزێنرا
 	Scan	سکانکردن
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	لەسەر کاغەزێکی سپی واژوو بکە و لە ڕووناکییەکی بەهێز و یەکساندا وێنەی بگرە (فلاش بەکاربهێنە). وێنەکە هەڵبژێرە یان لێرە دایبنێ: PdfCraft واژووەکە دەدۆزێتەوە و کاغەزەکە لادەبات.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	لەسەر کاغەزێکی سپی واژوو بکە و لە ڕووناکییەکی بەهێز و یەکساندا وێنەی بگرە (فلاش بەکاربهێنە). وێنەکە هەڵبژێرە یان لێرە دایبنێ: LocalPDF واژووەکە دەدۆزێتەوە و کاغەزەکە لادەبات.
 	Choose photo…	هەڵبژاردنی وێنە…
 	No photo chosen	هیچ وێنەیەک هەڵنەبژێردرا
 	Photo	وێنە
@@ -2518,7 +2518,7 @@ animation effects	Off	ناچالاک
 	Panel layout could not be restored: {error}	شێوازی پانێڵەکان نەگەڕێنرایەوە: {error}
 	Panel move was not applied: {error}	گواستنەوەی پانێڵ جێبەجێ نەکرا: {error}
 	Paste	لکاندن
-	PdfCraft can't check this signature yet: {}.	PdfCraft هێشتا ناتوانێت ئەم واژووە پشکنی بکات: {}.
+	LocalPDF can't check this signature yet: {}.	LocalPDF هێشتا ناتوانێت ئەم واژووە پشکنی بکات: {}.
 	Previous	پێشوو
 	Previous (⇧⌘G)	پێشوو (⇧⌘G)
 	Print (⌘P)	چاپکردن (⌘P)
@@ -2589,7 +2589,7 @@ animation effects	Off	ناچالاک
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	ناوەڕۆکی واژووکراو OCTET STRING ـێکی پێکهاتووە (پارچە پارچە)، وەک BER ڕێگەی پێدەدات؛ بە هەر حاڵ خوێندرایەوە.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	بڕوانامەی واژووکەرەکە ڕێگە بە واژووی دیجیتاڵی نادات (بەکارهێنانی کلیلەکەی نە واژووی دیجیتاڵی و نە ڕەتنەکردنەوەی تێدایە).
 	The signer's certificate has been revoked ({}).	بڕوانامەی واژووکەرەکە هەڵوەشێنراوەتەوە ({}).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	بڕوانامەی واژووکەرەکە درێژکراوەی گرنگی هەیە کە PdfCraft نایانناسێتەوە ({}).
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	بڕوانامەی واژووکەرەکە درێژکراوەی گرنگی هەیە کە LocalPDF نایانناسێتەوە ({}).
 	The signer's certificate is not in the signature.	بڕوانامەی واژووکەرەکە لە واژووەکەدا نییە.
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	بڕوانامەی واژووکەرەکە بۆ واژووکردنی بەڵگەنامە دەرنەکراوە (بەکارهێنانە درێژکراوەکەی کلیلەکە مەبەستی واژووکردنی بەڵگەنامەی تێدا نییە).
 	The signer's certificate was not valid at the time of signing.	بڕوانامەی واژووکەرەکە لە کاتی واژووکردندا دروست نەبوو.

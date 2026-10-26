@@ -12,7 +12,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Lao computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay in Latin letters;
+# Product and technology names (LocalPDF, PDF, Acrobat JavaScript ...) stay in Latin letters;
 # the trailing "..." of dialog commands is kept.
 
 	Menu	ເມນູ
@@ -163,17 +163,17 @@
 	Next page	ໜ້າຖັດໄປ
 	Previous page	ໜ້າກ່ອນໜ້າ
 	Current page — type a page number or label (such as iv) and press Enter	ໜ້າປັດຈຸບັນ — ພິມໝາຍເລກໜ້າ ຫຼື ປ້າຍຊື່ (ເຊັ່ນ: iv) ແລ້ວກົດ Enter
-	Welcome to PdfCraft	ຍິນດີຕ້ອນຮັບສູ່ PdfCraft
+	Welcome to LocalPDF	ຍິນດີຕ້ອນຮັບສູ່ LocalPDF
 	An open-source PDF workbench — local, private, and scriptable.	ເຄື່ອງມືຈັດການ PDF ແບບໂອເພນຊອຣ໌ສ — ເຮັດວຽກໃນເຄື່ອງ, ເປັນສ່ວນຕົວ ແລະ ຂຽນສະຄຣິບໄດ້.
-	Join the ArtCraft community	ເຂົ້າຮ່ວມຊຸມຊົນ ArtCraft
+	Join the Local community	ເຂົ້າຮ່ວມຊຸມຊົນ Local
 	Get help, share feedback and follow development on Discord.	ຂໍຄວາມຊ່ວຍເຫຼືອ, ແບ່ງປັນຄຳຕິຊົມ ແລະ ຕິດຕາມການພັດທະນາໄດ້ທີ່ Discord.
 	Recommended tools	ເຄື່ອງມືແນະນຳ
 	Use now	ໃຊ້ງານຕອນນີ້
 	Open file	ເປີດໄຟລ໌
 	Recent	ຫຼ້າສຸດ
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	ໄຟລ໌ທີ່ທ່ານເປີດໃນ PdfCraft ຈະສະແດງຢູ່ນີ້. ລາກໄຟລ໌ PDF ມາວາງບ່ອນໃດກໍໄດ້ເພື່ອເປີດ.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	ໄຟລ໌ທີ່ທ່ານເປີດໃນ LocalPDF ຈະສະແດງຢູ່ນີ້. ລາກໄຟລ໌ PDF ມາວາງບ່ອນໃດກໍໄດ້ເພື່ອເປີດ.
 	Privacy	ຄວາມເປັນສ່ວນຕົວ
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft ເຮັດວຽກແບບອອບລາຍ. ບໍ່ມີການສົ່ງຂໍ້ມູນການໃຊ້ງານ, ບໍ່ຕ້ອງມີບັນຊີ ແລະ ບໍ່ມີການປະມວນຜົນເທິງຄລາວ ເວັ້ນເສຍແຕ່ທ່ານຈະເພີ່ມຜູ້ໃຫ້ບໍລິການ.
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF ເຮັດວຽກແບບອອບລາຍ. ບໍ່ມີການສົ່ງຂໍ້ມູນການໃຊ້ງານ, ບໍ່ຕ້ອງມີບັນຊີ ແລະ ບໍ່ມີການປະມວນຜົນເທິງຄລາວ ເວັ້ນເສຍແຕ່ທ່ານຈະເພີ່ມຜູ້ໃຫ້ບໍລິການ.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	ສະຄຣິບເຮັດວຽກໃນ sandbox ໂດຍບໍ່ສາມາດເຂົ້າເຖິງໄຟລ໌ ຫຼື ເຄືອຂ່າຍໄດ້. ເຖິງວ່າຈະປິດ JavaScript, ຟັງຊັນມາດຕະຖານຂອງ Acrobat ສຳລັບການຈັດຮູບແບບ, ການກວດສອບ ແລະ ການຄຳນວນ ກໍຍັງໃຊ້ງານໄດ້.
 	Back to all tools	ກັບໄປຫາເຄື່ອງມືທັງໝົດ
 	Close panel	ປິດແຜງ
@@ -320,12 +320,12 @@
 	Split document…	ແບ່ງເອກະສານ…
 	Number pages…	ໃສ່ເລກໜ້າ…
 	Keyboard shortcuts	ປຸ່ມລັດແປ້ນພິມ
-	Join the ArtCraft Discord	ເຂົ້າຮ່ວມ Discord ຂອງ ArtCraft
-	PdfCraft web page	ໜ້າເວັບ PdfCraft
-	PdfCraft on GitHub	PdfCraft ເທິງ GitHub
-	ArtCraft website	ເວັບໄຊຕ໌ ArtCraft
+	Join the Local Discord	ເຂົ້າຮ່ວມ Discord ຂອງ Local
+	LocalPDF web page	ໜ້າເວັບ LocalPDF
+	LocalPDF on GitHub	LocalPDF ເທິງ GitHub
+	Local website	ເວັບໄຊຕ໌ Local
 	Check for updates…	ກວດສອບການອັບເດດ…
-	About PdfCraft	ກ່ຽວກັບ PdfCraft
+	About LocalPDF	ກ່ຽວກັບ LocalPDF
 	Export a PDF	ສົ່ງອອກ PDF
 	Export to	ສົ່ງອອກໄປເປັນ
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -786,9 +786,9 @@
 	Check for updates	ກວດສອບການອັບເດດ
 	No check has run yet.	ຍັງບໍ່ທັນມີການກວດສອບເທື່ອ.
 	Checking for a newer version…	ກຳລັງກວດສອບເວີຊັນໃໝ່…
-	PdfCraft {v} is available.	ມີ PdfCraft {v} ພ້ອມໃຫ້ໃຊ້ງານແລ້ວ.
+	LocalPDF {v} is available.	ມີ LocalPDF {v} ພ້ອມໃຫ້ໃຊ້ງານແລ້ວ.
 	You have version {c}. Download the new version from its release page.	ທ່ານກຳລັງໃຊ້ເວີຊັນ {c}. ດາວໂຫຼດເວີຊັນໃໝ່ໄດ້ຈາກໜ້າ release.
-	PdfCraft {c} is up to date.	PdfCraft {c} ເປັນເວີຊັນລ່າສຸດແລ້ວ.
+	LocalPDF {c} is up to date.	LocalPDF {c} ເປັນເວີຊັນລ່າສຸດແລ້ວ.
 	Couldn't check for updates: {e}	ບໍ່ສາມາດກວດສອບການອັບເດດໄດ້: {e}
 	You have version {c}. All releases are listed at {page}.	ທ່ານກຳລັງໃຊ້ເວີຊັນ {c}. ລາຍການ release ທັງໝົດແມ່ນສະແດງຢູ່ທີ່ {page}.
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	ກວດສອບລຸ້ນລ່າສຸດຈາກ GitHub. ຈະບໍ່ມີການດາວໂຫຼດ ຫຼື ຕິດຕັ້ງໂດຍອັດຕະໂນມັດ.
@@ -908,8 +908,8 @@
 	No changes allowed	ບໍ່ອະນຸຍາດໃຫ້ປ່ຽນແປງ
 	Annotations, form fill-in, and digital signatures	ຄຳເຫັນ, ການຕື່ມຟອມ ແລະ ລາຍເຊັນດິຈິຕອນ
 	Form fill-in and digital signatures	ການຕື່ມຟອມ ແລະ ລາຍເຊັນດິຈິຕອນ
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	ກະແຈຢູ່ໃນ macOS Keychain, ເຊິ່ງອາດຈະຖາມເພື່ອອະນຸຍາດໃຫ້ PdfCraft ໃຊ້ງານ.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	ກະແຈຢູ່ໃນ Windows Certificate Store, ເຊິ່ງອາດຈະຖາມເພື່ອອະນຸຍາດໃຫ້ PdfCraft ໃຊ້ງານ.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	ກະແຈຢູ່ໃນ macOS Keychain, ເຊິ່ງອາດຈະຖາມເພື່ອອະນຸຍາດໃຫ້ LocalPDF ໃຊ້ງານ.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	ກະແຈຢູ່ໃນ Windows Certificate Store, ເຊິ່ງອາດຈະຖາມເພື່ອອະນຸຍາດໃຫ້ LocalPDF ໃຊ້ງານ.
 	Digital ID password	ລະຫັດຜ່ານ Digital ID
 	Back	ກັບຄືນ
 	Validate all	ກວດສອບຄວາມຖືກຕ້ອງທັງໝົດ
@@ -1269,7 +1269,7 @@
 	Downsample to	ຫຼຸດຄວາມລະອຽດລົງເປັນ
 	Also recognize pages that already have text	ຮັບຮູ້ຂໍ້ຄວາມໃນໜ້າທີ່ມີຂໍ້ຄວາມຢູ່ແລ້ວນຳດ້ວຍ
 	Pictures on those pages are recognized too; words already in the page's text are not added again	ຮູບພາບໃນໜ້າເຫຼົ່ານັ້ນຈະຖືກຮັບຮູ້ນຳດ້ວຍ; ຄຳທີ່ມີຢູ່ແລ້ວໃນຂໍ້ຄວາມຂອງໜ້າຈະບໍ່ຖືກເພີ່ມຄືນອີກ
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	ການຮັບຮູ້ຂໍ້ຄວາມຍັງບໍ່ໄດ້ຮັບການຕິດຕັ້ງ: ໄຟລ໌ໂມເດວສູນຫາຍ. ກະລຸນາຕິດຕັ້ງ PdfCraft ຄືນໃໝ່ ຫຼື ຕັ້ງຄ່າ PDFCRAFT_MODELS ໄປຫາໂຟນເດີທີ່ບັນຈຸໄຟລ໌ດັ່ງກ່າວ.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	ການຮັບຮູ້ຂໍ້ຄວາມຍັງບໍ່ໄດ້ຮັບການຕິດຕັ້ງ: ໄຟລ໌ໂມເດວສູນຫາຍ. ກະລຸນາຕິດຕັ້ງ LocalPDF ຄືນໃໝ່ ຫຼື ຕັ້ງຄ່າ PDFCRAFT_MODELS ໄປຫາໂຟນເດີທີ່ບັນຈຸໄຟລ໌ດັ່ງກ່າວ.
 	Settings	ການຕັ້ງຄ່າ
 	Optional	ເລືອກໄດ້
 	Planned · {m}	ວາງແຜນໄວ້ · {m}
@@ -1414,7 +1414,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	ທຸກຄົນທີ່ເປີດເອກະສານຈະຕ້ອງໃຊ້ລະຫັດຜ່ານນີ້. ມັນຈະຖືກນຳໃຊ້ເມື່ອທ່ານບັນທຶກ.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	ເອກະສານເປີດໄດ້ໂດຍບໍ່ຕ້ອງໃຊ້ລະຫັດຜ່ານ; ລະຫັດຜ່ານນີ້ຈຳເປັນສຳລັບການປ່ຽນແປງຂໍ້ຈຳກັດ. ມັນຈະຖືກນຳໃຊ້ເມື່ອທ່ານບັນທຶກ.
 	Recover unsaved documents?	ກູ້ຄືນເອກະສານທີ່ຍັງບໍ່ໄດ້ບັນທຶກຫຼືບໍ່?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft ບໍ່ໄດ້ປິດລົງຢ່າງປົກກະຕິ. ເອກະສານເຫຼົ່ານີ້ມີການປ່ຽນແປງທີ່ຖືກບັນທຶກອັດຕະໂນມັດໄວ້:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF ບໍ່ໄດ້ປິດລົງຢ່າງປົກກະຕິ. ເອກະສານເຫຼົ່ານີ້ມີການປ່ຽນແປງທີ່ຖືກບັນທຶກອັດຕະໂນມັດໄວ້:
 	just now	ຫວ່າງກີ້ນີ້
 	{n} min ago	{n} ນາທີກ່ອນ
 	{n} h ago	{n} ຊົ່ວໂມງກ່ອນ
@@ -1575,10 +1575,10 @@
 	On the web, open or drop an image to convert it	ໃນເວັບ, ໃຫ້ເປີດ ຫຼື ລາກຮູບພາບມາວາງເພື່ອແປງໄຟລ໌
 	Couldn't optimize the file: {e}	ບໍ່ສາມາດປັບແຕ່ງໄຟລ໌ໃຫ້ເໝາະສົມໄດ້: {e}
 	Couldn't write {path}: {e}	ບໍ່ສາມາດຂຽນລົງ {path} ໄດ້: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	ຟອມຮ້ອງຂໍໃຫ້ສົ່ງໄປທີ່ {u}; PdfCraft ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຟອມ. ກະລຸນາບັນທຶກເອກະສານເພື່ອຮັກສາສິ່ງທີ່ທ່ານປ້ອນໄວ້.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	ຟອມຮ້ອງຂໍໃຫ້ສົ່ງໄປທີ່ {u}; LocalPDF ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຟອມ. ກະລຸນາບັນທຶກເອກະສານເພື່ອຮັກສາສິ່ງທີ່ທ່ານປ້ອນໄວ້.
 	This PDF uses the unsupported {s} action.	PDF ນີ້ໃຊ້ການກະທຳ {s} ທີ່ຍັງບໍ່ຮອງຮັບ.
 	{name}: the {other} action isn't supported yet	{name}: ຍັງບໍ່ຮອງຮັບການກະທຳ {other} ເທື່ອ
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} ສົ່ງຟອມໄປທີ່ {url}; PdfCraft ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຟອມ. ກະລຸນາບັນທຶກເອກະສານເພື່ອຮັກສາສິ່ງທີ່ທ່ານປ້ອນໄວ້.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} ສົ່ງຟອມໄປທີ່ {url}; LocalPDF ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຟອມ. ກະລຸນາບັນທຶກເອກະສານເພື່ອຮັກສາສິ່ງທີ່ທ່ານປ້ອນໄວ້.
 	Export stopped: {e}	ການສົ່ງອອກຢຸດລົງ: {e}
 	Exported 1 image	ສົ່ງອອກແລ້ວ 1 ຮູບພາບ
 	Exported {n} images	ສົ່ງອອກແລ້ວ {n} ຮູບພາບ
@@ -1742,7 +1742,7 @@
 	Couldn't open {name}: {e}	ບໍ່ສາມາດເປີດ {name} ໄດ້: {e}
 	Couldn't read {name}: {e}	ບໍ່ສາມາດອ່ານ {name} ໄດ້: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	ໂໝດພົກພາປິດຢູ່: ບໍ່ສາມາດຂຽນໃສ່ {folder} ໄດ້ ({error}). ການຕັ້ງຄ່າຈະຖືກເກັບໄວ້ໃນໂຟນເດີຜູ້ໃຊ້ຂອງທ່ານແທນ.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft ກຳລັງແຕ້ມສະແດງຜົນໂດຍບໍ່ໃຊ້ໜ່ວຍປະມວນຜົນກຣາບຟິກ, ເຊິ່ງອາດເຮັດໃຫ້ຊ້າ. ການອັບເດດໄດຣເວີກຣາບຟິກອາດຊ່ວຍໄດ້.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF ກຳລັງແຕ້ມສະແດງຜົນໂດຍບໍ່ໃຊ້ໜ່ວຍປະມວນຜົນກຣາບຟິກ, ເຊິ່ງອາດເຮັດໃຫ້ຊ້າ. ການອັບເດດໄດຣເວີກຣາບຟິກອາດຊ່ວຍໄດ້.
 	Couldn't save: {e}	ບໍ່ສາມາດບັນທຶກໄດ້: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	ການດາວໂຫຼດໄຟລ໌ແນບໃນເວັບຈະມາພ້ອມກັບ M3.10 (ພ້ອມແລ້ວ {n} ໄບຕ໌)
 	`{command}` {when}	`{command}` {when}
@@ -1816,9 +1816,9 @@
 	Signed and all signatures are valid.	ເຊັນແລ້ວ ແລະ ທຸກລາຍເຊັນຖືກຕ້ອງສົມບູນ.
 	At least one signature has problems.	ມີຢ່າງໜ້ອຍໜຶ່ງລາຍເຊັນທີ່ມີບັນຫາ.
 	This document is secured. Some changes are restricted by its security settings.	ເອກະສານນີ້ຖືກປ້ອງກັນໄວ້. ການປ່ຽນແປງບາງຢ່າງຖືກຈຳກັດໂດຍການຕັ້ງຄ່າຄວາມປອດໄພ.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	ນີ້ແມ່ນຟອມ XFA ແບບໄດນາມິກ ເຊິ່ງ PdfCraft ຍັງບໍ່ສາມາດສະແດງຜົນໄດ້. ສິ່ງທີ່ທ່ານເຫັນແມ່ນໜ້າຕົວແທນຊົ່ວຄາວຂອງໄຟລ໌.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	ນີ້ແມ່ນຟອມ XFA ແບບໄດນາມິກ ເຊິ່ງ LocalPDF ຍັງບໍ່ສາມາດສະແດງຜົນໄດ້. ສິ່ງທີ່ທ່ານເຫັນແມ່ນໜ້າຕົວແທນຊົ່ວຄາວຂອງໄຟລ໌.
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	ສະຄຣິບຂອງຟອມນີ້ຖືກປິດເນື່ອງຈາກບາງສະຄຣິບເຮັດວຽກດົນເກີນໄປ. ເປີດເອກະສານຄືນໃໝ່ເພື່ອໃຫ້ສະຄຣິບເຮັດວຽກອີກຄັ້ງ.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	ຟອມນີ້ຍັງມີຂໍ້ມູນ XFA ທີ່ PdfCraft ຍັງບໍ່ສາມາດອ່ານໄດ້. ທ່ານສາມາດຕື່ມຂໍ້ມູນລົງໃນຊ່ອງໄດ້, ແຕ່ Acrobat ອາດຈະສະແດງຄ່າ XFA ແທນ.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	ຟອມນີ້ຍັງມີຂໍ້ມູນ XFA ທີ່ LocalPDF ຍັງບໍ່ສາມາດອ່ານໄດ້. ທ່ານສາມາດຕື່ມຂໍ້ມູນລົງໃນຊ່ອງໄດ້, ແຕ່ Acrobat ອາດຈະສະແດງຄ່າ XFA ແທນ.
 	This document contains {n} interactive form fields.	ເອກະສານນີ້ບັນຈຸ {n} ຊ່ອງຟອມແບບໂຕ້ຕອບ.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	ໄຟລ໌ນີ້ເຄີຍເສຍຫາຍ ແລະ ໄດ້ຮັບການສ້ອມແປງແລ້ວ. ການບັນທຶກຈະຮັກສາເວີຊັນທີ່ສ້ອມແປງແລ້ວໄວ້.
 	Dismiss	ປິດໄປ
@@ -1867,7 +1867,7 @@
 	there are no pages to print	ບໍ່ມີໜ້າທີ່ຈະພິມ
 	the document has no tags	ເອກະສານບໍ່ມີແທັກ
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	ໂມເດວການຮັບຮູ້ຂໍ້ຄວາມຍັງບໍ່ໄດ້ຕິດຕັ້ງ (ຕິດຕັ້ງ PdfCraft ຄືນໃໝ່, ຫຼື ຕັ້ງຄ່າ PDFCRAFT_MODELS ໄປຫາໂຟນເດີທີ່ບັນຈຸໂມເດວ)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	ໂມເດວການຮັບຮູ້ຂໍ້ຄວາມຍັງບໍ່ໄດ້ຕິດຕັ້ງ (ຕິດຕັ້ງ LocalPDF ຄືນໃໝ່, ຫຼື ຕັ້ງຄ່າ PDFCRAFT_MODELS ໄປຫາໂຟນເດີທີ່ບັນຈຸໂມເດວ)
 	the image is empty	ຮູບພາບຫວ່າງເປົ່າ
 	this file isn't XFDF, FDF, XML or text form data	ໄຟລ໌ນີ້ບໍ່ແມ່ນຂໍ້ມູນຟອມປະເພດ XFDF, FDF, XML ຫຼື ຂໍ້ຄວາມ
 	nothing in the file matches this document	ບໍ່ມີສິ່ງໃດໃນໄຟລ໌ກົງກັບເອກະສານນີ້
@@ -2079,11 +2079,11 @@
 	Couldn't import the signature image: {e}	ບໍ່ສາມາດນຳເຂົ້າຮູບພາບລາຍເຊັນໄດ້: {e}
 	Go to page…	ໄປຫາໜ້າ…
 	For page sizes and margins.	ສຳລັບຂະໜາດໜ້າ ແລະ ຂອບເຈ້ຍ.
-	Reopen the files that were open when PdfCraft last closed	ເປີດໄຟລ໌ທີ່ເຄີຍເປີດຢູ່ຕອນປິດ PdfCraft ຄັ້ງຫຼ້າສຸດຄືນໃໝ່
+	Reopen the files that were open when LocalPDF last closed	ເປີດໄຟລ໌ທີ່ເຄີຍເປີດຢູ່ຕອນປິດ LocalPDF ຄັ້ງຫຼ້າສຸດຄືນໃໝ່
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	ຟອນຂໍ້ຄວາມ PDF ບໍ່ສາມາດສະແດງ “{c}” ({code}) ໄດ້. ກະລຸນາເລືອກຂໍ້ຄວາມທີ່ຮອງຮັບ.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	ຟອນມາດຕະຖານບໍ່ສາມາດສະແດງ “{c}” ({code}) ໄດ້. ໃນປະຈຸບັນ ສາມາດເພີ່ມໄດ້ສະເພາະຕົວອັກສອນຢູໂຣບຕາເວັນຕົກເທົ່ານັ້ນ.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	ຟອນຂອງຊ່ອງນີ້ບໍ່ສາມາດສະແດງ “{c}” ({code}) ໄດ້, ດັ່ງນັ້ນ PdfCraft ຈຶ່ງສະແດງ ? ແທນ. ຄ່ານີ້ຖືກບັນທຶກໄວ້ ແລະ ໂປຣແກຣມອ່ານ PDF ອື່ນໆຈະແຕ້ມສະແດງຜົນຊ່ອງຂໍ້ມູນຄືນໃໝ່ຈາກຄ່ານັ້ນ.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	ຟອນທີ່ PdfCraft ໃຊ້ຂຽນບໍ່ສາມາດສະແດງ “{c}” ({code}) ໄດ້, ດັ່ງນັ້ນມັນຈຶ່ງສະແດງເປັນ ? ໃນທຸກໂປຣແກຣມອ່ານ PDF. ຂໍ້ຄວາມຖືກບັນທຶກໄວ້ແລ້ວ.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	ຟອນຂອງຊ່ອງນີ້ບໍ່ສາມາດສະແດງ “{c}” ({code}) ໄດ້, ດັ່ງນັ້ນ LocalPDF ຈຶ່ງສະແດງ ? ແທນ. ຄ່ານີ້ຖືກບັນທຶກໄວ້ ແລະ ໂປຣແກຣມອ່ານ PDF ອື່ນໆຈະແຕ້ມສະແດງຜົນຊ່ອງຂໍ້ມູນຄືນໃໝ່ຈາກຄ່ານັ້ນ.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	ຟອນທີ່ LocalPDF ໃຊ້ຂຽນບໍ່ສາມາດສະແດງ “{c}” ({code}) ໄດ້, ດັ່ງນັ້ນມັນຈຶ່ງສະແດງເປັນ ? ໃນທຸກໂປຣແກຣມອ່ານ PDF. ຂໍ້ຄວາມຖືກບັນທຶກໄວ້ແລ້ວ.
 	Open arrow	ລູກສອນປາຍເປີດ
 	Closed arrow	ລູກສອນປາຍປິດ
 	Butt	ຮາບພຽງ
@@ -2201,8 +2201,8 @@
 	Write this email?	ຂຽນອີເມວນີ້ຫຼືບໍ່?
 	XFA form: its fields and its XFA data are kept in step, so other viewers show what you fill in.	ຟອມ XFA: ຊ່ອງຂໍ້ມູນ ແລະ ຂໍ້ມູນ XFA ຈະຖືກຮັກສາໃຫ້ຕົງກັນສະເໝີ, ເພື່ອໃຫ້ຕົວເບິ່ງເອກະສານອື່ນສະແດງສິ່ງທີ່ທ່ານຕື່ມ.
 	{n} contributors · {c} commits	{n} ຜູ້ປະກອບສ່ວນ · {c} ຄອມມິດ
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} ໃນເອກະສານນີ້ພະຍາຍາມເປີດທີ່ຢູ່ທີ່ PdfCraft ບໍ່ສາມາດເປີດໄດ້: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} ໃນເອກະສານນີ້ພະຍາຍາມເປີດທີ່ຢູ່ທີ່ PdfCraft ບໍ່ສາມາດເປີດໄດ້: {e}. ສະເພາະລິ້ງເວັບ (http, https) ແລະ ອີເມວ (mailto) ເທົ່ານັ້ນທີ່ສາມາດເປີດຈາກເອກະສານໄດ້.
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who} ໃນເອກະສານນີ້ພະຍາຍາມເປີດທີ່ຢູ່ທີ່ LocalPDF ບໍ່ສາມາດເປີດໄດ້: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} ໃນເອກະສານນີ້ພະຍາຍາມເປີດທີ່ຢູ່ທີ່ LocalPDF ບໍ່ສາມາດເປີດໄດ້: {e}. ສະເພາະລິ້ງເວັບ (http, https) ແລະ ອີເມວ (mailto) ເທົ່ານັ້ນທີ່ສາມາດເປີດຈາກເອກະສານໄດ້.
 	{who} in this document wants to open this address in your browser:	{who} ໃນເອກະສານນີ້ຕ້ອງການເປີດທີ່ຢູ່ນີ້ໃນບຣາວເຊີຂອງທ່ານ:
 	{who} in this document wants to open your email app with this address:	{who} ໃນເອກະສານນີ້ຕ້ອງການເປີດແອັບອີເມວຂອງທ່ານດ້ວຍທີ່ຢູ່ນີ້:
 	ΔLOC	ΔLOC
@@ -2357,7 +2357,7 @@ animation effects	Off	ປິດ
 	no output folder was chosen	ບໍ່ໄດ້ເລືອກໂຟນເດີຜົນອອກ
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	ດາວໂຫຼດແລ້ວ {n} PDF
 	Scan	ສະແກນ
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	ເຊັນລົງໃນເຈ້ຍສີຂາວ ແລະ ຖ່າຍຮູບໃນບ່ອນທີ່ມີແສງສະຫວ່າງພຽງພໍ ແລະ ສະໝ່ຳສະເໝີ (ໃຊ້ແຟລຊ). ເລືອກຮູບ ຫຼື ລາກມາວາງຢູ່ນີ້: PdfCraft ຈະກວດຫາລາຍເຊັນ ແລະ ລຶບພື້ນເຈ້ຍອອກ.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	ເຊັນລົງໃນເຈ້ຍສີຂາວ ແລະ ຖ່າຍຮູບໃນບ່ອນທີ່ມີແສງສະຫວ່າງພຽງພໍ ແລະ ສະໝ່ຳສະເໝີ (ໃຊ້ແຟລຊ). ເລືອກຮູບ ຫຼື ລາກມາວາງຢູ່ນີ້: LocalPDF ຈະກວດຫາລາຍເຊັນ ແລະ ລຶບພື້ນເຈ້ຍອອກ.
 	Choose photo…	ເລືອກຮູບຖ່າຍ…
 	No photo chosen	ບໍ່ໄດ້ເລືອກຮູບຖ່າຍ
 	Photo	ຮູບຖ່າຍ

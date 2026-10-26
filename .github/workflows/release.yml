@@ -19,6 +19,8 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: Fontes japonesas vendored
+        run: 'echo "CRAFT_FONTS_DIR=$env:GITHUB_WORKSPACE\assets\craft-fonts" >> $env:GITHUB_ENV'
       - name: Build e pacote
         run: powershell -ExecutionPolicy Bypass -File packaging/windows/package.ps1
       - uses: actions/upload-artifact@v4
@@ -34,6 +36,8 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: Fontes japonesas vendored
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/assets/craft-fonts" >> "$GITHUB_ENV"
       - name: Dependências de empacotamento
         run: |
           sudo apt-get update

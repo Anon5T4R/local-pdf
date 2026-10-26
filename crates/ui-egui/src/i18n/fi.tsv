@@ -13,7 +13,7 @@
 # Finnish computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied, and no other catalog was used as a source; add
 # entries the same way. AI-assisted (Claude Code); not yet proofread line by line.
-# Labels use sentence case. Product and technology names (PdfCraft, PDF, OCR, JavaScript ...)
+# Labels use sentence case. Product and technology names (LocalPDF, PDF, OCR, JavaScript ...)
 # stay in Latin letters; the trailing "…" of dialog commands is kept. Calendar headings use the
 # nominative month (`Lokakuu 2026`); dates use the partitive (`14. lokakuuta 2026`).
 	Menu	Valikko
@@ -159,17 +159,17 @@
 	Next page	Seuraava sivu
 	Previous page	Edellinen sivu
 	Current page — type a page number or label (such as iv) and press Enter	Nykyinen sivu – kirjoita sivunumero tai -tunniste (kuten iv) ja paina Enter
-	Welcome to PdfCraft	Tervetuloa PdfCraftiin
+	Welcome to LocalPDF	Tervetuloa LocalPDFiin
 	An open-source PDF workbench — local, private, and scriptable.	Avoimen lähdekoodin PDF-työpöytä – paikallinen, yksityinen ja skriptattava.
-	Join the ArtCraft community	Liity ArtCraft-yhteisöön
+	Join the Local community	Liity Local-yhteisöön
 	Get help, share feedback and follow development on Discord.	Hae apua, anna palautetta ja seuraa kehitystä Discordissa.
 	Recommended tools	Suositellut työkalut
 	Use now	Käytä nyt
 	Open file	Avaa tiedosto
 	Recent	Viimeisimmät
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	PdfCraftissa avatut tiedostot näkyvät tässä. Avaa PDF pudottamalla se mihin tahansa.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	LocalPDFissa avatut tiedostot näkyvät tässä. Avaa PDF pudottamalla se mihin tahansa.
 	Privacy	Tietosuoja
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft toimii ilman verkkoyhteyttä. Ei telemetriaa, ei tiliä eikä pilvikäsittelyä, ellei palveluntarjoajaa lisätä.
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF toimii ilman verkkoyhteyttä. Ei telemetriaa, ei tiliä eikä pilvikäsittelyä, ellei palveluntarjoajaa lisätä.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Skriptit suoritetaan eristetyssä ympäristössä ilman tiedosto- tai verkkoyhteyttä. Kun JavaScript on pois käytöstä, Acrobatin vakiomuotoilu-, tarkistus- ja laskentafunktiot toimivat silti.
 	Back to all tools	Takaisin kaikkiin työkaluihin
 	Close panel	Sulje paneeli
@@ -316,12 +316,12 @@
 	Split document…	Jaa asiakirja…
 	Number pages…	Numeroi sivut…
 	Keyboard shortcuts	Pikanäppäimet
-	Join the ArtCraft Discord	Liity ArtCraftin Discordiin
-	PdfCraft web page	PdfCraftin verkkosivu
-	PdfCraft on GitHub	PdfCraft GitHubissa
-	ArtCraft website	ArtCraftin verkkosivusto
+	Join the Local Discord	Liity Localin Discordiin
+	LocalPDF web page	LocalPDFin verkkosivu
+	LocalPDF on GitHub	LocalPDF GitHubissa
+	Local website	Localin verkkosivusto
 	Check for updates…	Tarkista päivitykset…
-	About PdfCraft	Tietoja PdfCraftista
+	About LocalPDF	Tietoja LocalPDFista
 	Export a PDF	Vie PDF
 	Export to	Vie muotoon
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -776,9 +776,9 @@
 	Check for updates	Tarkista päivitykset
 	No check has run yet.	Tarkistusta ei ole vielä tehty.
 	Checking for a newer version…	Tarkistetaan uudempaa versiota…
-	PdfCraft {v} is available.	PdfCraft {v} on saatavilla.
+	LocalPDF {v} is available.	LocalPDF {v} on saatavilla.
 	You have version {c}. Download the new version from its release page.	Käytössä on versio {c}. Lataa uusi versio sen julkaisusivulta.
-	PdfCraft {c} is up to date.	PdfCraft {c} on ajan tasalla.
+	LocalPDF {c} is up to date.	LocalPDF {c} on ajan tasalla.
 	Couldn't check for updates: {e}	Päivitysten tarkistus epäonnistui: {e}
 	You have version {c}. All releases are listed at {page}.	Käytössä on versio {c}. Kaikki julkaisut on lueteltu sivulla {page}.
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Kysyy uusinta julkaisua GitHubista. Mitään ei ladata tai asenneta automaattisesti.
@@ -892,8 +892,8 @@
 	No changes allowed	Muutoksia ei sallita
 	Annotations, form fill-in, and digital signatures	Merkinnät, lomakkeiden täyttö ja digitaaliset allekirjoitukset
 	Form fill-in and digital signatures	Lomakkeiden täyttö ja digitaaliset allekirjoitukset
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Avain on macOS-avainnipussa, joka voi pyytää lupaa PdfCraftin käytölle.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Avain on Windowsin varmennesäilössä, joka voi pyytää lupaa PdfCraftin käytölle.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	Avain on macOS-avainnipussa, joka voi pyytää lupaa LocalPDFin käytölle.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	Avain on Windowsin varmennesäilössä, joka voi pyytää lupaa LocalPDFin käytölle.
 	Digital ID password	Digitaalisen tunnuksen salasana
 	Back	Takaisin
 	Validate all	Tarkista kaikki
@@ -1252,7 +1252,7 @@
 	Downsample to	Alinäytteistä tarkkuuteen
 	Also recognize pages that already have text	Tunnista myös sivut, joilla on jo tekstiä
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Myös näiden sivujen kuvat tunnistetaan; sivun tekstissä jo olevia sanoja ei lisätä uudelleen
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Tekstintunnistusta ei ole asennettu: sen mallitiedostot puuttuvat. Asenna PdfCraft uudelleen tai aseta PDFCRAFT_MODELS osoittamaan kansioon, jossa ne ovat.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Tekstintunnistusta ei ole asennettu: sen mallitiedostot puuttuvat. Asenna LocalPDF uudelleen tai aseta PDFCRAFT_MODELS osoittamaan kansioon, jossa ne ovat.
 	Settings	Asetukset
 	Optional	Valinnainen
 	Planned · {m}	Suunniteltu · {m}
@@ -1396,7 +1396,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Asiakirjan avaaminen edellyttää tätä salasanaa. Se otetaan käyttöön tallennettaessa.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Asiakirja avautuu ilman salasanaa; tätä salasanaa tarvitaan rajoitusten muuttamiseen. Se otetaan käyttöön tallennettaessa.
 	Recover unsaved documents?	Palautetaanko tallentamattomat asiakirjat?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft ei sulkeutunut normaalisti. Näiden asiakirjojen muutokset tallennettiin automaattisesti:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF ei sulkeutunut normaalisti. Näiden asiakirjojen muutokset tallennettiin automaattisesti:
 	just now	juuri nyt
 	{n} min ago	{n} min sitten
 	{n} h ago	{n} h sitten
@@ -1554,10 +1554,10 @@
 	On the web, open or drop an image to convert it	Verkkoversiossa avaa tai pudota muunnettava kuva
 	Couldn't optimize the file: {e}	Tiedoston optimointi epäonnistui: {e}
 	Couldn't write {path}: {e}	Kohteen {path} kirjoittaminen epäonnistui: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Lomake pyytää lähettämään tiedot osoitteeseen {u}; PdfCraft ei lähetä lomaketietoja. Tallenna asiakirja, jotta syötetyt tiedot säilyvät.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	Lomake pyytää lähettämään tiedot osoitteeseen {u}; LocalPDF ei lähetä lomaketietoja. Tallenna asiakirja, jotta syötetyt tiedot säilyvät.
 	This PDF uses the unsupported {s} action.	Tämä PDF käyttää toimintoa {s}, jota ei tueta.
 	{name}: the {other} action isn't supported yet	{name}: toimintoa {other} ei vielä tueta
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} lähettää lomakkeen osoitteeseen {url}; PdfCraft ei lähetä lomaketietoja. Tallenna asiakirja, jotta syötetyt tiedot säilyvät.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} lähettää lomakkeen osoitteeseen {url}; LocalPDF ei lähetä lomaketietoja. Tallenna asiakirja, jotta syötetyt tiedot säilyvät.
 	Export stopped: {e}	Vienti keskeytyi: {e}
 	Exported 1 image	Vietiin 1 kuva
 	Exported {n} images	Vietiin {n} kuvaa
@@ -1782,8 +1782,8 @@
 	Signed and all signatures are valid.	Allekirjoitettu, ja kaikki allekirjoitukset ovat kelvollisia.
 	At least one signature has problems.	Vähintään yhdessä allekirjoituksessa on ongelmia.
 	This document is secured. Some changes are restricted by its security settings.	Tämä asiakirja on suojattu. Sen suojausasetukset rajoittavat joitakin muutoksia.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Tämä on dynaaminen XFA-lomake, jota PdfCraft ei vielä osaa näyttää. Näet tiedoston paikkamerkkisivun.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Tämä lomake sisältää myös XFA-tietoja, joita PdfCraft ei vielä lue. Voit täyttää kentät, mutta Acrobat saattaa näyttää XFA-arvot niiden sijaan.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	Tämä on dynaaminen XFA-lomake, jota LocalPDF ei vielä osaa näyttää. Näet tiedoston paikkamerkkisivun.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Tämä lomake sisältää myös XFA-tietoja, joita LocalPDF ei vielä lue. Voit täyttää kentät, mutta Acrobat saattaa näyttää XFA-arvot niiden sijaan.
 	This document contains {n} interactive form fields.	Tässä asiakirjassa on {n} vuorovaikutteista lomakekenttää.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Tämä tiedosto oli vioittunut, ja se on korjattu. Tallennus säilyttää korjatun version.
 	Dismiss	Sulje
@@ -1832,7 +1832,7 @@
 	there are no pages to print	tulostettavia sivuja ei ole
 	the document has no tags	asiakirjassa ei ole tageja
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	tekstintunnistusmalleja ei ole asennettu (asenna PdfCraft uudelleen tai aseta PDFCRAFT_MODELS osoittamaan mallien kansioon)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	tekstintunnistusmalleja ei ole asennettu (asenna LocalPDF uudelleen tai aseta PDFCRAFT_MODELS osoittamaan mallien kansioon)
 	the image is empty	kuva on tyhjä
 	this file isn't XFDF, FDF, XML or text form data	tämä tiedosto ei ole XFDF-, FDF-, XML- tai tekstimuotoista lomaketietoa
 	nothing in the file matches this document	mikään tiedostossa ei vastaa tätä asiakirjaa
@@ -2086,7 +2086,7 @@
 	Couldn't optimize the file	Tiedoston optimointi epäonnistui
 	Files are combined in this order. Leave Pages empty to take every page.	Tiedostot yhdistetään tässä järjestyksessä. Jätä Sivut tyhjäksi, niin kaikki sivut otetaan mukaan.
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Kannettava tila on pois päältä: kansioon {folder} ei voi kirjoittaa ({error}). Asetukset tallennetaan sen sijaan käyttäjäkansioon.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft piirtää ilman grafiikkasuoritinta, joten se voi olla hidas. Näytönohjaimen ajurin päivittäminen voi auttaa.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF piirtää ilman grafiikkasuoritinta, joten se voi olla hidas. Näytönohjaimen ajurin päivittäminen voi auttaa.
 	Show	Näytä
 	Sort	Lajittele
 	Reverse the order	Käännä järjestys
@@ -2144,7 +2144,7 @@ calendar date	September	syyskuuta
 calendar date	October	lokakuuta
 calendar date	November	marraskuuta
 calendar date	December	joulukuuta
-	Reopen the files that were open when PdfCraft last closed	Avaa uudelleen tiedostot, jotka olivat auki, kun PdfCraft viimeksi suljettiin
+	Reopen the files that were open when LocalPDF last closed	Avaa uudelleen tiedostot, jotka olivat auki, kun LocalPDF viimeksi suljettiin
 	Clear Recent Files	Tyhjennä viimeisimmät tiedostot
 	Remove from Recent	Poista viimeisimmistä
 	Remove {name} from Recent	Poista {name} viimeisimmistä
@@ -2156,8 +2156,8 @@ calendar date	December	joulukuuta
 	A link	Linkki
 	A button	Painike
 	A script	Komentosarja
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	Tämän asiakirjan {who} yritti avata osoitteen, jota PdfCraft ei avaa: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Tämän asiakirjan {who} yritti avata osoitteen, jota PdfCraft ei avaa: {e}. Asiakirjoista avautuvat vain verkkolinkit (http, https) ja sähköpostilinkit (mailto).
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	Tämän asiakirjan {who} yritti avata osoitteen, jota LocalPDF ei avaa: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Tämän asiakirjan {who} yritti avata osoitteen, jota LocalPDF ei avaa: {e}. Asiakirjoista avautuvat vain verkkolinkit (http, https) ja sähköpostilinkit (mailto).
 	Another file dialog is still open. Finish with it first.	Toinen tiedostoikkuna on vielä auki. Sulje se ensin.
 	Couldn't show the file picker. Please try again.	Tiedostovalitsinta ei voitu näyttää. Yritä uudelleen.
 	The document changed while you were choosing a file, so nothing was changed.	Asiakirja muuttui tiedoston valinnan aikana, joten mitään ei muutettu.
@@ -2193,8 +2193,8 @@ calendar date	December	joulukuuta
 	Slash	Vinoviiva
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	PDF-tekstifontit eivät pysty piirtämään merkkiä ”{c}” ({code}). Valitse tuettua tekstiä.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	Vakiofontit eivät pysty piirtämään merkkiä ”{c}” ({code}). Toistaiseksi tekstinä voi lisätä vain länsieurooppalaisia merkkejä.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Tämän kentän fontti ei pysty piirtämään merkkiä ”{c}” ({code}), joten PdfCraft näyttää sen tilalla merkin ?. Arvo tallennetaan, ja muut PDF-katseluohjelmat piirtävät kentän sen perusteella uudelleen.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	PdfCraftin käyttämät fontit eivät pysty piirtämään merkkiä ”{c}” ({code}), joten se näkyy merkkinä ? kaikissa PDF-katseluohjelmissa. Teksti tallennetaan.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Tämän kentän fontti ei pysty piirtämään merkkiä ”{c}” ({code}), joten LocalPDF näyttää sen tilalla merkin ?. Arvo tallennetaan, ja muut PDF-katseluohjelmat piirtävät kentän sen perusteella uudelleen.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	LocalPDFin käyttämät fontit eivät pysty piirtämään merkkiä ”{c}” ({code}), joten se näkyy merkkinä ? kaikissa PDF-katseluohjelmissa. Teksti tallennetaan.
 	Larger pages	Suuremmat sivut
 	Smaller pages	Pienemmät sivut
 	Reset page size	Palauta sivukoko
@@ -2345,7 +2345,7 @@ animation effects	Off	Ei käytössä
 	no output folder was chosen	tuloskansiota ei valittu
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	Ladattiin {n} PDF|Ladattiin {n} PDF:ää
 	Scan	Skannaa
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Allekirjoita valkoinen paperiarkki ja ota siitä valokuva kirkkaassa, tasaisessa valossa (käytä salamaa). Valitse kuva tai pudota se tähän: PdfCraft löytää allekirjoituksen ja poistaa paperin.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	Allekirjoita valkoinen paperiarkki ja ota siitä valokuva kirkkaassa, tasaisessa valossa (käytä salamaa). Valitse kuva tai pudota se tähän: LocalPDF löytää allekirjoituksen ja poistaa paperin.
 	Choose photo…	Valitse kuva…
 	No photo chosen	Kuvaa ei valittu
 	Photo	Kuva
@@ -2488,7 +2488,7 @@ animation effects	Off	Ei käytössä
 	The signature's byte range does not exclude exactly its contents.	Allekirjoituksen tavualue ei rajaa pois täsmälleen sen sisältöä.
 	The signature contents are not hexadecimal.	Allekirjoituksen sisältö ei ole heksadesimaalimuotoinen.
 	The signature could not be read ({}).	Allekirjoitusta ei voitu lukea ({}).
-	PdfCraft can't check this signature yet: {}.	PdfCraft ei vielä pysty tarkistamaan tätä allekirjoitusta: {}.
+	LocalPDF can't check this signature yet: {}.	LocalPDF ei vielä pysty tarkistamaan tätä allekirjoitusta: {}.
 	The signature uses the legacy adbe.x509.rsa_sha1 format.	Allekirjoitus käyttää vanhaa adbe.x509.rsa_sha1-muotoa.
 	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	Allekirjoitus on BER-koodattu (määrittelemättömät pituudet) eikä DER-koodattu; se luettiin sallivasti.
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	Allekirjoitettu sisältö on koostettu (segmentoitu) OCTET STRING, kuten BER sallii; se luettiin silti.
@@ -2510,9 +2510,9 @@ animation effects	Off	Ei käytössä
 	The signer's certificate was not valid at the time of signing.	Allekirjoittajan varmenne ei ollut voimassa allekirjoitushetkellä.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	Allekirjoittajan varmenne ei salli digitaalisia allekirjoituksia (sen avaimen käyttö ei sisällä digitaalista allekirjoitusta eikä kiistämättömyyttä).
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	Allekirjoittajan varmennetta ei ole myönnetty asiakirjojen allekirjoittamiseen (sen laajennettu avaimen käyttö ei sisällä asiakirjojen allekirjoitusta).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	Allekirjoittajan varmenteessa on kriittisiä laajennuksia, joita PdfCraft ei tunnista ({}).
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	Allekirjoittajan varmenteessa on kriittisiä laajennuksia, joita LocalPDF ei tunnista ({}).
 	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	Kohteen {} varmenne ei ole varmenteita myöntävä CA-varmenne, joten sitä ei käytetä kohteen {} vahvistamiseen.
-	The certificate of {} has critical extensions PdfCraft does not recognize, so it is not used to vouch for {}.	Kohteen {} varmenteessa on kriittisiä laajennuksia, joita PdfCraft ei tunnista, joten sitä ei käytetä kohteen {} vahvistamiseen.
+	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.	Kohteen {} varmenteessa on kriittisiä laajennuksia, joita LocalPDF ei tunnista, joten sitä ei käytetä kohteen {} vahvistamiseen.
 	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	Kohteen {} varmenne ei salli näin montaa alempaa CA-varmennetta (polun pituus), joten sitä ei käytetä kohteen {} vahvistamiseen.
 	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	Kohteen {} varmenne ei ollut voimassa allekirjoitushetkellä, joten sitä ei käytetä kohteen {} vahvistamiseen.
 	The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.	Allekirjoittajan henkilöllisyys on tuntematon, koska sitä ei ole lisätty luotettujen varmenteiden luetteloon eikä mikään sen ylemmistä varmenteista ole luotettu varmenne.

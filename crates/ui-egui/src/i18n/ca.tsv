@@ -6,7 +6,7 @@
 # Catalan computing vocabulary (standard Catalan, commands in the second-person imperative, informal
 # "tu" or impersonal wording in notices). No proprietary localisation resource, string table or
 # product UI (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) are not translated;
+# Product and technology names (LocalPDF, PDF, Acrobat JavaScript ...) are not translated;
 # the trailing "…" of dialog commands is kept.
 
 	Menu	Menú
@@ -159,17 +159,17 @@
 	Next page	Pàgina següent
 	Previous page	Pàgina anterior
 	Current page — type a page number or label (such as iv) and press Enter	Pàgina actual — escriu un número o una etiqueta de pàgina (com ara iv) i prem Retorn
-	Welcome to PdfCraft	Et donem la benvinguda a PdfCraft
+	Welcome to LocalPDF	Et donem la benvinguda a LocalPDF
 	An open-source PDF workbench — local, private, and scriptable.	Un banc de treball de PDF de codi obert — local, privat i programable.
-	Join the ArtCraft community	Uneix-te a la comunitat d'ArtCraft
+	Join the Local community	Uneix-te a la comunitat d'Local
 	Get help, share feedback and follow development on Discord.	Obtén ajuda, comparteix comentaris i segueix el desenvolupament a Discord.
 	Recommended tools	Eines recomanades
 	Use now	Utilitza-ho ara
 	Open file	Obre el fitxer
 	Recent	Recents
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Els fitxers que obris a PdfCraft apareixen aquí. Deixa anar un PDF en qualsevol lloc per obrir-lo.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	Els fitxers que obris a LocalPDF apareixen aquí. Deixa anar un PDF en qualsevol lloc per obrir-lo.
 	Privacy	Privadesa
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft funciona sense connexió. Sense telemetria, sense compte i sense processament al núvol tret que afegeixis un proveïdor.
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF funciona sense connexió. Sense telemetria, sense compte i sense processament al núvol tret que afegeixis un proveïdor.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Els scripts s'executen en un entorn aïllat sense accés a fitxers ni a la xarxa. Amb JavaScript desactivat, les funcions estàndard de format, validació i càlcul d'Acrobat continuen funcionant.
 	Back to all tools	Torna a totes les eines
 	Close panel	Tanca el tauler
@@ -316,12 +316,12 @@
 	Split document…	Divideix el document…
 	Number pages…	Numera les pàgines…
 	Keyboard shortcuts	Dreceres de teclat
-	Join the ArtCraft Discord	Uneix-te al Discord d'ArtCraft
-	PdfCraft web page	Pàgina web de PdfCraft
-	PdfCraft on GitHub	PdfCraft a GitHub
-	ArtCraft website	Lloc web d'ArtCraft
+	Join the Local Discord	Uneix-te al Discord d'Local
+	LocalPDF web page	Pàgina web de LocalPDF
+	LocalPDF on GitHub	LocalPDF a GitHub
+	Local website	Lloc web d'Local
 	Check for updates…	Cerca actualitzacions…
-	About PdfCraft	Quant a PdfCraft
+	About LocalPDF	Quant a LocalPDF
 	Export a PDF	Exporta un PDF
 	Export to	Exporta a
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -777,9 +777,9 @@
 	Check for updates	Cerca actualitzacions
 	No check has run yet.	Encara no s'ha fet cap comprovació.
 	Checking for a newer version…	S'està cercant una versió més recent…
-	PdfCraft {v} is available.	PdfCraft {v} està disponible.
+	LocalPDF {v} is available.	LocalPDF {v} està disponible.
 	You have version {c}. Download the new version from its release page.	Tens la versió {c}. Baixa la versió nova des de la seva pàgina de publicació.
-	PdfCraft {c} is up to date.	PdfCraft {c} està actualitzat.
+	LocalPDF {c} is up to date.	LocalPDF {c} està actualitzat.
 	Couldn't check for updates: {e}	No s'han pogut cercar actualitzacions: {e}
 	You have version {c}. All releases are listed at {page}.	Tens la versió {c}. Totes les versions es llisten a {page}.
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Consulta a GitHub la darrera versió. No es baixa ni s'instal·la res automàticament.
@@ -892,8 +892,8 @@
 	No changes allowed	No es permet cap canvi
 	Annotations, form fill-in, and digital signatures	Anotacions, emplenament de formularis i signatures digitals
 	Form fill-in and digital signatures	Emplenament de formularis i signatures digitals
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	La clau és al clauer de macOS, que pot demanar permís perquè PdfCraft la utilitzi.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	La clau és al magatzem de certificats de Windows, que pot demanar permís perquè PdfCraft la utilitzi.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	La clau és al clauer de macOS, que pot demanar permís perquè LocalPDF la utilitzi.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	La clau és al magatzem de certificats de Windows, que pot demanar permís perquè LocalPDF la utilitzi.
 	Digital ID password	Contrasenya de l'identificador digital
 	Back	Enrere
 	Validate all	Valida-ho tot
@@ -1254,7 +1254,7 @@
 	Downsample to	Redueix la resolució a
 	Also recognize pages that already have text	Reconeix també les pàgines que ja tenen text
 	Pictures on those pages are recognized too; words already in the page's text are not added again	També es reconeixen les imatges d'aquestes pàgines; les paraules que ja són al text de la pàgina no es tornen a afegir
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	El reconeixement de text no està instal·lat: falten els seus fitxers de model. Reinstal·la PdfCraft o defineix PDFCRAFT_MODELS amb la carpeta que els conté.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	El reconeixement de text no està instal·lat: falten els seus fitxers de model. Reinstal·la LocalPDF o defineix PDFCRAFT_MODELS amb la carpeta que els conté.
 	Settings	Configuració
 	Optional	Opcional
 	Planned · {m}	Previst · {m}
@@ -1398,7 +1398,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Qualsevol persona que obri el document necessitarà aquesta contrasenya. S'aplica en desar.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	El document s'obre sense contrasenya; aquesta contrasenya cal per canviar les restriccions. S'aplica en desar.
 	Recover unsaved documents?	Vols recuperar els documents no desats?
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft no s'ha tancat amb normalitat. Aquests documents tenien canvis desats automàticament:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF no s'ha tancat amb normalitat. Aquests documents tenien canvis desats automàticament:
 	just now	ara mateix
 	{n} min ago	fa {n} min
 	{n} h ago	fa {n} h
@@ -1556,10 +1556,10 @@
 	On the web, open or drop an image to convert it	Al web, obre o deixa anar una imatge per convertir-la
 	Couldn't optimize the file: {e}	No s'ha pogut optimitzar el fitxer: {e}
 	Couldn't write {path}: {e}	No s'ha pogut escriure {path}: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	El formulari demana que s'enviï a {u}; PdfCraft no envia dades de formularis. Desa el document per conservar les dades introduïdes.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	El formulari demana que s'enviï a {u}; LocalPDF no envia dades de formularis. Desa el document per conservar les dades introduïdes.
 	This PDF uses the unsupported {s} action.	Aquest PDF utilitza l'acció {s}, que no és compatible.
 	{name}: the {other} action isn't supported yet	{name}: l'acció {other} encara no és compatible
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} envia el formulari a {url}; PdfCraft no envia dades de formularis. Desa el document per conservar les dades introduïdes.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} envia el formulari a {url}; LocalPDF no envia dades de formularis. Desa el document per conservar les dades introduïdes.
 	Export stopped: {e}	Exportació aturada: {e}
 	Exported 1 image	S'ha exportat 1 imatge
 	Exported {n} images	S'han exportat {n} imatges
@@ -1727,7 +1727,7 @@ action wizard	Start	Inicia
 	Couldn't open {name}: {e}	No s'ha pogut obrir {name}: {e}
 	Couldn't read {name}: {e}	No s'ha pogut llegir {name}: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	El mode portàtil està desactivat: no es pot escriure a {folder} ({error}). La configuració es conserva a la carpeta d'usuari.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft dibuixa sense processador gràfic, de manera que pot anar lent. Pot ajudar actualitzar el controlador gràfic.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF dibuixa sense processador gràfic, de manera que pot anar lent. Pot ajudar actualitzar el controlador gràfic.
 	Couldn't save: {e}	No s'ha pogut desar: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	La baixada d'adjunts a la web arriba amb M3.10 ({n} bytes preparats)
 	`{command}` {when}	`{command}` {when}
@@ -1801,8 +1801,8 @@ action wizard	Start	Inicia
 	Signed and all signatures are valid.	Signat i totes les signatures són vàlides.
 	At least one signature has problems.	Almenys una signatura té problemes.
 	This document is secured. Some changes are restricted by its security settings.	Aquest document està protegit. Alguns canvis estan restringits per la seva configuració de seguretat.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Aquest és un formulari XFA dinàmic, que PdfCraft encara no pot mostrar. El que veus és la pàgina de substitució del fitxer.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Aquest formulari també conté dades XFA, que PdfCraft encara no llegeix. Pots emplenar-ne els camps, però Acrobat pot mostrar els valors XFA.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	Aquest és un formulari XFA dinàmic, que LocalPDF encara no pot mostrar. El que veus és la pàgina de substitució del fitxer.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Aquest formulari també conté dades XFA, que LocalPDF encara no llegeix. Pots emplenar-ne els camps, però Acrobat pot mostrar els valors XFA.
 	This document contains {n} interactive form fields.	Aquest document conté {n} camps de formulari interactius.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Aquest fitxer estava malmès i s'ha reparat. En desar, es conserva la versió reparada.
 	Dismiss	Descarta
@@ -1851,7 +1851,7 @@ action wizard	Start	Inicia
 	there are no pages to print	no hi ha pàgines per imprimir
 	the document has no tags	el document no té etiquetes
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	els models de reconeixement de text no estan instal·lats (reinstal·la PdfCraft o defineix PDFCRAFT_MODELS amb la carpeta que els conté)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	els models de reconeixement de text no estan instal·lats (reinstal·la LocalPDF o defineix PDFCRAFT_MODELS amb la carpeta que els conté)
 	the image is empty	la imatge és buida
 	this file isn't XFDF, FDF, XML or text form data	aquest fitxer no és de dades de formulari XFDF, FDF, XML ni de text
 	nothing in the file matches this document	res del fitxer coincideix amb aquest document
@@ -2117,7 +2117,7 @@ action wizard	Start	Inicia
 	% of all commits	% de totes les contribucions
 	Lines +/−	Línies +/−
 	@{login}: {prs} PRs, {commits} commits, +{added} / −{deleted} lines (Δ {delta}), +{bin_added} / −{bin_deleted} binary assets, {first} – {last}	@{login}: {prs} PR, {commits} contribucions, +{added} / −{deleted} línies (Δ {delta}), +{bin_added} / −{bin_deleted} recursos binaris, {first} – {last}
-	Reopen the files that were open when PdfCraft last closed	Reobre els fitxers que eren oberts l'última vegada que es va tancar PdfCraft
+	Reopen the files that were open when LocalPDF last closed	Reobre els fitxers que eren oberts l'última vegada que es va tancar LocalPDF
 	Add {what}	Afegeix {what}
 	Use {what}	Utilitza {what}
 	Place saved {what}	Col·loca {what} desats
@@ -2125,8 +2125,8 @@ action wizard	Start	Inicia
 	A link	Un enllaç
 	A button	Un botó
 	A script	Un script
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} d'aquest document ha intentat obrir una adreça que PdfCraft no obre: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} d'aquest document ha intentat obrir una adreça que PdfCraft no obre: {e}. Als documents només s'hi poden obrir enllaços web (http, https) i de correu electrònic (mailto).
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who} d'aquest document ha intentat obrir una adreça que LocalPDF no obre: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} d'aquest document ha intentat obrir una adreça que LocalPDF no obre: {e}. Als documents només s'hi poden obrir enllaços web (http, https) i de correu electrònic (mailto).
 	Another file dialog is still open. Finish with it first.	Hi ha un altre diàleg de fitxers obert. Acaba'l primer.
 	Couldn't show the file picker. Please try again.	No s'ha pogut mostrar el selector de fitxers. Torna-ho a provar.
 	The document changed while you were choosing a file, so nothing was changed.	El document ha canviat mentre triaves un fitxer, de manera que no s'ha modificat res.
@@ -2177,8 +2177,8 @@ action wizard	Start	Inicia
 	For page sizes and margins.	Per a les mides de pàgina i els marges.
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	Els tipus de lletra de text del PDF no poden dibuixar “{c}” ({code}). Tria un text compatible.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	Els tipus de lletra estàndard no poden dibuixar “{c}” ({code}). De moment només es poden afegir com a text caràcters d'Europa occidental.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	El tipus de lletra d'aquest camp no pot dibuixar “{c}” ({code}), de manera que PdfCraft hi mostra un ?. El valor es desa i altres visors de PDF tornen a dibuixar el camp a partir d'ell.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Els tipus de lletra amb què escriu PdfCraft no poden dibuixar “{c}” ({code}), de manera que es mostra com a ? a tots els visors de PDF. El text es desa.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	El tipus de lletra d'aquest camp no pot dibuixar “{c}” ({code}), de manera que LocalPDF hi mostra un ?. El valor es desa i altres visors de PDF tornen a dibuixar el camp a partir d'ell.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Els tipus de lletra amb què escriu LocalPDF no poden dibuixar “{c}” ({code}), de manera que es mostra com a ? a tots els visors de PDF. El text es desa.
 	Open arrow	Fletxa oberta
 	Closed arrow	Fletxa tancada
 	Butt	Pla
@@ -2275,7 +2275,7 @@ action wizard	Start	Inicia
 	The signature's byte range does not exclude exactly its contents.	L'interval de bytes de la signatura no exclou exactament el seu contingut.
 	The signature contents are not hexadecimal.	El contingut de la signatura no és hexadecimal.
 	The signature could not be read ({}).	No s'ha pogut llegir la signatura ({}).
-	PdfCraft can't check this signature yet: {}.	PdfCraft encara no pot comprovar aquesta signatura: {}.
+	LocalPDF can't check this signature yet: {}.	LocalPDF encara no pot comprovar aquesta signatura: {}.
 	The signature uses the legacy adbe.x509.rsa_sha1 format.	La signatura utilitza el format antic adbe.x509.rsa_sha1.
 	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	La signatura està codificada en BER (longituds indefinides) en lloc de DER; s'ha llegit de manera permissiva.
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	El contingut signat és un OCTET STRING construït (segmentat), com permet el BER; s'ha llegit igualment.
@@ -2297,9 +2297,9 @@ action wizard	Start	Inicia
 	The signer's certificate was not valid at the time of signing.	El certificat del signant no era vàlid en el moment de signar.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	El certificat del signant no permet signatures digitals (el seu ús de clau no inclou ni signatura digital ni no repudi).
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	El certificat del signant no s'ha emès per signar documents (el seu ús estès de clau no inclou el propòsit de signatura de documents).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	El certificat del signant té extensions crítiques que PdfCraft no reconeix ({}).
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	El certificat del signant té extensions crítiques que LocalPDF no reconeix ({}).
 	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	El certificat de {} no és un certificat de CA que pugui emetre certificats, de manera que no s'utilitza per avalar {}.
-	The certificate of {} has critical extensions PdfCraft does not recognize, so it is not used to vouch for {}.	The certificate of {} has critical extensions PdfCraft does not recognize, so it is not used to vouch for {}.
+	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.
 	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	El certificat de {} no permet tants certificats de CA per sota seu (longitud de camí), de manera que no s'utilitza per avalar {}.
 	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	El certificat de {} no era vàlid en el moment de signar, de manera que no s'utilitza per avalar {}.
 	The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.	La identitat del signant és desconeguda perquè no s'ha inclòs a la llista de certificats de confiança i cap dels seus certificats pare és un certificat de confiança.
@@ -2435,7 +2435,7 @@ animation effects	Off	Desactivats
 	no output folder was chosen	no s'ha triat cap carpeta de sortida
 @plural	Downloaded {n} PDF|Downloaded {n} PDFs	S'ha baixat {n} PDF|S'han baixat {n} PDF
 	Scan	Escaneja
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Signa un full de paper blanc i fes-ne una foto amb llum intensa i uniforme (utilitza el flaix). Tria la foto o deixa-la anar aquí: PdfCraft troba la signatura i elimina el paper.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	Signa un full de paper blanc i fes-ne una foto amb llum intensa i uniforme (utilitza el flaix). Tria la foto o deixa-la anar aquí: LocalPDF troba la signatura i elimina el paper.
 	Choose photo…	Tria una foto…
 	No photo chosen	No s'ha triat cap foto
 	Photo	Foto

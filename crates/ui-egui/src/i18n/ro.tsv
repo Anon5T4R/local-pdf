@@ -5,7 +5,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Romanian computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay as they are;
+# Product and technology names (LocalPDF, PDF, Acrobat JavaScript ...) stay as they are;
 # the trailing "…" of dialog commands is kept. Commands use the noun form ("Salvare", "Deschidere…"),
 # messages address the user formally ("Alegeți", "dvs.").
 
@@ -145,7 +145,7 @@
 	Accessibility	Accesibilitate
 	Help…	Ajutor…
 	Check for updates…	Căutare actualizări…
-	About PdfCraft	Despre PdfCraft
+	About LocalPDF	Despre LocalPDF
 	Automatically	Automat
 	Never	Niciodată
 	Always	Întotdeauna
@@ -558,7 +558,7 @@
 	Files are combined from top to bottom. Leave Pages empty to take every page.	Fișierele se combină de sus în jos. Lăsați Pagini gol pentru a lua toate paginile.
 	Files are combined in the order shown. Drag them to change it.	Fișierele se combină în ordinea afișată. Trageți-le pentru a o schimba.
 	Files for {name}	Fișiere pentru {name}
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Fișierele pe care le deschideți în PdfCraft apar aici. Plasați un PDF oriunde pentru a-l deschide.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	Fișierele pe care le deschideți în LocalPDF apar aici. Plasați un PDF oriunde pentru a-l deschide.
 	Fill & Sign dates	Date Completare și semnare
 	Fill & Sign signature	Semnătură Completare și semnare
 	Fill Color:	Culoare umplere:
@@ -665,7 +665,7 @@
 	JavaScript is turned off (Preferences ▸ JavaScript).	JavaScript este dezactivat (Preferințe > JavaScript).
 	JavaScript, e.g. getField("total").value	JavaScript, de ex. getField("total").value
 	Join our Discord	Intrați pe Discord-ul nostru
-	Join the ArtCraft community	Alăturați-vă comunității ArtCraft
+	Join the Local community	Alăturați-vă comunității Local
 	Justify	Aliniere stânga-dreapta
 	Keep source fonts	Păstrare fonturi sursă
 	Keep tool selected	Instrumentul rămâne selectat
@@ -866,10 +866,10 @@
 	Pattern	Model
 	Patterns	Modele
 	Patterns (graphics objects)	Modele (obiecte grafice)
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft nu s-a închis normal. Aceste documente aveau modificări salvate automat:
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft funcționează offline. Fără telemetrie, fără cont și fără procesare în cloud, cu excepția cazului în care adăugați un furnizor.
-	PdfCraft {c} is up to date.	PdfCraft {c} este la zi.
-	PdfCraft {v} is available.	Este disponibil PdfCraft {v}.
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF nu s-a închis normal. Aceste documente aveau modificări salvate automat:
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF funcționează offline. Fără telemetrie, fără cont și fără procesare în cloud, cu excepția cazului în care adăugați un furnizor.
+	LocalPDF {c} is up to date.	LocalPDF {c} este la zi.
+	LocalPDF {v} is available.	Este disponibil LocalPDF {v}.
 	Percentage	Procent
 	Permissions password	Parolă de permisiuni
 	Permitted actions after certifying	Acțiuni permise după certificare
@@ -945,7 +945,7 @@
 	Remove {n} files	Eliminare {n} fișiere
 	Remove {n} pages	Eliminare {n} pagini
 	Reopen Closed Tab	Redeschidere filă închisă
-	Reopen the files that were open when PdfCraft last closed	Redeschide fișierele care erau deschise la ultima închidere a PdfCraft
+	Reopen the files that were open when LocalPDF last closed	Redeschide fișierele care erau deschise la ultima închidere a LocalPDF
 	Repair log	Jurnal de reparare
 	Repeat overlay text	Repetare text suprapus
 	Replace Image…	Înlocuire imagine…
@@ -1132,7 +1132,7 @@
 	Text alignment:	Aliniere text:
 	Text in images isn't found; recognise text (OCR) first.	Textul din imagini nu este găsit; rulați întâi recunoașterea textului (OCR).
 	Text is compared word by word; the differences are shown on the new file.	Textul se compară cuvânt cu cuvânt; diferențele sunt afișate pe fișierul nou.
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Recunoașterea textului nu este instalată: lipsesc fișierele modelului. Reinstalați PdfCraft sau setați PDFCRAFT_MODELS la folderul care le conține.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Recunoașterea textului nu este instalată: lipsesc fișierele modelului. Reinstalați LocalPDF sau setați PDFCRAFT_MODELS la folderul care le conține.
 	Text to find	Text de găsit
 	Text to insert	Text de inserat
 	Text used as a clipping path cannot be moved with this selection.	Textul folosit ca traseu de decupare nu poate fi mutat cu această selecție.
@@ -1147,9 +1147,9 @@
 	The document's security settings don't allow copying text and images	Setările de securitate ale documentului nu permit copierea textului și a imaginilor
 	The document's security settings don't allow this change	Setările de securitate ale documentului nu permit această modificare
 	The existing action will be preserved.	Acțiunea existentă va fi păstrată.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Fonturile cu care scrie PdfCraft nu pot desena „{c}” ({code}), așa că apare ca ? în orice vizualizator PDF. Textul se salvează.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Cheia se află în depozitul de certificate Windows, care poate cere permisiunea ca PdfCraft să o folosească.
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Cheia se află în Keychain-ul macOS, care poate cere permisiunea ca PdfCraft să o folosească.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Fonturile cu care scrie LocalPDF nu pot desena „{c}” ({code}), așa că apare ca ? în orice vizualizator PDF. Textul se salvează.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	Cheia se află în depozitul de certificate Windows, care poate cere permisiunea ca LocalPDF să o folosească.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	Cheia se află în Keychain-ul macOS, care poate cere permisiunea ca LocalPDF să o folosească.
 	The newest {n} of {total} PDFs	Cele mai noi {n} din {total} PDF-uri
 	The password is only used to read the file; it isn't saved.	Parola este folosită doar pentru citirea fișierului; nu se salvează.
 	The printer driver's own settings for this print: paper tray, paper type, finishing and more.	Setările proprii ale driverului de imprimantă pentru această imprimare: tava de hârtie, tipul de hârtie, finisarea și altele.
@@ -1190,7 +1190,7 @@
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Acest fișier era deteriorat și a fost reparat. Salvarea păstrează versiunea reparată.
 	This folder isn't available right now. It may have moved, or its drive or cloud sync is offline.	Acest folder nu este disponibil acum. Poate a fost mutat sau unitatea ori sincronizarea cloud este offline.
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	Scripturile acestui formular sunt dezactivate pentru că unul a rulat prea mult. Redeschideți documentul pentru a le rula din nou.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Acesta este un formular XFA dinamic, pe care PdfCraft nu îl poate afișa încă. Ce vedeți este pagina de rezervă a fișierului.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	Acesta este un formular XFA dinamic, pe care LocalPDF nu îl poate afișa încă. Ce vedeți este pagina de rezervă a fișierului.
 	This measurement needs at least {n} points.	Această măsurătoare are nevoie de cel puțin {n} puncte.
 	This page contains objects that cannot be selected together.	Această pagină conține obiecte care nu pot fi selectate împreună.
 	This page couldn't be displayed.\n{e}	Această pagină nu a putut fi afișată.\n{e}
@@ -1268,7 +1268,7 @@
 	Visible Rectangle	Dreptunghi vizibil
 	Visual	Vizual
 	Warnings	Avertismente
-	Welcome to PdfCraft	Bun venit în PdfCraft
+	Welcome to LocalPDF	Bun venit în LocalPDF
 	What word or phrase would you like to search for?	Ce cuvânt sau expresie doriți să căutați?
 	Whole words only	Doar cuvinte întregi
 	Width:	Lățime:
@@ -1345,7 +1345,7 @@
 	Archive documents	Arhivare documente
 	Area	Arie
 	Arrow	Săgeată
-	ArtCraft website	Site-ul ArtCraft
+	Local website	Site-ul Local
 	Ask about this document	Întrebări despre acest document
 	Attach a file	Atașare fișier
 	Attach file	Atașare fișier
@@ -1484,7 +1484,7 @@
 	Insert text	Inserare text
 	JavaScript	JavaScript
 	JavaScript console…	Consolă JavaScript…
-	Join the ArtCraft Discord	Intrați pe Discord-ul ArtCraft
+	Join the Local Discord	Intrați pe Discord-ul Local
 	Light gray	Gri deschis
 	Line	Linie
 	Link	Link
@@ -1515,8 +1515,8 @@
 	Page options	Opțiuni pagină
 	Page transitions	Tranziții pagini
 	Paste pages	Lipire pagini
-	PdfCraft on GitHub	PdfCraft pe GitHub
-	PdfCraft web page	Pagina web PdfCraft
+	LocalPDF on GitHub	LocalPDF pe GitHub
+	LocalPDF web page	Pagina web LocalPDF
 	Perimeter	Perimetru
 	Pin folder to Home…	Fixare folder în Acasă…
 	PostScript / EPS	PostScript / EPS
@@ -1674,7 +1674,7 @@
 	Page {} has additional actions	Pagina {} are acțiuni suplimentare
 	Panel layout could not be restored: {error}	Aranjarea panourilor nu a putut fi restabilită: {error}
 	Panel move was not applied: {error}	Mutarea panoului nu a fost aplicată: {error}
-	PdfCraft can't check this signature yet: {}.	PdfCraft nu poate verifica încă această semnătură: {}.
+	LocalPDF can't check this signature yet: {}.	LocalPDF nu poate verifica încă această semnătură: {}.
 	Previous (⇧⌘G)	Anteriorul (⇧⌘G)
 	Print (⌘P)	Imprimare (⌘P)
 	Producer	Producător
@@ -1700,7 +1700,7 @@
 	The RSA signature's DigestInfo has no NULL parameter (older signers write it so); it was read anyway.	DigestInfo din semnătura RSA nu are parametrul NULL (semnatarii mai vechi îl scriu așa); a fost citită oricum.
 	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	Certificatul lui {} nu permite atâtea certificate CA sub el (lungimea căii), așa că nu este folosit pentru a garanta pentru {}.
 	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	Certificatul lui {} nu este un certificat CA care poate emite certificate, așa că nu este folosit pentru a garanta pentru {}.
-	The certificate of {} has critical extensions PdfCraft does not recognize, so it is not used to vouch for {}.	The certificate of {} has critical extensions PdfCraft does not recognize, so it is not used to vouch for {}.
+	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.
 	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	Certificatul lui {} nu era valabil în momentul semnării, așa că nu este folosit pentru a garanta pentru {}.
 	The checker found problems which may prevent the document from being fully accessible.	Verificatorul a găsit probleme care pot împiedica accesibilitatea completă a documentului.
 	The document has been altered or corrupted since the signature was applied.	Documentul a fost modificat sau deteriorat după aplicarea semnăturii.
@@ -1739,7 +1739,7 @@
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	Conținutul semnat este un OCTET STRING construit (segmentat), cum permite BER; a fost citit oricum.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	Certificatul semnatarului nu permite semnături digitale (utilizarea cheii nu include nici semnătură digitală, nici nerepudiere).
 	The signer's certificate has been revoked ({}).	Certificatul semnatarului a fost revocat ({}).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	Certificatul semnatarului are extensii critice pe care PdfCraft nu le recunoaște ({}).
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	Certificatul semnatarului are extensii critice pe care LocalPDF nu le recunoaște ({}).
 	The signer's certificate is not in the signature.	Certificatul semnatarului nu se află în semnătură.
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	Certificatul semnatarului nu este emis pentru semnarea documentelor (utilizarea extinsă a cheii nu are scopul de semnare a documentelor).
 	The signer's certificate was not valid at the time of signing.	Certificatul semnatarului nu era valabil în momentul semnării.
@@ -2184,7 +2184,7 @@ comment menu	Edit	Editare
 	Passed	Reușit
 	Password protection will be applied when you save	Protecția prin parolă se va aplica la salvare
 	Path	Traseu
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft desenează fără procesor grafic, așa că poate fi lent. Actualizarea driverului plăcii video poate ajuta.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF desenează fără procesor grafic, așa că poate fi lent. Actualizarea driverului plăcii video poate ajuta.
 	People may need more time to respond. Check that nothing has a time limit.	Unele persoane pot avea nevoie de mai mult timp pentru a răspunde. Verificați ca nimic să nu aibă o limită de timp.
 	Phone Number	Număr de telefon
 	Phone Numbers	Numere de telefon
@@ -2340,7 +2340,7 @@ comment menu	Edit	Editare
 	The document's security settings don't allow filling in form fields	Setările de securitate ale documentului nu permit completarea câmpurilor de formular
 	The field properties could not be changed.	Proprietățile câmpului nu au putut fi modificate.
 	The field properties dialog is no longer open.	Dialogul de proprietăți ale câmpului nu mai este deschis.
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Formularul cere să fie trimis la {u}; PdfCraft nu trimite date de formular. Salvați documentul pentru a păstra ce ați completat.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	Formularul cere să fie trimis la {u}; LocalPDF nu trimite date de formular. Salvați documentul pentru a păstra ce ați completat.
 	The form asks viewers to make appearances (NeedAppearances)	Formularul cere vizualizatoarelor să creeze aspectele (NeedAppearances)
 	The linked PDF opened, but its named destination was not applied.	PDF-ul legat s-a deschis, dar destinația sa denumită nu a fost aplicată.
 	The linked PDF opened, but its page destination was out of range.	PDF-ul legat s-a deschis, dar destinația de pagină era în afara intervalului.
@@ -2361,7 +2361,7 @@ comment menu	Edit	Editare
 	This document has no form fields.	Acest document nu are câmpuri de formular.
 	This document has no layers.	Acest document nu are straturi.
 	This file is already as small as it can be made ({size}). No copy was saved.	Acest fișier este deja cât de mic poate fi ({size}). Nu s-a salvat nicio copie.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Acest formular conține și date XFA, pe care PdfCraft nu le citește încă. Puteți completa câmpurile, dar Acrobat poate afișa în schimb valorile XFA.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Acest formular conține și date XFA, pe care LocalPDF nu le citește încă. Puteți completa câmpurile, dar Acrobat poate afișa în schimb valorile XFA.
 	Thumbnails	Miniaturi
 	Timed responses	Răspunsuri temporizate
 	Type Password	Introduceți parola
@@ -2414,7 +2414,7 @@ comment menu	Edit	Editare
 	the document is protected by a password	documentul este protejat cu parolă
 	the image is empty	imaginea este goală
 	the password is incorrect	parola este incorectă
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	modelele de recunoaștere a textului nu sunt instalate (reinstalați PdfCraft sau setați PDFCRAFT_MODELS la folderul care le conține)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	modelele de recunoaștere a textului nu sunt instalate (reinstalați LocalPDF sau setați PDFCRAFT_MODELS la folderul care le conține)
 	the title must not be empty	titlul nu poate fi gol
 	there are no pages to print	nu există pagini de imprimat
 	there are no redaction marks to apply	nu există marcaje de anonimizare de aplicat
@@ -2427,19 +2427,19 @@ comment menu	Edit	Editare
 	{label} failed: {e}	{label} a eșuat: {e}
 	{name} has no action	{name} nu are nicio acțiune
 	{name} is too large for a word list (at most 1 MB).	{name} este prea mare pentru o listă de cuvinte (cel mult 1 MB).
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} trimite formularul la {url}; PdfCraft nu trimite date de formular. Salvați documentul pentru a păstra ce ați completat.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} trimite formularul la {url}; LocalPDF nu trimite date de formular. Salvați documentul pentru a păstra ce ați completat.
 	{name}: choosing images arrives on the web with file pickers for images	{name}: alegerea imaginilor vine pe web odată cu selectoarele de fișiere pentru imagini
 	{name}: the {other} action isn't supported yet	{name}: acțiunea {other} nu este acceptată încă
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} din acest document a încercat să deschidă o adresă pe care PdfCraft nu o deschide: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} din acest document a încercat să deschidă o adresă pe care PdfCraft nu o deschide: {e}. Din documente se deschid doar linkuri web (http, https) și de e-mail (mailto).
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who} din acest document a încercat să deschidă o adresă pe care LocalPDF nu o deschide: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} din acest document a încercat să deschidă o adresă pe care LocalPDF nu o deschide: {e}. Din documente se deschid doar linkuri web (http, https) și de e-mail (mailto).
 animation effects	Off	Dezactivate
 animation effects	On	Activate
 	View more	Afișare mai mult
 	View less	Afișare mai puțin
 	Only continue if you trust this document. An address can carry information from the document, such as what you typed into its form.	Continuați doar dacă aveți încredere în acest document. O adresă poate transmite informații din document, de exemplu ce ați scris în formularul lui.
 	Print single-sided. Keep the sheets in order, cut at the marks, then stack the piles left to right, top to bottom.	Imprimați pe o singură față. Păstrați foile în ordine, tăiați la semne, apoi stivuiți teancurile de la stânga la dreapta, de sus în jos.
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Semnați o foaie de hârtie albă și fotografiați-o în lumină puternică și uniformă (folosiți blițul). Alegeți fotografia sau plasați-o aici: PdfCraft găsește semnătura și elimină hârtia.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Fontul acestui câmp nu poate desena „{c}” ({code}), așa că PdfCraft afișează ? în locul lui. Valoarea se salvează, iar alte vizualizatoare PDF redesenează câmpul pe baza ei.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	Semnați o foaie de hârtie albă și fotografiați-o în lumină puternică și uniformă (folosiți blițul). Alegeți fotografia sau plasați-o aici: LocalPDF găsește semnătura și elimină hârtia.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Fontul acestui câmp nu poate desena „{c}” ({code}), așa că LocalPDF afișează ? în locul lui. Valoarea se salvează, iar alte vizualizatoare PDF redesenează câmpul pe baza ei.
 	{chars} can't be written into the PDF yet: Fill & Sign text is Western European only. Pick a numeric format such as dd.mm.yyyy.	{chars} nu pot fi scrise încă în PDF: textul Completare și semnare acceptă doar caractere vest-europene. Alegeți un format numeric, de exemplu zz.ll.aaaa.
 	January	Ianuarie
 	February	Februarie

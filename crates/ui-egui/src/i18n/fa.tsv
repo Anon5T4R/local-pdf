@@ -12,7 +12,7 @@
 # Clean-room: every entry was written from the plain meaning of the English label using ordinary
 # Persian computing vocabulary. No proprietary localisation resource, string table or product UI
 # (Acrobat's included) was consulted or copied; add entries the same way.
-# Product and technology names (PdfCraft, PDF, Acrobat JavaScript ...) stay in Latin letters.
+# Product and technology names (LocalPDF, PDF, Acrobat JavaScript ...) stay in Latin letters.
 #
 # Right to left: like Arabic and Kurdish, entries stay in logical (typing) order.
 # `rtl: true` in i18n/mod.rs selects explicit right-to-left text direction; epaint reorders
@@ -171,17 +171,17 @@
 	Previous page	صفحه قبلی
 	Current page — type a page number or label (such as iv) and press Enter	صفحه فعلی — یک شماره یا برچسب صفحه (مانند iv) وارد کنید و Enter را فشار دهید
 	Zoom — type a percentage and press Enter	بزرگنمایی — یک درصد وارد کنید و Enter را فشار دهید
-	Welcome to PdfCraft	به PdfCraft خوش آمدید
+	Welcome to LocalPDF	به LocalPDF خوش آمدید
 	An open-source PDF workbench — local, private, and scriptable.	یک میزکار PDF متن باز — محلی، خصوصی و قابل اسکریپت‌نویسی.
-	Join the ArtCraft community	به جامعه ArtCraft بپیوندید
+	Join the Local community	به جامعه Local بپیوندید
 	Get help, share feedback and follow development on Discord.	کمک بگیرید، بازخورد بدهید و توسعه را در دیسکورد دنبال کنید.
 	Recommended tools	ابزار‌های پیشنهادی
 	Use now	همین حالا استفاده کنید
 	Open file	باز کردن فایل
 	Recent	اخیر
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	فایل‌هایی که در PdfCraft باز می‌کنید اینجا نمایش داده می‌شوند. برای باز کردن، یک PDF را هرجایی رها کنید.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	فایل‌هایی که در LocalPDF باز می‌کنید اینجا نمایش داده می‌شوند. برای باز کردن، یک PDF را هرجایی رها کنید.
 	Privacy	حریم خصوصی
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	PdfCraft آفلاین کار می‌کند. بدون تله سنجی، بدون حساب کاربری و بدون پردازش ابری، مگر اینکه ارائه دهند‌ه ای اضافه کنید.
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	LocalPDF آفلاین کار می‌کند. بدون تله سنجی، بدون حساب کاربری و بدون پردازش ابری، مگر اینکه ارائه دهند‌ه ای اضافه کنید.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	اسکریپت‌ها در یک محیط ایزوله بدون دسترسی به فایل یا شبکه اجرا می‌شوند. با خاموش بودن JavaScript، توابع استاندارد قالب‌بندی، اعتبارسنجی و محاسبه Acrobat همچنان کار می‌کنند.
 	Back to all tools	بازگشت به همه ابزار‌ها
 	Close panel	بستن پنل
@@ -319,12 +319,12 @@
 	Split document…	تقسیم سند…
 	Number pages…	شماره‌گذاری صفحه‌ها…
 	Keyboard shortcuts	میانبر‌های صفحه کلید
-	Join the ArtCraft Discord	به دیسکورد ArtCraft بپیوندید
-	PdfCraft web page	صفحه وب PdfCraft
-	PdfCraft on GitHub	PdfCraft در GitHub
-	ArtCraft website	وبسایت ArtCraft
+	Join the Local Discord	به دیسکورد Local بپیوندید
+	LocalPDF web page	صفحه وب LocalPDF
+	LocalPDF on GitHub	LocalPDF در GitHub
+	Local website	وبسایت Local
 	Check for updates…	بررسی به‌روز‌رسانی‌ها…
-	About PdfCraft	درباره PdfCraft
+	About LocalPDF	درباره LocalPDF
 	Export a PDF	برونبرد یک PDF
 	Export to	برونبرد به
 	Microsoft Word (.docx)	Microsoft Word (.docx)
@@ -812,9 +812,9 @@
 	Check for updates	بررسی به‌روز‌رسانی‌ها
 	No check has run yet.	هنوز هیچ بررسیای انجام نشده است.
 	Checking for a newer version…	بررسی برای نگارش تازه‌تر…
-	PdfCraft {v} is available.	PdfCraft {v} در دسترس است.
+	LocalPDF {v} is available.	LocalPDF {v} در دسترس است.
 	You have version {c}. Download the new version from its release page.	شما نگارش {c} را دارید. نگارش جدید را از صفحه انتشار آن دانلود کنید.
-	PdfCraft {c} is up to date.	PdfCraft {c} به‌روز است.
+	LocalPDF {c} is up to date.	LocalPDF {c} به‌روز است.
 	Couldn't check for updates: {e}	بررسی به‌روز‌رسانی‌ها انجام نشد: {e}
 	You have version {c}. All releases are listed at {page}.	شما نگارش {c} را دارید. همه انتشار‌ها در {page} فهرست شدهاند.
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	آخرین انتشار را از GitHub می‌پرسد. هیچ چیزی به‌طور خودکار دانلود یا نصب نمی‌شود.
@@ -934,8 +934,8 @@
 	No changes allowed	هیچ تغییری مجاز نیست
 	Annotations, form fill-in, and digital signatures	حاشیه‌نویسی‌ها، پُرکردن فرم و امضا‌های دیجیتال
 	Form fill-in and digital signatures	پُرکردن فرم و امضا‌های دیجیتال
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	کلید در Keychain macOS است، که ممکن است برای اجازه دادن به PdfCraft برای استفاده از آن درخواست کند.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	کلید در مخزن گواهی Windows است، که ممکن است برای اجازه دادن به PdfCraft برای استفاده از آن درخواست کند.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	کلید در Keychain macOS است، که ممکن است برای اجازه دادن به LocalPDF برای استفاده از آن درخواست کند.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	کلید در مخزن گواهی Windows است، که ممکن است برای اجازه دادن به LocalPDF برای استفاده از آن درخواست کند.
 	Digital ID password	گذرواژه شناسه دیجیتال
 	Back	بازگشت
 	Validate all	اعتبارسنجی همه
@@ -1298,7 +1298,7 @@
 	Downsample to	کاهش نمونهبرداری به
 	Also recognize pages that already have text	همچنین صفحه‌هایی که از قبل متن دارند را تشخیص بده
 	Pictures on those pages are recognized too; words already in the page's text are not added again	تصویر‌های آن صفحه‌ها نیز تشخیص داده می‌شوند؛ واژه‌هایی که از قبل در متن صفحه هستند دوباره افزوده نمی‌شوند
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	تشخیص متن نصب نیست: فایل‌های مدل آن وجود ندارند. PdfCraft را دوباره نصب کنید، یا PDFCRAFT_MODELS را به پوشه ای که آن‌ها را دارد تنظیم کنید.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	تشخیص متن نصب نیست: فایل‌های مدل آن وجود ندارند. LocalPDF را دوباره نصب کنید، یا PDFCRAFT_MODELS را به پوشه ای که آن‌ها را دارد تنظیم کنید.
 	Settings	تنظیمات
 	Optional	اختیاری
 	Planned · {m}	برنامه‌ریزی‌شده · {m}
@@ -1445,7 +1445,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	هر کسی که سند را باز کند به این گذرواژه نیاز دارد. هنگام ذخیره اعمال می‌شود.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	سند بدون گذرواژه باز می‌شود؛ این گذرواژه برای تغییر محدودیت‌ها لازم است. هنگام ذخیره اعمال می‌شود.
 	Recover unsaved documents?	باز‌یابی سند‌های ذخیره‌نشده؟
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	PdfCraft به درستی بسته نشد. این سند‌ها تغییراتی داشتند که ذخیره خودکار شدهاند:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	LocalPDF به درستی بسته نشد. این سند‌ها تغییراتی داشتند که ذخیره خودکار شدهاند:
 	just now	همین حالا
 	{n} min ago	{n} دقیقه پیش
 	{n} h ago	{n} ساعت پیش
@@ -1606,10 +1606,10 @@
 	On the web, open or drop an image to convert it	در نسخه وب، تصویری را باز کنید یا رها کنید تا تبدیل شود
 	Couldn't optimize the file: {e}	بهینه‌سازی فایل ممکن نشد: {e}
 	Couldn't write {path}: {e}	نوشتن {path} ممکن نشد: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	فرم درخواست ارسال به {u} را دارد؛ PdfCraft داده‌های فرم را ارسال نمی‌کند. سند را ذخیره کنید تا ورودی‌هایتان حفظ شوند.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	فرم درخواست ارسال به {u} را دارد؛ LocalPDF داده‌های فرم را ارسال نمی‌کند. سند را ذخیره کنید تا ورودی‌هایتان حفظ شوند.
 	This PDF uses the unsupported {s} action.	این PDF از کنش {s} پشتیبانی‌نشده استفاده می‌کند.
 	{name}: the {other} action isn't supported yet	{name}: کنش {other} هنوز پشتیبانی نمی‌شود
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	{name} فرم را به {url} ارسال می‌کند؛ PdfCraft داده‌های فرم را ارسال نمی‌کند. سند را ذخیره کنید تا ورودی‌هایتان حفظ شوند.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} فرم را به {url} ارسال می‌کند؛ LocalPDF داده‌های فرم را ارسال نمی‌کند. سند را ذخیره کنید تا ورودی‌هایتان حفظ شوند.
 	Export stopped: {e}	برونبری متوقف شد: {e}
 	Exported 1 image	۱ تصویر برونبری شد
 	Exported {n} images	{n} تصویر برونبری شد
@@ -1782,7 +1782,7 @@ action wizard	Start	شروع
 	Couldn't open {name}: {e}	باز کردن {name} ممکن نشد: {e}
 	Couldn't read {name}: {e}	خواندن {name} ممکن نشد: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	حالت قابل حمل خاموش است: نوشتن در {folder} ممکن نیست ({error}). در عوض تنظیمات در پوشه کاربر شما نگهداری می‌شود.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	PdfCraft بدون پردازنده گرافیکی رسم می‌کند، بنابراین ممکن است کند باشد. به‌روز‌رسانی درایور گرافیکی می‌تواند کمک کند.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	LocalPDF بدون پردازنده گرافیکی رسم می‌کند، بنابراین ممکن است کند باشد. به‌روز‌رسانی درایور گرافیکی می‌تواند کمک کند.
 	Couldn't save: {e}	ذخیره ممکن نشد: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	دانلود پیوست‌ها در نسخه وب با M3.10 ارائه می‌شود ({n} بایت آماده)
 	`{command}` {when}	`{command}` {when}
@@ -1857,8 +1857,8 @@ action wizard	Start	شروع
 	Signed and all signatures are valid.	امضا شده و همه امضا‌ها معتبرند.
 	At least one signature has problems.	حداقل یک امضا مشکل دارد.
 	This document is secured. Some changes are restricted by its security settings.	این سند محافظت شده است. برخی تغییر‌ها توسط تنظیمات امنیتی آن محدود شدهاند.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	این یک فرم XFA پویاست که PdfCraft هنوز نمی‌تواند نمایش دهد. آنچه می‌بینید صفحه جانگهدار فایل است.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	این فرم همچنین داده XFA دارد که PdfCraft هنوز نمی‌خواند. می‌توانید فیلد‌هایش را پر کنید، اما Acrobat ممکن است به‌جای آن مقادیر XFA را نشان دهد.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	این یک فرم XFA پویاست که LocalPDF هنوز نمی‌تواند نمایش دهد. آنچه می‌بینید صفحه جانگهدار فایل است.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	این فرم همچنین داده XFA دارد که LocalPDF هنوز نمی‌خواند. می‌توانید فیلد‌هایش را پر کنید، اما Acrobat ممکن است به‌جای آن مقادیر XFA را نشان دهد.
 	This document contains {n} interactive form fields.	این سند {n} فیلد فرم تعاملی دارد.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	این فایل آسیب دیده بود و ترمیم شده است. ذخیره کردن نسخه ترمیم‌شده را حفظ می‌کند.
 	Dismiss	بستن
@@ -1907,7 +1907,7 @@ action wizard	Start	شروع
 	there are no pages to print	هیچ صفح‌های برای چاپ وجود ندارد
 	the document has no tags	سند هیچ برچسبی ندارد
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	مدل‌های تشخیص متن نصب نشدهاند (PdfCraft را دوباره نصب کنید، یا PDFCRAFT_MODELS را روی پوش‌های که آن‌ها را نگه می‌دارد تنظیم کنید)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	مدل‌های تشخیص متن نصب نشدهاند (LocalPDF را دوباره نصب کنید، یا PDFCRAFT_MODELS را روی پوش‌های که آن‌ها را نگه می‌دارد تنظیم کنید)
 	the image is empty	تصویر خالی است
 	this file isn't XFDF, FDF, XML or text form data	این فایل داده فرم XFDF، FDF، XML یا متنی نیست
 	nothing in the file matches this document	هیچچیز در فایل با این سند مطابقت ندارد
@@ -2174,7 +2174,7 @@ action wizard	Start	شروع
 	% of all commits	٪ از همهٔ کامیت‌ها
 	Lines +/−	خطوط +/−
 	@{login}: {prs} PRs, {commits} commits, +{added} / −{deleted} lines (Δ {delta}), +{bin_added} / −{bin_deleted} binary assets, {first} – {last}	@{login}: {prs} PR، {commits} کامیت، +{added} / −{deleted} خط (Δ {delta})، +{bin_added} / −{bin_deleted} دارایی دودویی، {first} – {last}
-	Reopen the files that were open when PdfCraft last closed	باز‌گشایی فایل‌هایی که هنگام آخرین بسته شدن PdfCraft باز بودند
+	Reopen the files that were open when LocalPDF last closed	باز‌گشایی فایل‌هایی که هنگام آخرین بسته شدن LocalPDF باز بودند
 	Restore the last view (page, zoom and page display) when a document is opened again	باز‌یابی آخرین نما (صفحه، بزرگنمایی و نمایش صفحه) هنگام باز شدن دوبارهٔ سند
 	Add {what}	افزودن {what}
 	Use {what}	استفاده از {what}
@@ -2183,8 +2183,8 @@ action wizard	Start	شروع
 	A link	یک پیوند
 	A button	یک دکمه
 	A script	یک اسکریپت
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	{who} در این سند تلاش کرد نشانیای را باز کند که PdfCraft باز نمی‌کند: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} در این سند تلاش کرد نشانیای را باز کند که PdfCraft باز نمی‌کند: {e}. از میان سند‌ها فقط پیوند‌های وب (http، https) و ایمیل (mailto) باز می‌شوند.
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	{who} در این سند تلاش کرد نشانیای را باز کند که LocalPDF باز نمی‌کند: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} در این سند تلاش کرد نشانیای را باز کند که LocalPDF باز نمی‌کند: {e}. از میان سند‌ها فقط پیوند‌های وب (http، https) و ایمیل (mailto) باز می‌شوند.
 	Another file dialog is still open. Finish with it first.	یک پنجرهٔ گفتوگوی فایل دیگر هنوز باز است. ابتدا آن را تمام کنید.
 	Couldn't show the file picker. Please try again.	انتخابگر فایل نمایش داده نشد. لطفاً دوباره تلاش کنید.
 	The document changed while you were choosing a file, so nothing was changed.	سند در حین انتخاب فایل تغییر کرد، بنابراین چیزی تغییر نکرد.
@@ -2236,8 +2236,8 @@ action wizard	Start	شروع
 	For page sizes and margins.	برای اندازه‌های صفحه و حاشیه‌ها.
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	قلم‌های متن PDF نمی‌توانند «{c}» را بکشند ({code}). متن پشتیبانی‌شده انتخاب کنید.
 	The standard fonts can't draw “{c}” ({code}). Only Western European characters can be added as text for now.	قلم‌های استاندارد نمی‌توانند «{c}» را بکشند ({code}). فعلاً فقط نویسه‌های اروپای غربی می‌توانند به‌عنوان متن افزوده شوند.
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	قلم این فیلد نمی‌تواند «{c}» را بکشد ({code})، بنابراین PdfCraft به‌جای آن ? نشان می‌دهد. مقدار ذخیره می‌شود و سایر نمایشگر‌های PDF فیلد را از آن باز‌ترسیم می‌کنند.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	قلم‌هایی که PdfCraft با آن‌ها می‌نویسد نمی‌توانند «{c}» را بکشند ({code})، بنابراین در همهٔ نمایشگر‌های PDF به‌صورت ? نمایش داده می‌شود. متن ذخیره می‌شود.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	قلم این فیلد نمی‌تواند «{c}» را بکشد ({code})، بنابراین LocalPDF به‌جای آن ? نشان می‌دهد. مقدار ذخیره می‌شود و سایر نمایشگر‌های PDF فیلد را از آن باز‌ترسیم می‌کنند.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	قلم‌هایی که LocalPDF با آن‌ها می‌نویسد نمی‌توانند «{c}» را بکشند ({code})، بنابراین در همهٔ نمایشگر‌های PDF به‌صورت ? نمایش داده می‌شود. متن ذخیره می‌شود.
 	Open arrow	پیکان باز
 	Closed arrow	پیکان بسته
 	Butt	انت‌های صاف
@@ -2334,7 +2334,7 @@ action wizard	Start	شروع
 	The signature's byte range does not exclude exactly its contents.	بازهٔ بایت‌های امضا دقیقاً محتوای آن را مستثنا نمی‌کند.
 	The signature contents are not hexadecimal.	محتوای امضا هگزادسیمال نیست.
 	The signature could not be read ({}).	امضا خوانده نشد ({}).
-	PdfCraft can't check this signature yet: {}.	PdfCraft هنوز نمی‌تواند این امضا را بررسی کند: {}.
+	LocalPDF can't check this signature yet: {}.	LocalPDF هنوز نمی‌تواند این امضا را بررسی کند: {}.
 	The signature uses the legacy adbe.x509.rsa_sha1 format.	امضا از قالب قدیمی adbe.x509.rsa_sha1 استفاده می‌کند.
 	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	امضا به‌صورت BER رمز‌گذاری شده است (طول‌های نامعین) نه DER؛ با اغماض خوانده شد.
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	محتوای امضا‌شده یک OCTET STRING ساخته‌شده (بخشبخش) است، همان‌طور که BER اجازه می‌دهد؛ به هرحال خوانده شد.
@@ -2360,9 +2360,9 @@ action wizard	Start	شروع
 	The signer's certificate was not valid at the time of signing.	گواهی امضا‌کننده در زمان امضا معتبر نبود.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	گواهی امضا‌کننده امضا‌های دیجیتال را مجاز نمی‌داند (کاربرد کلید آن نه امضای دیجیتال دارد و نه انکارنا‌پذیری).
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	گواهی امضا‌کننده برای امضای اسناد صادر نشده است (کاربرد کلید گستردهٔ آن هیچ هدف امضای سند ندارد).
-	The signer's certificate has critical extensions PdfCraft does not recognize ({}).	گواهی امضا‌کننده افزونه‌های حیاتی دارد که PdfCraft آن‌ها را نمی‌شناسد ({}).
+	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	گواهی امضا‌کننده افزونه‌های حیاتی دارد که LocalPDF آن‌ها را نمی‌شناسد ({}).
 	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	گواهی {} یک گواهی CA که بتواند گواهی صادر کند نیست، بنابراین برای تأیید {} استفاده نمی‌شود.
-	The certificate of {} has critical extensions PdfCraft does not recognize, so it is not used to vouch for {}.	گواهی {} افزونه‌های حیاتی دارد که PdfCraft آن‌ها را نمی‌شناسد، بنابراین برای تأیید {} استفاده نمی‌شود.
+	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.	گواهی {} افزونه‌های حیاتی دارد که LocalPDF آن‌ها را نمی‌شناسد، بنابراین برای تأیید {} استفاده نمی‌شود.
 	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	گواهی {} این تعداد گواهی CA در زیر خود را مجاز نمی‌داند (طول مسیر)، بنابراین برای تأیید {} استفاده نمی‌شود.
 	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	گواهی {} در زمان امضا معتبر نبود، بنابراین برای تأیید {} استفاده نمی‌شود.
 	The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.	هویت امضا‌کننده ناشناخته است زیرا در فهرست گواهی‌های مورد اعتماد شما گنجانده نشده و هیچیک از گواهی‌های والد آن گواهی مورد اعتماد نیستند.
@@ -2515,7 +2515,7 @@ animation effects	Off	خاموش
 @plural	{n} more field calculates too early.|{n} more fields calculate too early.	{n} فیلد دیگر زود‌تر از موعد محاسبه می‌شود.|{n} فیلد دیگر زود‌تر از موعد محاسبه می‌شوند.
 @plural	{fields} is missing from the order saved in the PDF, so other PDF viewers may not calculate it.|{fields} are missing from the order saved in the PDF, so other PDF viewers may not calculate them.	{fields} در ترتیب ذخیره‌شده در PDF وجود ندارد، بنابراین سایر نمایشگر‌های PDF ممکن است آن را محاسبه نکنند.|{fields} در ترتیب ذخیره‌شده در PDF وجود ندارند، بنابراین سایر نمایشگر‌های PDF ممکن است آن‌ها را محاسبه نکنند.
 	Scan	اسکن
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	روی یک برگ کاغذ سفید امضا کنید و از آن در نور روشن و یکنواخت عکس بگیرید (از فلاش استفاده کنید). عکس را انتخاب کنید یا آن را اینجا رها کنید: PdfCraft امضا را پیدا می‌کند و کاغذ را حذف می‌کند.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	روی یک برگ کاغذ سفید امضا کنید و از آن در نور روشن و یکنواخت عکس بگیرید (از فلاش استفاده کنید). عکس را انتخاب کنید یا آن را اینجا رها کنید: LocalPDF امضا را پیدا می‌کند و کاغذ را حذف می‌کند.
 	Choose photo…	انتخاب عکس…
 	No photo chosen	هیچ عکسی انتخاب نشده
 	Photo	عکس

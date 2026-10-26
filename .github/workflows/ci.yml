@@ -31,6 +31,9 @@ jobs:
         with:
           components: rustfmt
       - uses: Swatinem/rust-cache@v2
+      - name: Fontes japonesas vendored
+        shell: bash
+        run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/assets/craft-fonts" >> "$GITHUB_ENV"
       - name: Formatação (nightly; só o nosso código — libs/ e vendor/ mantêm o estilo de origem)
         shell: bash
         run: |

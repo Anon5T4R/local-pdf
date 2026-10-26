@@ -142,16 +142,16 @@
 	Toggle fit page / fit width	Εναλλαγή προσαρμογής στη σελίδα / στο πλάτος
 	Next page	Επόμενη σελίδα
 	Previous page	Προηγούμενη σελίδα
-	Welcome to PdfCraft	Καλώς ορίσατε στο PdfCraft
+	Welcome to LocalPDF	Καλώς ορίσατε στο LocalPDF
 	An open-source PDF workbench — local, private, and scriptable.	Ένα εργαλείο PDF ανοιχτού κώδικα — τοπικό, ιδιωτικό και αυτοματοποιήσιμο.
-	Join the ArtCraft community	Γίνετε μέλος της κοινότητας ArtCraft
+	Join the Local community	Γίνετε μέλος της κοινότητας Local
 	Get help, share feedback and follow development on Discord.	Βρείτε βοήθεια, μοιραστείτε σχόλια και παρακολουθήστε την ανάπτυξη στο Discord.
 	Recommended tools	Προτεινόμενα εργαλεία
 	Use now	Χρήση τώρα
 	Open file	Άνοιγμα αρχείου
 	Recent	Πρόσφατα
 	Privacy	Απόρρητο
-	PdfCraft works offline. No telemetry, no account, and no cloud processing unless you add a provider.	Το PdfCraft λειτουργεί χωρίς σύνδεση στο διαδίκτυο. Χωρίς τηλεμετρία, λογαριασμό ή επεξεργασία στο νέφος, εκτός αν προσθέσετε εσείς υπηρεσία.
+	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	Το LocalPDF λειτουργεί χωρίς σύνδεση στο διαδίκτυο. Χωρίς τηλεμετρία, λογαριασμό ή επεξεργασία στο νέφος, εκτός αν προσθέσετε εσείς υπηρεσία.
 	Date	Ημερομηνία
 	Rotate	Περιστροφή
 	Delete	Διαγραφή
@@ -271,7 +271,7 @@
 	Advanced	Για προχωρημένους
 	General	Γενικά
 	About	Πληροφορίες
-	About PdfCraft	Σχετικά με το PdfCraft
+	About LocalPDF	Σχετικά με το LocalPDF
 	Check for updates	Έλεγχος για ενημερώσεις
 	Keyboard shortcuts	Συντομεύσεις πληκτρολογίου
 	Default	Προεπιλογή
@@ -285,7 +285,7 @@
 	Text, marks and signatures become part of the page. Other comments stay editable.	Το κείμενο, τα σημάδια και οι υπογραφές γίνονται μέρος της σελίδας. Τα υπόλοιπα σχόλια παραμένουν επεξεργάσιμα.
 	Current page — type a page number or label (such as iv) and press Enter	Τρέχουσα σελίδα — πληκτρολογήστε αριθμό ή ετικέτα σελίδας (π.χ. iv) και πατήστε Enter
 	Zoom — type a percentage and press Enter	Ζουμ — πληκτρολογήστε ένα ποσοστό και πατήστε Enter
-	Files you open in PdfCraft appear here. Drop a PDF anywhere to open it.	Τα αρχεία που ανοίγετε στο PdfCraft εμφανίζονται εδώ. Σύρετε ένα PDF οπουδήποτε για να το ανοίξετε.
+	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	Τα αρχεία που ανοίγετε στο LocalPDF εμφανίζονται εδώ. Σύρετε ένα PDF οπουδήποτε για να το ανοίξετε.
 	Scripts run in a sandbox without file or network access. With JavaScript off, Acrobat's standard format, validate and calculate functions still work.	Τα σενάρια εκτελούνται σε απομονωμένο περιβάλλον χωρίς πρόσβαση σε αρχεία ή δίκτυο. Με απενεργοποιημένη τη JavaScript, οι τυπικές λειτουργίες μορφοποίησης, επικύρωσης και υπολογισμού του Acrobat εξακολουθούν να λειτουργούν.
 	Move up	Μετακίνηση πάνω
 	Move down	Μετακίνηση κάτω
@@ -395,9 +395,9 @@
 	Save Image As…	Αποθήκευση εικόνας ως…
 	No check has run yet.	Δεν έχει πραγματοποιηθεί ακόμη έλεγχος.
 	Checking for a newer version…	Έλεγχος για νεότερη έκδοση…
-	PdfCraft {v} is available.	Η έκδοση {v} του PdfCraft είναι διαθέσιμη.
+	LocalPDF {v} is available.	Η έκδοση {v} του LocalPDF είναι διαθέσιμη.
 	You have version {c}. Download the new version from its release page.	Έχετε την έκδοση {c}. Κάντε λήψη της νέας έκδοσης από τη σελίδα εκδόσεών της.
-	PdfCraft {c} is up to date.	Το PdfCraft {c} είναι ενημερωμένο.
+	LocalPDF {c} is up to date.	Το LocalPDF {c} είναι ενημερωμένο.
 	Couldn't check for updates: {e}	Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις: {e}
 	You have version {c}. All releases are listed at {page}.	Έχετε την έκδοση {c}. Όλες οι εκδόσεις βρίσκονται στη διεύθυνση {page}.
 	Asks GitHub for the latest release. Nothing is downloaded or installed automatically.	Αναζητά την τελευταία έκδοση στο GitHub. Δεν γίνεται αυτόματα λήψη ή εγκατάσταση.
@@ -501,8 +501,8 @@
 	No changes allowed	Δεν επιτρέπονται αλλαγές
 	Annotations, form fill-in, and digital signatures	Σημειώσεις, συμπλήρωση φορμών και ψηφιακές υπογραφές
 	Form fill-in and digital signatures	Συμπλήρωση φορμών και ψηφιακές υπογραφές
-	The key is in the macOS Keychain, which may ask to allow PdfCraft to use it.	Το κλειδί βρίσκεται στην Κλειδοθήκη του macOS, η οποία ενδέχεται να ζητήσει άδεια χρήσης από το PdfCraft.
-	The key is in the Windows certificate store, which may ask to allow PdfCraft to use it.	Το κλειδί βρίσκεται στο χώρο αποθήκευσης πιστοποιητικών των Windows, ο οποίος ενδέχεται να ζητήσει άδεια χρήσης από το PdfCraft.
+	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	Το κλειδί βρίσκεται στην Κλειδοθήκη του macOS, η οποία ενδέχεται να ζητήσει άδεια χρήσης από το LocalPDF.
+	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	Το κλειδί βρίσκεται στο χώρο αποθήκευσης πιστοποιητικών των Windows, ο οποίος ενδέχεται να ζητήσει άδεια χρήσης από το LocalPDF.
 	Digital ID password	Κωδικός πρόσβασης ψηφιακής ταυτότητας
 	Validate all	Επικύρωση όλων
 	Sign this field…	Υπογραφή αυτού του πεδίου…
@@ -827,7 +827,7 @@
 	Downsample to	Μείωση ανάλυσης σε
 	Also recognize pages that already have text	Αναγνώριση και σελίδων που έχουν ήδη κείμενο
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Αναγνωρίζονται και οι εικόνες αυτών των σελίδων· οι λέξεις που υπάρχουν ήδη στο κείμενο της σελίδας δεν προστίθενται ξανά
-	Text recognition isn't installed: its model files are missing. Reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them.	Η αναγνώριση κειμένου δεν είναι εγκατεστημένη: λείπουν τα αρχεία μοντέλων. Εγκαταστήστε ξανά το PdfCraft ή ορίστε το PDFCRAFT_MODELS στον φάκελο που τα περιέχει.
+	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Η αναγνώριση κειμένου δεν είναι εγκατεστημένη: λείπουν τα αρχεία μοντέλων. Εγκαταστήστε ξανά το LocalPDF ή ορίστε το PDFCRAFT_MODELS στον φάκελο που τα περιέχει.
 	Planned · {m}	Προγραμματισμένο · {m}
 	Planned for milestone {m} — open to see what it will include	Προγραμματισμένο για το ορόσημο {m} — ανοίξτε για να δείτε τι θα περιλαμβάνει
 	Coming in milestone {m}. Items marked Ready work today.	Αναμένεται στο ορόσημο {m}. Τα στοιχεία με ένδειξη «Έτοιμο» λειτουργούν ήδη.
@@ -944,7 +944,7 @@
 	Anyone opening the document will need this password. It's applied when you save.	Όποιος ανοίγει το έγγραφο θα χρειάζεται αυτόν τον κωδικό. Η προστασία εφαρμόζεται κατά την αποθήκευση.
 	The document opens without a password; this password is needed to change the restrictions. It's applied when you save.	Το έγγραφο ανοίγει χωρίς κωδικό. Ο κωδικός απαιτείται για αλλαγή των περιορισμών και εφαρμόζεται κατά την αποθήκευση.
 	Recover unsaved documents?	Ανάκτηση μη αποθηκευμένων εγγράφων;
-	PdfCraft didn't shut down normally. These documents had changes that were autosaved:	Το PdfCraft δεν τερματίστηκε κανονικά. Στα παρακάτω έγγραφα αποθηκεύτηκαν αυτόματα αλλαγές:
+	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	Το LocalPDF δεν τερματίστηκε κανονικά. Στα παρακάτω έγγραφα αποθηκεύτηκαν αυτόματα αλλαγές:
 	just now	μόλις τώρα
 	{n} min ago	πριν από {n} λεπτά
 	{n} h ago	πριν από {n} ώρες
@@ -1084,10 +1084,10 @@
 	On the web, open or drop an image to convert it	Στη διαδικτυακή έκδοση, ανοίξτε ή σύρετε μια εικόνα για μετατροπή
 	Couldn't optimize the file: {e}	Δεν ήταν δυνατή η βελτιστοποίηση του αρχείου: {e}
 	Couldn't write {path}: {e}	Δεν ήταν δυνατή η εγγραφή στο {path}: {e}
-	The form asks to be submitted to {u}; PdfCraft doesn't send form data. Save the document to keep your entries.	Η φόρμα ζητά υποβολή στο {u}, αλλά το PdfCraft δεν αποστέλλει δεδομένα φόρμας. Αποθηκεύστε το έγγραφο για να διατηρήσετε τις καταχωρίσεις σας.
+	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	Η φόρμα ζητά υποβολή στο {u}, αλλά το LocalPDF δεν αποστέλλει δεδομένα φόρμας. Αποθηκεύστε το έγγραφο για να διατηρήσετε τις καταχωρίσεις σας.
 	This PDF uses the unsupported {s} action.	Αυτό το PDF χρησιμοποιεί τη μη υποστηριζόμενη ενέργεια {s}.
 	{name}: the {other} action isn't supported yet	{name}: η ενέργεια {other} δεν υποστηρίζεται ακόμη
-	{name} submits the form to {url}; PdfCraft doesn't send form data. Save the document to keep your entries.	Το {name} υποβάλλει τη φόρμα στο {url}, αλλά το PdfCraft δεν αποστέλλει δεδομένα φόρμας. Αποθηκεύστε το έγγραφο για να διατηρήσετε τις καταχωρίσεις σας.
+	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	Το {name} υποβάλλει τη φόρμα στο {url}, αλλά το LocalPDF δεν αποστέλλει δεδομένα φόρμας. Αποθηκεύστε το έγγραφο για να διατηρήσετε τις καταχωρίσεις σας.
 	Export stopped: {e}	Η εξαγωγή διακόπηκε: {e}
 	Exported 1 image	Εξήχθη 1 εικόνα
 	Exported {n} images	Εξήχθησαν {n} εικόνες
@@ -1274,7 +1274,7 @@
 	there are no pages to print	δεν υπάρχουν σελίδες προς εκτύπωση
 	the document has no tags	το έγγραφο δεν περιέχει ετικέτες δομής
 	{0}: {1}	{0}: {1}
-	the text recognition models are not installed (reinstall PdfCraft, or set PDFCRAFT_MODELS to the folder that holds them)	τα μοντέλα αναγνώρισης κειμένου δεν είναι εγκατεστημένα (επανεγκαταστήστε το PdfCraft ή ορίστε το PDFCRAFT_MODELS στον φάκελο που τα περιέχει)
+	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	τα μοντέλα αναγνώρισης κειμένου δεν είναι εγκατεστημένα (επανεγκαταστήστε το LocalPDF ή ορίστε το PDFCRAFT_MODELS στον φάκελο που τα περιέχει)
 	the image is empty	η εικόνα είναι κενή
 	this file isn't XFDF, FDF, XML or text form data	αυτό το αρχείο δεν περιέχει δεδομένα φόρμας XFDF, FDF, XML ή κειμένου
 	nothing in the file matches this document	κανένα στοιχείο του αρχείου δεν αντιστοιχεί στο έγγραφο
@@ -1470,7 +1470,7 @@
 	Choose a PNG or JPEG image (up to 4 MiB). Transparency is preserved.	Επιλέξτε εικόνα PNG ή JPEG (έως 4 MiB). Η διαφάνεια διατηρείται.
 	Couldn't import the signature image: {e}	Δεν ήταν δυνατή η εισαγωγή της εικόνας υπογραφής: {e}
 	Go to page…	Μετάβαση στη σελίδα…
-	Reopen the files that were open when PdfCraft last closed	Εκ νέου άνοιγμα των αρχείων που ήταν ανοιχτά κατά τον τελευταίο τερματισμό του PdfCraft
+	Reopen the files that were open when LocalPDF last closed	Εκ νέου άνοιγμα των αρχείων που ήταν ανοιχτά κατά τον τελευταίο τερματισμό του LocalPDF
 	Restore the last view (page, zoom and page display) when a document is opened again	Επαναφορά της τελευταίας προβολής (σελίδα, ζουμ και εμφάνιση σελίδων) όταν ένα έγγραφο ανοίγει ξανά
 	The PDF text fonts can't draw “{c}” ({code}). Choose supported text.	Οι γραμματοσειρές κειμένου PDF δεν μπορούν να εμφανίσουν τον χαρακτήρα «{c}» ({code}). Επιλέξτε κείμενο που υποστηρίζεται.
 	Open arrow	Ανοιχτή αιχμή βέλους
@@ -1583,8 +1583,8 @@
 	Write this email?	Σύνταξη αυτού του email;
 	XFA form: its fields and its XFA data are kept in step, so other viewers show what you fill in.	Φόρμα XFA: τα πεδία και τα δεδομένα XFA συγχρονίζονται, ώστε άλλα προγράμματα προβολής να εμφανίζουν όσα συμπληρώνετε.
 	{n} contributors · {c} commits	{n} συντελεστές · {c} καταχωρίσεις
-	{who} in this document tried to open an address PdfCraft won't open: {e}.	Το στοιχείο {who} σε αυτό το έγγραφο προσπάθησε να ανοίξει διεύθυνση που το PdfCraft δεν επιτρέπει: {e}.
-	{who} in this document tried to open an address PdfCraft won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Το στοιχείο {who} σε αυτό το έγγραφο προσπάθησε να ανοίξει μη επιτρεπόμενη διεύθυνση: {e}. Από τα έγγραφα ανοίγουν μόνο σύνδεσμοι ιστού (http, https) και ηλεκτρονικού ταχυδρομείου (mailto).
+	{who} in this document tried to open an address LocalPDF won't open: {e}.	Το στοιχείο {who} σε αυτό το έγγραφο προσπάθησε να ανοίξει διεύθυνση που το LocalPDF δεν επιτρέπει: {e}.
+	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Το στοιχείο {who} σε αυτό το έγγραφο προσπάθησε να ανοίξει μη επιτρεπόμενη διεύθυνση: {e}. Από τα έγγραφα ανοίγουν μόνο σύνδεσμοι ιστού (http, https) και ηλεκτρονικού ταχυδρομείου (mailto).
 	{who} in this document wants to open this address in your browser:	Το στοιχείο {who} σε αυτό το έγγραφο θέλει να ανοίξει αυτή τη διεύθυνση στο πρόγραμμα περιήγησης:
 	{who} in this document wants to open your email app with this address:	Το στοιχείο {who} σε αυτό το έγγραφο θέλει να ανοίξει την εφαρμογή ηλεκτρονικού ταχυδρομείου με αυτή τη διεύθυνση:
 	ΔLOC	Δγραμμές
@@ -1692,10 +1692,10 @@
 	Extract pages…	Εξαγωγή σελίδων…
 	Split document…	Διαχωρισμός εγγράφου…
 	Number pages…	Αρίθμηση σελίδων…
-	Join the ArtCraft Discord	Συμμετοχή στο Discord του ArtCraft
-	PdfCraft web page	Ιστότοπος του PdfCraft
-	PdfCraft on GitHub	PdfCraft στο GitHub
-	ArtCraft website	Ιστότοπος ArtCraft
+	Join the Local Discord	Συμμετοχή στο Discord του Local
+	LocalPDF web page	Ιστότοπος του LocalPDF
+	LocalPDF on GitHub	LocalPDF στο GitHub
+	Local website	Ιστότοπος Local
 	Check for updates…	Έλεγχος για ενημερώσεις…
 	Export a PDF	Εξαγωγή PDF
 	Export to	Εξαγωγή σε
@@ -2091,7 +2091,7 @@
 	Couldn't open {name}: {e}	Δεν ήταν δυνατό το άνοιγμα του {name}: {e}
 	Couldn't read {name}: {e}	Δεν ήταν δυνατή η ανάγνωση του {name}: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Η φορητή λειτουργία απενεργοποιήθηκε: δεν είναι δυνατή η εγγραφή στο {folder} ({error}). Οι ρυθμίσεις αποθηκεύονται στον φάκελο χρήστη.
-	PdfCraft is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Το PdfCraft αποδίδει τα γραφικά χωρίς επιτάχυνση από επεξεργαστή γραφικών και ενδέχεται να είναι αργό. Μια ενημέρωση του προγράμματος οδήγησης γραφικών ίσως βοηθήσει.
+	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Το LocalPDF αποδίδει τα γραφικά χωρίς επιτάχυνση από επεξεργαστή γραφικών και ενδέχεται να είναι αργό. Μια ενημέρωση του προγράμματος οδήγησης γραφικών ίσως βοηθήσει.
 	Couldn't save: {e}	Δεν ήταν δυνατή η αποθήκευση: {e}
 	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Η λήψη συνημμένων στη διαδικτυακή έκδοση θα διατεθεί με το M3.10 ({n} byte έτοιμα)
 	`{command}` {when}	`{command}` {when}
@@ -2154,8 +2154,8 @@
 	Signed and all signatures are valid.	Το έγγραφο είναι υπογεγραμμένο και όλες οι υπογραφές είναι έγκυρες.
 	At least one signature has problems.	Τουλάχιστον μία υπογραφή παρουσιάζει προβλήματα.
 	This document is secured. Some changes are restricted by its security settings.	Το έγγραφο προστατεύεται. Ορισμένες αλλαγές περιορίζονται από τις ρυθμίσεις ασφαλείας του.
-	This is a dynamic XFA form, which PdfCraft can't display yet. What you see is the file's placeholder page.	Πρόκειται για δυναμική φόρμα XFA, την οποία το PdfCraft δεν μπορεί ακόμη να εμφανίσει. Εμφανίζεται η προσωρινή σελίδα του αρχείου.
-	This form also contains XFA data, which PdfCraft doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Αυτή η φόρμα περιέχει επίσης δεδομένα XFA, τα οποία το PdfCraft δεν διαβάζει ακόμη. Μπορείτε να συμπληρώσετε τα πεδία της, αλλά το Acrobat ενδέχεται να εμφανίσει τις τιμές XFA.
+	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	Πρόκειται για δυναμική φόρμα XFA, την οποία το LocalPDF δεν μπορεί ακόμη να εμφανίσει. Εμφανίζεται η προσωρινή σελίδα του αρχείου.
+	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Αυτή η φόρμα περιέχει επίσης δεδομένα XFA, τα οποία το LocalPDF δεν διαβάζει ακόμη. Μπορείτε να συμπληρώσετε τα πεδία της, αλλά το Acrobat ενδέχεται να εμφανίσει τις τιμές XFA.
 	This document contains {n} interactive form fields.	Το έγγραφο περιέχει {n} διαδραστικά πεδία φόρμας.
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Το αρχείο ήταν κατεστραμμένο και επιδιορθώθηκε. Η αποθήκευση διατηρεί την επιδιορθωμένη έκδοση.
 	Dismiss	Κλείσιμο ειδοποίησης
@@ -2366,8 +2366,8 @@ animation effects	Off	Ανενεργά
 	Greyscale	Κλίμακα του γκρι
 	Black and white	Ασπρόμαυρο
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Το πρόγραμμα οδήγησης αυτού του εκτυπωτή δεν δέχεται ρυθμίσεις εκτύπωσης διπλής όψης από άλλα προγράμματα, οπότε ισχύει η δική του ρύθμιση. Αλλάξτε τη στις Ιδιότητες…
-	This field's font can't draw “{c}” ({code}), so PdfCraft shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Η γραμματοσειρά αυτού του πεδίου δεν μπορεί να σχεδιάσει το «{c}» ({code}), γι' αυτό το PdfCraft δείχνει ? στη θέση του. Η τιμή αποθηκεύεται και άλλα προγράμματα προβολής PDF επανασχεδιάζουν το πεδίο από αυτήν.
-	The fonts PdfCraft writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Οι γραμματοσειρές με τις οποίες γράφει το PdfCraft δεν μπορούν να σχεδιάσουν το «{c}» ({code}), γι' αυτό εμφανίζεται ως ? σε κάθε πρόγραμμα προβολής PDF. Το κείμενο αποθηκεύεται.
+	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Η γραμματοσειρά αυτού του πεδίου δεν μπορεί να σχεδιάσει το «{c}» ({code}), γι' αυτό το LocalPDF δείχνει ? στη θέση του. Η τιμή αποθηκεύεται και άλλα προγράμματα προβολής PDF επανασχεδιάζουν το πεδίο από αυτήν.
+	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Οι γραμματοσειρές με τις οποίες γράφει το LocalPDF δεν μπορούν να σχεδιάσουν το «{c}» ({code}), γι' αυτό εμφανίζεται ως ? σε κάθε πρόγραμμα προβολής PDF. Το κείμενο αποθηκεύεται.
 	Browser's print dialog	Παράθυρο εκτύπωσης του προγράμματος περιήγησης
 	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Τα αντίγραφα, η εκτύπωση διπλής όψης και το χρώμα επιλέγονται στο παράθυρο εκτύπωσης του προγράμματος περιήγησης.
 	Preparing {n} sheets for printing…	Προετοιμασία {n} φύλλων για εκτύπωση…
@@ -2404,7 +2404,7 @@ animation effects	Off	Ανενεργά
 @plural	{fields} is missing from the order saved in the PDF, so other PDF viewers may not calculate it.|{fields} are missing from the order saved in the PDF, so other PDF viewers may not calculate them.	{fields} λείπει από τη σειρά που είναι αποθηκευμένη στο PDF, οπότε άλλα προγράμματα PDF ίσως δεν το υπολογίσουν.|{fields} λείπουν από τη σειρά που είναι αποθηκευμένη στο PDF, οπότε άλλα προγράμματα PDF ίσως δεν τα υπολογίσουν.
 @plural	{n} field name collides with earlier files and will be renamed: {list}|{n} field names collide with earlier files and will be renamed: {list}	{n} όνομα πεδίου συγκρούεται με προηγούμενα αρχεία και θα μετονομαστεί: {list}|{n} ονόματα πεδίων συγκρούονται με προηγούμενα αρχεία και θα μετονομαστούν: {list}
 	Scan	Σάρωση
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: PdfCraft finds the signature and removes the paper.	Υπογράψτε σε ένα λευκό φύλλο χαρτιού και φωτογραφίστε το σε έντονο, ομοιόμορφο φως (χρησιμοποιήστε το φλας). Επιλέξτε τη φωτογραφία ή αφήστε την εδώ: το PdfCraft βρίσκει την υπογραφή και αφαιρεί το χαρτί.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	Υπογράψτε σε ένα λευκό φύλλο χαρτιού και φωτογραφίστε το σε έντονο, ομοιόμορφο φως (χρησιμοποιήστε το φλας). Επιλέξτε τη φωτογραφία ή αφήστε την εδώ: το LocalPDF βρίσκει την υπογραφή και αφαιρεί το χαρτί.
 	Choose photo…	Επιλογή φωτογραφίας…
 	No photo chosen	Δεν επιλέχθηκε φωτογραφία
 	Photo	Φωτογραφία
