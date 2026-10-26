@@ -18,9 +18,6 @@
 
 </p>
 
-<p align="center">
-  <a href="https://github.com/Anon5T4R/local-pdf/discussions"><img alt="LocalPDF Discussions" src="https://img.shields.io/badge/Discussions-5865F2?style=for-the-badge&logo=github&logoColor=white" height="40"></a>
-</p>
 
 <p align="center">
   <a href="https://github.com/Anon5T4R/local-pdf"><b>LocalPDF on GitHub</b></a> ·
