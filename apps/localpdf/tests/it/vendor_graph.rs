@@ -55,12 +55,9 @@ fn vendor_provenance_window_stack_graph_is_resolved() {
     }
     let vcs = std::fs::read_to_string(root().join("vendor/winit/.cargo_vcs_info.json")).expect("vendor/winit provenance");
     assert!(vcs.contains("e9809ef54b18499bb4f2cac945719ecc2a61061b"), "vendor/winit keeps its upstream base");
-    for path in [
-        "vendor/winit/src/platform_impl",
-        "vendor/egui-wgpu/src/winit.rs",
-        "libs/winit/src/platform_impl",
-        "libs/egui/crates/egui-wgpu/src/winit.rs",
-    ] {
+    for path in
+        ["vendor/winit/src/platform_impl", "vendor/egui-wgpu/src/winit.rs", "libs/winit/src/platform_impl", "libs/egui/crates/egui-wgpu/src/winit.rs"]
+    {
         assert!(root().join(path).exists(), "retain {path}");
     }
 }
