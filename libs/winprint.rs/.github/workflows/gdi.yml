@@ -1,0 +1,28 @@
+name: RGB driver transport
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, codex/shared-rgb-print-20261013]
+    paths: ['crates/gdi/**', '.github/workflows/gdi.yml']
+  pull_request:
+    paths: ['crates/gdi/**', '.github/workflows/gdi.yml']
+permissions:
+  contents: read
+jobs:
+  gdi:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - run: cargo fmt --manifest-path crates/gdi/Cargo.toml --check
+      - run: cargo clippy --manifest-path crates/gdi/Cargo.toml --all-targets --locked -- -D warnings
+      - run: cargo test --manifest-path crates/gdi/Cargo.toml --locked
+      - if: runner.os == 'Linux'
+        run: cargo check --manifest-path crates/gdi/Cargo.toml --target wasm32-unknown-unknown --locked

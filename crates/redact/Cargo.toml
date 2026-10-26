@@ -1,0 +1,23 @@
+[package]
+name = "localpdf-redact"
+description = "Redaction (architecture §11.2): marks, apply (glyphs, images, vectors, XObjects, annotations, fields), verification"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+localpdf-cos = { workspace = true }
+localpdf-content = { workspace = true }
+localpdf-fonts = { workspace = true }
+localpdf-model = { workspace = true }
+localpdf-forms = { workspace = true }
+localpdf-edit = { workspace = true }
+localpdf-annot = { workspace = true }
+localpdf-xfa = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+localpdf-testkit = { workspace = true }

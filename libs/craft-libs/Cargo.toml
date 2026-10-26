@@ -1,0 +1,85 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+exclude = ["vendor/krilla", "vendor/hayro", "vendor/hayro-interpret", "vendor/hayro-syntax", "vendor/hayro-jbig2", "vendor/hayro-cmap", "vendor/hayro-postscript"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.95"
+repository = "https://github.com/Anon5T4R/local-deps"
+
+[workspace.dependencies]
+# internal: add each crate here as `craft-<name> = { path = "crates/<name>" }`
+craft-platform = { path = "crates/platform" }
+craft-ai-core = { path = "crates/ai-core" }
+craft-pdf = { path = "crates/pdf", version = "=0.1.0" }
+craft-plate-test = { path = "crates/plate-test" }
+krilla = { version = "=0.8.2", default-features = false, features = ["raster-images"] }
+hayro = { version = "=0.7.1", default-features = false }
+hayro-interpret = { version = "=0.7.0", default-features = false, features = ["embed-fonts", "embed-cmaps"] }
+hayro-syntax = { version = "=0.7.2", default-features = false, features = ["std"] }
+bytemuck = "1"
+kurbo = "0.13"
+thiserror = "2"
+craft-atomic = { path = "crates/atomic" }
+craft-cms = { path = "crates/cms" }
+craft-docpath = { path = "crates/docpath" }
+craft-font-catalog = { path = "crates/font-catalog" }
+craft-font-manager = { path = "crates/font-manager" }
+craft-font-store = { path = "crates/font-store" }
+craft-fonts-build = { path = "crates/fonts-build" }
+craft-i18n = { path = "crates/i18n" }
+craft-jpeg = { path = "crates/jpeg" }
+craft-keymap = { path = "crates/keymap" }
+craft-media = { path = "crates/media" }
+craft-menu = { path = "crates/menu" }
+craft-prepress = { path = "crates/prepress" }
+craft-print = { path = "crates/print" }
+craft-quit = { path = "crates/quit" }
+craft-settings = { path = "crates/settings" }
+craft-text = { path = "crates/text" }
+craft-ui = { path = "crates/ui" }
+craft-update = { path = "crates/update" }
+craft-window = { path = "crates/window" }
+egui = { version = "0.37", default-features = false }
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+proptest = "1"
+# All date/time conversion goes through chrono (no hand-rolled calendar code beyond the 400-year range extension; AGENTS.md).
+chrono = { version = "0.4.45", default-features = false, features = ["std"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(craft_pdf_unicode_fixtures)"] }
+
+[workspace.lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+
+[patch.crates-io]
+krilla = { path = "vendor/krilla" }
+
+hayro = { path = "vendor/hayro" }
+hayro-interpret = { path = "vendor/hayro-interpret" }
+hayro-syntax = { path = "vendor/hayro-syntax" }
+hayro-jbig2 = { path = "vendor/hayro-jbig2" }
+hayro-cmap = { path = "vendor/hayro-cmap" }
+hayro-postscript = { path = "vendor/hayro-postscript" }
+ecolor = { path = "../egui/crates/ecolor/" }
+emath = { path = "../egui/crates/emath/" }
+epaint = { path = "../egui/crates/epaint/" }
+epaint_default_fonts = { path = "../egui/crates/epaint_default_fonts/" }
+egui = { path = "../egui/crates/egui/" }
+egui-winit = { path = "../egui/crates/egui-winit/" }
+egui-wgpu = { path = "../egui/crates/egui-wgpu/" }
+egui_glow = { path = "../egui/crates/egui_glow/" }
+egui_extras = { path = "../egui/crates/egui_extras/" }
+egui_kittest = { path = "../egui/crates/egui_kittest/" }
+egui_system_font_provider = { path = "../egui/crates/egui_system_font_provider/" }
+eframe = { path = "../egui/crates/eframe/" }
+egui_demo_lib = { path = "../egui/crates/egui_demo_lib/" }
+egui_inspection = { path = "../egui/crates/egui_inspection/" }
+winit = { path = "../winit/winit/" }

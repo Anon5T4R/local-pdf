@@ -1,0 +1,56 @@
+[package]
+name = "localpdf-engine"
+description = "LocalPDF engine façade: session, documents, command/tool catalogue"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+craft-docpath = { workspace = true }
+localpdf-measure = { workspace = true }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "tiff"] }
+localpdf-render = { workspace = true }
+localpdf-cos = { workspace = true }
+localpdf-organize = { workspace = true }
+localpdf-annot = { workspace = true }
+localpdf-forms = { workspace = true }
+localpdf-xfa = { workspace = true }
+localpdf-edit = { workspace = true }
+localpdf-audit = { workspace = true }
+localpdf-redact = { workspace = true }
+localpdf-print = { workspace = true }
+localpdf-xfdf = { workspace = true }
+localpdf-sign = { workspace = true }
+localpdf-optimize = { workspace = true }
+localpdf-a11y = { workspace = true }
+localpdf-ocr = { workspace = true }
+localpdf-js = { workspace = true }
+localpdf-compare = { workspace = true }
+localpdf-preflight = { workspace = true }
+localpdf-export = { workspace = true }
+localpdf-fonts = { workspace = true }
+localpdf-create = { workspace = true }
+localpdf-model = { workspace = true }
+localpdf-geom = { workspace = true }
+thiserror = { workspace = true }
+png = "0.18"
+# Already in the graph (through image and localpdf-create): image's TiffEncoder can't set the
+# resolution or the compression of an exported page.
+tiff = "0.11"
+# Already in the graph (url and idna through webbrowser, icu_properties through boa): they show
+# the host of a document's link the way the browser reads it (links::display_host).
+url = "2.5"
+idna = "1.1"
+icu_properties = "2.3"
+unicode-segmentation = "1.13"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# Already in the graph through lopdf; used only for the local UTC offset ("today"). The workspace
+# entry is std-only; this target adds `clock` for `chrono::Local::now`.
+chrono = { workspace = true, features = ["clock"] }
+
+[dev-dependencies]
+localpdf-testkit = { workspace = true }

@@ -1,0 +1,37 @@
+[package]
+name = "localpdf-automation"
+description = "Agent control for LocalPDF: a headless tool set over the engine and an MCP server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+localpdf-engine = { workspace = true }
+localpdf-cos = { workspace = true }
+localpdf-render = { workspace = true }
+localpdf-organize = { workspace = true }
+localpdf-platform = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.11"
+tempfile = "3.27"
+base64 = { version = "0.23", optional = true }
+
+
+[features]
+default = ["mcp"]
+# The MCP server module. Opt-in at run time either way; disable to leave it out of the build.
+mcp = ["dep:base64"]
+
+[dev-dependencies]
+localpdf-fonts = { workspace = true }
+png = "0.18"
+flate2.workspace = true
+localpdf-model = { workspace = true }
+localpdf-xfa = { workspace = true }
+image = { version = "0.25", default-features = false, features = ["jpeg"] }
+
+[target.'cfg(target_os = "macos")'.dev-dependencies]
+rustix = { version = "1", features = ["fs"] }

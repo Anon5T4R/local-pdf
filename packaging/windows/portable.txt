@@ -1,0 +1,9 @@
+LocalPDF portable mode
+
+While this file sits next to localpdf.exe, LocalPDF keeps its settings, log files, crash-recovery
+autosaves and new digital IDs in the LocalPDFData folder beside it, and writes nothing to
+%APPDATA% or %LOCALAPPDATA%. Copy the whole folder to move LocalPDF with its settings.
+
+Delete this file to use the normal per-user folders (%APPDATA%\LocalPDF and
+%LOCALAPPDATA%\LocalPDF) instead. If LocalPDFData can't be written (for example on a read-only
+drive), LocalPDF says so and uses the per-user folders instead.

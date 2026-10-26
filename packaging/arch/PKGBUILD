@@ -1,0 +1,33 @@
+# Maintainer: Anon5T4R <https://github.com/Anon5T4R>
+pkgname=localpdf
+pkgver=0.14.0
+pkgrel=1
+pkgdesc="Editor de PDF local e open-source, escrito em Rust puro"
+arch=('x86_64' 'aarch64')
+url="https://github.com/Anon5T4R/local-pdf"
+license=('MIT' 'Apache-2.0')
+depends=('glibc' 'gcc-libs' 'vulkan-driver' 'libxkbcommon')
+makedepends=('rust' 'clang' 'lld')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+options=('!lto')
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --locked --release
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --locked --release
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 target/release/localpdf "$pkgdir/usr/bin/localpdf"
+  install -Dm755 target/release/localpdf-cli "$pkgdir/usr/bin/localpdf-cli"
+  install -Dm644 packaging/linux/com.local.localpdf.desktop \
+    "$pkgdir/usr/share/applications/com.local.localpdf.desktop"
+  install -Dm644 assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/com.local.localpdf.svg"
+}

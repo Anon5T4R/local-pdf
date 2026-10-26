@@ -1,0 +1,18 @@
+[package]
+name = "localpdf-annot"
+description = "Annotations (comments): builders, appearance streams and edits, ISO 32000-2 §12.5"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+localpdf-cos = { workspace = true }
+localpdf-fonts = { workspace = true }
+localpdf-model = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+hayro-syntax = { workspace = true }

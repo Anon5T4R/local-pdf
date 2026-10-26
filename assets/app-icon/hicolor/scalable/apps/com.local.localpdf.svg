@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dc2626"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#bg)"/>
+  <!-- folha com canto dobrado -->
+  <g fill="none" stroke="#ffffff" stroke-width="52" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M 320 200 H 600 L 744 344 V 780 H 320 Z"/>
+    <path d="M 600 200 V 344 H 744"/>
+  </g>
+  <!-- linhas de texto -->
+  <g stroke="#ffffff" stroke-width="44" stroke-linecap="round" opacity="0.92">
+    <line x1="404" y1="480" x2="660" y2="480"/>
+    <line x1="404" y1="580" x2="660" y2="580"/>
+    <line x1="404" y1="680" x2="560" y2="680"/>
+  </g>
+  <!-- easter egg da marca -->
+  <text x="512" y="905" text-anchor="middle" font-family="Segoe Script, Brush Script MT, cursive" font-size="96" fill="#ffffff" opacity="0.92">Taylor</text>
+</svg>

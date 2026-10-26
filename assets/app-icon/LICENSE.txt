@@ -1,0 +1,12 @@
+LocalPDF app icon (localpdf.svg, localpdf-small.svg and every file derived from them in this
+directory: localpdf-1024.png, localpdf.icns, localpdf.ico, hicolor/).
+
+Original artwork made for this project by the project owner, drawn in Local and vectorised for
+LocalPDF (no third-party material). Licensed like the rest of LocalPDF, under either of
+
+  * Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  * MIT license (https://opensource.org/licenses/MIT)
+
+at your option.
+
+Regenerate the derived files with packaging/icons.sh.

@@ -1,0 +1,21 @@
+[package]
+name = "craft-winprint-gdi"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT OR Apache-2.0"
+description = "Safe Windows driver settings and RGB/GDI print transport"
+
+[workspace]
+
+[lints.rust]
+unsafe_code = "deny"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.61.2", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_Graphics_Printing",
+    "Win32_Storage_Xps",
+    "Win32_UI_ColorSystem",
+] }

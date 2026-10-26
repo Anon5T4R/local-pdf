@@ -1,0 +1,20 @@
+[package]
+name = "localpdf-forms"
+description = "Interactive forms (AcroForm): field model, filling, appearances, reset (ISO 32000-2 §12.7)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+localpdf-cos = { workspace = true }
+localpdf-fonts = { workspace = true }
+localpdf-content = { workspace = true }
+localpdf-model = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+hayro-syntax = { workspace = true }
+proptest = { workspace = true }

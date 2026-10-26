@@ -1,0 +1,20 @@
+[package]
+name = "localpdf-measure"
+description = "Calibrated 2D PDF measurements, viewports and snapping"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+localpdf-cos = { workspace = true }
+localpdf-model = { workspace = true }
+localpdf-content = { workspace = true }
+localpdf-annot = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+localpdf-testkit = { workspace = true }

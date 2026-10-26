@@ -1,0 +1,23 @@
+[package]
+name = "localpdf-cos"
+description = "PDF object layer: lazy tolerant parsing, copy-on-write edits, incremental and full saving"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+localpdf-crypt = { workspace = true }
+localpdf-filters = { workspace = true }
+thiserror = { workspace = true }
+# PDF date strings (`pdf_date`) go through chrono (no hand-rolled calendar code).
+chrono = { workspace = true }
+
+[dev-dependencies]
+localpdf-oracle = { workspace = true }
+localpdf-testkit = { workspace = true }
+serde_json = { workspace = true }
+proptest = { workspace = true }
+hayro-syntax = { workspace = true }
