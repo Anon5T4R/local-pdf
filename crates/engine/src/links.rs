@@ -561,7 +561,7 @@ mod tests {
 
     #[test]
     fn urls_follow_the_local_scheme() {
-        assert_eq!(super::APP_PAGE, format!("{}/apps/{}", super::WEBSITE, super::APP));
+        assert_eq!(super::APP_PAGE, super::GITHUB);
         assert_eq!(super::GITHUB, format!("https://github.com/Anon5T4R/{}", "local-pdf"));
         for l in super::LINKS {
             assert!(l.url.starts_with("https://"), "{}", l.url);
