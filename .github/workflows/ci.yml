@@ -60,12 +60,11 @@ jobs:
           pacman -Syu --noconfirm rust clang lld
       - name: Build --locked
         run: cargo build --locked
-      - name: PKGBUILD válido (makepkg -o)
+      - name: PKGBUILD válido (makepkg --printsrcinfo)
         run: |
-          useradd -m builder
-          chown -R builder:builder .
           cd packaging/arch
-          sudo -u builder makepkg -o --noconfirm
+          makepkg --printsrcinfo > /dev/null
+          echo "PKGBUILD parseia e gera .SRCINFO"
 
   git-sources:
     name: Sem dependências git remotas

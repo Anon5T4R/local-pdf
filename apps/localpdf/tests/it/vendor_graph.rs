@@ -58,7 +58,7 @@ fn vendor_provenance_window_stack_graph_is_resolved() {
     for path in [
         "vendor/winit/src/platform_impl",
         "vendor/egui-wgpu/src/winit.rs",
-        "libs/winit/winit/src/platform_impl",
+        "libs/winit/src/platform_impl",
         "libs/egui/crates/egui-wgpu/src/winit.rs",
     ] {
         assert!(root().join(path).exists(), "retain {path}");
