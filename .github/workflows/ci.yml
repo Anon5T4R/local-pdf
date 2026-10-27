@@ -32,7 +32,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev \
-            libxi-dev libgl1-mesa-dev libgtk-3-dev qpdf poppler-utils mesa-vulkan-drivers
+            libxi-dev libgl1-mesa-dev libgtk-3-dev qpdf poppler-utils mesa-vulkan-drivers \
+            fonts-noto-cjk fonts-noto-core fonts-dejavu-core
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
