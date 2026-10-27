@@ -21,6 +21,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Fontes japonesas vendored
         run: 'echo "CRAFT_FONTS_DIR=$env:GITHUB_WORKSPACE\assets\craft-fonts" >> $env:GITHUB_ENV'
+      - name: WiX Toolset
+        run: dotnet tool install --global wix
       - name: Build e pacote
         run: powershell -ExecutionPolicy Bypass -File packaging/windows/package.ps1
       - uses: actions/upload-artifact@v4
@@ -43,7 +45,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxcb1-dev libxrandr-dev libxi-dev libxcursor-dev \
             libxkbcommon-dev ninja-build
-          curl -sfL https://nfpm.goreleaser.com/install.sh | sudo bash
+          curl -sSfL https://github.com/goreleaser/nfpm/releases/download/v2.48.0/nfpm_2.48.0_amd64.deb -o /tmp/nfpm.deb
+          sudo dpkg -i /tmp/nfpm.deb
       - name: Build e pacote
         run: packaging/linux/package.sh --formats "appimage deb rpm tar cli"
       - uses: actions/upload-artifact@v4
