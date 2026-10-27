@@ -393,10 +393,10 @@ fn model_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
             });
         }
         let r = ui.add_enabled(!fetching && app.ai.selected_conn().is_some(), egui::Button::new("⟳"));
-        if r.on_hover_text("Fetch the provider's model list").clicked() {
-            if let Some(conn) = app.ai.selected_conn().cloned() {
-                app.ai.models_job = Some(Job::spawn(move || localpdf_ai::list_models(&conn)));
-            }
+        if r.on_hover_text("Fetch the provider's model list").clicked()
+            && let Some(conn) = app.ai.selected_conn().cloned()
+        {
+            app.ai.models_job = Some(Job::spawn(move || localpdf_ai::list_models(&conn)));
         }
     });
 }
