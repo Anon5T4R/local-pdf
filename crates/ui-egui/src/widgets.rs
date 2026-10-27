@@ -572,7 +572,9 @@ pub fn local_mark(ui: &mut egui::Ui, size: f32) -> Response {
 }
 
 /// Buttons for every community link (`localpdf_engine::links`), Discord first and prominent.
-/// Returns the registry command of the one clicked.
+/// Returns the registry command of the one clicked. (Unused by the UI now: the hub owns news
+/// and updates; kept for the Help menu's command path.)
+#[expect(dead_code)]
 pub fn community_links(ui: &mut egui::Ui) -> Option<&'static str> {
     let mut clicked = None;
     ui.horizontal_wrapped(|ui| {
