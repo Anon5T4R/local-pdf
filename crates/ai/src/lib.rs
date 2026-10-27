@@ -113,11 +113,7 @@ impl Connection {
 
     fn effective_base(&self) -> String {
         let base = self.base_url.trim().trim_end_matches('/').to_owned();
-        if base.is_empty() {
-            provider(&self.provider).map(|p| p.base_url.trim_end_matches('/').to_owned()).unwrap_or_default()
-        } else {
-            base
-        }
+        if base.is_empty() { provider(&self.provider).map(|p| p.base_url.trim_end_matches('/').to_owned()).unwrap_or_default() } else { base }
     }
 }
 
@@ -247,11 +243,7 @@ fn parse_chat(body: &str) -> Result<String, String> {
         let message = err.get("message").and_then(|m| m.as_str()).unwrap_or("unknown provider error");
         return Err(message.to_owned());
     }
-    value
-        .pointer("/choices/0/message/content")
-        .and_then(|c| c.as_str())
-        .map(str::to_owned)
-        .ok_or_else(|| format!("the answer has no text: {body}"))
+    value.pointer("/choices/0/message/content").and_then(|c| c.as_str()).map(str::to_owned).ok_or_else(|| format!("the answer has no text: {body}"))
 }
 
 /// Standard base64 (RFC 4648), padding included: data URIs want it.
