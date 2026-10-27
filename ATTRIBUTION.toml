@@ -3586,3 +3586,15 @@ licence_file = "assets/craft-fonts/fonts/noto-sans-devanagari/OFL.txt"
 kind = "font"
 usage = "Interface fallback and PDF text (vendored from craft-fonts)"
 sha256 = "573e525d9f4923d34645fe752475419f45f8dec5a8e43f3e83c5c5f43d1f2ff9"
+
+
+[[asset]]
+path = "assets/craft-fonts/fonts/lxgw-wenkai-lite/LXGWWenKaiLite-Regular.ttf"
+title = "LXGW WenKai Lite Regular"
+author = "LXGW WenKai Project Authors"
+source = "https://github.com/lxgw/LxgwWenKai-Lite"
+licence = "OFL-1.1"
+licence_file = "assets/craft-fonts/fonts/lxgw-wenkai-lite/OFL.txt"
+kind = "font"
+usage = "Interface Simplified Chinese fallback (vendored from craft-fonts, native builds only)"
+sha256 = "f799a538a3355877e597a0ae04050e897932c9ae7689eb9227c2953c5dd549ea"
