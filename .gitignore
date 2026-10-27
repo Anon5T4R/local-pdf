@@ -6,6 +6,5 @@ plan/
 /log
 .DS_Store
 /fuzz-out
-/assets/models
 # A craft-fonts checkout used as the optional CRAFT_FONTS_DIR build input (CI and releases put it here).
 /craft-fonts
