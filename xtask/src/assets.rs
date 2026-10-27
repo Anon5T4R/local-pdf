@@ -380,8 +380,25 @@ pub fn models(args: &[String]) -> Result<()> {
     let root = root();
     let m = load(&root)?;
     let dir = args.first().map(PathBuf::from).unwrap_or_else(|| root.join("assets/models"));
-    for p in fetch_all(&m, &dir, "model")? {
-        println!("models: {}", p.display());
+    let vendored = root.join("assets/models");
+    for f in m.fetched.iter().filter(|f| f.kind == "model") {
+        // The models are committed under assets/models/ (hashes verified by the assets gate):
+        // a package build copies them instead of downloading, so a release never depends on a
+        // remote host being up.
+        let src = vendored.join(&f.file);
+        let dst = dir.join(&f.file);
+        if src.is_file() && sha256_hex(&std::fs::read(&src)?) == f.sha256 {
+            std::fs::copy(&src, &dst)?;
+            let licence = vendored.join(format!("{}.LICENCE.txt", f.file));
+            if licence.is_file() {
+                std::fs::copy(&licence, dir.join(format!("{}.LICENCE.txt", f.file)))?;
+            }
+            println!("models: copied from assets/models: {}", dst.display());
+        } else {
+            fetch_verified(&f.url, &dst, &f.sha256)?;
+            fetch_verified(&f.licence_url, &dir.join(format!("{}.LICENCE.txt", f.file)), &f.licence_sha256)?;
+        }
+        println!("models: {}", dst.display());
     }
     std::fs::write(dir.join("ATTRIBUTION.txt"), models_attribution(&m))?;
     Ok(())
