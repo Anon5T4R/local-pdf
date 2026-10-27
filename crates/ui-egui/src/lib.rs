@@ -999,7 +999,6 @@ pub struct LocalPDFApp {
     /// The last web link the app asked the system to open (tests and automation).
     pub last_opened_url: Option<String>,
     /// The home screen's community card was closed; it comes back next launch (not remembered).
-    pub community_card_closed: bool,
     /// A document asked to open this address; the user hasn't answered yet (#90, #91).
     pub pending_link: Option<PendingLink>,
     /// A document just opened asks to be shown in Full Screen mode (`/PageMode /FullScreen`):
@@ -1279,7 +1278,6 @@ impl LocalPDFApp {
             control: None,
             bookmark_rename: None,
             last_opened_url: None,
-            community_card_closed: false,
             pending_link: None,
             pending_full_screen: None,
             pending_remote_link: None,
