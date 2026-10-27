@@ -1,39 +1,39 @@
 # LocalPDF app icon
 
-<img src="localpdf-small.svg" alt="LocalPDF app icon: an engraved lion's head on green" width="128">
+<img src="localpdf-small.svg" alt="LocalPDF app icon: a document with a folded corner and text lines, on a red-to-orange gradient tile" width="128">
 
-**Creature:** a lion, in a frontal head-and-shoulders portrait, mane running off the bottom of the tile.
+**Figure:** a document sheet with a folded corner and three text lines, drawn in outline.
 
-**Style:** an engraving (woodcut-weight line work) portrait in the Crafting Apps "owl template" framing:
-a full-bleed colour field, no frame or roundel, the animal looking at the viewer and filling the tile.
+**Style:** flat, thick round-capped strokes on a full-bleed gradient tile — the same language as
+the rest of the Local suite's icons.
 
-**Palette:** exactly three colours.
+**Palette:**
 
 | Colour | Hex | Used for |
 |---|---|---|
-| Ink | `#0b0b0c` | line work and the figure's contour |
-| Paper | `#efe9dc` | the figure (the lion's silhouette) |
-| LocalPDF green (app colour) | `#12a58a` | the full-bleed field |
+| Red | `#dc2626` | gradient start (top-left) |
+| Orange | `#f97316` | gradient end (bottom-right) |
+| White | `#ffffff` | the sheet, fold and text lines |
+| — | `#ffffff` at 92% | the signature "Taylor" at the tile's foot |
 
-**Tile:** `viewBox="0 0 512 512"`, a rounded square with `rx=112` that clips everything. Windows and Linux
-icons use the full-bleed tile. macOS icons put it on Apple's grid (an 824 px body centred on a transparent
-1024 px canvas).
+**Tile:** `viewBox="0 0 1024 1024"`, a rounded square with `rx=200` that clips everything. Windows and
+Linux icons use the full-bleed tile. macOS icons put it on Apple's grid (an 824 px body centred on a
+transparent 1024 px canvas).
 
-**Provenance:** the project owner's original drawing, made in Local (2880 px, keyed to the palette), then
-vectorised with craftrules `assets/logo-options/_tools/vectorize_tile.py` (potrace; no filtering or
-warping). The source drawing is kept in craftrules at `assets/app-icons/localpdf/source.png`, not here.
-Licence: [LICENSE.txt](LICENSE.txt) (`MIT OR Apache-2.0`, like the repo).
+**Provenance:** the project owner's original SVG (`source-localpdf.svg`), used as the master vector.
+The 1024 px PNG is a faithful raster of it. Licence: [LICENSE.txt](LICENSE.txt) (`MIT OR Apache-2.0`,
+like the repo).
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `localpdf.svg` | the master vector (traced at 2048 px); every PNG, `.ico` and `.icns` is rendered from it |
-| `localpdf-small.svg` | a lighter vector (traced at 1024 px) for places where size matters, such as this README |
-| `localpdf-1024.png` | 1024 px on Apple's grid; also the runtime Dock icon on macOS |
+| `localpdf.svg` | the master vector (the project owner's source SVG); every PNG, `.ico` and `.icns` is rendered from it |
+| `localpdf-small.svg` | copy of the master for places where a relative path reads better, such as this README |
+| `localpdf-1024.png` | 1024 px raster of the master; also the runtime Dock icon on macOS |
 | `localpdf.icns` | macOS icon (16–1024 px) |
-| `localpdf.ico` | Windows icon (16–256 px), embedded in `localpdf.exe` by `apps/localpdf/build.rs` |
-| `localpdf-document.svg` | Windows PDF file icon master: a Lucide document outline, green badge and outlined PDF lettering; no font dependency |
+| `localpdf.ico` | Windows icon, embedded in `localpdf.exe` by `apps/localpdf/build.rs` |
+| `localpdf-document.svg` | Windows PDF file icon master: a Lucide file-text outline (ISC) with the app's gradient badge and "PDF" lettering |
 | `localpdf-document.ico` | Windows PDF file icon (16–256 px), embedded as resource 2 in `localpdf.exe` |
 | `hicolor/<n>x<n>/apps/com.local.localpdf.png` | Linux hicolor theme, 16–512 px; the 256 px one is the runtime icon on Windows and Linux |
 | `hicolor/scalable/apps/com.local.localpdf.svg` | Linux scalable icon (copy of the master) |
@@ -43,14 +43,3 @@ Wayland app id `com.local.localpdf`; `packaging/linux/com.local.localpdf.desktop
 hicolor icon.
 
 Windows PDF files use resource 2 (`"localpdf.exe",-2`) when LocalPDF is chosen as the default
-reader; the app keeps resource 1. The document outline is adapted from Lucide `file-text`
-1.49.0 (ISC); its badge and outlined lettering are original (`MIT OR Apache-2.0`), covered by
-[LICENSE-document.txt](LICENSE-document.txt). Both icons are embedded, requiring no runtime
-sidecar. This provides a file type icon; first-page thumbnails still need a thumbnail provider.
-
-## Regenerate
-
-```sh
-packaging/icons.sh        # needs resvg and python3; iconutil (macOS) for the .icns
-cargo xtask assets        # then update the sha256 values in ATTRIBUTION.toml and run with --write
-```
