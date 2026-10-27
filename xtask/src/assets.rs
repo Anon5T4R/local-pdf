@@ -229,6 +229,11 @@ fn cargo_lock_versions(root: &Path) -> Result<BTreeSet<(String, String)>> {
 }
 
 pub fn is_asset_path(path: &str) -> bool {
+    // Vendored forks (libs/) and third-party patches (vendor/) keep their own provenance; the
+    // app's manifest attributes only what this repository bundles itself.
+    if Path::new(path).components().next().is_some_and(|c| c.as_os_str() == "libs" || c.as_os_str() == "vendor") {
+        return false;
+    }
     Path::new(path).extension().and_then(std::ffi::OsStr::to_str).is_some_and(|e| ASSET_EXTENSIONS.contains(&e.to_ascii_lowercase().as_str()))
 }
 
