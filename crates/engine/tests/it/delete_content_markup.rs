@@ -4,9 +4,9 @@
 
 use std::sync::Arc;
 
+use localpdf_annot::{Markup, NewAnnotation, Shape, Style};
 use localpdf_cos::{Dict, Document, Object, SaveOptions, Stream, write_incremental};
 use localpdf_engine::{AddedText, Edit, Session};
-use localpdf_annot::{Markup, NewAnnotation, Shape, Style};
 
 fn fixture() -> Arc<Vec<u8>> {
     let mut doc = Document::new_empty();

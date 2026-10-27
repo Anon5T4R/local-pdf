@@ -1676,11 +1676,18 @@ pub fn delete_markup_over(doc: &mut Document, page: usize, rect: [f64; 4]) -> Re
     let mut removed = 0usize;
     for e in list {
         let d = doc.resolve(&e).as_dict().cloned();
-        let markup = d.as_ref().and_then(|d| d.get(b"Subtype")).and_then(|s| doc.resolve(s).as_name().map(|n| n.to_vec())).is_some_and(|n| is_markup_subtype(&n));
+        let markup = d
+            .as_ref()
+            .and_then(|d| d.get(b"Subtype"))
+            .and_then(|s| doc.resolve(s).as_name().map(|n| n.to_vec()))
+            .is_some_and(|n| is_markup_subtype(&n));
         let locked = d.as_ref().map(|d| d.get(b"F").and_then(|f| doc.resolve(f).as_int()).unwrap_or(0) & 128 != 0).unwrap_or(false);
-        let hits = d.as_ref().and_then(|d| d.get(b"Rect")).map(|r| doc.resolve(r)).and_then(|r| r.as_array().map(|a| a.iter().filter_map(Object::as_f64).collect::<Vec<_>>())).is_some_and(|r| {
-            r.len() == 4 && rects_intersect(rect, [r[0], r[1], r[2], r[3]])
-        });
+        let hits = d
+            .as_ref()
+            .and_then(|d| d.get(b"Rect"))
+            .map(|r| doc.resolve(r))
+            .and_then(|r| r.as_array().map(|a| a.iter().filter_map(Object::as_f64).collect::<Vec<_>>()))
+            .is_some_and(|r| r.len() == 4 && rects_intersect(rect, [r[0], r[1], r[2], r[3]]));
         if markup && !locked && hits {
             removed += 1;
             continue;
