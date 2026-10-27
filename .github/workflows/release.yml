@@ -43,8 +43,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxcb1-dev libxrandr-dev libxi-dev libxcursor-dev \
             libxkbcommon-dev ninja-build
-          curl -sSfL https://github.com/goreleaser/nfpm/releases/latest/download/nfpm_amd64.deb -o /tmp/nfpm.deb
-          sudo dpkg -i /tmp/nfpm.deb
+          curl -sfL https://nfpm.goreleaser.com/install.sh | sudo bash
       - name: Build e pacote
         run: packaging/linux/package.sh --formats "appimage deb rpm tar cli"
       - uses: actions/upload-artifact@v4
