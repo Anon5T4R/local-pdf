@@ -23,6 +23,8 @@ jobs:
         run: 'echo "CRAFT_FONTS_DIR=$env:GITHUB_WORKSPACE\assets\craft-fonts" >> $env:GITHUB_ENV'
       - name: WiX Toolset
         run: dotnet tool install --global wix
+      - name: Aceite da EULA WiX (OSMF; fee só para orgs com receita >= US$10k/ano)
+        run: wix eula accept wix7
       - name: Build e pacote
         run: powershell -ExecutionPolicy Bypass -File packaging/windows/package.ps1
       - uses: actions/upload-artifact@v4
