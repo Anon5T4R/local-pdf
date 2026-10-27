@@ -695,6 +695,7 @@ impl LocalPDFApp {
                 self.dialog = Some(Dialog::RotatePages);
             }
             "page.split" => self.dialog = Some(Dialog::Split),
+            "tools.ai" => self.ai.open = !self.ai.open,
             "help.shortcuts" => self.dialog = Some(Dialog::Shortcuts),
             "help.about" => self.dialog = Some(Dialog::About),
             "help.check_updates" => self.check_for_updates(),

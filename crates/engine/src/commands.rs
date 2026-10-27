@@ -392,6 +392,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     c("page.extract", "Extract pages…", PAGES, None, Assembly, "file-output"),
     c("page.split", "Split document…", PAGES, None, Assembly, "scissors"),
     c("page.number", "Number pages…", PAGES, None, Assembly, "hash"),
+    c("tools.ai", "AI assistant", None, None, Nothing, "sparkles"),
     c("help.shortcuts", "Keyboard shortcuts", HELP, None, Nothing, "circle-help"),
     c("help.discord", "Join the Local Discord", HELP, None, Nothing, "messages-square"),
     c("help.app_page", "LocalPDF web page", HELP, None, Nothing, "globe"),

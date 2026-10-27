@@ -20,6 +20,8 @@ craft-quit = { workspace = true, features = ["egui"] }
 localpdf-fonts = { workspace = true }
 localpdf-engine = { workspace = true }
 localpdf-cos = { workspace = true }
+localpdf-ai = { workspace = true }
+localpdf-ocr = { workspace = true }
 localpdf-render = { workspace = true }
 localpdf-model = { workspace = true }
 localpdf-platform = { workspace = true }

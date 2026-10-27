@@ -34,6 +34,7 @@ macro_rules! tl_ctx {
 
 mod a11y_ui;
 mod actions_ui;
+mod ai_ui;
 mod all_tools_ui;
 mod appearance;
 mod calc_order_ui;
@@ -629,6 +630,8 @@ pub struct LocalPDFApp {
     /// Tools side and pane widths; which panes are open is `left_open` and `right`.
     pub side_panels: side_panels::SidePanels,
     pub session: Session,
+    /// The AI assistant's state (connections, chat, jobs).
+    pub ai: ai_ui::AiState,
     pub views: Vec<DocView>,
     pub(crate) closed_tabs: Vec<String>,
     /// `None` shows the Home tab.
@@ -1101,6 +1104,7 @@ impl LocalPDFApp {
     pub fn new() -> Self {
         Self {
             session: Session::new(),
+            ai: ai_ui::AiState::default(),
             views: Vec::new(),
             closed_tabs: Vec::new(),
             active: None,
@@ -3803,6 +3807,7 @@ impl eframe::App for LocalPDFApp {
         });
         self.process_pending_edits();
         palette::show(self, &ctx);
+        ai_ui::show(self, &ctx);
         dialogs::show(self, &ctx);
         self.show_progress(&ctx);
         widgets::toast(self, &ctx);
