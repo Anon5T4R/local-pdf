@@ -137,8 +137,8 @@ neither the MSI nor the portable zip needs the Visual C++ redistributable.
   needs an `IExplorerCommand` handler and package identity (a sparse MSIX package), which the MSI
   doesn't have.
 - The image right-click entry (#190) is the same kind of verb, `LocalPDF.CreatePdf`, for ten image
-  types, in its own component (`PdfcraftImageContextMenu`) since it became optional. Its rows moved
-  out of `PdfcraftApp`; that's safe because `MajorUpgrade` removes the old version before installing
+  types, in its own component (`LocalpdfImageContextMenu`) since it became optional. Its rows moved
+  out of `LocalpdfApp`; that's safe because `MajorUpgrade` removes the old version before installing
   the new one (`afterInstallValidate`), which `test-msi.ps1` checks.
 - `test-msi.ps1 <file.msi>` checks the compiled shortcut, context-menu and dialog tables, and
   evaluates the first-install and update conditions of the desktop shortcut and both menus. Packaging

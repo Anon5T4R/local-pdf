@@ -1,4 +1,4 @@
-﻿<#
+﻿﻿<#
 .SYNOPSIS
   Check the compiled MSI's install scope, publisher, shortcuts, native UI and OCR models, without installing it.
 .EXAMPLE
@@ -106,12 +106,12 @@ Assert-NoRow 'SELECT `Event` FROM `EventMapping` WHERE `Dialog_` = ''InstallProg
 # Plain (non-advertised) shortcuts to localpdf.exe, each in its own component; the desktop one is
 # gated by INSTALLDESKTOPSHORTCUT, which is secure so the UI choice reaches the
 # elevated install.
-foreach ($entry in @(@('StartMenuShortcut', 'ProgramMenuFolder', 'PdfcraftStartMenuShortcut', ''),
-                     @('DesktopShortcut', 'DesktopFolder', 'PdfcraftDesktopShortcut', 'INSTALLDESKTOPSHORTCUT = 1'))) {
+foreach ($entry in @(@('StartMenuShortcut', 'ProgramMenuFolder', 'LocalpdfStartMenuShortcut', ''),
+                     @('DesktopShortcut', 'DesktopFolder', 'LocalpdfDesktopShortcut', 'INSTALLDESKTOPSHORTCUT = 1'))) {
   $row = Read-Row ('SELECT `Directory_`, `Target`, `Icon_`, `WkDir`, `Component_` FROM `Shortcut` WHERE `Shortcut` = ''' + $entry[0] + '''') 5
   Assert-Equal $row[0] $entry[1] "$($entry[0]) directory"
-  Assert-Equal $row[1] '[#PdfcraftExe]' "$($entry[0]) target"
-  Assert-Equal $row[2] 'PdfcraftIcon.ico' "$($entry[0]) icon"
+  Assert-Equal $row[1] '[#LocalpdfExe]' "$($entry[0]) target"
+  Assert-Equal $row[2] 'LocalpdfIcon.ico' "$($entry[0]) icon"
   Assert-Equal $row[3] 'INSTALLFOLDER' "$($entry[0]) working directory"
   Assert-Equal $row[4] $entry[2] "$($entry[0]) component"
   $component = Read-Row ('SELECT `Directory_`, `Condition` FROM `Component` WHERE `Component` = ''' + $entry[2] + '''') 2
@@ -161,7 +161,7 @@ function Assert-KeptOnUpdate([string] $Property, [string] $Release, [string] $Fo
     if ($session) { [void] [Runtime.InteropServices.Marshal]::FinalReleaseComObject($session) }
   }
 }
-Assert-KeptOnUpdate 'INSTALLDESKTOPSHORTCUT' 'WIX_UPGRADE_DETECTED' 'EXISTINGDESKTOPSHORTCUT' 'C:\Users\Public\Desktop\LocalPDF.lnk' 'PdfcraftDesktopShortcut' 'Desktop shortcut'
+Assert-KeptOnUpdate 'INSTALLDESKTOPSHORTCUT' 'WIX_UPGRADE_DETECTED' 'EXISTINGDESKTOPSHORTCUT' 'C:\Users\Public\Desktop\LocalPDF.lnk' 'LocalpdfDesktopShortcut' 'Desktop shortcut'
 $secure = Read-Row 'SELECT `Value` FROM `Property` WHERE `Property` = ''SecureCustomProperties''' 1
 if (($secure[0] -split ';') -notcontains 'INSTALLDESKTOPSHORTCUT') { throw "INSTALLDESKTOPSHORTCUT is not secure: '$($secure[0])'" }
 $checkbox = Read-Row 'SELECT `Type`, `Property`, `Text` FROM `Control` WHERE `Dialog_` = ''InstallWelcome'' AND `Control` = ''DesktopShortcut''' 3
@@ -170,8 +170,8 @@ Assert-Equal $checkbox[1] 'INSTALLDESKTOPSHORTCUT' 'Welcome checkbox property'
 if ($checkbox[2] -notmatch 'desktop shortcut') { throw "Welcome checkbox label: '$($checkbox[2])'" }
 $checked = Read-Row 'SELECT `Value` FROM `CheckBox` WHERE `Property` = ''INSTALLDESKTOPSHORTCUT''' 1
 Assert-Equal $checked[0] '1' 'Welcome checkbox value'
-$app = Read-Row 'SELECT `KeyPath` FROM `Component` WHERE `Component` = ''PdfcraftApp''' 1
-Assert-Equal $app[0] 'PdfcraftExe' 'Shortcut executable key path'
+$app = Read-Row 'SELECT `KeyPath` FROM `Component` WHERE `Component` = ''LocalpdfApp''' 1
+Assert-Equal $app[0] 'LocalpdfExe' 'Shortcut executable key path'
 $scope = Read-Row 'SELECT `Value` FROM `Property` WHERE `Property` = ''ALLUSERS''' 1
 Assert-Equal $scope[0] '1' 'Per-machine shortcut scope'
 
@@ -196,7 +196,7 @@ function Assert-MenuSearch([string] $Found, [string] $Key, [string] $Release, [s
   if (($secure[0] -split ';') -notcontains $Release) { throw "$Release is not secure: '$($secure[0])'" }
 }
 # The old version is removed before the new one is installed, so rows that moved between components
-# (the image menu left PdfcraftApp after 0.7.1) are removed with it rather than orphaned.
+# (the image menu left LocalpdfApp after 0.7.1) are removed with it rather than orphaned.
 $validate = Read-Row 'SELECT `Sequence` FROM `InstallExecuteSequence` WHERE `Action` = ''InstallValidate''' 1
 $remove = Read-Row 'SELECT `Sequence` FROM `InstallExecuteSequence` WHERE `Action` = ''RemoveExistingProducts''' 1
 $initialize = Read-Row 'SELECT `Sequence` FROM `InstallExecuteSequence` WHERE `Action` = ''InstallInitialize''' 1
@@ -212,28 +212,28 @@ foreach ($ext in @('png', 'jpg', 'jpeg', 'tif', 'tiff', 'gif', 'bmp', 'jp2', 'j2
   $key = 'Software\Classes\SystemFileAssociations\.' + $ext + '\shell\LocalPDF.CreatePdf'
   $menu = Read-Row ('SELECT `Value`, `Component_`, `Root` FROM `Registry` WHERE `Key` = ''' + $key + ''' AND `Name` IS NULL') 3
   Assert-Equal $menu[0] 'Create PDF with LocalPDF…' "$ext context menu label"
-  Assert-Equal $menu[1] 'PdfcraftImageContextMenu' "$ext context menu component"
+  Assert-Equal $menu[1] 'LocalpdfImageContextMenu' "$ext context menu component"
   Assert-Equal $menu[2] '2' "$ext context menu HKLM root"
   $command = Read-Row ('SELECT `Value`, `Component_` FROM `Registry` WHERE `Key` = ''' + $key + '\command''') 2
-  Assert-Equal $command[0] '"[#PdfcraftExe]" --create-images "%1"' "$ext context menu command"
-  Assert-Equal $command[1] 'PdfcraftImageContextMenu' "$ext context menu command component"
+  Assert-Equal $command[0] '"[#LocalpdfExe]" --create-images "%1"' "$ext context menu command"
+  Assert-Equal $command[1] 'LocalpdfImageContextMenu' "$ext context menu command component"
   $selection = Read-Row ('SELECT `Value`, `Component_` FROM `Registry` WHERE `Key` = ''' + $key + ''' AND `Name` = ''MultiSelectModel''') 2
   Assert-Equal $selection[0] 'Single' "$ext context menu selection"
-  Assert-Equal $selection[1] 'PdfcraftImageContextMenu' "$ext context menu selection component"
+  Assert-Equal $selection[1] 'LocalpdfImageContextMenu' "$ext context menu selection component"
 }
-$view = $Database.OpenView('SELECT `Key` FROM `Registry` WHERE `Component_` = ''PdfcraftApp''')
+$view = $Database.OpenView('SELECT `Key` FROM `Registry` WHERE `Component_` = ''LocalpdfApp''')
 try {
   [void] $view.Execute()
   while ($record = $view.Fetch()) {
-    if ($record.StringData(1) -match 'LocalPDF\.CreatePdf') { throw "image menu row left in PdfcraftApp: $($record.StringData(1))" }
+    if ($record.StringData(1) -match 'LocalPDF\.CreatePdf') { throw "image menu row left in LocalpdfApp: $($record.StringData(1))" }
   }
 } finally { [void] $view.Close() }
 $imageKeyPath = Read-Row ('SELECT `Registry` FROM `Registry` WHERE `Key` = ''' + $imageKey + ''' AND `Name` IS NULL') 1
-$imageComponent = Read-Row 'SELECT `KeyPath`, `Attributes` FROM `Component` WHERE `Component` = ''PdfcraftImageContextMenu''' 2
+$imageComponent = Read-Row 'SELECT `KeyPath`, `Attributes` FROM `Component` WHERE `Component` = ''LocalpdfImageContextMenu''' 2
 Assert-Equal $imageComponent[0] $imageKeyPath[0] 'Image context menu key path'
 # msidbComponentAttributesRegistryKeyPath (4).
 if (([int] $imageComponent[1] -band 4) -eq 0) { throw "Image context menu key path is not a registry value: attributes $($imageComponent[1])" }
-Assert-KeptOnUpdate 'INSTALLIMAGECONTEXTMENU' 'IMAGECONTEXTMENURELEASE' 'EXISTINGIMAGECONTEXTMENU' 'Create PDF with LocalPDF…' 'PdfcraftImageContextMenu' 'Image context menu'
+Assert-KeptOnUpdate 'INSTALLIMAGECONTEXTMENU' 'IMAGECONTEXTMENURELEASE' 'EXISTINGIMAGECONTEXTMENU' 'Create PDF with LocalPDF…' 'LocalpdfImageContextMenu' 'Image context menu'
 Assert-MenuSearch 'EXISTINGIMAGECONTEXTMENU' $imageKey 'IMAGECONTEXTMENURELEASE' '0.4.0' 'Image context menu'
 if (($secure[0] -split ';') -notcontains 'INSTALLIMAGECONTEXTMENU') { throw "INSTALLIMAGECONTEXTMENU is not secure: '$($secure[0])'" }
 
@@ -245,20 +245,20 @@ if (($secure[0] -split ';') -notcontains 'INSTALLIMAGECONTEXTMENU') { throw "INS
 $pdfKey = 'Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit'
 $pdfMenu = Read-Row ('SELECT `Registry`, `Value`, `Component_`, `Root` FROM `Registry` WHERE `Key` = ''' + $pdfKey + ''' AND `Name` IS NULL') 4
 Assert-Equal $pdfMenu[1] 'Edit with LocalPDF' 'PDF context menu label'
-Assert-Equal $pdfMenu[2] 'PdfcraftPdfContextMenu' 'PDF context menu component'
+Assert-Equal $pdfMenu[2] 'LocalpdfPdfContextMenu' 'PDF context menu component'
 Assert-Equal $pdfMenu[3] '2' 'PDF context menu HKLM root'
-foreach ($value in @(@('Icon', '"[#PdfcraftExe]",0'), @('MultiSelectModel', 'Document'))) {
+foreach ($value in @(@('Icon', '"[#LocalpdfExe]",0'), @('MultiSelectModel', 'Document'))) {
   $row = Read-Row ('SELECT `Value`, `Component_` FROM `Registry` WHERE `Key` = ''' + $pdfKey + ''' AND `Name` = ''' + $value[0] + '''') 2
   Assert-Equal $row[0] $value[1] "PDF context menu $($value[0])"
-  Assert-Equal $row[1] 'PdfcraftPdfContextMenu' "PDF context menu $($value[0]) component"
+  Assert-Equal $row[1] 'LocalpdfPdfContextMenu' "PDF context menu $($value[0]) component"
 }
 $pdfCommand = Read-Row ('SELECT `Value`, `Component_` FROM `Registry` WHERE `Key` = ''' + $pdfKey + '\command''') 2
-Assert-Equal $pdfCommand[0] '"[#PdfcraftExe]" "%1"' 'PDF context menu command'
-Assert-Equal $pdfCommand[1] 'PdfcraftPdfContextMenu' 'PDF context menu command component'
-$pdfComponent = Read-Row 'SELECT `Condition`, `KeyPath` FROM `Component` WHERE `Component` = ''PdfcraftPdfContextMenu''' 2
+Assert-Equal $pdfCommand[0] '"[#LocalpdfExe]" "%1"' 'PDF context menu command'
+Assert-Equal $pdfCommand[1] 'LocalpdfPdfContextMenu' 'PDF context menu command component'
+$pdfComponent = Read-Row 'SELECT `Condition`, `KeyPath` FROM `Component` WHERE `Component` = ''LocalpdfPdfContextMenu''' 2
 Assert-Equal $pdfComponent[0] 'INSTALLPDFCONTEXTMENU = 1' 'PDF context menu condition'
 Assert-Equal $pdfComponent[1] $pdfMenu[0] 'PDF context menu key path'
-Assert-KeptOnUpdate 'INSTALLPDFCONTEXTMENU' 'PDFCONTEXTMENURELEASE' 'EXISTINGPDFCONTEXTMENU' 'Edit with LocalPDF' 'PdfcraftPdfContextMenu' 'PDF context menu'
+Assert-KeptOnUpdate 'INSTALLPDFCONTEXTMENU' 'PDFCONTEXTMENURELEASE' 'EXISTINGPDFCONTEXTMENU' 'Edit with LocalPDF' 'LocalpdfPdfContextMenu' 'PDF context menu'
 Assert-MenuSearch 'EXISTINGPDFCONTEXTMENU' $pdfKey 'PDFCONTEXTMENURELEASE' '0.7.1' 'PDF context menu'
 if (($secure[0] -split ';') -notcontains 'INSTALLPDFCONTEXTMENU') { throw "INSTALLPDFCONTEXTMENU is not secure: '$($secure[0])'" }
 $pdfCheckbox = Read-Row 'SELECT `Type`, `Property`, `Text` FROM `Control` WHERE `Dialog_` = ''InstallWelcome'' AND `Control` = ''PdfContextMenu''' 3

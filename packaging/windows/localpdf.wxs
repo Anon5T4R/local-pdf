@@ -36,8 +36,8 @@
 
     <!-- Windows Installer requires an Icon id ending in .ico or .exe, or advertised shortcuts and
          Add/Remove Programs show a blank icon (#57). -->
-    <Icon Id="PdfcraftIcon.ico" SourceFile="$(var.IconPath)" />
-    <Property Id="ARPPRODUCTICON" Value="PdfcraftIcon.ico" />
+    <Icon Id="LocalpdfIcon.ico" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="LocalpdfIcon.ico" />
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/Anon5T4R/apps/localpdf" />
     <Property Id="ARPURLUPDATEINFO" Value="https://github.com/Anon5T4R/apps/localpdf" />
     <Property Id="ARPHELPLINK" Value="https://github.com/Anon5T4R/local-pdf/discussions" />
@@ -80,7 +80,7 @@
     </Property>
     <SetProperty Id="INSTALLIMAGECONTEXTMENU" Value="1" After="AppSearch" Sequence="first"
         Condition="NOT INSTALLIMAGECONTEXTMENU AND (NOT IMAGECONTEXTMENURELEASE OR EXISTINGIMAGECONTEXTMENU)" />
-    <UIRef Id="PdfcraftInstallerUI" />
+    <UIRef Id="LocalpdfInstallerUI" />
 
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="INSTALLFOLDER" Name="LocalPDF">
@@ -94,8 +94,8 @@
       <?if $(var.HasCraftFontLicences) = 1 ?>
       <ComponentGroupRef Id="CraftFontLicences" />
       <?endif ?>
-      <ComponentGroupRef Id="PdfcraftFiles" />
-      <ComponentGroupRef Id="PdfcraftModels" />
+      <ComponentGroupRef Id="LocalpdfFiles" />
+      <ComponentGroupRef Id="LocalpdfModels" />
     </Feature>
   </Package>
 
@@ -105,11 +105,11 @@
       <Files Include="$(var.DocsDir)\**" />
     </ComponentGroup>
     <?endif ?>
-    <ComponentGroup Id="PdfcraftFiles" Directory="INSTALLFOLDER">
-      <Component Id="PdfcraftApp" Guid="E724C1C6-091F-4E21-A685-80D089FDBE21">
-        <File Id="PdfcraftExe" Source="$(var.BinDir)\localpdf.exe" KeyPath="yes" />
+    <ComponentGroup Id="LocalpdfFiles" Directory="INSTALLFOLDER">
+      <Component Id="LocalpdfApp" Guid="E724C1C6-091F-4E21-A685-80D089FDBE21">
+        <File Id="LocalpdfExe" Source="$(var.BinDir)\localpdf.exe" KeyPath="yes" />
 
-        <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\localpdf.exe" Value="[#PdfcraftExe]" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\localpdf.exe" Value="[#LocalpdfExe]" Type="string" />
 
         <!-- PDF files (#107): LocalPDF is offered under "Open with" and in Settings ▸ Default
              apps, through Windows' Default Programs registration (a ProgID, OpenWithProgids,
@@ -120,8 +120,8 @@
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document" Value="PDF Document" Type="string" />
         <!-- A negative index selects the stable icon resource ID, rather than its position.
              Resource 1 is the app's lion; resource 2 is the PDF document (build.rs). -->
-        <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document\DefaultIcon" Value="&quot;[#PdfcraftExe]&quot;,-2" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document\shell\open\command" Value="&quot;[#PdfcraftExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document\DefaultIcon" Value="&quot;[#LocalpdfExe]&quot;,-2" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document\shell\open\command" Value="&quot;[#LocalpdfExe]&quot; &quot;%1&quot;" Type="string" />
         <!-- No overlay on thumbnails and in the preview pane: without TypeOverlay, Windows paints
              the default program's icon (the lion) over the lower-right corner of every PDF
              thumbnail, covering part of the page. An empty string means none ("Thumbnail
@@ -129,12 +129,12 @@
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document" Name="TypeOverlay" Value="" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\.pdf\OpenWithProgids" Name="LocalPDF.Document" Value="" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe" Name="FriendlyAppName" Value="LocalPDF" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\DefaultIcon" Value="&quot;[#PdfcraftExe]&quot;,-2" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\DefaultIcon" Value="&quot;[#LocalpdfExe]&quot;,-2" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\SupportedTypes" Name=".pdf" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\shell\open\command" Value="&quot;[#PdfcraftExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\shell\open\command" Value="&quot;[#LocalpdfExe]&quot; &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationName" Value="LocalPDF" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationDescription" Value="Open-source PDF workbench" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationIcon" Value="[#PdfcraftExe],0" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationIcon" Value="[#LocalpdfExe],0" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities\FileAssociations" Name=".pdf" Value="LocalPDF.Document" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\RegisteredApplications" Name="LocalPDF" Value="Software\LocalPDF\Capabilities" Type="string" />
       </Component>
@@ -144,16 +144,16 @@
            use as a file handler (#107), and 0.2.1's advertised one went missing from the Start menu
            (#143). Each has its own component with an HKLM key path, so Windows Installer removes it
            on uninstall; in this per-machine package both folders are the all-users ones. -->
-      <Component Id="PdfcraftStartMenuShortcut" Directory="ProgramMenuFolder" Guid="DC028192-C233-4F99-9A77-ED458C60DF26">
+      <Component Id="LocalpdfStartMenuShortcut" Directory="ProgramMenuFolder" Guid="DC028192-C233-4F99-9A77-ED458C60DF26">
         <Shortcut Id="StartMenuShortcut" Name="LocalPDF" Description="LocalPDF PDF workbench"
-            Target="[#PdfcraftExe]" WorkingDirectory="INSTALLFOLDER" Icon="PdfcraftIcon.ico" IconIndex="0" />
+            Target="[#LocalpdfExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalpdfIcon.ico" IconIndex="0" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
-      <Component Id="PdfcraftDesktopShortcut" Directory="DesktopFolder" Guid="F6948627-32AB-4D78-8865-0FDF417CE442"
+      <Component Id="LocalpdfDesktopShortcut" Directory="DesktopFolder" Guid="F6948627-32AB-4D78-8865-0FDF417CE442"
           Condition="INSTALLDESKTOPSHORTCUT = 1">
         <Shortcut Id="DesktopShortcut" Name="LocalPDF" Description="LocalPDF PDF workbench"
-            Target="[#PdfcraftExe]" WorkingDirectory="INSTALLFOLDER" Icon="PdfcraftIcon.ico" IconIndex="0" />
+            Target="[#LocalpdfExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalpdfIcon.ico" IconIndex="0" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="Desktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
@@ -164,75 +164,75 @@
            Windows 11 the entry is under "Show more options": the first-level menu only takes
            packaged apps' (IExplorerCommand) entries. Its own component with an HKLM key path, so
            INSTALLPDFCONTEXTMENU=0 leaves it out and uninstall removes it. -->
-      <Component Id="PdfcraftPdfContextMenu" Guid="439F084F-657D-4AC2-A4CC-F099C518D71F"
+      <Component Id="LocalpdfPdfContextMenu" Guid="439F084F-657D-4AC2-A4CC-F099C518D71F"
           Condition="INSTALLPDFCONTEXTMENU = 1">
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Value="Edit with LocalPDF" Type="string" KeyPath="yes" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Name="Icon" Value="&quot;[#PdfcraftExe]&quot;,0" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Name="Icon" Value="&quot;[#LocalpdfExe]&quot;,0" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Name="MultiSelectModel" Value="Document" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit\command" Value="&quot;[#PdfcraftExe]&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit\command" Value="&quot;[#LocalpdfExe]&quot; &quot;%1&quot;" Type="string" />
       </Component>
 
       <!-- Image context menu (#190): "Create PDF with LocalPDF…" opens the DPI chooser, without
            changing image file defaults. Its own component with an HKLM key path, so
            INSTALLIMAGECONTEXTMENU=0 leaves it out and uninstall removes it. These rows were in
-           PdfcraftApp up to 0.7.1; moving them is safe because MajorUpgrade removes the old version
+           LocalpdfApp up to 0.7.1; moving them is safe because MajorUpgrade removes the old version
            before installing (afterInstallValidate), so no old row is left behind. -->
-      <Component Id="PdfcraftImageContextMenu" Guid="1B783BF3-12DF-4588-AF80-E2CEA8BC1E5A"
+      <Component Id="LocalpdfImageContextMenu" Guid="1B783BF3-12DF-4588-AF80-E2CEA8BC1E5A"
           Condition="INSTALLIMAGECONTEXTMENU = 1">
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" KeyPath="yes" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
       </Component>
 
-      <Component Id="PdfcraftCli">
-        <File Id="PdfcraftCliExe" Source="$(var.BinDir)\localpdf-cli.exe" KeyPath="yes" />
+      <Component Id="LocalpdfCli">
+        <File Id="LocalpdfCliExe" Source="$(var.BinDir)\localpdf-cli.exe" KeyPath="yes" />
       </Component>
       <!-- The embedded PDF icon's ISC notice and project licences travel with the binaries. -->
-      <Component Id="PdfcraftDocumentIconLicense">
-        <File Id="PdfcraftDocumentIconLicenseFile" Source="$(var.BinDir)\LICENSE-document.txt" KeyPath="yes" />
+      <Component Id="LocalpdfDocumentIconLicense">
+        <File Id="LocalpdfDocumentIconLicenseFile" Source="$(var.BinDir)\LICENSE-document.txt" KeyPath="yes" />
       </Component>
-      <Component Id="PdfcraftMitLicense">
-        <File Id="PdfcraftMitLicenseFile" Source="$(var.BinDir)\LICENSE-MIT" KeyPath="yes" />
+      <Component Id="LocalpdfMitLicense">
+        <File Id="LocalpdfMitLicenseFile" Source="$(var.BinDir)\LICENSE-MIT" KeyPath="yes" />
       </Component>
-      <Component Id="PdfcraftApacheLicense">
-        <File Id="PdfcraftApacheLicenseFile" Source="$(var.BinDir)\LICENSE-APACHE" KeyPath="yes" />
+      <Component Id="LocalpdfApacheLicense">
+        <File Id="LocalpdfApacheLicenseFile" Source="$(var.BinDir)\LICENSE-APACHE" KeyPath="yes" />
       </Component>
-      <Component Id="PdfcraftNotice">
-        <File Id="PdfcraftNoticeFile" Source="$(var.BinDir)\NOTICE" KeyPath="yes" />
+      <Component Id="LocalpdfNotice">
+        <File Id="LocalpdfNoticeFile" Source="$(var.BinDir)\NOTICE" KeyPath="yes" />
       </Component>
     </ComponentGroup>
 
     <!-- OCR models (#103), with their licences and ATTRIBUTION.txt, in models\ beside localpdf.exe
          where the app looks for them: every file `cargo xtask models` fetched (package.ps1), one
          component each, so new models ship without naming them here. -->
-    <ComponentGroup Id="PdfcraftModels" Directory="ModelsFolder">
+    <ComponentGroup Id="LocalpdfModels" Directory="ModelsFolder">
       <Files Include="$(var.ModelsDir)\*" />
     </ComponentGroup>
   </Fragment>

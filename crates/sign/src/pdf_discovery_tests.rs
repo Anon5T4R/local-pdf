@@ -334,7 +334,7 @@ fn real_file_discovery_cache_diagnostic() {
     eprintln!("signature-discovery-unchanged\tfull_scans={}", scans(&cache));
     assert_eq!(scans(&cache), 1);
     let mut edited = doc.clone();
-    edited.update_dict(edited.root().unwrap(), |d| d.set(b"PdfcraftSignatureCacheProbe".to_vec(), Object::Int(1))).unwrap();
+    edited.update_dict(edited.root().unwrap(), |d| d.set(b"LocalpdfSignatureCacheProbe".to_vec(), Object::Int(1))).unwrap();
     assert_eq!(list_cached(&edited, &bytes, &trust, &cache).len(), first.len());
     assert_eq!(list_cached(&doc, &bytes, &trust, &cache).len(), first.len());
     assert_eq!(list_cached(&edited, &bytes, &trust, &cache).len(), first.len());

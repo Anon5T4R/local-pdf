@@ -3,7 +3,7 @@
      Full UI gets welcome (with the desktop-shortcut and PDF context-menu checkboxes)/progress/outcome screens; /qn and /qb stay unattended. -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
-    <UI Id="PdfcraftInstallerUI">
+    <UI Id="LocalpdfInstallerUI">
       <TextStyle Id="InstallerNormal" FaceName="Segoe UI" Size="9" />
       <TextStyle Id="InstallerTitle" FaceName="Segoe UI" Size="12" Bold="yes" />
       <Property Id="DefaultUIFont" Value="InstallerNormal" />

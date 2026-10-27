@@ -1,4 +1,4 @@
-﻿<#
+﻿﻿<#
 .SYNOPSIS
   Authenticode-sign files with signtool, using whichever signing material is configured.
 
@@ -15,7 +15,7 @@
   timestamp server, ...). Optional overrides: WINDOWS_TIMESTAMP_URL, SIGNTOOL (path to signtool.exe).
 
 .EXAMPLE
-  pwsh packaging/windows/sign.ps1 dist/localpdf.exe dist/Pdfcraft.msi
+  pwsh packaging/windows/sign.ps1 dist/localpdf.exe dist/Localpdf.msi
 #>
 param(
   [Parameter(Mandatory = $true, ValueFromRemainingArguments = $true)]
