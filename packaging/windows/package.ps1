@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Build, sign and package LocalPDF for Windows.
 

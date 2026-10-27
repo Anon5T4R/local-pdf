@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Record the facts behind a scanner detection of LocalPDF Windows files: SHA-256, Authenticode
   status and, with -YaraExe and -YaraRule, the matched strings and offsets of an external YARA rule.

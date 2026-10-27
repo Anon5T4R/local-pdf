@@ -1,4 +1,4 @@
-param([string] $CraftFontsRoot)
+﻿param([string] $CraftFontsRoot)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'font-notices.ps1')
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('localpdf-font-notices-' + [guid]::NewGuid())

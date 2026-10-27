@@ -1,4 +1,4 @@
-# Validate one non-comment manifest row before adding its family notice.
+﻿# Validate one non-comment manifest row before adding its family notice.
 function Get-CraftFontNoticeRow([string] $rootPath, [string] $manifest, [string] $line) {
   $fields = @($line -split ' \| ' | ForEach-Object { $_.Trim() })
   if ($fields.Count -lt 6 -or $fields[4] -ne 'OFL-1.1') { throw "Missing OFL metadata in ${manifest}: $line" }

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Authenticode-sign files with signtool, using whichever signing material is configured.
 
