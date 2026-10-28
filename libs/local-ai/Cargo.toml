@@ -1,0 +1,23 @@
+[package]
+name = "local-ai"
+description = "BYOK AI for the Local suite: the user's own keys, one OpenAI-compatible client for every provider"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.95"
+repository = "https://github.com/Anon5T4R/local-ai"
+publish = false
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "3", default-features = false, features = ["rustls", "platform-verifier"] }
+keyring = { version = "4", default-features = false, features = ["v1"] }
+dirs = "7"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
