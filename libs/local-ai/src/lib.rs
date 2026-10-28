@@ -304,6 +304,9 @@ mod tests {
     #[test]
     fn the_store_path_lives_under_the_apps_folder() {
         let app = App { id: "TestApp", url: "" };
-        assert!(Connection::store_path(&app).unwrap().ends_with(r"TestApp\ai-connections.json"));
+        // Path separators differ per OS; the identity folder and file name are what matter.
+        let path = Connection::store_path(&app).unwrap();
+        assert!(path.to_string_lossy().contains("TestApp"));
+        assert!(path.ends_with("ai-connections.json"));
     }
 }
