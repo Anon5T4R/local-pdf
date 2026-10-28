@@ -422,7 +422,10 @@ fn chat_area(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens) {
         }
     });
     ui.add_space(4.0);
-    egui::ScrollArea::vertical().auto_shrink([false, false]).stick_to_bottom(true).show(ui, |ui| {
+    // A área do chat tem altura limitada: sem isso ela pede "a tela inteira" no sizing pass e a
+    // janela cresce sozinha, ignorando o resize do usuário. O restante da altura fica vazio.
+    let chat_height = (ui.available_height() - 44.0).clamp(140.0, 460.0);
+    egui::ScrollArea::vertical().auto_shrink([false, false]).stick_to_bottom(true).max_height(chat_height).show(ui, |ui| {
         if app.ai.chat.is_empty() {
             ui.label(egui::RichText::new("Ask about the document, or press Summarize.").color(t.text_faint));
         }
@@ -460,7 +463,10 @@ fn input_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
         if ui.add_enabled(!busy, egui::Button::new("Send")).clicked() {
             send(app);
         }
-        let field = egui::TextEdit::singleline(&mut app.ai.input).hint_text("Ask about the document…").desired_width(f32::INFINITY).lock_focus(true);
+        let field = egui::TextEdit::singleline(&mut app.ai.input)
+            .hint_text("Ask about the document…")
+            .desired_width((ui.available_width() - 70.0).max(120.0))
+            .lock_focus(true);
         let response = ui.add(field);
         if response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) && !busy {
             send(app);
