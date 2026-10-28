@@ -11,10 +11,7 @@ pub use local_ai::{Job, Msg, PROVIDERS, Provider, provider};
 
 /// LocalPDF's identity in the shared `local-ai` crate: config folder and keychain service both
 /// `"LocalPDF"`, and the OpenRouter referer points at this repository.
-pub const APP: local_ai::App = local_ai::App {
-    id: "LocalPDF",
-    url: "https://github.com/Anon5T4R/local-pdf",
-};
+pub const APP: local_ai::App = local_ai::App { id: "LocalPDF", url: "https://github.com/Anon5T4R/local-pdf" };
 
 /// A saved connection: which provider, its base URL (editable for `custom` or when a gateway
 /// moves) and the model the picker last chose. The API key is never in this file. Same shape
@@ -40,9 +37,7 @@ impl Connection {
     }
 
     fn wrap(all: Vec<local_ai::Connection>) -> Vec<Connection> {
-        all.into_iter()
-            .map(|c| Connection { id: c.id, provider: c.provider, label: c.label, base_url: c.base_url, model: c.model })
-            .collect()
+        all.into_iter().map(|c| Connection { id: c.id, provider: c.provider, label: c.label, base_url: c.base_url, model: c.model }).collect()
     }
 
     /// Where the connections file lives: `<data dir>/LocalPDF/ai-connections.json`.
