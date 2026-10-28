@@ -4,7 +4,9 @@ updates:
   - package-ecosystem: "cargo"
     directories:
       - "/"
-      - "/crates/filters/fuzz"
+      # "/crates/filters/fuzz" fica fora: ele herda `edition` do workspace raiz e o Dependabot
+      # não resolve (dependency_file_not_resolvable, falha diária). As deps dele já são
+      # fixadas pelo Cargo.lock do repo e checadas pelo CI com --locked.
     schedule:
       interval: "daily"
       time: "06:00"
