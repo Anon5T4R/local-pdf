@@ -5,7 +5,7 @@ exclude = ["vendor", "libs"]
 default-members = ["crates/*", "apps/localpdf", "apps/localpdf-cli", "xtask"]
 
 [workspace.package]
-version = "0.14.1"
+version = "0.14.2"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
@@ -25,40 +25,40 @@ craft-print = { path = "libs/craft-libs/crates/print/" }
 craft-docpath = { version = "0.1.0", path = "libs/craft-libs/crates/docpath/" }
 craft-update = { path = "libs/craft-libs/crates/update/", features = ["egui"] }
 # internal
-localpdf-geom = { path = "crates/geom", version = "0.14.1" }
-localpdf-filters = { path = "crates/filters", version = "0.14.1" }
-localpdf-cos = { path = "crates/cos", version = "0.14.1" }
-localpdf-crypt = { path = "crates/crypt", version = "0.14.1" }
-localpdf-organize = { path = "crates/organize", version = "0.14.1" }
-localpdf-measure = { path = "crates/measure", version = "0.14.1" }
-localpdf-annot = { path = "crates/annot", version = "0.14.1" }
-localpdf-audit = { path = "crates/audit", version = "0.14.1" }
-localpdf-fonts = { path = "crates/fonts", version = "0.14.1" }
-localpdf-ai = { path = "crates/ai", version = "0.14.1" }
-localpdf-model = { path = "crates/model", version = "0.14.1" }
-localpdf-content = { path = "crates/content", version = "0.14.1" }
-localpdf-redact = { path = "crates/redact", version = "0.14.1" }
-localpdf-print = { path = "crates/print", version = "0.14.1" }
-localpdf-xfdf = { path = "crates/xfdf", version = "0.14.1" }
-localpdf-sign = { path = "crates/sign", version = "0.14.1" }
-localpdf-optimize = { path = "crates/optimize", version = "0.14.1" }
-localpdf-a11y = { path = "crates/a11y", version = "0.14.1" }
-localpdf-oracle = { path = "crates/oracle", version = "0.14.1" }
-localpdf-testkit = { path = "crates/testkit", version = "0.14.1" }
-localpdf-ocr = { path = "crates/ocr", version = "0.14.1" }
-localpdf-js = { path = "crates/js", version = "0.14.1" }
-localpdf-compare = { path = "crates/compare", version = "0.14.1" }
-localpdf-preflight = { path = "crates/preflight", version = "0.14.1" }
-localpdf-export = { path = "crates/export", version = "0.14.1" }
-localpdf-edit = { path = "crates/edit", version = "0.14.1" }
-localpdf-create = { path = "crates/create", version = "0.14.1" }
-localpdf-forms = { path = "crates/forms", version = "0.14.1" }
-localpdf-xfa = { path = "crates/xfa", version = "0.14.1" }
-localpdf-render = { path = "crates/render", version = "0.14.1" }
-localpdf-engine = { path = "crates/engine", version = "0.14.1" }
-localpdf-platform = { path = "crates/platform", version = "0.14.1" }
-localpdf-ui-egui = { path = "crates/ui-egui", version = "0.14.1" }
-localpdf-automation = { path = "crates/automation", version = "0.14.1", default-features = false }
+localpdf-geom = { path = "crates/geom", version = "0.14.2" }
+localpdf-filters = { path = "crates/filters", version = "0.14.2" }
+localpdf-cos = { path = "crates/cos", version = "0.14.2" }
+localpdf-crypt = { path = "crates/crypt", version = "0.14.2" }
+localpdf-organize = { path = "crates/organize", version = "0.14.2" }
+localpdf-measure = { path = "crates/measure", version = "0.14.2" }
+localpdf-annot = { path = "crates/annot", version = "0.14.2" }
+localpdf-audit = { path = "crates/audit", version = "0.14.2" }
+localpdf-fonts = { path = "crates/fonts", version = "0.14.2" }
+localpdf-ai = { path = "crates/ai", version = "0.14.2" }
+localpdf-model = { path = "crates/model", version = "0.14.2" }
+localpdf-content = { path = "crates/content", version = "0.14.2" }
+localpdf-redact = { path = "crates/redact", version = "0.14.2" }
+localpdf-print = { path = "crates/print", version = "0.14.2" }
+localpdf-xfdf = { path = "crates/xfdf", version = "0.14.2" }
+localpdf-sign = { path = "crates/sign", version = "0.14.2" }
+localpdf-optimize = { path = "crates/optimize", version = "0.14.2" }
+localpdf-a11y = { path = "crates/a11y", version = "0.14.2" }
+localpdf-oracle = { path = "crates/oracle", version = "0.14.2" }
+localpdf-testkit = { path = "crates/testkit", version = "0.14.2" }
+localpdf-ocr = { path = "crates/ocr", version = "0.14.2" }
+localpdf-js = { path = "crates/js", version = "0.14.2" }
+localpdf-compare = { path = "crates/compare", version = "0.14.2" }
+localpdf-preflight = { path = "crates/preflight", version = "0.14.2" }
+localpdf-export = { path = "crates/export", version = "0.14.2" }
+localpdf-edit = { path = "crates/edit", version = "0.14.2" }
+localpdf-create = { path = "crates/create", version = "0.14.2" }
+localpdf-forms = { path = "crates/forms", version = "0.14.2" }
+localpdf-xfa = { path = "crates/xfa", version = "0.14.2" }
+localpdf-render = { path = "crates/render", version = "0.14.2" }
+localpdf-engine = { path = "crates/engine", version = "0.14.2" }
+localpdf-platform = { path = "crates/platform", version = "0.14.2" }
+localpdf-ui-egui = { path = "crates/ui-egui", version = "0.14.2" }
+localpdf-automation = { path = "crates/automation", version = "0.14.2", default-features = false }
 
 # pdf
 hayro = "0.7.1"
