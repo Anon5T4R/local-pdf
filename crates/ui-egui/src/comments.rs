@@ -1280,13 +1280,18 @@ fn select_input(
         && let Some(a) = pointer.and_then(|p| cx.hit(p))
     {
         cv.selected = Some((cx.page, a.index));
-        cv.composer = Some(Composer {
-            page: cx.page,
-            at: edit_anchor(cx.info, a),
-            kind: ComposerKind::Edit(a.index),
-            text: a.contents.clone().unwrap_or_default(),
-            focus: true,
-        });
+        // A Fill & Sign mark is page content to the user, not a comment: double-clicking its
+        // typed text selects the word (the selection action bar follows), it does not open the
+        // comment composer. The comment stays editable from the Comments panel.
+        if !a.fill_sign {
+            cv.composer = Some(Composer {
+                page: cx.page,
+                at: edit_anchor(cx.info, a),
+                kind: ComposerKind::Edit(a.index),
+                text: a.contents.clone().unwrap_or_default(),
+                focus: true,
+            });
+        }
         consumed = true;
     }
     consumed

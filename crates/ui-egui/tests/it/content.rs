@@ -496,6 +496,24 @@ fn finished_text_over_field_keeps_move_and_resize_cursors() {
 }
 
 #[test]
+fn double_click_on_added_text_opens_only_its_editor() {
+    let mut h = text_over_city();
+    let rect = added(&h)[0].content.rect();
+    let center = at(&h, ((rect[0] + rect[2]) / 2.0) as f32, (400.0 - (rect[1] + rect[3]) / 2.0) as f32);
+    h.run_steps(60);
+    h.hover_at(center);
+    h.run_steps(1);
+    for _ in 0..2 {
+        for pressed in [true, false] {
+            h.event(egui::Event::PointerButton { pos: center, button: egui::PointerButton::Primary, pressed, modifiers: egui::Modifiers::NONE });
+        }
+        h.run_steps(1);
+    }
+    h.run_steps(2);
+    assert!(h.state().views[0].content.draft.as_ref().is_some_and(|d| d.index == Some(0)), "double click edits the added text");
+    assert!(h.state().views[0].comments.composer.is_none(), "no comment composer opens over the added-text editor");
+}
+#[test]
 fn finished_text_over_field_still_opens_its_editor() {
     let mut h = text_over_city();
     let rect = added(&h)[0].content.rect();

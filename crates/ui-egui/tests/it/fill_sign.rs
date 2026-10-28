@@ -1,4 +1,4 @@
-//! Fill & Sign in the real shell (egui_kittest): text, marks, date and a drawn signature.
+﻿//! Fill & Sign in the real shell (egui_kittest): text, marks, date and a drawn signature.
 
 use egui::{Pos2, pos2};
 use egui_kittest::Harness;
@@ -144,6 +144,32 @@ fn type_box_rect(h: &Harness<'static, LocalPDFApp>) -> egui::Rect {
     h.query_all_by_role(egui::accesskit::Role::TextInput).find(|n| n.is_focused()).expect("an open type box").rect()
 }
 
+#[test]
+fn double_click_on_typed_text_shows_no_comment_composer() {
+    let mut h = harness();
+    h.state_mut().execute("sign.fill.text");
+    click(&mut h, 50.0, 250.0);
+    h.event(egui::Event::Text("Ada Lovelace".into()));
+    h.run_steps(1);
+    h.key_press(egui::Key::Enter);
+    h.run_steps(4);
+    assert_eq!(items(&h), vec![("FreeText".to_string(), Some("Ada Lovelace".to_string()))]);
+
+    // Double-click on the typed text: the word is selected (the selection action bar follows);
+    // the comment composer does not open over it. The comment stays editable from the panel.
+    let center = at(&h, 60.0, 250.0);
+    h.run_steps(60);
+    h.hover_at(center);
+    h.run_steps(1);
+    for _ in 0..2 {
+        for pressed in [true, false] {
+            h.event(egui::Event::PointerButton { pos: center, button: egui::PointerButton::Primary, pressed, modifiers: egui::Modifiers::NONE });
+        }
+        h.run_steps(1);
+    }
+    h.run_steps(2);
+    assert!(h.state().views[0].comments.composer.is_none(), "no comment composer opens over Fill & Sign text");
+}
 #[test]
 fn clicking_elsewhere_with_add_text_keeps_the_typed_text() {
     let mut h = harness();
