@@ -96,7 +96,10 @@ mod tests {
 
     #[test]
     fn keeps_the_old_store_path() {
-        assert!(Connection::store_path().unwrap().ends_with(r"LocalPDF\ai-connections.json"));
+        // Path separators differ per OS; the identity folder and file name are what matter.
+        let path = Connection::store_path().unwrap();
+        assert!(path.to_string_lossy().contains("LocalPDF"));
+        assert!(path.ends_with("ai-connections.json"));
     }
 
     #[test]
