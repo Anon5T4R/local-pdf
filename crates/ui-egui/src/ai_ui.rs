@@ -4,12 +4,17 @@
 //!
 //! Nothing here talks to a LocalPDF server: there is none. Every call goes straight to the
 //! provider the user configured, with the key the OS keychain holds.
+//!
+//! The window follows the app's dialog kit: `widgets::begin_dialog` field fills and borders,
+//! section titles, icon buttons with washes, pill buttons, and translated labels.
 
 use std::sync::Arc;
 
 use crate::LocalPDFApp;
 use crate::theme::{self, Tokens};
-use localpdf_ai::{Connection, Job, Msg, PROVIDERS, provider};
+use crate::{icons, widgets};
+pub use localpdf_ai::Connection;
+use localpdf_ai::{Job, Msg, PROVIDERS, provider};
 
 /// How much document text one chat request may carry (about 30k tokens of English).
 const MAX_CONTEXT: usize = 120_000;
@@ -81,27 +86,37 @@ impl AiState {
     }
 }
 
+/// Poll a job slot once, taking the finished job with its result. One `try_recv` only:
+/// polling twice eats the answer, so a "finished?" check followed by a read would drop it.
+fn take_done<T: Send + 'static>(slot: &mut Option<Job<T>>) -> Option<Result<T, String>> {
+    let result = slot.as_mut().and_then(|j| j.poll());
+    if result.is_some() {
+        *slot = None;
+    }
+    result
+}
+
 /// Poll the background jobs; called every frame before the window draws.
 fn poll(app: &mut LocalPDFApp) {
-    if app.ai.models_job.as_ref().is_some_and(|j| j.poll().is_some()) {
-        let job = app.ai.models_job.take();
-        if let Some(Ok(models)) = job.and_then(|j| j.poll()) {
-            app.ai.models = models;
+    if let Some(result) = take_done(&mut app.ai.models_job) {
+        match result {
+            Ok(models) => app.ai.models = models,
+            Err(e) => app.ai.error = Some(e),
         }
     }
-    if app.ai.job.as_ref().is_some_and(|j| j.poll().is_some()) {
-        let job = app.ai.job.take();
-        if let Some(Ok(answer)) = job.and_then(|j| j.poll()) {
-            app.ai.chat.push(Turn::Assistant(answer));
+    if let Some(result) = take_done(&mut app.ai.job) {
+        match result {
+            Ok(answer) => app.ai.chat.push(Turn::Assistant(answer)),
+            Err(e) => app.ai.chat.push(Turn::Failed(e)),
         }
     }
-    if app.ai.ocr_job.as_ref().is_some_and(|j| j.poll().is_some()) {
-        let job = app.ai.ocr_job.take();
-        if let Some(Ok((page, lines))) = job.and_then(|j| j.poll()) {
-            match ocr_lines_into_file(app, page, &lines) {
+    if let Some(result) = take_done(&mut app.ai.ocr_job) {
+        match result {
+            Ok((page, lines)) => match ocr_lines_into_file(app, page, &lines) {
                 Ok(words) => app.notify_fmt("AI text recognition: {words} words saved into the file", &[("words", &words.to_string())]),
                 Err(e) => app.ai.error = Some(e),
-            }
+            },
+            Err(e) => app.ai.error = Some(e),
         }
     }
 }
@@ -141,17 +156,18 @@ fn doc_name(app: &mut LocalPDFApp) -> String {
 
 /// Send the chat input: the doc context as the system turn, then the conversation so far.
 fn send(app: &mut LocalPDFApp) {
-    let input = std::mem::take(&mut app.ai.input);
-    if input.trim().is_empty() {
+    if app.ai.input.trim().is_empty() {
         return;
     }
     let conn = match app.ai.ready() {
         Ok(c) => c,
         Err(e) => {
+            // The typed question stays in the field: only the answer is missing, not the input.
             app.ai.chat.push(Turn::Failed(e));
             return;
         }
     };
+    let input = std::mem::take(&mut app.ai.input);
     let name = doc_name(app);
     let context = context_text(app);
     let mut history = vec![Msg::System(format!(
@@ -266,17 +282,23 @@ pub fn show(app: &mut LocalPDFApp, ctx: &egui::Context) {
     app.ai.load();
     let t = Tokens::get(ctx);
     let mut open = app.ai.open;
-    egui::Window::new("AI assistant").open(&mut open).default_width(560.0).default_height(620.0).constrain(false).show(ctx, |ui| {
-        connections_row(app, ui);
-        ui.add_space(6.0);
-        model_row(app, ui);
-        ui.add_space(6.0);
-        if let Some(e) = app.ai.error.take() {
-            ui.label(egui::RichText::new(e).color(error_red()).small());
-        }
-        chat_area(app, ui, &t);
-        input_row(app, ui);
-    });
+    egui::Window::new(tl!("AI assistant"))
+        .id(egui::Id::unique("ai_window"))
+        .order(egui::Order::Foreground)
+        .open(&mut open)
+        .collapsible(false)
+        .default_width(520.0)
+        .default_height(620.0)
+        .show(ctx, |ui| {
+            widgets::begin_dialog(ui);
+            connection_section(app, ui);
+            model_section(app, ui);
+            actions_row(app, ui);
+            error_line(app, ui);
+            chat_area(app, ui, &t);
+            input_row(app, ui);
+            ui.add_space(4.0);
+        });
     app.ai.open = open;
 }
 
@@ -284,26 +306,34 @@ fn error_red() -> egui::Color32 {
     egui::Color32::from_rgb(0xE5, 0x48, 0x4D)
 }
 
-/// The connection combo and its buttons: key, new, delete.
-fn connections_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+/// The last error, shown once: the next frame clears it.
+fn error_line(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+    if let Some(e) = app.ai.error.take() {
+        ui.add_space(4.0);
+        ui.label(egui::RichText::new(e).color(error_red()).small());
+    }
+}
+
+/// The connection combo, its key/add/delete icon buttons, the key editor, and the details.
+fn connection_section(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+    widgets::section_title(ui, tl!("Connection"));
+    let labels: Vec<String> = app.ai.connections.iter().map(|c| format!("{} — {}", c.label, provider_label(&c.provider))).collect();
     ui.horizontal(|ui| {
-        ui.label("Connection");
-        let labels: Vec<String> = app.ai.connections.iter().map(|c| format!("{} — {}", c.label, provider_label(&c.provider))).collect();
-        egui::ComboBox::from_id_salt("ai-connection").selected_text(labels.get(app.ai.selected).map(String::as_str).unwrap_or("add one…")).show_ui(
-            ui,
-            |ui| {
-                for (i, label) in labels.iter().enumerate() {
-                    ui.selectable_value(&mut app.ai.selected, i, label);
-                }
-            },
-        );
-        let has = app.ai.selected_conn().is_some();
+        let chosen = labels.get(app.ai.selected).cloned().unwrap_or_else(|| tl!("Add a connection…").to_owned());
+        let shown = widgets::fit_line(&chosen, 210.0, |s| widgets::text_width(ui, s, &theme::regular(13.0)));
+        egui::ComboBox::from_id_salt("ai-connection").selected_text(shown).show_ui(ui, |ui| {
+            for (i, label) in labels.iter().enumerate() {
+                ui.selectable_value(&mut app.ai.selected, i, label);
+            }
+        });
         let keyed = app.ai.selected_conn().is_some_and(|c| c.has_key());
-        if ui.add_enabled(has, egui::Button::new(if keyed { "🔑 ✓" } else { "🔑 set key" })).clicked() {
+        let key_tip = if keyed { tl!("Edit the API key") } else { tl!("Set the API key") };
+        let key_icon = if keyed { "lock" } else { "lock-open" };
+        if icons::button(ui, key_icon, 26.0, false, key_tip).clicked() {
             app.ai.editing_key = !app.ai.editing_key;
             app.ai.key_draft.clear();
         }
-        if ui.button("＋").on_hover_text("Add a connection").clicked() {
+        if icons::button(ui, "plus", 26.0, false, tl!("Add a connection")).clicked() {
             let id = format!("conn-{}", app.ai.connections.len() + 1);
             app.ai.connections.push(Connection {
                 id,
@@ -317,8 +347,9 @@ fn connections_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
             app.ai.key_draft.clear();
             app.ai.models.clear();
         }
-        let r = ui.add_enabled(has, egui::Button::new("🗑"));
-        if r.on_hover_text("Delete this connection").clicked() {
+        let has = app.ai.selected_conn().is_some();
+        let del = ui.add_enabled_ui(has, |ui| icons::button(ui, "trash", 26.0, false, tl!("Delete this connection"))).inner;
+        if del.clicked() {
             if let Some(c) = app.ai.selected_conn() {
                 let _ = c.clear_key();
             }
@@ -328,13 +359,17 @@ fn connections_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
             app.ai.save();
         }
     });
-    // The key editor and the connection's fields, under the row.
     if let Some(conn) = app.ai.selected_conn().cloned() {
         if app.ai.editing_key {
             ui.horizontal(|ui| {
-                let field = egui::TextEdit::singleline(&mut app.ai.key_draft).password(true).hint_text("API key (stays in the OS keychain)");
+                let field = widgets::line(&mut app.ai.key_draft)
+                    .password(true)
+                    .hint_text(tl!("API key (stays in the OS keychain)"))
+                    .desired_width((ui.available_width() - 130.0).max(140.0));
                 let response = ui.add(field);
-                if ui.button("Save key").clicked() || (response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+                if widgets::pill_button(ui, tl!("Save key"), true).clicked()
+                    || (response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)))
+                {
                     if let Err(e) = conn.set_key(app.ai.key_draft.trim()) {
                         app.ai.error = Some(e);
                     }
@@ -343,24 +378,30 @@ fn connections_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                 }
             });
         }
-        ui.collapsing("Connection details", |ui| {
+        ui.collapsing(tl!("Connection details"), |ui| {
             egui::Grid::new("ai-conn-details").num_columns(2).spacing([8.0, 4.0]).show(ui, |ui| {
-                ui.label("Provider");
+                ui.label(tl!("Provider"));
+                let provider_before = conn.provider.clone();
                 egui::ComboBox::from_id_salt("ai-provider").selected_text(provider_label(&conn.provider)).show_ui(ui, |ui| {
                     for p in PROVIDERS {
                         ui.selectable_value(&mut app.ai.connections[app.ai.selected].provider, p.id.to_owned(), p.label);
                     }
                 });
+                // Another provider answers `/models` with another list; the stale one must go.
+                if app.ai.connections[app.ai.selected].provider != provider_before {
+                    app.ai.models.clear();
+                }
                 ui.end_row();
-                ui.label("Name");
-                ui.add(egui::TextEdit::singleline(&mut app.ai.connections[app.ai.selected].label));
+                ui.label(tl!("Name"));
+                ui.add(widgets::line(&mut app.ai.connections[app.ai.selected].label).desired_width(220.0));
                 ui.end_row();
-                ui.label("Base URL");
+                ui.label(tl!("Base URL"));
                 let hint = provider(&conn.provider).map(|p| p.base_url).unwrap_or("");
-                ui.add(egui::TextEdit::singleline(&mut app.ai.connections[app.ai.selected].base_url).hint_text(hint));
+                ui.add(widgets::line(&mut app.ai.connections[app.ai.selected].base_url).hint_text(hint).desired_width(220.0));
                 ui.end_row();
             });
-            if ui.small_button("Save connection").clicked() {
+            ui.add_space(2.0);
+            if widgets::pill_button(ui, tl!("Save connection"), false).clicked() {
                 app.ai.save();
             }
         });
@@ -371,104 +412,132 @@ fn provider_label(id: &str) -> String {
     localpdf_ai::provider(id).map(|p| p.label.to_owned()).unwrap_or_else(|| id.to_owned())
 }
 
-/// The model combo (the provider's own list) and its refresh button.
-fn model_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+/// The model picker (the provider's own list) and its refresh button.
+fn model_section(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+    widgets::section_title(ui, tl!("Model"));
     ui.horizontal(|ui| {
-        ui.label("Model");
         let fetching = app.ai.models_job.is_some();
-        if fetching {
-            ui.add(egui::Spinner::new().size(16.0));
-        }
         if app.ai.models.is_empty() {
             // No list yet: a free-text model name still works.
             if app.ai.selected_conn().is_some() {
-                ui.add(egui::TextEdit::singleline(&mut app.ai.connections[app.ai.selected].model).hint_text("model id (or fetch the list)"));
+                let field = widgets::line(&mut app.ai.connections[app.ai.selected].model)
+                    .hint_text(tl!("Model id, or fetch the list"))
+                    .desired_width((ui.available_width() - 40.0).max(160.0));
+                ui.add(field);
             }
         } else {
             let current = app.ai.selected_conn().map(|c| c.model.clone()).unwrap_or_default();
-            egui::ComboBox::from_id_salt("ai-model").selected_text(if current.is_empty() { "choose…" } else { current.as_str() }).show_ui(ui, |ui| {
+            let shown = widgets::fit_line(if current.is_empty() { tl!("Choose a model…") } else { current.as_str() }, 240.0, |s| {
+                widgets::text_width(ui, s, &theme::regular(13.0))
+            });
+            egui::ComboBox::from_id_salt("ai-model").selected_text(shown).show_ui(ui, |ui| {
                 for m in &app.ai.models {
                     ui.selectable_value(&mut app.ai.connections[app.ai.selected].model, m.clone(), m);
                 }
             });
         }
-        let r = ui.add_enabled(!fetching && app.ai.selected_conn().is_some(), egui::Button::new("⟳"));
-        if r.on_hover_text("Fetch the provider's model list").clicked()
-            && let Some(conn) = app.ai.selected_conn().cloned()
-        {
-            app.ai.models_job = Some(Job::spawn(move || localpdf_ai::list_models(&conn)));
+        // The refresh slot: the spinner takes the button's place while the list is on its way.
+        if fetching {
+            ui.add(egui::Spinner::new().size(20.0));
+        } else {
+            let can_fetch = app.ai.selected_conn().is_some();
+            let refresh = ui.add_enabled_ui(can_fetch, |ui| icons::button(ui, "rotate-cw", 26.0, false, tl!("Fetch the model list"))).inner;
+            if refresh.clicked()
+                && let Some(conn) = app.ai.selected_conn().cloned()
+            {
+                app.ai.models_job = Some(Job::spawn(move || localpdf_ai::list_models(&conn)));
+            }
         }
     });
 }
 
-/// The conversation, scrolled to the bottom.
-fn chat_area(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens) {
+/// What the chat answers about, and the two one-shot actions, as the app's pills.
+fn actions_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+    ui.add_space(4.0);
     ui.horizontal(|ui| {
-        if ui.selectable_label(!app.ai.whole_document, "Current page").clicked() {
-            app.ai.whole_document = false;
-        }
-        if ui.selectable_label(app.ai.whole_document, "Whole document").clicked() {
-            app.ai.whole_document = true;
-        }
-        if ui.button("Summarize").clicked() {
+        widgets::radio_value(ui, &mut app.ai.whole_document, false, tl!("Current page"));
+        widgets::radio_value(ui, &mut app.ai.whole_document, true, tl!("Whole document"));
+        ui.add_space(2.0);
+        ui.separator();
+        ui.add_space(2.0);
+        if widgets::icon_pill(ui, "sparkles", tl!("Summarize"), false).clicked() {
             summarize(app);
         }
-        let ocr = ui.add_enabled(app.ai.ocr_job.is_none(), egui::Button::new("🔍 OCR (AI) → save in file"));
-        if ocr.on_hover_text("A vision model reads this page; the text is saved into the PDF as an invisible layer, so it stays forever").clicked() {
+        let ocr_busy = app.ai.ocr_job.is_some();
+        let ocr = ui.add_enabled_ui(!ocr_busy, |ui| widgets::icon_pill(ui, "scan-text", tl!("OCR (AI) → save in file"), false)).inner;
+        if ocr
+            .on_hover_text(tl!("A vision model reads this page; its text is saved into the PDF as an invisible layer, so it stays forever"))
+            .clicked()
+        {
             ocr_page(app);
         }
-        if app.ai.ocr_job.is_some() {
+        if ocr_busy {
             ui.add(egui::Spinner::new().size(14.0));
         }
     });
+}
+
+/// The conversation, anchored at the input: the newest turn sits just above it and the rest
+/// scroll upward — a chat fills from the bottom of its box, not the top.
+fn chat_area(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens) {
     ui.add_space(4.0);
-    // A área do chat tem altura limitada: sem isso ela pede "a tela inteira" no sizing pass e a
-    // janela cresce sozinha, ignorando o resize do usuário. O restante da altura fica vazio.
-    let chat_height = (ui.available_height() - 44.0).clamp(140.0, 460.0);
-    egui::ScrollArea::vertical().auto_shrink([false, false]).stick_to_bottom(true).max_height(chat_height).show(ui, |ui| {
-        if app.ai.chat.is_empty() {
-            ui.label(egui::RichText::new("Ask about the document, or press Summarize.").color(t.text_faint));
-        }
-        for turn in &app.ai.chat {
-            match turn {
-                Turn::User(text) => {
-                    ui.label(egui::RichText::new("You").color(t.text_faint).small());
-                    ui.label(egui::RichText::new(text).font(theme::regular(13.0)));
-                }
-                Turn::Assistant(text) => {
-                    ui.separator();
-                    ui.label(egui::RichText::new("Assistant").color(t.text_faint).small());
-                    ui.label(egui::RichText::new(text).font(theme::regular(13.0)));
-                }
-                Turn::Failed(text) => {
-                    ui.label(egui::RichText::new(format!("✗ {text}")).color(error_red()).small());
+    ui.separator();
+    ui.add_space(2.0);
+    // The chat takes what is left of the window above the input row, within the window the user
+    // sized; without the bound the scroll area asks for the whole screen and the window grows.
+    let busy = app.ai.job.is_some();
+    let scroll_height = (ui.available_height() - 54.0).max(120.0);
+    egui::ScrollArea::vertical().auto_shrink([false, false]).stick_to_bottom(true).max_height(scroll_height).show(ui, |ui| {
+        // Bottom-up: what is allocated first sits lowest. The busy line, then the newest turn,
+        // then the older ones, then the empty state, stack upward from the input.
+        ui.with_layout(egui::Layout::bottom_up(egui::Align::Min), |ui| {
+            if busy {
+                ui.horizontal(|ui| {
+                    ui.add(egui::Spinner::new().size(14.0));
+                    ui.label(egui::RichText::new(tl!("thinking…")).color(t.text_faint));
+                });
+                ui.add_space(6.0);
+            }
+            for turn in app.ai.chat.iter().rev() {
+                ui.add_space(6.0);
+                match turn {
+                    Turn::User(text) => {
+                        // Bottom-up allocates upward: the text first, its eyebrow above it.
+                        ui.label(egui::RichText::new(text).font(theme::regular(13.0)));
+                        ui.label(egui::RichText::new(tl!("You")).color(t.text_faint).small());
+                    }
+                    Turn::Assistant(text) => {
+                        ui.label(egui::RichText::new(text).font(theme::regular(13.0)));
+                        ui.label(egui::RichText::new(tl!("Assistant")).color(t.text_faint).small());
+                        ui.separator();
+                    }
+                    Turn::Failed(text) => {
+                        ui.label(egui::RichText::new(format!("✗ {text}")).color(error_red()).small());
+                        ui.add_space(4.0);
+                    }
                 }
             }
-            ui.add_space(4.0);
-        }
-        if app.ai.job.is_some() {
-            ui.horizontal(|ui| {
-                ui.add(egui::Spinner::new().size(14.0));
-                ui.label(egui::RichText::new("thinking…").color(t.text_faint));
-            });
-        }
+            if app.ai.chat.is_empty() && !busy {
+                ui.label(egui::RichText::new(tl!("Ask about the document, or press Summarize.")).color(t.text_faint).small());
+                ui.add_space(12.0);
+            }
+        });
     });
 }
 
-/// The input box and Send.
+/// The input field and Send, as the window's primary action.
 fn input_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
+    let busy = app.ai.job.is_some();
     ui.add_space(4.0);
-    ui.with_layout(egui::Layout::right_to_left(egui::Align::Min), |ui| {
-        let busy = app.ai.job.is_some();
-        if ui.add_enabled(!busy, egui::Button::new("Send")).clicked() {
-            send(app);
-        }
-        let field = egui::TextEdit::singleline(&mut app.ai.input)
-            .hint_text("Ask about the document…")
-            .desired_width((ui.available_width() - 70.0).max(120.0))
+    ui.horizontal(|ui| {
+        let field = widgets::line(&mut app.ai.input)
+            .hint_text(tl!("Ask about the document…"))
+            .desired_width((ui.available_width() - 96.0).max(120.0))
             .lock_focus(true);
         let response = ui.add(field);
-        if response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) && !busy {
+        let entered = response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) && !busy;
+        let sent = ui.add_enabled_ui(!busy, |ui| widgets::icon_pill(ui, "send", tl!("Send"), true)).inner.clicked();
+        if entered || sent {
             send(app);
         }
     });
