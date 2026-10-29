@@ -540,7 +540,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
             items: &[
                 item("Summarize", "sparkles", "ai.summary", Provider),
                 item("Ask about this document", "message-circle-reply", "ai.ask", Provider),
-                item("Translate", "languages", "ai.translate", Provider),
+                item("Recognize text (OCR)", "scan-text", "ai.ocr", Provider),
             ],
         }],
     },

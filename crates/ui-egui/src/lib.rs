@@ -2488,6 +2488,14 @@ impl LocalPDFApp {
     /// Enter a tool from the catalogue, Home, palette or control channel. Organize is a
     /// workspace, so opening its panel also opens the page grid (without toggling it off).
     pub(crate) fn select_tool(&mut self, id: &'static str) {
+        // The AI assistant is a floating window, not a side panel: every entry point that chooses
+        // the tool (the All tools tile, the palette's Tool row, the home card) opens the window,
+        // exactly as the command does. The dead panel it used to open was upstream's.
+        if id == "ai" {
+            self.all_tools_full = false;
+            self.ai.open = true;
+            return;
+        }
         // The tool's panel shows, not the expanded All tools view over it.
         self.all_tools_full = false;
         self.left = LeftPanel::Tool(id);

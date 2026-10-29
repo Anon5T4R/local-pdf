@@ -47,6 +47,33 @@ fn ai_window_opens_and_reports_why_it_cannot_answer() {
     assert_eq!(h.state().ai.input, "What is this document?");
 }
 
+/// The AI commands (palette, menus, the tool panel's entries) open the window and run their
+/// action; the tool-catalog entries are not dead references anymore.
+#[test]
+fn ai_commands_open_the_window_and_act() {
+    let mut h = harness();
+    assert!(h.state_mut().execute("tools.ai"));
+    h.run_steps(2);
+    assert!(h.state().ai.open, "the command opened the window");
+    assert!(h.state_mut().execute("tools.ai"));
+    h.run_steps(2);
+    assert!(!h.state().ai.open, "the command toggles it closed again");
+
+    // Hermetic: a stub connection without a key, so the action runs without leaving the machine.
+    h.state_mut().ai.connections = vec![localpdf_ui_egui::ai_ui::Connection {
+        id: "hermetic".into(),
+        provider: "gemini".into(),
+        label: "Test".into(),
+        base_url: String::new(),
+        model: String::new(),
+    }];
+    assert!(h.state_mut().execute("ai.summary"));
+    h.run_steps(2);
+    assert!(h.state().ai.open, "summarize opened the window");
+    assert_eq!(h.state().ai.chat.len(), 1, "{:?}", h.state().ai.chat);
+    assert!(format!("{:?}", h.state().ai.chat[0]).contains("Failed"), "why it cannot run, visibly");
+}
+
 /// Not run with the suite: writes `target/ai-window.png` for a visual check of the window.
 #[test]
 #[ignore = "visual check helper"]

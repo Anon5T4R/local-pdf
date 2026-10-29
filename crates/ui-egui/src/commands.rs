@@ -696,6 +696,9 @@ impl LocalPDFApp {
             }
             "page.split" => self.dialog = Some(Dialog::Split),
             "tools.ai" => self.ai.open = !self.ai.open,
+            "ai.summary" => crate::ai_ui::open_and_summarize(self),
+            "ai.ask" => crate::ai_ui::open_and_ask(self),
+            "ai.ocr" => crate::ai_ui::open_and_ocr(self),
             "help.shortcuts" => self.dialog = Some(Dialog::Shortcuts),
             "help.about" => self.dialog = Some(Dialog::About),
             "help.check_updates" => self.check_for_updates(),

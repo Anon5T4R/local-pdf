@@ -121,6 +121,24 @@ fn poll(app: &mut LocalPDFApp) {
     }
 }
 
+/// The tool panel's AI entries and the palette's AI commands: open the window and run the one
+/// action. Everything the entries do, the window also offers by hand.
+pub fn open_and_summarize(app: &mut LocalPDFApp) {
+    app.ai.open = true;
+    summarize(app);
+}
+
+/// Asking opens the window: the question is typed where the answer will appear.
+pub fn open_and_ask(app: &mut LocalPDFApp) {
+    app.ai.open = true;
+}
+
+/// OCR opens the window (its progress and result land there) and reads the current page.
+pub fn open_and_ocr(app: &mut LocalPDFApp) {
+    app.ai.open = true;
+    ocr_page(app);
+}
+
 /// The page the active view shows.
 fn current_page(app: &LocalPDFApp) -> usize {
     app.active.and_then(|i| app.views.get(i)).map(|v| v.current).unwrap_or(0)
