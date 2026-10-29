@@ -182,7 +182,26 @@ if ($HasCraftFontLicences -eq 1) {
 Copy-Item (Join-Path $PSScriptRoot 'portable.txt') $Portable
 $Zip = Join-Path $Dist "localpdf-$Version-windows-$Arch-portable.zip"
 Remove-Item -Force $Zip -ErrorAction SilentlyContinue
-Compress-Archive -Path $Portable -DestinationPath $Zip
+# Compress-Archive (PowerShell 5.1) writes entry names with backslashes; the updater's portable
+# unpack refuses them ("The portable ZIP contains an unsafe path or link."), and a zip with '\'
+# is ambiguous cross-platform besides. Build the archive by hand, every entry with '/'.
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+$RootName = Split-Path $Portable -Leaf
+$PortableFull = [System.IO.Path]::GetFullPath($Portable)
+$ZipStream = [System.IO.File]::Open($Zip, [System.IO.FileMode]::Create)
+$Archive = New-Object System.IO.Compression.ZipArchive($ZipStream, [System.IO.Compression.ZipArchiveMode]::Create)
+try {
+  Get-ChildItem -LiteralPath $Portable -Recurse -File | ForEach-Object {
+    $Relative = [System.IO.Path]::GetFullPath($_.FullName).Substring($PortableFull.Length + 1) -replace '\\', '/'
+    $Entry = $Archive.CreateEntry("$RootName/$Relative", [System.IO.Compression.CompressionLevel]::Optimal)
+    $EntryStream = $Entry.Open()
+    $FileStream = [System.IO.File]::OpenRead($_.FullName)
+    try { $FileStream.CopyTo($EntryStream) } finally { $FileStream.Dispose(); $EntryStream.Dispose() }
+  }
+} finally {
+  $Archive.Dispose()
+  $ZipStream.Dispose()
+}
 
 # Smoke-test the CLI when this machine can run it. An ARM64 build made on an x64 runner can't run
 # here; .github/workflows/windows-arm64.yml installs and runs it on ARM64 instead.

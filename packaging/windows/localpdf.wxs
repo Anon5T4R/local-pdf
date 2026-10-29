@@ -110,6 +110,10 @@
         <File Id="LocalpdfExe" Source="$(var.BinDir)\localpdf.exe" KeyPath="yes" />
 
         <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\localpdf.exe" Value="[#LocalpdfExe]" Type="string" />
+        <!-- Where this MSI installed the app. The app's own updater reads it (HKLM here) under the
+             suite's key to know this is an MSI install, so it updates with the new MSI rather than
+             the portable zip. -->
+        <RegistryValue Root="HKLM" Key="Software\Anon5T4R\LocalPDF" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
 
         <!-- PDF files (#107): LocalPDF is offered under "Open with" and in Settings ▸ Default
              apps, through Windows' Default Programs registration (a ProgID, OpenWithProgids,

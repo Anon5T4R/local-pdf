@@ -184,13 +184,16 @@ fn detect(app: &App, exe: &Path) -> Option<Install> {
 
 #[cfg(windows)]
 fn detect(app: &App, exe: &Path) -> Option<Install> {
-    let dir = exe.parent()?;
+    // All comparisons in canonical form: canonicalize gives a `\\?\`-prefixed path on Windows, so
+    // a raw exe folder never equals a canonicalized registry or default folder, and every MSI
+    // install fell through to the standalone (portable zip) kind.
+    let canonical = |p: PathBuf| p.canonicalize().unwrap_or(p);
+    let dir = exe.parent().map(|p| canonical(p.to_path_buf()))?;
     if dir.join("portable.txt").is_file() {
         return Some(Install::Portable(exe.to_path_buf()));
     }
     // The MSI installs per user, into the folder chosen in its wizard (which it records in the
     // registry) or by default %LOCALAPPDATA%\Programs\<App Name>.
-    let canonical = |p: PathBuf| p.canonicalize().unwrap_or(p);
     let recorded = msi_install_dir(app).map(canonical);
     let default = crate::folders::data_local_dir().map(|d| canonical(d.join("Programs").join(app.name)));
     if [recorded, default].into_iter().flatten().any(|d| d == dir) {
@@ -206,12 +209,20 @@ fn detect(app: &App, exe: &Path) -> Option<Install> {
 #[cfg(windows)]
 fn msi_install_dir(app: &App) -> Option<PathBuf> {
     use winreg::RegKey;
-    use winreg::enums::HKEY_CURRENT_USER;
-    let subkey = format!(r"Software\Learning Machines LLC\{}", app.name);
-    let key = RegKey::predef(HKEY_CURRENT_USER).open_subkey(&subkey).ok()?;
-    let dir: String = key.get_value("InstallDir").ok()?;
-    let dir = dir.trim();
-    (!dir.is_empty()).then(|| PathBuf::from(dir))
+    use winreg::enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE};
+    // The suite's own per-machine MSI records its install folder under the suite's key; a
+    // per-user kind would sit in HKCU. HKLM first: the per-machine value is the whole machine's,
+    // not just the current account's.
+    for root in [HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER] {
+        let subkey = format!(r"Software\Anon5T4R\{}", app.name);
+        if let Ok(key) = RegKey::predef(root).open_subkey(&subkey)
+            && let Ok(dir) = key.get_value::<String, _>("InstallDir")
+            && !dir.trim().is_empty()
+        {
+            return Some(PathBuf::from(dir));
+        }
+    }
+    None
 }
 
 #[cfg(target_os = "linux")]
