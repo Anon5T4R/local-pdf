@@ -7,6 +7,7 @@ use localpdf_render::{PageInfo, RenderPool, RenderRequest, Tile};
 
 use crate::QuickTool;
 use crate::comments::{CommentView, Gesture, PageCx};
+use crate::theme::Tokens;
 
 /// The longest side, in pixels, a stamp's own layer is rendered at.
 const MAX_STAMP_SIDE: f32 = 2048.0;
@@ -191,14 +192,10 @@ impl SignatureDrag {
         let painter = painter.with_clip_rect(painter.clip_rect().intersect(cx.xf.rect));
         cx.xf.paint_image(&painter, background.id(), 0.0, 0.0, 1.0, 1.0);
         match &layers.front {
-            Front::Image { texture, opacity, turn } => cx.xf.paint_user_image(
-                &painter,
-                texture.id(),
-                p,
-                cx.rect_to_user(rect),
-                *turn,
-                egui::Color32::from_white_alpha((opacity * 255.0).round() as u8),
-            ),
+            Front::Image { texture, opacity, turn } => cx.xf.paint_user_image(&painter, texture.id(), p, cx.rect_to_user(rect), *turn, {
+                let t = Tokens::get(painter.ctx());
+                t.hover.linear_multiply(*opacity)
+            }),
             Front::Stamp(stamp) => {
                 let Some((_, texture, area)) = &stamp.pixels else { return };
                 // Where the stamp's pixels were rendered, stretched as its box is from `from` to `rect`.

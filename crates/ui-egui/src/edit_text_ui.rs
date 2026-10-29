@@ -7,6 +7,7 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+use crate::theme::Tokens;
 use egui::{Color32, CornerRadius, FontFamily, FontId, Pos2, Rect, Stroke};
 use localpdf_engine::{Edit, ObjectKind, ObjectTarget};
 use localpdf_render::DocInfo;
@@ -661,9 +662,10 @@ impl ImageSelection {
 /// The page raster's picture of the box `from`, stretched into `to`, over blanks at `blank` (where
 /// the screen may still show the picture).
 fn stretched_picture(painter: &egui::Painter, xf: &PageXform, tex: egui::TextureId, blank: &[Rect], from: Rect, to: Rect) {
+    let t = Tokens::get(painter.ctx());
     let clipped = painter.with_clip_rect(painter.clip_rect().intersect(xf.rect));
     for r in blank {
-        clipped.rect_filled(*r, CornerRadius::ZERO, Color32::WHITE);
+        clipped.rect_filled(*r, CornerRadius::ZERO, t.field);
     }
     let mut mesh = egui::Mesh::with_texture(tex);
     for (a, b) in [

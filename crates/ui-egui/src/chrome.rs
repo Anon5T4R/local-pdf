@@ -488,7 +488,7 @@ pub fn mode_bar(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                 // The AI assistant beside the modes: a floating window, so a button, not a tab.
                 // Selected shows while the window is open, as a tab does for its workspace.
                 ui.add_space(6.0);
-                if icons::button(ui, "sparkles", 32.0, app.ai.open, tl!("AI assistant")).clicked() {
+                if widgets::pill_button(ui, tl!("AI"), app.ai.open).clicked() {
                     app.ai.open = !app.ai.open;
                 }
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {

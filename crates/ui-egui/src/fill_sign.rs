@@ -653,8 +653,13 @@ pub(crate) fn page_input(
             xf.paint_user_image(ui.painter(), tex, p, rect, i64::from(p.rotation), Color32::WHITE);
             ui.ctx().set_cursor_icon(egui::CursorIcon::None);
         }
+    } else if tool == FillTool::Text {
+        ui.ctx().set_cursor_icon(egui::CursorIcon::None);
+        // The system I-beam follows the desktop's pointer scheme, which can be white (invisible on
+        // paper) or black (invisible in dark reading mode). Draw our own mid-grey one so it reads on both.
+        crate::canvas::paint_ibeam(ui.painter(), pointer);
     } else {
-        ui.ctx().set_cursor_icon(if tool == FillTool::Text { egui::CursorIcon::Text } else { egui::CursorIcon::Crosshair });
+        ui.ctx().set_cursor_icon(egui::CursorIcon::Crosshair);
     }
     if !resp.clicked() {
         return None;

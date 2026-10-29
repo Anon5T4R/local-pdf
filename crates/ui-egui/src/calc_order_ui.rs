@@ -13,13 +13,13 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
+use crate::theme::{self, Tokens};
 use egui::{Align2, Color32, CornerRadius, Pos2, Rect, Sense, Shape, Stroke, Vec2, pos2, vec2};
 use localpdf_engine::form_scripts::{CalcOp, Calculate, format_value};
 use localpdf_engine::{CalculatedField, CalculationIssue, CalculationOrder, Edit, FormField, FormFieldKind};
 use localpdf_render::DocInfo;
 
 use crate::canvas::PageXform;
-use crate::theme::{self, Tokens};
 use crate::{LeftPanel, LocalPDFApp, icons, widgets};
 
 /// Links and steps on the page, which is paper white in either theme.
@@ -760,7 +760,8 @@ pub(crate) fn paint_page(
     if let (Some(focus), Some(related)) = (focus.as_deref(), &related) {
         for (name, r) in &on_page {
             if !related.contains(name) {
-                painter.rect_filled(r.expand(1.0), CornerRadius::ZERO, Color32::from_white_alpha(150));
+                let t = Tokens::get(painter.ctx());
+                painter.rect_filled(r.expand(1.0), CornerRadius::ZERO, t.hover);
             } else {
                 let width = if *name == focus { 2.0 } else { 1.0 };
                 painter.rect_stroke(r.expand(1.0), CornerRadius::same(2), Stroke::new(width, LINK_OK), egui::StrokeKind::Outside);

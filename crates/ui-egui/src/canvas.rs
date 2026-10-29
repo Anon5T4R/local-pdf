@@ -2515,7 +2515,7 @@ fn annotation_hover_text(a: &localpdf_render::Annotation) -> Option<String> {
 /// white paper and over dark reading mode alike. The system pointer is hidden for it: its colour
 /// follows the desktop's pointer scheme, which can be white (invisible on paper) or black
 /// (invisible in the dark).
-fn paint_ibeam(painter: &egui::Painter, at: Pos2) {
+pub(crate) fn paint_ibeam(painter: &egui::Painter, at: Pos2) {
     let ink = egui::Color32::from_gray(122);
     let stroke = egui::Stroke::new(1.5, ink);
     let (x, y) = (at.x, at.y);
