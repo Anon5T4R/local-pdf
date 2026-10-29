@@ -28,6 +28,148 @@ pub enum Turn {
     Failed(String),
 }
 
+/// Light markdown style for an assistant answer run.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum MdStyle {
+    Plain,
+    Bold,
+    Italic,
+    Code,
+}
+
+/// A run of an answer's line, cut where its marking changes.
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct MdSeg {
+    text: String,
+    style: MdStyle,
+}
+
+/// One line of an answer: ordinary text, a list item (`- `) or a heading (`# `).
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum MdLine {
+    Text(Vec<MdSeg>),
+    Item(Vec<MdSeg>),
+    Heading(Vec<MdSeg>),
+}
+
+/// The light markdown over assistant answers: `- ` opens a list item, a run of `#`s and a space
+/// a heading, and the inline pairs (`**bold**`, `*italic*`, backticks) cut their runs apart
+/// ([`md_segs`]). Just enough to read an answer at a glance: links, tables and fences are none
+/// of its business, and the user's turns are always drawn as they typed them.
+fn md(text: &str) -> Vec<MdLine> {
+    text.split('\n')
+        .map(|line| {
+            let hashes = line.chars().take_while(|&c| c == '#').count();
+            // `#` is ASCII, so the character count of the opening run is its width in bytes.
+            if hashes > 0
+                && let Some(rest) = line[hashes..].strip_prefix(' ')
+            {
+                return MdLine::Heading(md_segs(rest));
+            }
+            if let Some(rest) = line.strip_prefix("- ") {
+                return MdLine::Item(md_segs(rest));
+            }
+            MdLine::Text(md_segs(line))
+        })
+        .collect()
+}
+
+/// The runs of one line: `**bold**`, `*italic*` and `` `code` ``, plain text apart from those.
+/// A marker without its pair later on the line is literal text, so `2 * 3` draws as typed, and
+/// runs don't nest: each opener closes at the first pair that answers it.
+fn md_segs(line: &str) -> Vec<MdSeg> {
+    let cs: Vec<char> = line.chars().collect();
+    let mut out: Vec<MdSeg> = Vec::new();
+    let mut plain = String::new();
+    let mut i = 0;
+    while i < cs.len() {
+        let run = if cs[i] == '`'
+            && let Some(end) = (i + 1..cs.len()).find(|&k| cs[k] == '`')
+        {
+            Some((MdStyle::Code, i + 1, end, end + 1))
+        } else if cs[i] == '*'
+            && let Some(run) = md_star_pair(&cs, i)
+        {
+            Some(run)
+        } else {
+            None
+        };
+        match run {
+            Some((style, start, end, next)) => {
+                if !plain.is_empty() {
+                    out.push(MdSeg { text: std::mem::take(&mut plain), style: MdStyle::Plain });
+                }
+                if start < end {
+                    out.push(MdSeg { text: cs[start..end].iter().collect(), style });
+                }
+                i = next;
+            }
+            None => {
+                plain.push(cs[i]);
+                i += 1;
+            }
+        }
+    }
+    if !plain.is_empty() {
+        out.push(MdSeg { text: plain, style: MdStyle::Plain });
+    }
+    out
+}
+
+/// What the `*` at index `i` opens: a `**` pair (bold) with where it closes, or the next single
+/// `*` (italic). `None` when the rest of the line has no closer, leaving the `*` literal text.
+fn md_star_pair(cs: &[char], i: usize) -> Option<(MdStyle, usize, usize, usize)> {
+    if cs.get(i + 1) == Some(&'*') {
+        let end = (i + 2..cs.len()).find(|&k| cs[k] == '*' && cs.get(k + 1) == Some(&'*'))?;
+        return Some((MdStyle::Bold, i + 2, end, end + 2));
+    }
+    let end = (i + 1..cs.len()).find(|&k| cs[k] == '*')?;
+    Some((MdStyle::Italic, i + 1, end, end + 1))
+}
+
+/// An assistant turn drawn as light markdown: one wrapped block with the [`MdLine`]s back in
+/// order — a heading a size up in the semibold face, list items behind a dim bullet, bold in
+/// the house semibold, italic slanted, inline code in the monospace face over the house accent.
+/// Plain prose wraps as one run, like any label.
+fn show_assistant_turn(ui: &mut egui::Ui, text: &str, t: &Tokens) {
+    let mut job = egui::text::LayoutJob::default();
+    for (n, line) in md(text).into_iter().enumerate() {
+        if n > 0 {
+            job.append("\n", 0.0, egui::text::TextFormat::simple(theme::regular(13.0), t.text));
+        }
+        let (segs, heading) = match &line {
+            MdLine::Item(segs) => {
+                job.append("•  ", 0.0, egui::text::TextFormat::simple(theme::regular(13.0), t.text_muted));
+                (segs, false)
+            }
+            MdLine::Heading(segs) => (segs, true),
+            MdLine::Text(segs) => (segs, false),
+        };
+        for seg in segs {
+            if seg.text.is_empty() {
+                continue;
+            }
+            let format = match (heading, seg.style) {
+                (_, MdStyle::Code) => egui::text::TextFormat::simple(egui::FontId::monospace(12.0), t.accent_text),
+                (_, MdStyle::Bold) => egui::text::TextFormat::simple(theme::semibold(if heading { 15.0 } else { 13.0 }), t.text),
+                (true, _) => egui::text::TextFormat::simple(theme::semibold(15.0), t.text),
+                (false, MdStyle::Italic) => {
+                    egui::text::TextFormat { font_id: theme::regular(13.0), color: t.text, italics: true, ..egui::text::TextFormat::default() }
+                }
+                (false, MdStyle::Plain) => egui::text::TextFormat::simple(theme::regular(13.0), t.text),
+            };
+            job.append(&seg.text, 0.0, format);
+        }
+    }
+    if job.text.is_empty() {
+        return;
+    }
+    job.wrap.max_width = ui.available_width();
+    let galley = ui.painter().layout_job(job);
+    let (rect, _) = ui.allocate_exact_size(galley.size(), egui::Sense::hover());
+    ui.painter().galley(rect.min, galley, t.text);
+}
+
 /// What the panel holds between frames.
 #[derive(Default)]
 pub struct AiState {
@@ -492,6 +634,13 @@ fn actions_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
         if ocr_busy {
             ui.add(egui::Spinner::new().size(14.0));
         }
+        ui.add_space(8.0);
+        ui.separator();
+        ui.add_space(2.0);
+        let can_clear = !app.ai.chat.is_empty() && !app.ai.job.is_some();
+        if ui.add_enabled_ui(can_clear, |ui| widgets::pill_button(ui, tl!("Clear"), false)).inner.clicked() {
+            app.ai.chat.clear();
+        }
     });
 }
 
@@ -525,7 +674,8 @@ fn chat_area(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens) {
                         ui.label(egui::RichText::new(tl!("You")).color(t.text_faint).small());
                     }
                     Turn::Assistant(text) => {
-                        ui.label(egui::RichText::new(text).font(theme::regular(13.0)));
+                        show_assistant_turn(ui, text, t);
+                        ui.add_space(4.0);
                         ui.label(egui::RichText::new(tl!("Assistant")).color(t.text_faint).small());
                         ui.separator();
                     }
@@ -534,6 +684,7 @@ fn chat_area(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens) {
                         ui.add_space(4.0);
                     }
                 }
+                ui.add_space(6.0);
             }
             if app.ai.chat.is_empty() && !busy {
                 ui.label(egui::RichText::new(tl!("Ask about the document, or press Summarize.")).color(t.text_faint).small());

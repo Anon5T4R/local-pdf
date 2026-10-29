@@ -2515,8 +2515,13 @@ fn annotation_hover_text(a: &localpdf_render::Annotation) -> Option<String> {
 /// white paper and over dark reading mode alike. The system pointer is hidden for it: its colour
 /// follows the desktop's pointer scheme, which can be white (invisible on paper) or black
 /// (invisible in the dark).
+/// The I-beam drawn where the page's text is under the pointer, in the theme's icon color that
+/// reads on both light paper and dark reading mode alike. The system pointer is hidden for it:
+/// its colour follows the desktop's pointer scheme, which can be white (invisible on paper) or
+/// black (invisible in dark reading mode). The theme's icon colour reads on both.
 pub(crate) fn paint_ibeam(painter: &egui::Painter, at: Pos2) {
-    let ink = egui::Color32::from_gray(122);
+    let t = Tokens::get(painter.ctx());
+    let ink = t.icon;
     let stroke = egui::Stroke::new(1.5, ink);
     let (x, y) = (at.x, at.y);
     let (top, bottom) = (y - 9.0, y + 9.0);
