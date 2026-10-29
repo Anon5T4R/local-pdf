@@ -463,9 +463,9 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
 name = "aws-lc-rs"
-version = "1.18.2"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "faac5829c2b74c28f830747e7818ccfb684261b5f48a1118b1e2a13d36dfab13"
+checksum = "048006790404103c488e6c5616b3e7e702a71292aadda08e8f7698a9e0d2eb53"
 dependencies = [
  "aws-lc-sys",
  "untrusted 0.7.1",
@@ -474,9 +474,9 @@ dependencies = [
 
 [[package]]
 name = "aws-lc-sys"
-version = "0.46.0"
+version = "0.47.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1622d8446a2d4b2ce0c7eefc73dd43a99779028d5ee5c2dd8073a658ba8a2bc"
+checksum = "8bfbe32ac36b3c428696ce315464181bc4029d689fd58e3f2a4e58c252242f52"
 dependencies = [
  "cc",
  "cmake",
@@ -1435,9 +1435,9 @@ dependencies = [
 
 [[package]]
 name = "ctutils"
-version = "0.4.6"
+version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe3e9d21d39e6f39ff46e03d5b621424f88ee23d8a1672c6bfc9ccc7f2da4f6a"
+checksum = "a2376ffd6f96d8a9db59875b4b6b0237d6900b5baf64279714e05493ce64828a"
 dependencies = [
  "cmov",
  "subtle",
@@ -3477,7 +3477,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "chrono",
  "craft-update",
@@ -3501,7 +3501,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-a11y"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-content",
  "localpdf-cos",
@@ -3513,7 +3513,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-ai"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "local-ai",
  "serde",
@@ -3521,7 +3521,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-annot"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "hayro-syntax",
  "localpdf-cos",
@@ -3532,7 +3532,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-audit"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-content",
  "localpdf-cos",
@@ -3543,7 +3543,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-automation"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "base64 0.23.1",
  "flate2",
@@ -3565,7 +3565,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-cli"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "base64 0.23.1",
  "localpdf-audit",
@@ -3583,11 +3583,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-compare"
-version = "0.14.3"
+version = "0.14.4"
 
 [[package]]
 name = "localpdf-content"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "hayro-syntax",
  "localpdf-cos",
@@ -3595,7 +3595,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-cos"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "chrono",
  "hayro-syntax",
@@ -3610,7 +3610,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-create"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "encoding_rs",
  "hayro-syntax",
@@ -3626,7 +3626,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-crypt"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "aes",
  "md-5",
@@ -3638,7 +3638,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-edit"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "hayro-syntax",
  "kurbo 0.13.1",
@@ -3653,7 +3653,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-engine"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "chrono",
  "craft-docpath",
@@ -3694,14 +3694,14 @@ dependencies = [
 
 [[package]]
 name = "localpdf-export"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "flate2",
 ]
 
 [[package]]
 name = "localpdf-filters"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "flate2",
  "proptest",
@@ -3711,7 +3711,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-fonts"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "harfrust",
  "localpdf-cos",
@@ -3721,7 +3721,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-forms"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "hayro-syntax",
  "localpdf-content",
@@ -3734,11 +3734,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-geom"
-version = "0.14.3"
+version = "0.14.4"
 
 [[package]]
 name = "localpdf-js"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "boa_engine",
  "chrono",
@@ -3746,7 +3746,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-measure"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-annot",
  "localpdf-content",
@@ -3759,14 +3759,14 @@ dependencies = [
 
 [[package]]
 name = "localpdf-model"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-cos",
 ]
 
 [[package]]
 name = "localpdf-ocr"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-fonts",
  "ocrs",
@@ -3776,7 +3776,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-optimize"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "image",
  "localpdf-annot",
@@ -3791,11 +3791,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-oracle"
-version = "0.14.3"
+version = "0.14.4"
 
 [[package]]
 name = "localpdf-organize"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "hayro-syntax",
  "localpdf-content",
@@ -3806,7 +3806,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-platform"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "async-channel",
  "futures-lite",
@@ -3816,7 +3816,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-preflight"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "flate2",
  "localpdf-content",
@@ -3827,7 +3827,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-print"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "craft-print",
  "localpdf-content",
@@ -3839,7 +3839,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-redact"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-annot",
  "localpdf-content",
@@ -3855,7 +3855,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-render"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "bytemuck",
  "flate2",
@@ -3874,7 +3874,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-sign"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "aes",
  "aws-lc-rs",
@@ -3910,11 +3910,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-testkit"
-version = "0.14.3"
+version = "0.14.4"
 
 [[package]]
 name = "localpdf-ui-egui"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "arboard",
  "base64 0.23.1",
@@ -3968,7 +3968,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-web"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "eframe",
  "egui",
@@ -3980,7 +3980,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-xfa"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "base64 0.23.1",
  "image",
@@ -3994,7 +3994,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-xfdf"
-version = "0.14.3"
+version = "0.14.4"
 dependencies = [
  "localpdf-annot",
  "localpdf-cos",
@@ -5758,12 +5758,11 @@ dependencies = [
 
 [[package]]
 name = "ron"
-version = "0.12.2"
+version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81116b9531d61eabc41aeb228e4b6b2435bcca3233b98cf3b3077d4e6e9debb3"
+checksum = "97b3fe97c18ff24299ea56f802c5693eb34266fb0bc8317f4e101debc8a3ceaf"
 dependencies = [
  "bitflags 2.13.2",
- "once_cell",
  "serde",
  "serde_derive",
  "typeid",
