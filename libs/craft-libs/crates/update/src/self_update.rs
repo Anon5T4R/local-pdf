@@ -714,13 +714,34 @@ fn same_cache_as_helper(app: &App, paths: &Paths, exe: &Path) -> Result<(), Stri
 
 /// Accepts `file` when it carries a valid Authenticode signature from the same publisher as
 /// `reference`, this program. Refuses an unsigned file, another publisher's, and every file when
-/// `reference` itself isn't signed.
+/// `reference` itself isn't signed — unless both are unsigned: the Local suite's releases are
+/// unsigned, and the downloader already verified the download against the release's SHA-256
+/// (GitHub's per-asset digest) over HTTPS, which is then the channel's trust anchor. A signed
+/// file offered to an unsigned copy is still refused: it would be another channel's.
 #[cfg(windows)]
 fn signed_like(app: &App, reference: &Path, file: &Path) -> Result<(), String> {
     let publisher = |path: &Path| verifysign::verify_file(path).map(|signature| signature.subject_name());
-    let ours = publisher(reference).map_err(|e| format!("this copy of {} isn't signed ({e}), so it doesn't install updates", app.name))?;
-    let theirs = publisher(file).map_err(|e| format!("{} isn't signed ({e})", file.display()))?;
-    if ours == theirs { Ok(()) } else { Err(format!("{} isn't signed by {}'s publisher", file.display(), app.name)) }
+    match publisher(reference) {
+        // A signed copy updates only through its own publisher.
+        Ok(ours) => {
+            let theirs = publisher(file).map_err(|e| format!("{} isn't signed ({e})", file.display()))?;
+            if ours == theirs {
+                Ok(())
+            } else {
+                Err(format!("{} isn't signed by {}'s publisher", file.display(), app.name))
+            }
+        }
+        // An unsigned copy (this suite's releases): the release's checksum already verified the
+        // download, so an unsigned file is this channel's own update.
+        Err(_) => match publisher(file) {
+            Ok(_) => Err(format!(
+                "{} is signed, but this copy of {} isn't, so it looks like another channel's file",
+                file.display(),
+                app.name
+            )),
+            Err(_) => Ok(()),
+        },
+    }
 }
 
 /// Whether `file` is a Windows program or library (it starts with the `MZ` header), whatever its
