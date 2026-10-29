@@ -934,12 +934,12 @@ fn buttons_over_text_show_the_pointing_hand_not_the_i_beam() {
     let mut over_notes = egui::CursorIcon::Default;
     for _ in 0..100 {
         over_notes = cursor_at(&mut h, notes);
-        if over_notes == egui::CursorIcon::Text {
+        if over_notes == egui::CursorIcon::None {
             break;
         }
         std::thread::sleep(std::time::Duration::from_millis(10));
     }
-    assert_eq!(over_notes, egui::CursorIcon::Text, "printed text off any field shows the I-beam");
+    assert_eq!(over_notes, egui::CursorIcon::None, "printed text off any field shows the app's I-beam");
     use egui::CursorIcon::{PointingHand, Text};
     let over_fields = [agree, strength, background].map(|r| cursor_at(&mut h, r.center()));
     assert_eq!(over_fields, [PointingHand, PointingHand, Text], "check boxes are buttons, not text to select; a text field keeps the I-beam");

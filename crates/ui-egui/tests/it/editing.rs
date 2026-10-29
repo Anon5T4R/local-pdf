@@ -6427,9 +6427,9 @@ fn mode_tabs_keep_the_hand_over_page_text_scrolled_under_them() {
         h.hover_at(text.center() + egui::vec2(0.0, top));
         h.run_steps(2);
         cursor = h.output().platform_output.cursor_icon;
-        cursor == egui::CursorIcon::Text
+        cursor == egui::CursorIcon::None
     });
-    assert!(text_cursor, "the I-beam over page text, not {cursor:?}");
+    assert!(text_cursor, "the app's I-beam over page text hides the system pointer, not {cursor:?}");
     assert_eq!(mode_tab_cursors(&mut h, text), HAND_ON_EVERY_TAB);
 }
 

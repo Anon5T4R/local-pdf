@@ -59,6 +59,10 @@ fn ai_window_screenshot() {
         localpdf_ui_egui::ai_ui::Turn::Assistant("It is a form: fields for a name, a city and a signature.".into()),
     ];
     h.run_steps(10);
+    // Hovering the assistant turn: what the text looks like then (cursor and any colour change).
+    let at = h.get_by_label("It is a form: fields for a name, a city and a signature.").rect().center();
+    h.hover_at(at);
+    h.run_steps(2);
     let image = h.render().unwrap();
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target/ai-window.png");
     image.save(&path).unwrap();

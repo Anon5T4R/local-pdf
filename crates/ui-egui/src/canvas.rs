@@ -2511,6 +2511,20 @@ fn annotation_hover_text(a: &localpdf_render::Annotation) -> Option<String> {
     Some(if body.is_empty() { who } else { format!("{who}\n{body}") })
 }
 
+/// The I-beam drawn where the page's text is under the pointer, in a mid grey that reads over
+/// white paper and over dark reading mode alike. The system pointer is hidden for it: its colour
+/// follows the desktop's pointer scheme, which can be white (invisible on paper) or black
+/// (invisible in the dark).
+fn paint_ibeam(painter: &egui::Painter, at: Pos2) {
+    let ink = egui::Color32::from_gray(122);
+    let stroke = egui::Stroke::new(1.5, ink);
+    let (x, y) = (at.x, at.y);
+    let (top, bottom) = (y - 9.0, y + 9.0);
+    painter.line_segment([pos2(x - 3.5, top), pos2(x + 3.5, top)], stroke);
+    painter.line_segment([pos2(x, top), pos2(x, bottom)], stroke);
+    painter.line_segment([pos2(x - 3.5, bottom), pos2(x + 3.5, bottom)], stroke);
+}
+
 /// The scroll offset that puts `point` (content coordinates) at `rel` in the viewport, kept within
 /// the content as egui keeps it. egui clamps only after drawing, so an offset past the end showed
 /// the page misplaced for a frame and then jumped (zooming out beside a page that fits).
@@ -3853,7 +3867,12 @@ pub fn document_area(app: &mut LocalPDFApp, index: usize, ui: &mut egui::Ui) {
                     if column && cursor_free {
                         ui.ctx().set_cursor_icon(egui::CursorIcon::Crosshair);
                     } else if over_text && cursor_free {
-                        ui.ctx().set_cursor_icon(egui::CursorIcon::Text);
+                        // The I-beam over page text is the app's own, not the system pointer's:
+                        // a white pointer scheme (the desktop's mouse pointer colour) vanishes
+                        // over white paper, a black one over dark reading mode. A mid grey,
+                        // painted, reads on both.
+                        ui.ctx().set_cursor_icon(egui::CursorIcon::None);
+                        paint_ibeam(ui.painter(), p);
                     }
                     // The pages' press, kept when its release came in the same frame (#2100): it
                     // still starts multi-click selection.

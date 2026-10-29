@@ -526,8 +526,8 @@ fn a_click_on_the_frame_a_dialog_opens_places_no_stamp() {
 fn a_double_click_on_a_dialog_backdrop_leaves_page_text_alone() {
     let mut h = open(text_pdf(), "150", false);
     let word = at(&h, 50.0, 303.0);
-    // The I-beam shows the page's text layer has arrived.
-    assert_eq!(wait_for_cursor(&mut h, word, |c| c == egui::CursorIcon::Text), egui::CursorIcon::Text, "the page text is live");
+    // The app's I-beam (the system pointer hidden) shows the page's text layer has arrived.
+    assert_eq!(wait_for_cursor(&mut h, word, |c| c == egui::CursorIcon::None), egui::CursorIcon::None, "the page text is live");
     // Control: without a dialog, a double-click there selects the word.
     double_click(&mut h, word);
     h.run_steps(4);
