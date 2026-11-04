@@ -30,7 +30,7 @@ pub const LANGUAGES: &[(&str, &str)] = &[("en", "English")];
 pub enum OcrError {
     /// Shown to end users (release packages ship the models; a source build fetches them with
     /// `cargo xtask models`). The UI catalogs key this exact text.
-    #[error("the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)")]
+    #[error("the text recognition models are not installed (reinstall Local PDF, or set PDFCRAFT_MODELS to the folder that holds them)")]
     NoModels,
     #[error("loading {0}: {1}")]
     Load(String, String),

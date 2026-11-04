@@ -1,6 +1,6 @@
 [package]
 name = "localpdf"
-description = "LocalPDF desktop app"
+description = "Local PDF desktop app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

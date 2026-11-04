@@ -2137,7 +2137,7 @@ fn no_fallback_font(text: &str) -> EditError {
     EditError::Invalid(format!(
         "the paragraph's font has no glyph for {ch} (U+{:04X}) and this build has no fallback font for it; \
          choose a font that has it (Load font… or Installed fonts…), or use an official release, which includes \
-         LocalPDF's fallback fonts (to build them in, set CRAFT_FONTS_DIR to a craft-fonts checkout)",
+         Local PDF's fallback fonts (to build them in, set CRAFT_FONTS_DIR to a craft-fonts checkout)",
         u32::from(ch)
     ))
 }
@@ -2158,7 +2158,7 @@ fn no_glyph_for(face: &CraftFont, ch: char) -> EditError {
     EditError::Invalid(format!(
         "the {} fallback font has no glyph for {ch} (U+{:04X}), and no fallback face covers the text; \
          choose a font that has it (Load font… or Installed fonts…), or use an official release, which includes \
-         LocalPDF's fallback fonts (to build them in, set CRAFT_FONTS_DIR to a craft-fonts checkout)",
+         Local PDF's fallback fonts (to build them in, set CRAFT_FONTS_DIR to a craft-fonts checkout)",
         face.family,
         u32::from(ch)
     ))
@@ -2167,7 +2167,7 @@ fn no_glyph_for(face: &CraftFont, ch: char) -> EditError {
 /// This build has no Japanese face to draw replacement text with.
 fn no_japanese_font() -> EditError {
     EditError::Invalid(
-        "this text needs LocalPDF's Japanese fallback font, which this build doesn't include \
+        "this text needs Local PDF's Japanese fallback font, which this build doesn't include \
          (official releases do; to build it in, set CRAFT_FONTS_DIR to a craft-fonts checkout)"
             .into(),
     )
@@ -2181,7 +2181,7 @@ fn fallback_face<'a>(faces: &[&'a CraftFont], chars: &[char], has_glyph: impl Fn
 /// This build has no Hebrew face to draw replacement text with.
 fn no_hebrew_font() -> EditError {
     EditError::Invalid(
-        "this text needs LocalPDF's Hebrew fallback font (Noto Sans Hebrew), which this build doesn't include \
+        "this text needs Local PDF's Hebrew fallback font (Noto Sans Hebrew), which this build doesn't include \
          (to build it in, set CRAFT_FONTS_DIR to a craft-fonts checkout that has it)"
             .into(),
     )

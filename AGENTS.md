@@ -1,4 +1,4 @@
-# AGENTS.md — LocalPDF
+# AGENTS.md — Local PDF
 
 Fork independente do pdfcraft (ArtCraft), rebrandado para a suíte Local do João.
 Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de terceiros.

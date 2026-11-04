@@ -12,7 +12,7 @@ use serde_json::{Value, json};
 use crate::{Args, Automation, Content, DEFAULT_DPI, MAX_DPI, Result, ToolError, encode_png, failed};
 
 /// Author used when a tool call names none.
-pub(crate) const DEFAULT_AUTHOR: &str = "LocalPDF";
+pub(crate) const DEFAULT_AUTHOR: &str = "Local PDF";
 /// The largest side of a stamp's box, in points: the largest page PDF allows (ISO 32000-2 Annex C).
 const MAX_STAMP_SIDE: f64 = 14_400.0;
 

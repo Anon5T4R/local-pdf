@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=LocalPDF
+Name=Local PDF
 GenericName=PDF Editor
 Comment=Read, organize, combine, split and secure PDFs
 Exec=localpdf %U

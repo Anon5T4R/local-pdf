@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 [package.metadata]
 cargo-fuzz = true
 
-# Detached from the LocalPDF workspace: run with `cargo +nightly fuzz run decode`
+# Detached from the Local PDF workspace: run with `cargo +nightly fuzz run decode`
 # from crates/filters/.
 [workspace]
 

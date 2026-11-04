@@ -1,11 +1,11 @@
-# Releasing LocalPDF
+# Releasing Local PDF
 
 Every push to the `release` branch runs `.github/workflows/release.yml`. It builds installers for
 macOS, Windows, Linux, FreeBSD and the web, signs the ones it has certificates for, and creates or
-updates a **draft** GitHub Release named `LocalPDF v<version>`. Nobody sees a draft until a
+updates a **draft** GitHub Release named `Local PDF v<version>`. Nobody sees a draft until a
 maintainer publishes it.
 
-The pipeline was ported from PhotoCraft's. User-facing names say **LocalPDF**; files, binaries and
+The pipeline was ported from PhotoCraft's. User-facing names say **Local PDF**; files, binaries and
 ids stay lowercase (`localpdf-<version>-<platform>-<arch>.<ext>`, `com.local.localpdf`).
 
 ## Cutting a release
@@ -18,10 +18,10 @@ ids stay lowercase (`localpdf-<version>-<platform>-<arch>.<ext>`, `com.local.loc
    cargo xtask version set 0.3.0       # or 0.3.0-rc.1; updates Cargo.toml and Cargo.lock
    ```
 
-   Commit the change through the normal review flow (see the `Release: LocalPDF v0.2.1` PR).
+   Commit the change through the normal review flow (see the `Release: Local PDF v0.2.1` PR).
 2. **Merge `main` into `release`** (or fast-forward it) and push. The workflow starts by itself.
 3. **Wait for the draft.** When every job has finished (notarization is the slow part), the
-   Releases page has a draft `LocalPDF v0.3.0` targeting the pushed commit, with every artifact
+   Releases page has a draft `Local PDF v0.3.0` targeting the pushed commit, with every artifact
    and `SHA256SUMS.txt`. The notes are generated from the merged PRs.
 4. **Check it.** Download an installer or two and read the job summaries. A `::warning::` there
    means a signing secret was missing and that artifact is unsigned.
@@ -81,7 +81,7 @@ and an `ATTRIBUTION.txt`, straight into the package, so packaging needs the netw
 
 `packaging/macos/package.sh` builds both architectures, joins them with `lipo`, and assembles
 `LocalPDF.app` from `Info.plist.in` (bundle id `com.local.localpdf`, macOS 11+, PDF declared
-as a document type with rank Alternate, so LocalPDF is offered under Open With without taking over
+as a document type with rank Alternate, so Local PDF is offered under Open With without taking over
 from Preview). Files opened from Finder arrive as Apple events, which
 `apps/localpdf/src/apple_events.rs` receives.
 
@@ -92,7 +92,7 @@ from Preview). Files opened from Finder arrive as Apple events, which
   stapled, and the result is checked with `codesign --verify`, `stapler validate` and `spctl`. The
   app ships on a drag-to-Applications DMG, which is signed and notarized too.
   Its Finder window (background, icon size and positions) comes from
-  [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `LocalPDF`
+  [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `Local PDF`
   without the version, which the window's background needs; the DMG file name keeps the version.
 - **CLI:** `localpdf-cli` is signed and notarized as a zip. A bare executable can't hold a stapled
   ticket, so Gatekeeper looks it up online the first time a downloaded copy runs.
@@ -119,7 +119,7 @@ neither the MSI nor the portable zip needs the Visual C++ redistributable.
   this.
 - `installer-ui.wxs` supplies native welcome, maintenance, progress, files-in-use and outcome
   dialogs. Full UI confirms success with Finish; failures and cancellations have distinct messages.
-  The welcome dialog has a "Create a desktop shortcut" checkbox and an "Edit with LocalPDF"
+  The welcome dialog has a "Create a desktop shortcut" checkbox and an "Edit with Local PDF"
   right-click menu checkbox, both ticked by default. `/qn` and `/qb` stay unattended and create
   both unless `INSTALLDESKTOPSHORTCUT=0` or `INSTALLPDFCONTEXTMENU=0` is passed;
   `INSTALLIMAGECONTEXTMENU=0` (no checkbox) leaves out the image menu. An update (the launcher runs
@@ -255,7 +255,7 @@ a match of the `CobaltStrikeBeacon` family rule.
    portable zip, not only the outer installer. `7z x -oDIR localpdf-<version>-windows-x64.msi`
    extracts them. The payload names are WiX-internal, so tell the executables apart by their file
    type. Don't install or run the MSI or the extracted files.
-4. **Scan with YARA and keep every match.** Use your own copies of YARA and the rule. LocalPDF
+4. **Scan with YARA and keep every match.** Use your own copies of YARA and the rule. Local PDF
    bundles neither, and the helper never runs in the app, the installer or CI:
 
    ```powershell
@@ -272,8 +272,8 @@ a match of the `CobaltStrikeBeacon` family rule.
    distinctive code or strings, and it does not show that the software belongs to the family. Rules
    change too: CAPEv2 commit `9b599185` (2024-12-05) lengthened this rule's two repeated-byte patterns
    from 4 to 16 bytes to reduce false positives, so an older rule revision can match files that the
-   current one does not. Don't alter LocalPDF's binaries to change a scanner's result. That changes
+   current one does not. Don't alter Local PDF's binaries to change a scanner's result. That changes
    nothing about the software.
 7. **Report.** To the scanner, send the file's SHA-256, the release URL, the rule name and revision,
-   and the matched identifiers and offsets. Report LocalPDF problems at
+   and the matched identifiers and offsets. Report Local PDF problems at
    <https://github.com/Anon5T4R/local-pdf/issues> with the same facts.

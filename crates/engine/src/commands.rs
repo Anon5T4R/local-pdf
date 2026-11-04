@@ -398,11 +398,11 @@ pub const COMMANDS: &[CommandSpec] = &[
     c("ai.ocr", "Recognize text with AI", None, None, Document, "scan-text"),
     c("help.shortcuts", "Keyboard shortcuts", HELP, None, Nothing, "circle-help"),
     c("help.discord", "Open the discussions", HELP, None, Nothing, "messages-square"),
-    c("help.app_page", "LocalPDF web page", HELP, None, Nothing, "globe"),
-    c("help.github", "LocalPDF on GitHub", HELP, None, Nothing, "code-xml"),
+    c("help.app_page", "Local PDF web page", HELP, None, Nothing, "globe"),
+    c("help.github", "Local PDF on GitHub", HELP, None, Nothing, "code-xml"),
     c("help.website", "Local website", HELP, None, Nothing, "external-link"),
     c("help.check_updates", "Check for updates…", HELP, None, Nothing, "cloud"),
-    c("help.about", "About LocalPDF", HELP, None, Nothing, "info"),
+    c("help.about", "About Local PDF", HELP, None, Nothing, "info"),
 ];
 
 pub fn command(id: &str) -> Option<&'static CommandSpec> {

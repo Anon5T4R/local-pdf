@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-automation"
-description = "Agent control for LocalPDF: a headless tool set over the engine and an MCP server"
+description = "Agent control for Local PDF: a headless tool set over the engine and an MCP server"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

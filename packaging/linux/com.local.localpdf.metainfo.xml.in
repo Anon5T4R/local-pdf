@@ -5,14 +5,14 @@
   <id>com.local.localpdf</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT OR Apache-2.0</project_license>
-  <name>LocalPDF</name>
+  <name>Local PDF</name>
   <summary>Read, organize, combine, split and secure PDFs</summary>
   <developer id="ai.local">
-    <name>Learning Machines LLC</name>
+    <name>Local PDF contributors</name>
   </developer>
   <description>
     <p>
-      LocalPDF is an open-source PDF workbench. Read, comment on, fill in and sign PDFs;
+      Local PDF is an open-source PDF workbench. Read, comment on, fill in and sign PDFs;
       organize, combine and split pages; edit, redact, protect and export documents.
     </p>
   </description>

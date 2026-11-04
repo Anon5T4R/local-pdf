@@ -18,7 +18,7 @@ clear_marks(&mut doc, None)?;                        // remove marks without app
   more than a fifth of its size (or a point) both ways; zero-size text goes when its origin is
   inside;
 - **images**: fully covered → removed; partly covered → a copy with the covered pixels cleared
-  (8/16-bit and 1/2/4-bit images, image masks; Flate/LZW/RL/A85/AHx). Codecs LocalPDF can't
+  (8/16-bit and 1/2/4-bit images, image masks; Flate/LZW/RL/A85/AHx). Codecs Local PDF can't
   re-encode (DCT, JPX, JBIG2, CCITT) are removed whole (fail-closed); inline images under an
   area are removed. Images with separate `/SMask` or `/Mask` data, and images whose data decodes
   to more than twice their declared raster (plus a byte per row and 4 KiB), are removed whole;

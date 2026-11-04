@@ -1,6 +1,6 @@
 # localpdf-fonts
 
-Layer L2. Font helpers for the appearance streams LocalPDF generates (comments, form fields).
+Layer L2. Font helpers for the appearance streams Local PDF generates (comments, form fields).
 
 Today it holds what generated appearances need without a font program:
 

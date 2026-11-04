@@ -135,7 +135,7 @@ fn entries() -> Result<Entries, SignError> {
         // P-521, brainpool and Ed25519 certificates parse (to verify with) but aren't signed with.
         let Some(want) = certificate.public_key.store_signing_key() else {
             let what = certificate.public_key.describe();
-            skip(certificate.display_name(), format!("its {what} key can't sign through LocalPDF yet (RSA, P-256 and P-384 only)"), false);
+            skip(certificate.display_name(), format!("its {what} key can't sign through Local PDF yet (RSA, P-256 and P-384 only)"), false);
             continue;
         };
         // Enumeration must not open permission or PIN dialogs. Signing may prompt later.

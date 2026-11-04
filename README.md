@@ -1,9 +1,9 @@
 
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png" width="128" height="128" alt="LocalPDF icon: an engraved lion on a teal tile">
+  <img src="assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png" width="128" height="128" alt="Local PDF icon: an engraved lion on a teal tile">
 </p>
 
-<h1 align="center">LocalPDF</h1>
+<h1 align="center">Local PDF</h1>
 
 <p align="center">
   <b>The PDF workbench; an open-source, modern PDF reader and editor, built in pure Rust.</b><br>
@@ -20,7 +20,7 @@
 
 
 <p align="center">
-  <a href="https://github.com/Anon5T4R/local-pdf"><b>LocalPDF on GitHub</b></a> ·
+  <a href="https://github.com/Anon5T4R/local-pdf"><b>Local PDF on GitHub</b></a> ·
   <a href="https://github.com/Anon5T4R/">Local</a> ·
   <a href="https://github.com/Anon5T4R">Anon5T4R</a>
 </p>
@@ -33,8 +33,8 @@
 
 ## License and credits
 
-LocalPDF is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
-Copyright (c) 2026 Local Team and the LocalPDF contributors. Required notices are in [NOTICE](NOTICE).
+Local PDF is dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option.
+Copyright (c) 2026 Local Team and the Local PDF contributors. Required notices are in [NOTICE](NOTICE).
 
 Bundled fonts, icons, images and other assets keep their own open licenses; each one is listed
 with its author, source and license in [ATTRIBUTION.md](ATTRIBUTION.md). Release builds also embed

@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-ai"
-description = "BYOK AI for LocalPDF: OpenAI-compatible providers, OS-keychain keys, models list, chat and vision"
+description = "BYOK AI for Local PDF: OpenAI-compatible providers, OS-keychain keys, models list, chat and vision"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

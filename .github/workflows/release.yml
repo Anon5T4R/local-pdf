@@ -71,6 +71,6 @@ jobs:
         run: |
           set -euo pipefail
           gh release create "${GITHUB_REF_NAME}" dist/windows/* dist/linux/* \
-            --title "LocalPDF ${GITHUB_REF_NAME}" --generate-notes
+            --title "Local PDF ${GITHUB_REF_NAME}" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}

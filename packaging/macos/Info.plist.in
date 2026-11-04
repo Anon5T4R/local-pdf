@@ -7,9 +7,9 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleDisplayName</key>
-  <string>LocalPDF</string>
+  <string>Local PDF</string>
   <key>CFBundleName</key>
-  <string>LocalPDF</string>
+  <string>Local PDF</string>
   <key>CFBundleExecutable</key>
   <string>LocalPDF</string>
   <key>CFBundleIdentifier</key>
@@ -43,9 +43,9 @@
   <key>NSRequiresAquaSystemAppearance</key>
   <false/>
   <key>NSHumanReadableCopyright</key>
-  <string>Copyright © the LocalPDF authors. MIT OR Apache-2.0.</string>
+  <string>Copyright © the Local PDF authors. MIT OR Apache-2.0.</string>
 
-  <!-- Documents LocalPDF opens (#73): it is offered under Open With and can be made the default
+  <!-- Documents Local PDF opens (#73): it is offered under Open With and can be made the default
        for PDFs, without taking over from the system's viewer on install ("Alternate"). Declared by
        UTI (LSItemContentTypes, what modern macOS filters Open With > Recommended Applications on),
        plus extension and MIME type for backward compatibility. Finder hands the

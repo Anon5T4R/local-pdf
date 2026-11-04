@@ -19,7 +19,7 @@ use crate::theme::ThemePreference;
 use crate::{LocalPDFApp, RightPanel};
 
 /// The app's name in the menus the layouts write (About, Hide, Quit).
-pub(crate) const APP_NAME: &str = "LocalPDF";
+pub(crate) const APP_NAME: &str = "Local PDF";
 
 /// The top bar's width after the menus: the mode tabs, the search box and the buttons.
 const ROW_AFTER_MENUS: f32 = 720.0;

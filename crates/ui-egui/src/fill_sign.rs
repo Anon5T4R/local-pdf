@@ -892,7 +892,7 @@ fn scan_tab(
 ) -> bool {
     ui.label(
         egui::RichText::new(tl!(
-            "Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper."
+            "Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: Local PDF finds the signature and removes the paper."
         ))
         .color(t.text_muted),
     );

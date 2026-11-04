@@ -1,6 +1,6 @@
 # localpdf-oracle
 
-The external programs LocalPDF checks its own output against, and one rule: **a missing oracle is
+The external programs Local PDF checks its own output against, and one rule: **a missing oracle is
 either a declared skip or a failure, never a silent pass.**
 
 - **Layer:** test support (`Class::Testkit` in `xtask/src/layers.rs`). A dev-dependency only, never

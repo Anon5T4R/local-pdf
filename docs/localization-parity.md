@@ -2,7 +2,7 @@
 
 > **Last reviewed:** 2026-10-25 · **Last updated:** 2026-10-25 · **Change:** minor (Persian (`fa`, 2,785 entries) added right-to-left like Arabic and Kurdish; Arabic current state corrected: catalogs stay logical, RTL labels take an explicit direction and stock chrome mirrors; native/browser RTL input, IME and complex workflows remain unqualified. Native release Hans face via LXGW WenKai Lite; release-pinned craft-fonts still has no Telugu face. Current union 2,798 keys. Scores and estimates unchanged) · **Target:** Adobe Acrobat Pro (Acrobat DC, continuous track 26.002.21931, macOS)
 
-Per-language status of LocalPDF's interface against Acrobat Pro's. How translations work and how to
+Per-language status of Local PDF's interface against Acrobat Pro's. How translations work and how to
 add a language: [localization.md](localization.md). Summary in [ROADMAP.md](../ROADMAP.md).
 
 ## How this was measured
@@ -83,7 +83,7 @@ help/docs polish (catalog and script work are already done), not missing UI stri
 
 **20 other languages** ship (34 catalogs plus English = **35** interface languages in Preferences).
 The entry counts without percentages are as of 2026-10-25; they are not percentages of the older 2,143-key snapshot above. Their presence does not imply a detailed linguistic or runtime review.
-Acrobat languages LocalPDF lacks: Danish, Dutch, Swedish, Hebrew. Vietnamese is shipped here but not by Acrobat.
+Acrobat languages Local PDF lacks: Danish, Dutch, Swedish, Hebrew. Vietnamese is shipped here but not by Acrobat.
 
 ## Revision history
 

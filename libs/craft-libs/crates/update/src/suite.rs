@@ -11,8 +11,8 @@ pub const FILMCRAFT: App = App::new("filmcraft", "FilmCraft", "Video editing, co
 pub const LIGHTCRAFT: App = App::new("lightcraft", "LightCraft", "Photo library and raw development", "storytold/lightcraft");
 pub const LOCALPDF: App = App {
     former_ids: &["printcraft"],
-    former_names: &["PrintCraft"],
-    ..App::new("localpdf", "LocalPDF", "Reading, organizing and protecting PDFs", "Anon5T4R/local-pdf")
+    former_names: &["PrintCraft", "LocalPDF"],
+    ..App::new("localpdf", "Local PDF", "Reading, organizing and protecting PDFs", "Anon5T4R/local-pdf")
 };
 pub const EFFECTCRAFT: App = App::new("effectcraft", "EffectCraft", "Motion graphics and visual effects", "storytold/effectcraft");
 pub const DESIGNCRAFT: App = App::new("designcraft", "DesignCraft", "Page layout and publishing", "storytold/designcraft");
@@ -61,8 +61,12 @@ mod tests {
         ids.dedup();
         assert_eq!(ids.len(), SUITE.len());
         for a in &SUITE {
-            assert_eq!(a.repo, format!("storytold/{}", a.id));
-            assert_eq!(a.name.to_lowercase(), a.id);
+            // Storytold's own apps keep a machine name that is their display name lowercased; the
+            // Local suite's apps are renamed for display ("Local PDF"), keeping the id.
+            if a.repo.starts_with("storytold/") {
+                assert_eq!(a.repo, format!("storytold/{}", a.id));
+                assert_eq!(a.name.to_lowercase(), a.id);
+            }
         }
         assert!(by_id(LAUNCHER.id).is_none());
         assert_eq!(by_id("localpdf").map(|a| a.former_ids), Some(&["printcraft"][..]));

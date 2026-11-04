@@ -13,9 +13,9 @@ fn main() {
         return;
     }
     let mut res = winresource::WindowsResource::new();
-    res.set("ProductName", "LocalPDF")
-        .set("FileDescription", "LocalPDF command-line tool")
-        .set("LegalCopyright", "Copyright (c) the LocalPDF contributors. MIT OR Apache-2.0.")
+    res.set("ProductName", "Local PDF")
+        .set("FileDescription", "Local PDF command-line tool")
+        .set("LegalCopyright", "Copyright (c) the Local PDF contributors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "localpdf-cli.exe")
         .set("InternalName", "localpdf-cli");
     if let Err(e) = res.compile() {

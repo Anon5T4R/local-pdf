@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-testkit"
-description = "Synthetic PDF fixtures for LocalPDF's tests: one way to write the bytes, so the tests differ only where they mean to"
+description = "Synthetic PDF fixtures for Local PDF's tests: one way to write the bytes, so the tests differ only where they mean to"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-ui-egui"
-description = "The egui shell of LocalPDF"
+description = "The egui shell of Local PDF"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -63,7 +63,7 @@ pollster = "1.0"
 fontconfig-parser = "0.5.8"
 
 [target.'cfg(target_os = "macos")'.dependencies]
-# Safe AppKit calls for drag coordinates and repairing an existing per-file LocalPDF binding.
+# Safe AppKit calls for drag coordinates and repairing an existing per-file Local PDF binding.
 # The Objective-C wrappers and block support are already in the tree through arboard and rfd.
 objc2 = "0.6"
 objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSEvent", "NSScreen", "NSWorkspace", "block2"] }
@@ -92,7 +92,7 @@ web-sys = { version = "0.3", features = ["Window", "Document", "Element", "HtmlE
 craft-update = { workspace = true }
 localpdf-xfa = { workspace = true }
 egui_kittest = { workspace = true, features = ["eframe", "wgpu"] }
-# Tests draw LocalPDF text without a system provider: the bundled and monochrome emoji faces must
+# Tests draw Local PDF text without a system provider: the bundled and monochrome emoji faces must
 # be enabled on the test graph itself (a dependency's dev-features do not propagate).
 egui = { workspace = true, features = ["default_fonts", "monochrome_emoji_fonts"] }
 image = { version = "0.25", default-features = false, features = ["png"] }

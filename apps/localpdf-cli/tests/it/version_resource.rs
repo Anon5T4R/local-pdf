@@ -33,9 +33,9 @@ fn the_exe_has_version_info_with_the_package_version() {
     let start = find(&exe, &utf16("VS_VERSION_INFO")).expect("no version resource");
     let resource = &exe[start..];
     for (key, value) in [
-        ("ProductName", "LocalPDF"),
-        ("FileDescription", "LocalPDF command-line tool"),
-        ("LegalCopyright", "Copyright (c) the LocalPDF contributors. MIT OR Apache-2.0."),
+        ("ProductName", "Local PDF"),
+        ("FileDescription", "Local PDF command-line tool"),
+        ("LegalCopyright", "Copyright (c) the Local PDF contributors. MIT OR Apache-2.0."),
         ("OriginalFilename", "localpdf-cli.exe"),
         ("InternalName", "localpdf-cli"),
         ("FileVersion", env!("CARGO_PKG_VERSION")),

@@ -379,7 +379,7 @@ impl Certificate {
             ))
         } else if !self.unknown_critical.is_empty() {
             Some(Detail::of(
-                "The signer's certificate has critical extensions LocalPDF does not recognize ({}).",
+                "The signer's certificate has critical extensions Local PDF does not recognize ({}).",
                 Fill::Value(self.unknown_critical.join(", ")),
             ))
         } else {
@@ -541,7 +541,7 @@ pub fn build_chain_noted<'a>(leaf: &'a Certificate, pool: &'a [Certificate], at:
             } else if !c.unknown_critical.is_empty() && !c.is_self_signed() {
                 // What such an extension limits (name constraints, policy constraints) would
                 // go unchecked. A self-signed root's extensions are the trust store's business.
-                Some("The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.")
+                Some("The certificate of {} has critical extensions Local PDF does not recognize, so it is not used to vouch for {}.")
             } else if c.path_len.is_some_and(|n| below > n as usize) {
                 Some("The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.")
             } else if at.is_some_and(|t| !c.valid_at(t)) {

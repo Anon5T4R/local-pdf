@@ -2,7 +2,7 @@
 
 ## Reproduced failure
 
-On one Windows 11 Pro build 26200 host, the official LocalPDF 0.6.0 x86 installation and
+On one Windows 11 Pro build 26200 host, the official Local PDF 0.6.0 x86 installation and
 portable EXE both exited with code 101 before displaying a usable window. Their EXE SHA-256
 matched: `3a3a9ba75ec9f8ecc25863e9138fac57e17f359a5de5add486efedd83e0fcf8f`.
 The host has an NVIDIA GeForce RTX 3050 Laptop GPU, driver `32.0.16.1088`, and an AMD iGPU.

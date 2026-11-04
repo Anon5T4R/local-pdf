@@ -74,7 +74,7 @@ pub(crate) fn paint(painter: &egui::Painter, xf: &PageXform, page: usize, info: 
 fn safe_name(s: &str) -> String {
     let cleaned: String = s.chars().map(|c| if c.is_control() || r#"/\:*?"<>|"#.contains(c) { '_' } else { c }).take(80).collect();
     let cleaned = cleaned.trim().trim_matches('.').to_string();
-    if cleaned.is_empty() { "LocalPDF".into() } else { cleaned }
+    if cleaned.is_empty() { "Local PDF".into() } else { cleaned }
 }
 
 /// The per-user folder that holds the file of the last Copy Image in Original Format: `Clipboard`
@@ -234,7 +234,7 @@ mod tests {
     #[test]
     fn file_names_are_safe() {
         assert_eq!(safe_name("a/b:c"), "a_b_c");
-        assert_eq!(safe_name("  ..  "), "LocalPDF");
+        assert_eq!(safe_name("  ..  "), "Local PDF");
         assert_eq!(safe_name("Relazione 2026"), "Relazione 2026");
     }
 

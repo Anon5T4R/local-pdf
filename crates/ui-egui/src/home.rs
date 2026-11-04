@@ -23,7 +23,7 @@ pub fn show(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
         egui::Frame::NONE.inner_margin(egui::Margin { left: 36, right: 36, top: 28, bottom: 28 }).show(ui, |ui| {
-            ui.label(egui::RichText::new(tl!("Welcome to LocalPDF")).font(theme::semibold(24.0)));
+            ui.label(egui::RichText::new(tl!("Welcome to Local PDF")).font(theme::semibold(24.0)));
             ui.label(
                 egui::RichText::new(tl!("An open-source PDF workbench — local, private, and scriptable."))
                     .color(t.text_muted)
@@ -122,7 +122,7 @@ pub fn show(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
             });
             ui.add_space(8.0);
             if app.recent.is_empty() {
-                ui.label(egui::RichText::new(tl!("Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.")).color(t.text_muted));
+                ui.label(egui::RichText::new(tl!("Files you open in Local PDF appear here. Drop a PDF anywhere to open it.")).color(t.text_muted));
             }
             let mut open = None;
             let mut remove = None;
@@ -188,7 +188,7 @@ pub fn show(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
             ui.add_space(20.0);
             widgets::section_title(ui, tl!("Privacy"));
             ui.label(
-                egui::RichText::new(tl!("LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider."))
+                egui::RichText::new(tl!("Local PDF works offline. No telemetry, no account, and no cloud processing unless you add a provider."))
                     .color(t.text_muted),
             );
         });

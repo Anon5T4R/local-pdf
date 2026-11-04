@@ -1,4 +1,4 @@
-LocalPDF PDF document icon (localpdf-document.svg and localpdf-document.ico).
+Local PDF PDF document icon (localpdf-document.svg and localpdf-document.ico).
 SPDX-License-Identifier: ISC AND (MIT OR Apache-2.0)
 
 The document outline and fold are adapted from Lucide file-text (lucide-static 1.49.0):
@@ -22,7 +22,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The badge, outlined PDF lettering, colours and composition are original work
-by the LocalPDF contributors. Copyright (c) 2026 LocalPDF contributors.
+by the Local PDF contributors. Copyright (c) 2026 Local PDF contributors.
 Licensed under either the MIT License or the Apache License, Version 2.0,
 at your option. Full texts are LICENSE-MIT and LICENSE-APACHE at the
 repository root, and beside this file in Windows distributions.

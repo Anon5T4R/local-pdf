@@ -344,7 +344,7 @@ pub const WORDINGS: &[&str] = &[
     "The signature's byte range does not exclude exactly its contents.",
     "The signature contents are not hexadecimal.",
     "The signature could not be read ({}).",
-    "LocalPDF can't check this signature yet: {}.",
+    "Local PDF can't check this signature yet: {}.",
     "The signature uses the legacy adbe.x509.rsa_sha1 format.",
     // What was read leniently on the way, each sentence worded where the reading happens.
     "The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.",
@@ -375,10 +375,10 @@ pub const WORDINGS: &[&str] = &[
     "The signer's certificate was not valid at the time of signing.",
     "The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).",
     "The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).",
-    "The signer's certificate has critical extensions LocalPDF does not recognize ({}).",
+    "The signer's certificate has critical extensions Local PDF does not recognize ({}).",
     // Why a certificate that matched the issuer was not used to build the chain.
     "The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.",
-    "The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.",
+    "The certificate of {} has critical extensions Local PDF does not recognize, so it is not used to vouch for {}.",
     "The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.",
     "The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.",
     "The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.",
@@ -757,7 +757,7 @@ fn validate_into(doc: &Document, bytes: &[u8], trust: &TrustStore, v: &Dict, inf
     let unsupported = |info: &mut SignatureInfo, why: &str| {
         info.status = Status::Unknown;
         // What is not supported yet is named by the reader, in its own words.
-        info.details.push(Detail::of("LocalPDF can't check this signature yet: {}.", Fill::Reason(why.to_owned())));
+        info.details.push(Detail::of("Local PDF can't check this signature yet: {}.", Fill::Reason(why.to_owned())));
     };
     if info.sub_filter.as_deref() == Some("adbe.x509.rsa_sha1") {
         return validate_x509_rsa_sha1(doc, bytes, trust, v, info, cache, (l0, o1, covered), &contents);
@@ -1125,7 +1125,7 @@ fn check_dss_revocation(doc: &Document, signer: Option<&Certificate>, at: &Optio
         None if cut => {
             info.details.push(Detail::of(
                 "The signature could not be checked ({}).",
-                Fill::Reason("the /DSS holds more revocation evidence than LocalPDF reads".into()),
+                Fill::Reason("the /DSS holds more revocation evidence than Local PDF reads".into()),
             ));
             DssRevocation::Incomplete
         }
@@ -1314,7 +1314,7 @@ fn validate_x509_rsa_sha1(
             info.certificate = Some(cert);
             info.status = Status::Unknown;
             // What is not supported yet is named by the reader, in its own words.
-            info.details.push(Detail::of("LocalPDF can't check this signature yet: {}.", Fill::Reason(e.to_string())));
+            info.details.push(Detail::of("Local PDF can't check this signature yet: {}.", Fill::Reason(e.to_string())));
             return;
         }
         Err(e) => {
@@ -2076,7 +2076,7 @@ fn sign_inner(
         }
     }
     let mut app = Dict::new();
-    app.set(b"Name".to_vec(), Object::name("LocalPDF"));
+    app.set(b"Name".to_vec(), Object::name("Local PDF"));
     let mut build = Dict::new();
     build.set(b"App".to_vec(), Object::Dict(app));
     v.set(b"Prop_Build".to_vec(), Object::Dict(build));
@@ -2267,7 +2267,7 @@ pub fn timestamp_document(doc: &Document, tsa: &dyn crate::timestamp::TimestampA
     v.set(b"Contents".to_vec(), Object::String(PdfString { bytes: vec![0; TOKEN_RESERVE], hex: true }));
     v.set(b"M".to_vec(), PdfString::literal(date.as_bytes().to_vec()));
     let mut app = Dict::new();
-    app.set(b"Name".to_vec(), Object::name("LocalPDF"));
+    app.set(b"Name".to_vec(), Object::name("Local PDF"));
     let mut build = Dict::new();
     build.set(b"App".to_vec(), Object::Dict(app));
     v.set(b"Prop_Build".to_vec(), Object::Dict(build));

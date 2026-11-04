@@ -51,7 +51,7 @@ fn add_page(doc: &mut Document, w: f64, h: f64, resources: Dict, content: Option
 fn set_title(doc: &mut Document, title: &str) {
     let mut info = Dict::new();
     info.set(b"Title".to_vec(), PdfString::text(title));
-    info.set(b"Producer".to_vec(), PdfString::text("LocalPDF"));
+    info.set(b"Producer".to_vec(), PdfString::text("Local PDF"));
     let r = doc.add(info);
     doc.trailer_mut().set(b"Info".to_vec(), Object::Ref(r));
 }

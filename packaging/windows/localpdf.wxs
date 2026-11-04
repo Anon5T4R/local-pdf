@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  LocalPDF MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
+  Local PDF MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
 
     wix build localpdf.wxs installer-ui.wxs -arch x64 -d Version=1.2.3 -d BinDir=... -d ModelsDir=... -d IconPath=... -o out.msi
 
   Per-machine install into Program Files, a Start Menu shortcut, a desktop shortcut (on by default,
-  optional, and an update keeps it only if it is still there), an App Paths entry, LocalPDF registered as a PDF handler (offered under "Open with"
-  and in Default apps, never forced as the default), "Edit with LocalPDF" on PDF files'
-  right-click menu and "Create PDF with LocalPDF…" on image files' right-click menu (both on by
+  optional, and an update keeps it only if it is still there), an App Paths entry, Local PDF registered as a PDF handler (offered under "Open with"
+  and in Default apps, never forced as the default), "Edit with Local PDF" on PDF files'
+  right-click menu and "Create PDF with Local PDF…" on image files' right-click menu (both on by
   default, optional, and an update keeps the installed version's choice). Files opened with
-  LocalPDF arrive on its command line.
+  Local PDF arrive on its command line.
 -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <?ifndef HasCraftFontLicences ?>
   <?define HasCraftFontLicences=0 ?>
   <?endif ?>
   <Package
-      Name="LocalPDF"
-      Manufacturer="Learning Machines LLC"
+      Name="Local PDF"
+      Manufacturer="Local PDF contributors"
       Version="$(var.Version)"
       UpgradeCode="EA00C367-7270-4C50-9D8B-A7A5C88AD27F"
       Scope="perMachine"
       Compressed="yes"
       Language="1033">
-    <SummaryInformation Description="LocalPDF PDF workbench" Manufacturer="Learning Machines LLC" />
+    <SummaryInformation Description="Local PDF PDF workbench" Manufacturer="Local PDF contributors" />
     <!-- HKLM registrations must never point into a per-user installation (#305). Allow removal
          of an existing installation even if an older MSI let it install per-user. -->
     <Launch Condition="ALLUSERS = 1 OR (Installed AND REMOVE = &quot;ALL&quot;)"
-        Message="LocalPDF must be installed for all users. Run setup with administrator privileges and ALLUSERS=1; per-user installation is not supported." />
+        Message="Local PDF must be installed for all users. Run setup with administrator privileges and ALLUSERS=1; per-user installation is not supported." />
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
          (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
-        DowngradeErrorMessage="A newer version of LocalPDF is already installed." />
+        DowngradeErrorMessage="A newer version of Local PDF is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <!-- Windows Installer requires an Icon id ending in .ico or .exe, or advertised shortcuts and
@@ -55,8 +55,8 @@
     </Property>
     <SetProperty Id="INSTALLDESKTOPSHORTCUT" Value="1" After="AppSearch" Sequence="first"
         Condition="NOT INSTALLDESKTOPSHORTCUT AND (NOT WIX_UPGRADE_DETECTED OR EXISTINGDESKTOPSHORTCUT)" />
-    <!-- The File Explorer menus: "Edit with LocalPDF" for PDF files (#682) and "Create PDF with
-         LocalPDF…" for images (#190). Each is on by default for a first install and has a property
+    <!-- The File Explorer menus: "Edit with Local PDF" for PDF files (#682) and "Create PDF with
+         Local PDF…" for images (#190). Each is on by default for a first install and has a property
          to leave it out of unattended installs: INSTALLPDFCONTEXTMENU=0 (also a welcome-dialog
          checkbox) and INSTALLIMAGECONTEXTMENU=0. Secure, like the desktop shortcut's.
          An update keeps the installed version's choice (#305) by looking for the menu's registry
@@ -83,14 +83,14 @@
     <UIRef Id="LocalpdfInstallerUI" />
 
     <StandardDirectory Id="ProgramFiles6432Folder">
-      <Directory Id="INSTALLFOLDER" Name="LocalPDF">
+      <Directory Id="INSTALLFOLDER" Name="Local PDF">
         <Directory Id="ModelsFolder" Name="models" />
       </Directory>
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder" />
     <StandardDirectory Id="DesktopFolder" />
 
-    <Feature Id="Main" Title="LocalPDF" Level="1">
+    <Feature Id="Main" Title="Local PDF" Level="1">
       <?if $(var.HasCraftFontLicences) = 1 ?>
       <ComponentGroupRef Id="CraftFontLicences" />
       <?endif ?>
@@ -115,11 +115,11 @@
              the portable zip. -->
         <RegistryValue Root="HKLM" Key="Software\Anon5T4R\LocalPDF" Name="InstallDir" Value="[INSTALLFOLDER]" Type="string" />
 
-        <!-- PDF files (#107): LocalPDF is offered under "Open with" and in Settings ▸ Default
+        <!-- PDF files (#107): Local PDF is offered under "Open with" and in Settings ▸ Default
              apps, through Windows' Default Programs registration (a ProgID, OpenWithProgids,
              Capabilities and RegisteredApplications). It never takes over an existing default:
              .pdf's own default value is left alone, and the user chooses. Without this, the only
-             LocalPDF entry to pick was the advertised Start Menu shortcut, which Windows can't
+             Local PDF entry to pick was the advertised Start Menu shortcut, which Windows can't
              run as a file handler ("This app can't run on your PC"). -->
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document" Value="PDF Document" Type="string" />
         <!-- A negative index selects the stable icon resource ID, rather than its position.
@@ -132,11 +132,11 @@
              Handlers", Microsoft Learn). -->
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document" Name="TypeOverlay" Value="" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\.pdf\OpenWithProgids" Name="LocalPDF.Document" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe" Name="FriendlyAppName" Value="LocalPDF" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe" Name="FriendlyAppName" Value="Local PDF" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\DefaultIcon" Value="&quot;[#LocalpdfExe]&quot;,-2" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\SupportedTypes" Name=".pdf" Value="" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\Applications\localpdf.exe\shell\open\command" Value="&quot;[#LocalpdfExe]&quot; &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationName" Value="LocalPDF" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationName" Value="Local PDF" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationDescription" Value="Open-source PDF workbench" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities" Name="ApplicationIcon" Value="[#LocalpdfExe],0" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Capabilities\FileAssociations" Name=".pdf" Value="LocalPDF.Document" Type="string" />
@@ -149,7 +149,7 @@
            (#143). Each has its own component with an HKLM key path, so Windows Installer removes it
            on uninstall; in this per-machine package both folders are the all-users ones. -->
       <Component Id="LocalpdfStartMenuShortcut" Directory="ProgramMenuFolder" Guid="DC028192-C233-4F99-9A77-ED458C60DF26">
-        <Shortcut Id="StartMenuShortcut" Name="LocalPDF" Description="LocalPDF PDF workbench"
+        <Shortcut Id="StartMenuShortcut" Name="Local PDF" Description="Local PDF PDF workbench"
             Target="[#LocalpdfExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalpdfIcon.ico" IconIndex="0" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
@@ -158,19 +158,19 @@
            starts with Local — a plain "pdf" finds nothing. Same exe, same icon, own
            component so uninstall removes it. -->
       <Component Id="LocalpdfAliasShortcut" Directory="ProgramMenuFolder" Guid="D621B2DB-37F9-40A2-9ACE-7237AA9E192E">
-        <Shortcut Id="AliasShortcut" Name="PDF Editor" Description="LocalPDF PDF workbench"
+        <Shortcut Id="AliasShortcut" Name="PDF Editor" Description="Local PDF PDF workbench"
             Target="[#LocalpdfExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalpdfIcon.ico" IconIndex="0" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="Alias" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
       <Component Id="LocalpdfDesktopShortcut" Directory="DesktopFolder" Guid="F6948627-32AB-4D78-8865-0FDF417CE442"
           Condition="INSTALLDESKTOPSHORTCUT = 1">
-        <Shortcut Id="DesktopShortcut" Name="LocalPDF" Description="LocalPDF PDF workbench"
+        <Shortcut Id="DesktopShortcut" Name="Local PDF" Description="Local PDF PDF workbench"
             Target="[#LocalpdfExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalpdfIcon.ico" IconIndex="0" />
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="Desktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
-      <!-- PDF context menu (#682): "Edit with LocalPDF" opens the file in LocalPDF whichever app is
+      <!-- PDF context menu (#682): "Edit with Local PDF" opens the file in Local PDF whichever app is
            the default for .pdf, which it leaves alone (SystemFileAssociations, like the image
            menu). Several PDFs selected (up to 15, Windows' limit for this kind of entry) start one
            launch each, and the single-instance hand-off opens them as tabs of one window. On
@@ -179,47 +179,47 @@
            INSTALLPDFCONTEXTMENU=0 leaves it out and uninstall removes it. -->
       <Component Id="LocalpdfPdfContextMenu" Guid="439F084F-657D-4AC2-A4CC-F099C518D71F"
           Condition="INSTALLPDFCONTEXTMENU = 1">
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Value="Edit with LocalPDF" Type="string" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Value="Edit with Local PDF" Type="string" KeyPath="yes" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Name="Icon" Value="&quot;[#LocalpdfExe]&quot;,0" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit" Name="MultiSelectModel" Value="Document" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.pdf\shell\LocalPDF.Edit\command" Value="&quot;[#LocalpdfExe]&quot; &quot;%1&quot;" Type="string" />
       </Component>
 
-      <!-- Image context menu (#190): "Create PDF with LocalPDF…" opens the DPI chooser, without
+      <!-- Image context menu (#190): "Create PDF with Local PDF…" opens the DPI chooser, without
            changing image file defaults. Its own component with an HKLM key path, so
            INSTALLIMAGECONTEXTMENU=0 leaves it out and uninstall removes it. These rows were in
            LocalpdfApp up to 0.7.1; moving them is safe because MajorUpgrade removes the old version
            before installing (afterInstallValidate), so no old row is left behind. -->
       <Component Id="LocalpdfImageContextMenu" Guid="1B783BF3-12DF-4588-AF80-E2CEA8BC1E5A"
           Condition="INSTALLIMAGECONTEXTMENU = 1">
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" KeyPath="yes" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.png\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpg\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpeg\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tif\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.tiff\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.gif\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.bmp\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jp2\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.j2k\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf" Value="Create PDF with LocalPDF…" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf" Value="Create PDF with Local PDF…" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\SystemFileAssociations\.jpx\shell\LocalPDF.CreatePdf\command" Value="&quot;[#LocalpdfExe]&quot; --create-images &quot;%1&quot;" Type="string" />
       </Component>

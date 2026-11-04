@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build LocalPDF for FreeBSD and package it:
+# Build Local PDF for FreeBSD and package it:
 #   $DIST/localpdf-<version>-freebsd-<arch>.tar.gz   a /usr/local-style tree (bin/, share/)
 #
 # Extract it into /usr/local (or anywhere, and run bin/localpdf from there). The desktop entry,
@@ -44,7 +44,7 @@ if [ -n "${CARGO_BUILD_TARGET:-}" ] && [ "$(uname -s)" != FreeBSD ]; then
 fi
 BASENAME="localpdf-$VERSION-freebsd-$ARCH"
 
-echo "==> LocalPDF $VERSION for FreeBSD $ARCH"
+echo "==> Local PDF $VERSION for FreeBSD $ARCH"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   (cd "$ROOT" && cargo build --release --locked -p localpdf -p localpdf-cli)

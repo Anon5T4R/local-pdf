@@ -24,9 +24,9 @@ pub struct Link {
 
 /// In the order they are shown. Discord comes first: it is where people get help fastest.
 pub const LINKS: &[Link] = &[
-    Link { command: "help.discord", label: "LocalPDF Discussions", url: DISCORD, icon: "messages-square" },
-    Link { command: "help.app_page", label: "LocalPDF web page", url: APP_PAGE, icon: "globe" },
-    Link { command: "help.github", label: "LocalPDF on GitHub", url: GITHUB, icon: "code-xml" },
+    Link { command: "help.discord", label: "Local PDF Discussions", url: DISCORD, icon: "messages-square" },
+    Link { command: "help.app_page", label: "Local PDF web page", url: APP_PAGE, icon: "globe" },
+    Link { command: "help.github", label: "Local PDF on GitHub", url: GITHUB, icon: "code-xml" },
     Link { command: "help.website", label: "Local website", url: WEBSITE, icon: "external-link" },
 ];
 

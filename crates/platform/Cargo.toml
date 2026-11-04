@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-platform"
-description = "Operating-system services shared by the LocalPDF desktop app and automation tools"
+description = "Operating-system services shared by the Local PDF desktop app and automation tools"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

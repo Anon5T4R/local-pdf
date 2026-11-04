@@ -1241,7 +1241,7 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                     ui.label(egui::RichText::new(tl!("Recover unsaved documents?")).font(theme::semibold(18.0)));
                 });
                 ui.add_space(6.0);
-                ui.label(tl!("LocalPDF didn't shut down normally. These documents had changes that were autosaved:"));
+                ui.label(tl!("Local PDF didn't shut down normally. These documents had changes that were autosaved:"));
                 ui.add_space(8.0);
                 let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
                 egui::Grid::new("recoverable").num_columns(2).spacing([18.0, 6.0]).show(ui, |ui| {
@@ -1332,7 +1332,7 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                         ui.horizontal(|ui| {
                             widgets::local_mark(ui, 40.0);
                             ui.vertical(|ui| {
-                                ui.label(egui::RichText::new("LocalPDF").font(theme::semibold(20.0)));
+                                ui.label(egui::RichText::new("Local PDF").font(theme::semibold(20.0)));
                                 ui.label(crate::i18n::fmt(tl!("Version {v}"), &[("v", &localpdf_engine::build_info::version())]));
                             });
                         });

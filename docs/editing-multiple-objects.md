@@ -15,7 +15,7 @@ In **Edit a PDF → Edit text & images**, select several items on the same page:
   Finish or discard a text draft before starting a multi-selection.
 
 The supported items are the existing paragraph boxes, raster Image XObjects, whole Form artwork,
-and text/images added by LocalPDF. A Form remains one item, including its nested artwork and
+and text/images added by Local PDF. A Form remains one item, including its nested artwork and
 resources. Added items appear once in the selection inventory. Selections stay on one page and
 contain at most 1,000 items; pages with more than 10,000 recognised objects are refused for group
 selection. Content streams must decode completely within 64 MiB each and 128 MiB per page, with

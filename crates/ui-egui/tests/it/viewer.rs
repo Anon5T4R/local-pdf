@@ -964,7 +964,7 @@ fn tab_and_window_show_the_document_title_when_asked() {
     use localpdf_engine::Edit;
     let mut h = harness();
     h.run_steps(2);
-    assert_eq!(h.state().window_title, "b.pdf — LocalPDF");
+    assert_eq!(h.state().window_title, "b.pdf — Local PDF");
     {
         let s = h.state_mut();
         let id = s.views[s.active.unwrap()].id;
@@ -974,7 +974,7 @@ fn tab_and_window_show_the_document_title_when_asked() {
         s.session.apply(id, Edit::SetInitialView(Box::new(v))).unwrap();
     }
     h.run_steps(2);
-    assert_eq!(h.state().window_title, "Quarterly report — LocalPDF");
+    assert_eq!(h.state().window_title, "Quarterly report — Local PDF");
     h.get_by_label_contains("Quarterly report");
 }
 
@@ -993,7 +993,7 @@ fn a_placeholder_title_leaves_the_file_name_on_the_tab_and_window() {
         s.session.apply(id, Edit::SetInitialView(Box::new(v))).unwrap();
     }
     h.run_steps(2);
-    assert_eq!(h.state().window_title, "b.pdf — LocalPDF");
+    assert_eq!(h.state().window_title, "b.pdf — Local PDF");
     assert!(h.query_by_label_contains("about:blank").is_none());
 }
 
@@ -2254,7 +2254,7 @@ fn the_accessible_window_has_the_window_title_as_its_name() {
     let mut h = harness();
     h.run_steps(2);
     let name = |h: &Harness<'static, LocalPDFApp>| h.root().accesskit_node().label().map(|l| l.to_string());
-    assert_eq!(name(&h).as_deref(), Some("b.pdf — LocalPDF"));
+    assert_eq!(name(&h).as_deref(), Some("b.pdf — Local PDF"));
     {
         use localpdf_engine::Edit;
         let s = h.state_mut();
@@ -2265,6 +2265,6 @@ fn the_accessible_window_has_the_window_title_as_its_name() {
         s.session.apply(id, Edit::SetInitialView(Box::new(v))).unwrap();
     }
     h.run_steps(2);
-    assert_eq!(name(&h).as_deref(), Some("Quarterly report — LocalPDF"));
+    assert_eq!(name(&h).as_deref(), Some("Quarterly report — Local PDF"));
     assert_eq!(name(&h), Some(h.state().window_title.clone()));
 }

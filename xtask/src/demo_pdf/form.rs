@@ -63,7 +63,7 @@ pub fn build(doc: &mut Document, annotator: &mut Annotator, inputs: FormInputs<'
     });
 
     label(&mut c, LEFT, 510.0, "Comments  (multiline)");
-    let comments = "LocalPDF renders this field from its own appearance stream, so it looks \
+    let comments = "Local PDF renders this field from its own appearance stream, so it looks \
                     the same in every viewer. Edit it to see your viewer regenerate the text.";
     b.text_field("comments", "Comments", Rect::new(LEFT, 446.0, RIGHT, 506.0), comments, None, 0, |d| {
         d.set("Ff", 4096);
@@ -101,7 +101,7 @@ pub fn build(doc: &mut Document, annotator: &mut Annotator, inputs: FormInputs<'
         "hello",
         "Run JavaScript: app.alert",
         Rect::new(LEFT, 184.0, 250.0, 206.0),
-        "app.alert(\"Hello from the LocalPDF showcase! This alert is a JavaScript action on a push button.\", 3);",
+        "app.alert(\"Hello from the Local PDF showcase! This alert is a JavaScript action on a push button.\", 3);",
     );
     c.fill_color(colors::INK_3).text(Font::Helv, 7.0, LEFT, 172.0, "JavaScript: shows app.alert(...) in viewers that run document scripts.");
     label(&mut c, COL2, 212.0, "Signature  (unsigned /Sig field)");

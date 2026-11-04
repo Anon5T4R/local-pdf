@@ -64,7 +64,7 @@ let cells: Vec<table::Cell> = grid.cells_for(names)?;      // "Table1_1", "Table
   over the appearance the file carries; push buttons with none are drawn from `/MK`, `/BS` and
   their caption.
 - Check boxes and radio buttons switch `/V` and each widget's `/AS`. Widgets with no appearances
-  get LocalPDF's own (a drawn check mark or dot; no symbol font needed).
+  get Local PDF's own (a drawn check mark or dot; no symbol font needed).
 - Imported `/MaxLen 0` is treated as unlimited (also clearing an inherited limit), while the
   original entry is preserved. Positive limits still apply.
 - Values are validated (options, `MaxLen`, single vs multi-select, NoToggleToOff, read-only) and a

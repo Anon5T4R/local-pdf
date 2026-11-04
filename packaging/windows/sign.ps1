@@ -55,7 +55,7 @@ if (-not $haveCert -and -not $haveAzure) {
 }
 
 $script:SignTool = Find-SignTool
-$common = @('sign', '/v', '/fd', 'SHA256', '/td', 'SHA256', '/d', 'LocalPDF', '/du', 'https://github.com/Anon5T4R/local-pdf')
+$common = @('sign', '/v', '/fd', 'SHA256', '/td', 'SHA256', '/d', 'Local PDF', '/du', 'https://github.com/Anon5T4R/local-pdf')
 $tmp = Join-Path ([IO.Path]::GetTempPath()) "localpdf-sign-$([IO.Path]::GetRandomFileName())"
 New-Item -ItemType Directory -Path $tmp | Out-Null
 

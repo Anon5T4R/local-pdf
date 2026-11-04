@@ -2,8 +2,8 @@
 
 > **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-24 · **Change:** minor (§14.3: custom properties edited in Document Properties) · **Target:** Adobe Acrobat Pro (Acrobat DC, continuous track 26.002.21931, macOS)
 
-How much of ISO 32000-2 (PDF 2.0) and the PDF subset standards LocalPDF implements, set against
-what Acrobat Pro implements. This is LocalPDF's equivalent of a "geometry" or "codec" checklist:
+How much of ISO 32000-2 (PDF 2.0) and the PDF subset standards Local PDF implements, set against
+what Acrobat Pro implements. This is Local PDF's equivalent of a "geometry" or "codec" checklist:
 the parts of the format users never see named but always feel. Feature-level detail is in
 `parity/acrobat-features.toml`; the gaps are ranked in [gaps.md](gaps.md).
 
@@ -17,7 +17,7 @@ are borrowed; PDF 2.0 additions and most subset standards are missing. **150–2
 
 ## ISO 32000-2 by clause
 
-| Clause | Topic | Acrobat | LocalPDF | Evidence / what's missing |
+| Clause | Topic | Acrobat | Local PDF | Evidence / what's missing |
 |---|---|---|---|---|
 | §7.2–7.5 | Syntax, objects, file structure, xref tables and streams, object streams, hybrid files, incremental updates | full | **own**, tolerant, repairs damaged files | `crates/cos`; corpus 958 files; fuzzed nightly |
 | §7.4 | Stream filters: Flate, LZW, ASCII85, ASCIIHex, RunLength, predictors | full | **own** | `crates/filters` |
@@ -57,7 +57,7 @@ are borrowed; PDF 2.0 additions and most subset standards are missing. **150–2
 
 ## Annotations (§12.5.6)
 
-| Type | Acrobat | LocalPDF | Notes |
+| Type | Acrobat | Local PDF | Notes |
 |---|---|---|---|
 | Text (note), Popup | create, edit | create, edit; pop-ups not movable windows | `comment.popups` planned |
 | Link | create, edit | create, edit, from URLs | `edit.link-*` |
@@ -78,10 +78,10 @@ are borrowed; PDF 2.0 additions and most subset standards are missing. **150–2
 
 ## Actions (§12.6.4)
 
-| Action | Acrobat | LocalPDF |
+| Action | Acrobat | Local PDF |
 |---|---|---|
 | GoTo | yes | yes (page with Fit; named destinations and zoom partial) |
-| GoToR | yes | partial: local PDF paths open in a LocalPDF tab; `/F` strings and file-spec dictionaries (`/UF`, then `/F`), source-relative paths, and explicit numeric-page destinations are supported. Automation uses the same resolver and `--root` confinement. Named destinations open at the target's default view with a warning; `/NewWindow` is a tab hint. Network/URL file systems are refused. |
+| GoToR | yes | partial: local PDF paths open in a Local PDF tab; `/F` strings and file-spec dictionaries (`/UF`, then `/F`), source-relative paths, and explicit numeric-page destinations are supported. Automation uses the same resolver and `--root` confinement. Named destinations open at the target's default view with a warning; `/NewWindow` is a tab hint. Network/URL file systems are refused. |
 | GoToE | yes | none (preserved; the Optimizer can remove invalid ones) |
 | Launch | yes (restricted) | none |
 | Thread | yes | none |
@@ -98,7 +98,7 @@ are borrowed; PDF 2.0 additions and most subset standards are missing. **150–2
 
 ## Digital signatures (§12.8, ETSI EN 319 142 PAdES)
 
-| Capability | Acrobat | LocalPDF |
+| Capability | Acrobat | Local PDF |
 |---|---|---|
 | Sub-filters `adbe.pkcs7.detached`, `ETSI.CAdES.detached`; read `adbe.pkcs7.sha1`, `adbe.x509.rsa_sha1` | yes | yes |
 | PAdES B-B | yes | yes (PKCS #12, macOS Keychain, Windows store with PIN) |
@@ -114,7 +114,7 @@ are borrowed; PDF 2.0 additions and most subset standards are missing. **150–2
 
 ## Subset standards
 
-| Standard | Acrobat | LocalPDF | Hours |
+| Standard | Acrobat | Local PDF | Hours |
 |---|---|---|---|
 | PDF/A-1a/b (ISO 19005-1) | verify, convert | none | |
 | PDF/A-2a/b/u, PDF/A-3a/b/u | verify, convert | **partial**: 2b and 3b structural rules and conversion (sRGB intent; not CMYK) | |

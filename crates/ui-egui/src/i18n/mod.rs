@@ -1778,7 +1778,7 @@ mod tests {
     fn arabic_catalog_stays_logical() {
         let ar = arabic();
         assert_eq!(tr(ar, "Save as…"), "حفظ باسم…");
-        assert_eq!(tr(ar, "About LocalPDF"), "حول LocalPDF");
+        assert_eq!(tr(ar, "About Local PDF"), "حول Local PDF");
         assert_eq!(tr(ar, "Name:"), "الاسم:");
         assert_eq!(tr(ar, "Issued by: "), "صادرة عن: ");
         // Placeholders survive in their logical positions.

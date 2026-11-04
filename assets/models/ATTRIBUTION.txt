@@ -1,4 +1,4 @@
-LocalPDF's text recognition (Scan & OCR) uses these models, unmodified.
+Local PDF's text recognition (Scan & OCR) uses these models, unmodified.
 
 text-detection.rten
   Ocrs text detection model

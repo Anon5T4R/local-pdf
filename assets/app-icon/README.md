@@ -1,6 +1,6 @@
-# LocalPDF app icon
+# Local PDF app icon
 
-<img src="localpdf-small.svg" alt="LocalPDF app icon: a document with a folded corner and text lines, on a red-to-orange gradient tile" width="128">
+<img src="localpdf-small.svg" alt="Local PDF app icon: a document with a folded corner and text lines, on a red-to-orange gradient tile" width="128">
 
 **Figure:** a document sheet with a folded corner and three text lines, drawn in outline.
 
@@ -42,4 +42,4 @@ Where it shows: `apps/localpdf/src/main.rs` sets the window icon (Dock, taskbar,
 Wayland app id `com.local.localpdf`; `packaging/linux/com.local.localpdf.desktop` names the
 hicolor icon.
 
-Windows PDF files use resource 2 (`"localpdf.exe",-2`) when LocalPDF is chosen as the default
+Windows PDF files use resource 2 (`"localpdf.exe",-2`) when Local PDF is chosen as the default

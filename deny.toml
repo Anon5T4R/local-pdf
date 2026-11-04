@@ -66,7 +66,7 @@ allow = ["OFL-1.1", "Ubuntu-font-1.0"]
 # winprint (craft-print's Windows spooler, #1107) lists reqwest as a build-dependency for its
 # PDFium download, which only runs with its `pdfium` feature; craft-print turns that off. The CA
 # bundle reqwest brings is CDLA-Permissive-2.0 data and is compiled into winprint's build script
-# only, never into LocalPDF. Remove when winprint makes those build-dependencies optional.
+# only, never into Local PDF. Remove when winprint makes those build-dependencies optional.
 [[licenses.exceptions]]
 crate = "webpki-root-certs"
 allow = ["CDLA-Permissive-2.0"]

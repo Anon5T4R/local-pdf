@@ -331,7 +331,7 @@ fn send(app: &mut LocalPDFApp) {
     let name = doc_name(app);
     let context = context_text(app);
     let mut history = vec![Msg::System(format!(
-        "You help with a PDF the user has open in LocalPDF. The document is {name:?}. Its text follows after the marker. Answer in the user's language; be concise; quote the document when it helps.\n\n--- document text ---\n{context}"
+        "You help with a PDF the user has open in Local PDF. The document is {name:?}. Its text follows after the marker. Answer in the user's language; be concise; quote the document when it helps.\n\n--- document text ---\n{context}"
     ))];
     for turn in &app.ai.chat {
         match turn {
@@ -358,7 +358,7 @@ fn summarize(app: &mut LocalPDFApp) {
     let context = context_text(app);
     let history = vec![
         Msg::System(format!(
-            "You help with a PDF the user has open in LocalPDF. The document is {name:?}. Its text follows after the marker. Answer in the document's language; be concise; use short paragraphs and, when it helps, a short list.\n\n--- document text ---\n{context}"
+            "You help with a PDF the user has open in Local PDF. The document is {name:?}. Its text follows after the marker. Answer in the document's language; be concise; use short paragraphs and, when it helps, a short list.\n\n--- document text ---\n{context}"
         )),
         Msg::User("Summarize this document: what it is, its main points and any actions it asks of the reader.".into()),
     ];

@@ -11,7 +11,7 @@ Comments (annotations), ISO 32000-2 §12.5. Layer L3, depends on `localpdf-cos`,
   and restyled comments look the same in every viewer. Highlights multiply (`/BM /Multiply`).
   A line's leader lines (`/LL`, `/LLE`, `/LLO`) and caption (`/Cap`, `/CP`, `/CO`) are drawn as
   ISO 32000-2 Table 178 places them, the caption in black Helvetica 10.
-  Note icons are LocalPDF's own drawings. Text boxes use standard Helvetica (WinAnsi), with
+  Note icons are Local PDF's own drawings. Text boxes use standard Helvetica (WinAnsi), with
   line breaking by approximate Helvetica proportions (no font program is bundled). Text it can't
   draw (in a text box, callout, Fill & Sign text, line caption, measurement label or dynamic
   stamp's by-line; `appearance::undrawable_text`) is kept as typed and drawn as `?`, and the comment is marked with
@@ -50,12 +50,12 @@ deterministic; the engine supplies them.
 - Resizing a stamp changes its `/Rect` and preserves its original appearance and resources;
   viewers scale that appearance into the new rectangle. Locked stamps refuse the edit.
 - Picture stamps (a natural-size or explicit-rectangle image, a PDF page, or an image
-  signature) and LocalPDF's rubber stamps counterrotate their appearance on rotated pages, so
+  signature) and Local PDF's rubber stamps counterrotate their appearance on rotated pages, so
   the picture or label reads upright as the page is displayed. Restyling a picture stamp keeps
   that appearance matrix. The rotation is the page's `/Rotate` at placement.
 - Sticky notes and file attachments are not counterrotated: they carry the NoRotate flag and
   their icon is drawn in an unturned 20 × 20 box. A viewer keeps them upright on a turned page,
-  about the upper-left corner of `/Rect` (ISO 32000-2 §12.5.3). LocalPDF's renderer does so
+  about the upper-left corner of `/Rect` (ISO 32000-2 §12.5.3). Local PDF's renderer does so
   (vendored hayro-interpret patch 37), and `Summary::no_rotate` tells the UI where the icon is
   drawn.
 

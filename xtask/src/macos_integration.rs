@@ -41,7 +41,7 @@ pub fn run(args: &[String]) -> anyhow::Result<()> {
         return Ok(());
     }
     let mut report = String::new();
-    writeln!(report, "LocalPDF macOS integration diagnostics")?;
+    writeln!(report, "Local PDF macOS integration diagnostics")?;
     writeln!(report, "target: {} / {}", std::env::consts::OS, std::env::consts::ARCH)?;
     writeln!(report, "os version: {}", os_version())?;
 

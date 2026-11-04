@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-cli"
-description = "LocalPDF command-line tool: inspect, render and robustness-check PDFs"
+description = "Local PDF command-line tool: inspect, render and robustness-check PDFs"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

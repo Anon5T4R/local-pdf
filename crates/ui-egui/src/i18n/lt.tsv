@@ -2,7 +2,7 @@
 #
 # Clean-room translations from English source labels. Use standard Lithuanian computing terms;
 # consult the Lietuvos Respublikos terminų bankas (terminai.vlkk.lt) when selecting terminology.
-# Product and format names (LocalPDF, PDF, PDF/A, OCR, XFA, Word…) remain unchanged.
+# Product and format names (Local PDF, PDF, PDF/A, OCR, XFA, Word…) remain unchanged.
 
 	Menu	Meniu
 	Edit	Redaguoti
@@ -141,7 +141,7 @@
 	Accessibility	Prieinamumas
 	Help…	Žinynas…
 	Check for updates…	Tikrinti, ar yra naujinimų…
-	About LocalPDF	Apie „LocalPDF“
+	About Local PDF	Apie „Local PDF“
 	Automatically	Automatiškai
 	Never	Niekada
 	Always	Visada
@@ -563,7 +563,7 @@
 	Files are combined from top to bottom. Leave Pages empty to take every page.	Failai jungiami iš viršaus į apačią. Palikite lauką „Puslapiai“ tuščią, jei norite įtraukti visus puslapius.
 	Files are combined in the order shown. Drag them to change it.	Failai sujungiami rodoma tvarka. Vilkite juos, kad ją pakeistumėte.
 	Files for {name}	Failai: {name}
-	Files you open in LocalPDF appear here. Drop a PDF anywhere to open it.	Čia rodomi „LocalPDF“ atverti failai. Įkelkite PDF bet kurioje vietoje, kad jį atvertumėte.
+	Files you open in Local PDF appear here. Drop a PDF anywhere to open it.	Čia rodomi „Local PDF“ atverti failai. Įkelkite PDF bet kurioje vietoje, kad jį atvertumėte.
 	Fill & Sign dates	Datos pildymo ir pasirašymo įrankyje
 	Fill & Sign signature	Parašas pildymo ir pasirašymo įrankyje
 	Fill Color:	Užpildo spalva:
@@ -908,10 +908,10 @@
 	Pattern	Šablonas
 	Patterns	Šablonai
 	Patterns (graphics objects)	Šablonai (grafiniai objektai)
-	LocalPDF didn't shut down normally. These documents had changes that were autosaved:	„LocalPDF“ buvo uždaryta netinkamai. Šių dokumentų pakeitimai buvo automatiškai įrašyti:
-	LocalPDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	„LocalPDF“ veikia neprisijungus. Nerenkami telemetrijos duomenys, nereikia paskyros ir nenaudojamos debesijos paslaugos, nebent pridėtumėte jų teikėją.
-	LocalPDF {c} is up to date.	Naudojate naujausią „LocalPDF“ versiją {c}.
-	LocalPDF {v} is available.	Išleista „LocalPDF“ versija {v}.
+	Local PDF didn't shut down normally. These documents had changes that were autosaved:	„Local PDF“ buvo uždaryta netinkamai. Šių dokumentų pakeitimai buvo automatiškai įrašyti:
+	Local PDF works offline. No telemetry, no account, and no cloud processing unless you add a provider.	„Local PDF“ veikia neprisijungus. Nerenkami telemetrijos duomenys, nereikia paskyros ir nenaudojamos debesijos paslaugos, nebent pridėtumėte jų teikėją.
+	Local PDF {c} is up to date.	Naudojate naujausią „Local PDF“ versiją {c}.
+	Local PDF {v} is available.	Išleista „Local PDF“ versija {v}.
 	Percentage	Procentai
 	Permissions password	Teisių slaptažodis
 	Permitted actions after certifying	Po patvirtinimo leidžiami veiksmai
@@ -988,7 +988,7 @@
 	Remove {n} files	Pašalinti failų: {n}
 	Remove {n} pages	Pašalinti puslapių: {n}
 	Reopen Closed Tab	Vėl atverti užvertą kortelę
-	Reopen the files that were open when LocalPDF last closed	Vėl atverti failus, kurie buvo atverti paskutinį kartą užveriant „LocalPDF“
+	Reopen the files that were open when Local PDF last closed	Vėl atverti failus, kurie buvo atverti paskutinį kartą užveriant „Local PDF“
 	Restore the last view (page, zoom and page display) when a document is opened again	Iš naujo atidarant dokumentą atkurti paskutinį rodinį (puslapį, mastelį ir puslapių rodymą)
 	Repair log	Taisymo žurnalas
 	Repeat overlay text	Kartoti perdangos tekstą
@@ -1182,7 +1182,7 @@
 	Text alignment:	Teksto lygiuotė:
 	Text in images isn't found; recognise text (OCR) first.	Paveikslėliuose esantis tekstas nerandamas; pirmiausia atpažinkite tekstą (OCR).
 	Text is compared word by word; the differences are shown on the new file.	Tekstas lyginamas žodis po žodžio; skirtumai rodomi naujame faile.
-	Text recognition isn't installed: its model files are missing. Reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them.	Teksto atpažinimas neįdiegtas: trūksta modelio failų. Iš naujo įdiekite „LocalPDF“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi.
+	Text recognition isn't installed: its model files are missing. Reinstall Local PDF, or set PDFCRAFT_MODELS to the folder that holds them.	Teksto atpažinimas neįdiegtas: trūksta modelio failų. Iš naujo įdiekite „Local PDF“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi.
 	Text to find	Ieškomas tekstas
 	Text to insert	Įterpiamas tekstas
 	Text used as a clipping path cannot be moved with this selection.	Teksto, naudojamo kaip iškarpymo kelias, negalima perkelti pasirinkus šį objektą.
@@ -1198,9 +1198,9 @@
 	The document's security settings don't allow printing	Dokumento saugos nuostatos neleidžia spausdinti
 	The document's security settings don't allow this change	Dokumento saugos nuostatos neleidžia atlikti šio pakeitimo
 	The existing action will be preserved.	Esamas veiksmas bus išsaugotas.
-	The fonts LocalPDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	„LocalPDF“ naudojami šriftai negali atvaizduoti simbolio „{c}“ ({code}), todėl visose PDF žiūryklėse jis rodomas kaip ?. Tekstas įrašytas.
-	The key is in the Windows certificate store, which may ask to allow LocalPDF to use it.	Raktas saugomas „Windows“ sertifikatų saugykloje; gali būti paprašyta leisti „LocalPDF“ juo naudotis.
-	The key is in the macOS Keychain, which may ask to allow LocalPDF to use it.	Raktas saugomas „macOS“ raktinėje; gali būti paprašyta leisti „LocalPDF“ juo naudotis.
+	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	„Local PDF“ naudojami šriftai negali atvaizduoti simbolio „{c}“ ({code}), todėl visose PDF žiūryklėse jis rodomas kaip ?. Tekstas įrašytas.
+	The key is in the Windows certificate store, which may ask to allow Local PDF to use it.	Raktas saugomas „Windows“ sertifikatų saugykloje; gali būti paprašyta leisti „Local PDF“ juo naudotis.
+	The key is in the macOS Keychain, which may ask to allow Local PDF to use it.	Raktas saugomas „macOS“ raktinėje; gali būti paprašyta leisti „Local PDF“ juo naudotis.
 	The newest {n} of {total} PDFs	Naujausi PDF failai: {n} iš {total}
 	The password is only used to read the file; it isn't saved.	Slaptažodis naudojamas tik failui perskaityti ir nėra įrašomas.
 	The printer driver's own settings for this print: paper tray, paper type, finishing and more.	Šio spausdinimo spausdintuvo tvarkyklės nuostatos: popieriaus dėklas, popieriaus tipas, apdaila ir kita.
@@ -1241,7 +1241,7 @@
 	This file was damaged and has been repaired. Saving keeps the repaired version.	Failas buvo pažeistas ir pataisytas. Įrašius bus išsaugota pataisyta versija.
 	This folder isn't available right now. It may have moved, or its drive or cloud sync is offline.	Aplankas šiuo metu nepasiekiamas. Jis galėjo būti perkeltas arba diskas ar sinchronizavimas su debesija neveikia.
 	This form's scripts are turned off because one ran too long. Reopen the document to run them again.	Šios formos scenarijai išjungti, nes vienas jų veikė per ilgai. Atverkite dokumentą iš naujo, kad scenarijai būtų vykdomi vėl.
-	This is a dynamic XFA form, which LocalPDF can't display yet. What you see is the file's placeholder page.	Tai dinaminė XFA forma, kurios „LocalPDF“ dar negali rodyti. Matote faile esantį pakaitinį puslapį.
+	This is a dynamic XFA form, which Local PDF can't display yet. What you see is the file's placeholder page.	Tai dinaminė XFA forma, kurios „Local PDF“ dar negali rodyti. Matote faile esantį pakaitinį puslapį.
 	This measurement needs at least {n} points.	Šiam matavimui reikia bent {n} taškų.
 	This page contains objects that cannot be selected together.	Šiame puslapyje yra objektų, kurių negalima pasirinkti kartu.
 	This page couldn't be displayed.\n{e}	Nepavyko parodyti šio puslapio.\n{e}
@@ -1319,7 +1319,7 @@
 	Visible Rectangle	Matomo stačiakampio anotacija
 	Visual	Vaizdinis
 	Warnings	Įspėjimai
-	Welcome to LocalPDF	Sveiki atvykę į „LocalPDF“
+	Welcome to Local PDF	Sveiki atvykę į „Local PDF“
 	What word or phrase would you like to search for?	Kokio žodžio ar frazės norite ieškoti?
 	Whole words only	Tik ištisi žodžiai
 	Width:	Plotis:
@@ -1566,8 +1566,8 @@
 	Page options	Puslapio parinktys
 	Page transitions	Puslapių perėjimai
 	Paste pages	Įdėti puslapius
-	LocalPDF on GitHub	„LocalPDF“ „GitHub“ puslapis
-	LocalPDF web page	„LocalPDF“ svetainė
+	Local PDF on GitHub	„Local PDF“ „GitHub“ puslapis
+	Local PDF web page	„Local PDF“ svetainė
 	Perimeter	Perimetras
 	Pin folder to Home…	Prisegti aplanką prie pradžios lango…
 	PostScript / EPS	PostScript / EPS
@@ -1726,7 +1726,7 @@
 	Page {} has additional actions	Puslapis {} turi papildomų veiksmų
 	Panel layout could not be restored: {error}	Nepavyko atkurti skydelių išdėstymo: {error}
 	Panel move was not applied: {error}	Skydelio perkėlimas nepritaikytas: {error}
-	LocalPDF can't check this signature yet: {}.	„LocalPDF“ dar negali patikrinti šio parašo: {}.
+	Local PDF can't check this signature yet: {}.	„Local PDF“ dar negali patikrinti šio parašo: {}.
 	Previous (⇧⌘G)	Ankstesnis (⇧⌘G)
 	Print (⌘P)	Spausdinti (⌘P)
 	Producer	PDF kūrimo programa
@@ -1752,7 +1752,7 @@
 	The RSA signature's DigestInfo has no NULL parameter (older signers write it so); it was read anyway.	RSA parašo „DigestInfo“ neturi parametro NULL (taip įrašo senesnės pasirašymo programos); jis vis tiek perskaitytas.
 	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	Subjekto {} sertifikatas neleidžia tiek žemesnio lygio sertifikavimo įstaigų sertifikatų (grandinės ilgio riba), todėl juo nepatvirtinamas {} sertifikatas.
 	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	Subjekto {} sertifikatas nėra sertifikavimo įstaigos sertifikatas, leidžiantis išduoti sertifikatus, todėl juo nepatvirtinamas {} sertifikatas.
-	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.	The certificate of {} has critical extensions LocalPDF does not recognize, so it is not used to vouch for {}.
+	The certificate of {} has critical extensions Local PDF does not recognize, so it is not used to vouch for {}.	The certificate of {} has critical extensions Local PDF does not recognize, so it is not used to vouch for {}.
 	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	Subjekto {} sertifikatas pasirašymo metu negaliojo, todėl juo nepatvirtinamas {} sertifikatas.
 	The checker found problems which may prevent the document from being fully accessible.	Tikrintuvas aptiko problemų, dėl kurių dokumentas gali būti nevisiškai pritaikytas prieinamumui.
 	The document has been altered or corrupted since the signature was applied.	Po pasirašymo dokumentas buvo pakeistas arba pažeistas.
@@ -1794,7 +1794,7 @@
 	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	Pasirašytas turinys yra sudėtinis (segmentuotas) OCTET STRING, kaip leidžia BER; jis vis tiek perskaitytas.
 	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	Pasirašiusiojo sertifikatas neleidžia skaitmeninių parašų (rakto paskirtyje nenurodyta nei pasirašymo, nei neišsižadėjimo paskirtis).
 	The signer's certificate has been revoked ({}).	Pasirašiusiojo sertifikatas atšauktas ({}).
-	The signer's certificate has critical extensions LocalPDF does not recognize ({}).	Pasirašiusiojo sertifikatas turi kritinių plėtinių, kurių „LocalPDF“ neatpažįsta ({}).
+	The signer's certificate has critical extensions Local PDF does not recognize ({}).	Pasirašiusiojo sertifikatas turi kritinių plėtinių, kurių „Local PDF“ neatpažįsta ({}).
 	The signer's certificate is not in the signature.	Paraše nėra pasirašiusiojo sertifikato.
 	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	Pasirašiusiojo sertifikatas neskirtas dokumentams pasirašyti (išplėstinėje rakto paskirtyje nenurodytas dokumentų pasirašymas).
 	The signer's certificate was not valid at the time of signing.	Pasirašiusiojo sertifikatas pasirašymo metu negaliojo.
@@ -2241,7 +2241,7 @@ comment menu	Edit	Redaguoti
 	Passed	Atitinka
 	Password protection will be applied when you save	Apsauga slaptažodžiu bus pritaikyta įrašant
 	Path	Kelias
-	LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	„LocalPDF“ atvaizduoja be grafikos procesoriaus, todėl gali veikti lėtai. Gali padėti grafikos tvarkyklės atnaujinimas.
+	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	„Local PDF“ atvaizduoja be grafikos procesoriaus, todėl gali veikti lėtai. Gali padėti grafikos tvarkyklės atnaujinimas.
 	People may need more time to respond. Check that nothing has a time limit.	Žmonėms gali reikėti daugiau laiko atsakyti. Patikrinkite, ar nėra laiko apribojimų.
 	Phone Number	Telefono numeris
 	Phone Numbers	Telefono numeriai
@@ -2398,7 +2398,7 @@ comment menu	Edit	Redaguoti
 	The document's security settings don't allow filling in form fields	Dokumento saugos nuostatos neleidžia pildyti formos laukų
 	The field properties could not be changed.	Nepavyko pakeisti lauko savybių.
 	The field properties dialog is no longer open.	Lauko savybių dialogas jau užvertas.
-	The form asks to be submitted to {u}; LocalPDF doesn't send form data. Save the document to keep your entries.	Forma prašo pateikti duomenis į {u}; „LocalPDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
+	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Forma prašo pateikti duomenis į {u}; „Local PDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
 	The form asks viewers to make appearances (NeedAppearances)	Forma prašo žiūryklių sukurti laukų išvaizdą (NeedAppearances)
 	The linked PDF opened, but its named destination was not applied.	Susietas PDF atvertas, tačiau pavadinta paskirties vieta nepritaikyta.
 	The linked PDF opened, but its page destination was out of range.	Susietas PDF atvertas, tačiau paskirties puslapis nepatenka į puslapių intervalą.
@@ -2419,7 +2419,7 @@ comment menu	Edit	Redaguoti
 	This document has no form fields.	Šiame dokumente nėra formos laukų.
 	This document has no layers.	Šiame dokumente nėra sluoksnių.
 	This file is already as small as it can be made ({size}). No copy was saved.	Šio failo daugiau sumažinti negalima ({size}). Kopija neįrašyta.
-	This form also contains XFA data, which LocalPDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ši forma taip pat turi XFA duomenų, kurių „LocalPDF“ dar neskaito. Laukus galite pildyti, tačiau „Acrobat“ gali rodyti XFA reikšmes.
+	This form also contains XFA data, which Local PDF doesn't read yet. You can fill its fields, but Acrobat may show the XFA values instead.	Ši forma taip pat turi XFA duomenų, kurių „Local PDF“ dar neskaito. Laukus galite pildyti, tačiau „Acrobat“ gali rodyti XFA reikšmes.
 	Thumbnails	Miniatiūros
 	Timed responses	Atsakymai per ribotą laiką
 	Type Password	Įveskite slaptažodį
@@ -2472,7 +2472,7 @@ comment menu	Edit	Redaguoti
 	the document is protected by a password	dokumentas apsaugotas slaptažodžiu
 	the image is empty	paveikslėlis tuščias
 	the password is incorrect	slaptažodis netinkamas
-	the text recognition models are not installed (reinstall LocalPDF, or set PDFCRAFT_MODELS to the folder that holds them)	teksto atpažinimo modeliai neįdiegti (iš naujo įdiekite „LocalPDF“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi)
+	the text recognition models are not installed (reinstall Local PDF, or set PDFCRAFT_MODELS to the folder that holds them)	teksto atpažinimo modeliai neįdiegti (iš naujo įdiekite „Local PDF“ arba nustatykite PDFCRAFT_MODELS aplanką, kuriame jie laikomi)
 	the title must not be empty	pavadinimas negali būti tuščias
 	there are no pages to print	nėra spausdintinų puslapių
 	there are no redaction marks to apply	nėra pritaikytinų konfidencialios informacijos šalinimo žymų
@@ -2485,19 +2485,19 @@ comment menu	Edit	Redaguoti
 	{label} failed: {e}	Veiksmas {label} nepavyko: {e}
 	{name} has no action	{name} neturi veiksmo
 	{name} is too large for a word list (at most 1 MB).	{name} per didelis žodžių sąrašui (leidžiama iki 1 MB).
-	{name} submits the form to {url}; LocalPDF doesn't send form data. Save the document to keep your entries.	{name} pateikia formą į {url}; „LocalPDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
+	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} pateikia formą į {url}; „Local PDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
 	{name}: choosing images arrives on the web with file pickers for images	{name}: žiniatinklio versijoje paveikslėlius bus galima pasirinkti įdiegus jų failų pasirinkimą
 	{name}: the {other} action isn't supported yet	{name}: veiksmas {other} dar nepalaikomas
-	{who} in this document tried to open an address LocalPDF won't open: {e}.	Šiame dokumente {who} bandė atverti adresą, kurio „LocalPDF“ neatveria: {e}.
-	{who} in this document tried to open an address LocalPDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Šiame dokumente {who} bandė atverti adresą, kurio „LocalPDF“ neatveria: {e}. Iš dokumentų atveriami tik žiniatinklio (http, https) ir el. pašto (mailto) saitai.
+	{who} in this document tried to open an address Local PDF won't open: {e}.	Šiame dokumente {who} bandė atverti adresą, kurio „Local PDF“ neatveria: {e}.
+	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Šiame dokumente {who} bandė atverti adresą, kurio „Local PDF“ neatveria: {e}. Iš dokumentų atveriami tik žiniatinklio (http, https) ir el. pašto (mailto) saitai.
 animation effects	Off	Išjungta
 animation effects	On	Įjungta
 	View more	Rodyti daugiau
 	View less	Rodyti mažiau
 	Only continue if you trust this document. An address can carry information from the document, such as what you typed into its form.	Tęskite tik jei pasitikite šiuo dokumentu. Adresu gali būti perduota dokumento informacija, pavyzdžiui, tai, ką įvedėte į jo formą.
 	Print single-sided. Keep the sheets in order, cut at the marks, then stack the piles left to right, top to bottom.	Spausdinkite vienpusiškai. Išlaikykite lapų tvarką, pjaukite ties žymomis, tada sudėkite krūveles iš kairės į dešinę ir iš viršaus į apačią.
-	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: LocalPDF finds the signature and removes the paper.	Pasirašykite ant balto popieriaus lapo ir nufotografuokite jį esant ryškiam, tolygiam apšvietimui (naudokite blykstę). Pasirinkite nuotrauką arba nuvilkite ją čia: „LocalPDF“ suras parašą ir pašalins popieriaus foną.
-	This field's font can't draw “{c}” ({code}), so LocalPDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Šio lauko šriftas negali atvaizduoti simbolio „{c}“ ({code}), todėl „LocalPDF“ vietoj jo rodo ?. Reikšmė įrašoma, o kitos PDF žiūryklės pagal ją iš naujo atvaizduoja lauką.
+	Sign a sheet of white paper and take a photo of it in bright, even light (use the flash). Choose the photo or drop it here: Local PDF finds the signature and removes the paper.	Pasirašykite ant balto popieriaus lapo ir nufotografuokite jį esant ryškiam, tolygiam apšvietimui (naudokite blykstę). Pasirinkite nuotrauką arba nuvilkite ją čia: „Local PDF“ suras parašą ir pašalins popieriaus foną.
+	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Šio lauko šriftas negali atvaizduoti simbolio „{c}“ ({code}), todėl „Local PDF“ vietoj jo rodo ?. Reikšmė įrašoma, o kitos PDF žiūryklės pagal ją iš naujo atvaizduoja lauką.
 	{chars} can't be written into the PDF yet: Fill & Sign text is Western European only. Pick a numeric format such as dd.mm.yyyy.	Simbolių {chars} dar negalima įrašyti į PDF: pildymo ir pasirašymo tekstui palaikomi tik Vakarų Europos simboliai. Pasirinkite skaitinį formatą, pvz., dd.mm.yyyy.
 	January	sausis
 	February	vasaris

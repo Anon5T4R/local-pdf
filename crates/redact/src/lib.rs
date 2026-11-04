@@ -50,7 +50,7 @@ pub enum RedactError {
     #[error("{0}")]
     Undrawable(String),
     #[error(
-        "page {0} has vertical-writing text while a redaction mark is pending, and LocalPDF cannot tell whether that text lies under the mark yet, so nothing was changed"
+        "page {0} has vertical-writing text while a redaction mark is pending, and Local PDF cannot tell whether that text lies under the mark yet, so nothing was changed"
     )]
     VerticalText(usize),
     #[error(

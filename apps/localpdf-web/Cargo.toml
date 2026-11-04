@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-web"
-description = "LocalPDF in the browser (wasm32; build with `trunk build --release` in this directory)"
+description = "Local PDF in the browser (wasm32; build with `trunk build --release` in this directory)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

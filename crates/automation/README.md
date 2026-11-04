@@ -1,6 +1,6 @@
 # localpdf-automation
 
-Agent control for LocalPDF: a headless tool table over the engine, and an opt-in MCP server.
+Agent control for Local PDF: a headless tool table over the engine, and an opt-in MCP server.
 
 - **Layer:** L7 (architecture §13), but headless. It depends on `engine`, `render` and `organize`, never on a UI toolkit.
 - **Status:** over a hundred tools; `localpdf-cli tools` lists the current set with their schemas (the count isn't repeated here, so it can't go stale). They cover inspection, rendering, text, page edits and organizing, page labels, bookmarks, comments and their review, form filling and authoring (fields, properties, scripts, data exchange, detection), redaction and sanitizing, password protection and signatures, calibrated 2D measurements and CSV export, adding text, images, links and stamps, optimizing, OCR, printing, export, metadata, undo/redo, save, combine, extract and split. Comment tools take geometry in the same top-left-origin points as everything else, and `comment_add` can mark text by searching for it (`find`). The MCP server also serves the open documents as resources, page images included. The running app's UI is driven separately, through the `ui.*` control channel in `localpdf-ui-egui`.
@@ -29,7 +29,7 @@ its undo/redo history.
 - Pages and positions are **1-based**. Rectangles are PDF points with the origin at the top-left of the displayed page.
 - Unknown arguments are rejected, so typos fail loudly.
 - Tools that change a document return its summary (`doc`, `pages`, `dirty`, `undo`, `redo`, …).
-- `comment_image_preview` returns JSON and a PNG: `layer: "background"` (the default) gives the page without the selected image signature/initials; `layer: "image"` gives its embedded image with alpha. The metadata supplies its displayed rectangle, document rotation, `image_rotation` (how far clockwise the image is shown turned: 0 for one placed by LocalPDF, which keeps it upright as displayed) and annotation opacity. Each result can be saved with the CLI's `--out`. Cache the background and transform the image for live movement/resizing; `comment_edit` commits the final geometry in one undo step. Previewing never changes the document.
+- `comment_image_preview` returns JSON and a PNG: `layer: "background"` (the default) gives the page without the selected image signature/initials; `layer: "image"` gives its embedded image with alpha. The metadata supplies its displayed rectangle, document rotation, `image_rotation` (how far clockwise the image is shown turned: 0 for one placed by Local PDF, which keeps it upright as displayed) and annotation opacity. Each result can be saved with the CLI's `--out`. Cache the background and transform the image for live movement/resizing; `comment_edit` commits the final geometry in one undo step. Previewing never changes the document.
 - For proportional image signature resizing, use the embedded image layer's width/height ratio rather than a previously stretched annotation rectangle. The GUI preserves this ratio at corners with the opposite corner anchored; edge midpoint handles change only their own axis. `comment_edit` accepts the resulting rectangle.
 - `doc_close` refuses to drop unsaved changes unless `discard_changes: true`. `doc_save` writes atomically, incrementally in place, and in full for a new path. Atomic output writes call `sync_all` on the staging file before replacing the destination. A write or sync error leaves the destination intact, removes staging and leaves the document dirty for retry. A filesystem that does not support syncing returns an error; there is no unsynced fallback. This flushes file contents, but does not guarantee persistence of the parent-directory rename across power loss.
 - With a root set, every read and write path must resolve inside it (symlinks and `..` included). Relative paths resolve inside the root, and `..` is resolved by name before the check. Every path outside the root gets the same refusal (`<path> is outside the allowed directory <root>`), whether or not it exists, so a confined agent can't probe the rest of the disk; on Windows another network share or device path (`\\host\share`, `\\?\UNC\…`, `\\.\…`) is refused without being contacted. "Not found" and other filesystem errors are reported only for paths inside the root. Tools that write several files into a folder name them after the document or input file, with separators, colons and control characters replaced by `_`, so a name can't lead them out of the folder. The root itself must be a folder.
@@ -112,13 +112,13 @@ The release packages ship `localpdf-cli` alongside the desktop app, so no build 
 
 | Install | CLI |
 |---|---|
-| Windows (MSI) | `C:\Program Files\LocalPDF\localpdf-cli.exe` by default (wherever you installed it otherwise), not on `PATH` |
+| Windows (MSI) | `C:\Program Files\Local PDF\localpdf-cli.exe` by default (wherever you installed it otherwise), not on `PATH` |
 | Linux (deb, rpm) | `/usr/bin/localpdf-cli` |
 | macOS | the separate `localpdf-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
 
 ```sh
 # Windows, default install folder
-claude mcp add localpdf -- "C:\Program Files\LocalPDF\localpdf-cli.exe" mcp --root <dir>
+claude mcp add localpdf -- "C:\Program Files\Local PDF\localpdf-cli.exe" mcp --root <dir>
 # Linux, or macOS with the CLI unzipped onto PATH
 claude mcp add localpdf -- localpdf-cli mcp --root <dir>
 ```
@@ -216,7 +216,7 @@ folders. The CLI also exposes it as `localpdf-cli batch`. See the
 
 ## Viewer navigation history
 
-A running LocalPDF instance launched with `--control FILE` exposes its per-tab history through
+A running Local PDF instance launched with `--control FILE` exposes its per-tab history through
 `localpdf-cli ui --control FILE command id=view.previous_view` and
 `localpdf-cli ui --control FILE command id=view.next_view`. `commands` reports whether each action
 is enabled for the active document. These are the same actions as the rail buttons, View → Page

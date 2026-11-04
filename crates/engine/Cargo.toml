@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-engine"
-description = "LocalPDF engine façade: session, documents, command/tool catalogue"
+description = "Local PDF engine façade: session, documents, command/tool catalogue"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

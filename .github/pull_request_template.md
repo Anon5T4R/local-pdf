@@ -1,5 +1,5 @@
 <!--
-Thanks for contributing to LocalPDF.
+Thanks for contributing to Local PDF.
 
 Base this on `main` — it is the only integration branch. `main` moves fast (it took
 396 commits in the three days to 2026-10-12), so a PR that sits for a day usually needs

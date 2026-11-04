@@ -60,10 +60,10 @@ const APP_ICON_PNG: &[u8] = include_bytes!("../../../assets/app-icon/hicolor/256
 const USAGE: &str = "\
 Usage: localpdf [options] [files…]
 
-Opens the files in the LocalPDF desktop app.
+Opens the files in the Local PDF desktop app.
 
 Options:
-  --new-window                open a window of its own instead of passing the files to a running LocalPDF
+  --new-window                open a window of its own instead of passing the files to a running Local PDF
   --create-images [images…]   put the images in one PDF and ask for the page DPI
   --control <file>            enable the UI control channel (localpdf-cli ui --control <file> …)
   --page N, --zoom 150, --layout continuous, --theme dark, …
@@ -251,7 +251,7 @@ fn main() -> eframe::Result {
         (logger, localpdf_ui_egui::portable::data_dir().map(std::path::Path::to_path_buf).or_else(|| eframe::storage_dir("LocalPDF")))
     {
         match logger.attach_dir(&dir.join("logs")) {
-            Ok(path) => log::info!("LocalPDF {}, log file {}", localpdf_engine::build_info::version(), path.display()),
+            Ok(path) => log::info!("Local PDF {}, log file {}", localpdf_engine::build_info::version(), path.display()),
             // Standard error only by now (`attach_dir` gave up on the file); unlike `eprintln!`, never panics.
             Err(e) => log::warn!("no log file: {e}"),
         }
@@ -279,7 +279,7 @@ fn main() -> eframe::Result {
     let started = Rc::new(Cell::new(false));
     let first = if choice == RendererChoice::Gl { eframe::Renderer::Glow } else { eframe::Renderer::Wgpu };
     let result = eframe::run_native(
-        "LocalPDF",
+        "Local PDF",
         native_options(launch.integrated, launch.window_controls.is_some(), first),
         app_creator(
             launch.clone(),
@@ -297,7 +297,7 @@ fn main() -> eframe::Result {
             // usually still works there, so that's better than quitting.
             log::error!("the GPU renderer (wgpu) didn't start: {e}. Starting with OpenGL instead; set PDFCRAFT_RENDERER=gl to skip wgpu.");
             eframe::run_native(
-                "LocalPDF",
+                "Local PDF",
                 native_options(launch.integrated, launch.window_controls.is_some(), eframe::Renderer::Glow),
                 app_creator(
                     launch,
@@ -340,7 +340,7 @@ fn retry_with_gl(choice: RendererChoice, app_started: bool) -> bool {
 /// The window and renderer settings for one run.
 fn native_options(integrated: bool, app_frame: bool, renderer: eframe::Renderer) -> eframe::NativeOptions {
     let mut viewport = egui::ViewportBuilder::default()
-        .with_title("LocalPDF")
+        .with_title("Local PDF")
         .with_inner_size([1440.0, 920.0])
         .with_min_inner_size([820.0, 520.0])
         .with_drag_and_drop(true)
@@ -494,7 +494,7 @@ fn app_creator<'a>(
 /// `unsafe` calls.
 fn notify_software_renderer(app: &mut LocalPDFApp, device_type: eframe::wgpu::DeviceType) {
     if device_type == eframe::wgpu::DeviceType::Cpu {
-        app.notify_tr("LocalPDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.");
+        app.notify_tr("Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.");
     }
 }
 

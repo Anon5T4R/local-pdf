@@ -2,7 +2,7 @@
 
 > **Last reviewed:** 2026-10-21 · **Last updated:** 2026-10-21 · **Change:** minor (Pages inspector thumbnail size slider and buttons #3808; full screen presents one page at a time #1459; the selected field nudges with the arrow keys in Prepare a form #2608) · **Target:** Adobe Acrobat Pro (Acrobat DC, continuous track 26.002.21931, macOS)
 
-How LocalPDF's tools, panels, shortcuts and feel compare with Acrobat Pro's current interface (the
+How Local PDF's tools, panels, shortcuts and feel compare with Acrobat Pro's current interface (the
 2023+ "new Acrobat": All tools pane on the left, quick-action toolbar, Home view). Behaviour is
 observed clean-room (`plan/acrobat/02-ui-ux.md`, local-only; `AGENTS.md` §2); nothing from Adobe's
 interface is copied. Gaps ranked in [gaps.md](gaps.md).
@@ -22,7 +22,7 @@ No dump of Acrobat's menu tree has been diffed against the registry yet (gap 24)
 
 ## Shell and navigation
 
-| Element | Acrobat | LocalPDF | Status |
+| Element | Acrobat | Local PDF | Status |
 |---|---|---|---|
 | Home view (recent files, recommended tools) | yes | yes | shipped |
 | All tools pane, tool sets | yes | yes, with milestone badges | shipped |
@@ -39,7 +39,7 @@ No dump of Acrobat's menu tree has been diffed against the registry yet (gap 24)
 
 ## Tools, handles and precision
 
-| Behaviour | Acrobat | LocalPDF | Status / evidence |
+| Behaviour | Acrobat | Local PDF | Status / evidence |
 |---|---|---|---|
 | Zoom: wheel, pinch, keys, marquee, fit page/width/height/visible | yes | yes | shipped |
 | Fixed zoom percentages match Acrobat's physical size | yes | differ (#739, documented in #736) | gap |
@@ -60,7 +60,7 @@ No dump of Acrobat's menu tree has been diffed against the registry yet (gap 24)
 
 ## Shortcuts and modifiers
 
-| Item | Acrobat | LocalPDF | Status |
+| Item | Acrobat | Local PDF | Status |
 |---|---|---|---|
 | Platform shortcuts for registered commands | yes | yes; ⌘ on macOS, Ctrl elsewhere (#695) | shipped; find bar still shows ⌘ on Windows (#746) |
 | Keyboard shortcuts reference | yes | yes | shipped |
@@ -69,7 +69,7 @@ No dump of Acrobat's menu tree has been diffed against the registry yet (gap 24)
 
 ## Dialogs and preferences
 
-| Item | Acrobat | LocalPDF | Status |
+| Item | Acrobat | Local PDF | Status |
 |---|---|---|---|
 | Print dialog with preview | yes | yes | shipped |
 | Document Properties (description, security, fonts, initial view, custom, advanced) | yes | all but Custom and XMP | partial |

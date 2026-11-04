@@ -10,11 +10,11 @@ use super::pdf::{Content, Font, Fonts, Stamp, colors, name, text};
 /// Links to this prefix in showcase.html mark where annotations go.
 const MARKER_PREFIX: &str = "https://mark.localpdf.invalid/";
 
-const TITLE: &str = "LocalPDF Showcase";
-const AUTHOR: &str = "LocalPDF";
+const TITLE: &str = "Local PDF Showcase";
+const AUTHOR: &str = "Local PDF";
 const SUBJECT: &str = "A specimen document exercising typography, world scripts, vector graphics, \
                        MathML, forms, annotations, layers and attachments.";
-const KEYWORDS: &[&str] = &["PDF", "typography", "OpenType", "AcroForm", "annotations", "optional content", "LocalPDF"];
+const KEYWORDS: &[&str] = &["PDF", "typography", "OpenType", "AcroForm", "annotations", "optional content", "Local PDF"];
 const CREATOR: &str = "localpdf xtask demo-pdf";
 
 /// Chrome-printed page indices (0-based) that the post-processor refers to.
@@ -376,7 +376,7 @@ fn decode_text(bytes: &[u8]) -> String {
 fn tidy_title(title: &str) -> String {
     const ACRONYMS: &[&str] = &["PDF"];
     // Chrome drops the <br> between the two lines of the cover title.
-    if title == "LocalPDFShowcase" {
+    if title == "Local PDFShowcase" {
         return TITLE.to_string();
     }
     let title = title.split_whitespace().collect::<Vec<_>>().join(" ");

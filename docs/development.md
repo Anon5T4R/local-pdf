@@ -1,4 +1,4 @@
-# Developing LocalPDF
+# Developing Local PDF
 
 Working instructions for agents and contributors are in `AGENTS.md` and `CLAUDE.md`. This page
 collects what the desktop app reads from its environment and where it writes its diagnostics.
@@ -25,7 +25,7 @@ Cargo stores custom-profile artifacts separately under `target/low-disk`. Switch
 normal and low-disk profiles can therefore leave both sets of artifacts on disk. To remove only
 the low-disk artifacts, run `cargo clean --profile low-disk`.
 
-Building LocalPDF requires Rust 1.95 or later: the UI crate and its `egui` and `craft-ui`
+Building Local PDF requires Rust 1.95 or later: the UI crate and its `egui` and `craft-ui`
 dependencies need it, and the workspace `rust-version` states the same minimum.
 
 ## Annotation tool pin
@@ -83,7 +83,7 @@ Each launch moves the previous log to `localpdf.1.log` (and that one to `localpd
 log of a run that crashed survives the next start. The file stops growing at 16 MiB. `--version`
 writes no file.
 
-By default LocalPDF's own crates (`localpdf*`) log at `info` and everything else at `warn`.
+By default Local PDF's own crates (`localpdf*`) log at `info` and everything else at `warn`.
 `RUST_LOG` replaces that with env_logger-style directives, for example `RUST_LOG=debug`,
 `RUST_LOG=warn,localpdf_render=trace` or `RUST_LOG=info,wgpu_core=warn`; a directive ending in `*`
 covers every target starting with it (`localpdf*=debug`). The logger is
@@ -97,29 +97,29 @@ default 8192-pixel extent even when the GPU supports a larger surface (#577). Th
 never exceeds the adapter's capability. A window larger than even that (restored at another
 monitor's scale, or stretched across monitors) gets a surface fitted within the limit and is drawn
 at a correspondingly lower scale instead of panicking in `Surface::configure` (vendored egui-wgpu,
-`surface_fit`; see `vendor/README.md`). On DX12, LocalPDF's Windows default, the surface is
+`surface_fit`; see `vendor/README.md`). On DX12, Local PDF's Windows default, the surface is
 stretched over the window: softer, but complete and lined up with the pointer. wgpu's GL backend
 copies it unscaled into a corner of the window instead.
 
 For blurry or incorrectly scaled UI reports, attach `localpdf.log`. Look for the successful
 startup `renderer:` line, which records the wgpu adapter, device type, backend and enabled texture
 limit, or the OpenGL renderer. Also look for the `drawing it at … and scaling it up` warning: it
-means LocalPDF hit the surface-size safety fallback and rendered below the physical window size, so
+means Local PDF hit the surface-size safety fallback and rendered below the physical window size, so
 softness is expected.
 
 ## Renderer fallback
 
-LocalPDF draws with wgpu, and starts again with eframe's own OpenGL renderer (glow) when wgpu fails
+Local PDF draws with wgpu, and starts again with eframe's own OpenGL renderer (glow) when wgpu fails
 before the app is created: no adapter, no device, or a window surface the device can't configure.
 The last of these was a panic, not an error, because wgpu's default error handler panics and
 eframe configures the surface before any app code runs; a 2015 Intel GPU whose driver timed out in
-`Surface::configure` on wgpu's GL backend closed LocalPDF at launch (#519). Vendored egui-wgpu
+`Surface::configure` on wgpu's GL backend closed Local PDF at launch (#519). Vendored egui-wgpu
 configures a new window's surface inside `winit::catch_errors` and returns a validation,
 out-of-memory or internal error as `WgpuError::ConfigureSurface` (see `vendor/README.md`). Still a
 panic, as upstream: an error in a later reconfigure (resizing, a lost surface); a device lost
 during that first configure (wgpu reports it only to a callback, so the first frame panics, after
 the app has started); and a window shown at zero size, which is first configured on resize. If
-OpenGL can't start either, LocalPDF exits with both errors in the log. The fallback is logged at
+OpenGL can't start either, Local PDF exits with both errors in the log. The fallback is logged at
 `error`, with the wgpu error. Renderer resource creation now uses the same scopes and returns
 `WgpuError::CreateRenderer` before the app is created, so a rejected `egui_pipeline` can also
 reach this retry instead of the uncaptured-error panic handler. This does not fix the failing
@@ -146,12 +146,12 @@ copies retain their current preferences locations.
 | `RUST_BACKTRACE` | `1` adds a backtrace to the report of an internal error |
 | `XDG_CONFIG_HOME` | Linux/FreeBSD: absolute configuration base for `localpdf/app.ron`; defaults to `~/.config` |
 | `XDG_DATA_HOME` | Linux/FreeBSD: base of the log folder and crash recovery; previous preferences are migrated from here |
-| `WGPU_POWER_PREF` | GPU choice; by default LocalPDF draws on the GPU the Wayland compositor draws with (it says so through linux-dmabuf feedback), else the GPU that drives the primary display (Windows) or the built-in panel (Linux), else the low-power (integrated) GPU. The log says which one was chosen |
+| `WGPU_POWER_PREF` | GPU choice; by default Local PDF draws on the GPU the Wayland compositor draws with (it says so through linux-dmabuf feedback), else the GPU that drives the primary display (Windows) or the built-in panel (Linux), else the low-power (integrated) GPU. The log says which one was chosen |
 | `WGPU_BACKEND` | Graphics backend; by default Windows uses Direct3D 12, falling back to OpenGL |
-| `WGPU_DX12_PRESENTATION_SYSTEM` | Windows, Direct3D 12: `hwnd` presents through a swap chain on the window itself, which Windows stretches while the window is resized (#2738); unset or `visual`, LocalPDF presents through a DirectComposition visual |
-| `WGPU_VALIDATION_INDIRECT_CALL` | `1` turns wgpu's check of indirect draw arguments back on. LocalPDF draws nothing indirectly and turns it off, since the compute shader the check needs fails to compile on some drivers (Metal on an Intel Iris Pro), which lost the device at start-up |
+| `WGPU_DX12_PRESENTATION_SYSTEM` | Windows, Direct3D 12: `hwnd` presents through a swap chain on the window itself, which Windows stretches while the window is resized (#2738); unset or `visual`, Local PDF presents through a DirectComposition visual |
+| `WGPU_VALIDATION_INDIRECT_CALL` | `1` turns wgpu's check of indirect draw arguments back on. Local PDF draws nothing indirectly and turns it off, since the compute shader the check needs fails to compile on some drivers (Metal on an Intel Iris Pro), which lost the device at start-up |
 | `PDFCRAFT_RENDERER` | `gl` starts with OpenGL (glow) and never loads wgpu; `wgpu` reports a wgpu failure instead of retrying with OpenGL; unset, wgpu is retried with OpenGL when it can't start (see [Renderer fallback](#renderer-fallback)) |
-| `PDFCRAFT_TITLEBAR` | Linux: `app` draws LocalPDF's own title bar (window buttons in the tab strip, in the order of GNOME's `button-layout`, and resize edges); `system` keeps the frame winit or the desktop draws; unset, LocalPDF draws its own when the Wayland compositor draws no frames (GNOME), and leaves it to the desktop otherwise (KDE, Sway, Hyprland, X11). Where LocalPDF draws it, Preferences ▸ Use system title bar switches back to winit's frame without a restart; `system` also hides that option |
+| `PDFCRAFT_TITLEBAR` | Linux: `app` draws Local PDF's own title bar (window buttons in the tab strip, in the order of GNOME's `button-layout`, and resize edges); `system` keeps the frame winit or the desktop draws; unset, Local PDF draws its own when the Wayland compositor draws no frames (GNOME), and leaves it to the desktop otherwise (KDE, Sway, Hyprland, X11). Where Local PDF draws it, Preferences ▸ Use system title bar switches back to winit's frame without a restart; `system` also hides that option |
 | `PDFCRAFT_BUILD_LABEL` | Build time: a label for a local or patched build (letters, digits, inner dots), shown after the version in `--version`, About and the log (`0.7.1 (titlebar)`). `packaging/linux/package.sh` also puts it in the file names and the .rpm/.deb release (`1.titlebar`), which upgrades over the release of the same version |
 | `CRAFT_FONTS_DIR` | Build time: a [craft-fonts](https://github.com/storytold/craft-fonts) checkout to embed (Japanese fonts) |
 | `PDFCRAFT_SYSTEM_FONTS` | `0` stops the desktop app from using an installed font for characters its embedded fonts lack (`cargo xtask screenshots` sets it) |

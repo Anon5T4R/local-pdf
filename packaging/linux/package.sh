@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and package LocalPDF for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
+# Build and package Local PDF for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
 #
 #   $DIST/localpdf-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
 #   $DIST/localpdf-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
@@ -46,11 +46,11 @@ case "$ARCH" in
   aarch64 | arm64) ARCH=aarch64; DEB_ARCH=arm64 ;;
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
-export PDFCRAFT_MAINTAINER="${PDFCRAFT_MAINTAINER:-LocalPDF maintainers <localpdf@local.ai>}"
+export PDFCRAFT_MAINTAINER="${PDFCRAFT_MAINTAINER:-Local PDF maintainers <localpdf@local.ai>}"
 LABEL_SUFFIX="${PDFCRAFT_BUILD_LABEL:+-$PDFCRAFT_BUILD_LABEL}"
 BASENAME="localpdf-$VERSION$LABEL_SUFFIX-linux-$ARCH"
 
-echo "==> LocalPDF $VERSION$LABEL_SUFFIX for Linux $ARCH ($FORMATS)"
+echo "==> Local PDF $VERSION$LABEL_SUFFIX for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then

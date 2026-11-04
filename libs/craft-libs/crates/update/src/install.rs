@@ -205,7 +205,14 @@ pub fn occupied(
     let target = match kind {
         PackageKind::Msi => folder,
         PackageKind::PortableZip => Some(folder.unwrap_or_else(|| paths.apps()).join(app.id)),
-        PackageKind::Dmg => folder.map(|f| f.join(format!("{}.app", app.name))),
+        PackageKind::Dmg => folder.map(|f| {
+            // The bundle keeps its machine name (`LocalPDF.app`) while the display name changed, so
+            // look for every name the app has had and fall back to the current one.
+            app.names()
+                .map(|n| f.join(format!("{n}.app")))
+                .find(|p| p.is_dir())
+                .unwrap_or_else(|| f.join(format!("{}.app", app.name)))
+        }),
         #[cfg(target_os = "linux")]
         PackageKind::AppImage => folder.or_else(crate::detect::linux::appimage_dir).map(|f| f.join(&asset.name)),
         _ => None,
@@ -1337,8 +1344,16 @@ pub mod macos {
         replace: bool,
         expect: &Expect<'_>,
     ) -> Result<PathBuf, String> {
-        let bundle = format!("{}.app", app.name);
-        let src = mount.join(&bundle);
+        // The disk image holds the bundle under its machine name (`LocalPDF.app`), which the
+        // display rename leaves alone: take whichever name the app has had that the image carries.
+        let (bundle, src) = app
+            .names()
+            .map(|n| format!("{n}.app"))
+            .find_map(|n| {
+                let p = mount.join(&n);
+                p.is_dir().then_some((n, p))
+            })
+            .ok_or("the disk image doesn't contain the app")?;
         crate::detect::macos::read_bundle(app, &src).ok_or("the disk image doesn't contain the app")?;
         let dir = applications_dir(existing, destination)?;
         let dest = existing.filter(|i| i.source == InstallSource::MacApp).map_or_else(|| dir.join(&bundle), |i| PathBuf::from(&i.location));

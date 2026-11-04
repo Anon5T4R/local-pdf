@@ -1,6 +1,6 @@
 [package]
 name = "localpdf-render"
-description = "Page rendering (bootstrap: hayro) and document inspection for LocalPDF"
+description = "Page rendering (bootstrap: hayro) and document inspection for Local PDF"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
