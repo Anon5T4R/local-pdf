@@ -2846,7 +2846,7 @@ licence = "ISC AND (MIT OR Apache-2.0)"
 licence_file = "assets/app-icon/LICENSE-document.txt"
 kind = "icon"
 usage = "Master artwork for the Windows PDF file type icon; rendered by packaging/icons.sh, without fonts or external images"
-sha256 = "b947328a4c66805a5e7c867851aebf319066f42e0199eb624fb3c24fad24c0f1"
+sha256 = "e2e507572c757f2ab515318cba9fb72caabbebff22c6f8e29b15745c3557f55c"
 
 [[asset]]
 path = "assets/app-icon/localpdf-document.ico"
