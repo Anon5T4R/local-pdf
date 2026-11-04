@@ -154,6 +154,15 @@
         <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
+      <!-- Search alias: Start Menu search matches the shortcut's name, and every suite name
+           starts with Local — a plain "pdf" finds nothing. Same exe, same icon, own
+           component so uninstall removes it. -->
+      <Component Id="LocalpdfAliasShortcut" Directory="ProgramMenuFolder" Guid="D621B2DB-37F9-40A2-9ACE-7237AA9E192E">
+        <Shortcut Id="AliasShortcut" Name="PDF Editor" Description="LocalPDF PDF workbench"
+            Target="[#LocalpdfExe]" WorkingDirectory="INSTALLFOLDER" Icon="LocalpdfIcon.ico" IconIndex="0" />
+        <RegistryValue Root="HKLM" Key="Software\LocalPDF\Shortcuts" Name="Alias" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
       <Component Id="LocalpdfDesktopShortcut" Directory="DesktopFolder" Guid="F6948627-32AB-4D78-8865-0FDF417CE442"
           Condition="INSTALLDESKTOPSHORTCUT = 1">
         <Shortcut Id="DesktopShortcut" Name="LocalPDF" Description="LocalPDF PDF workbench"
