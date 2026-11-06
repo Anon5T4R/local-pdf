@@ -17,7 +17,9 @@ Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de t
 ## Estrutura
 - `crates/` — engine e módulos (`localpdf-*`)
 - `apps/localpdf` — app desktop; `apps/localpdf-cli` — CLI/MCP; `apps/localpdf-web` — wasm
-- `libs/` — forks vendored: `craft-libs`, `egui`, `winit`, `winprint.rs`
+- `libs/` — forks vendored: `craft-libs`, `egui`, `winit`, `winprint.rs`, `local-ai`
+  (BYOK — chave de API/config, consumido pelo `crates/ai`; fonte em
+  `C:\Dev\underworld\local-ai`, NÃO é o app LocalAI da suíte antiga)
 - `vendor/` — patches de terceiros (hayro, lopdf, vello_common, provenance winit/egui-wgpu)
 - `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar), Arch (PKGBUILD), macOS, web
 - `xtask/` — tarefas de build/CI (`cargo xtask ci`)
