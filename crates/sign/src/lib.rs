@@ -1,7 +1,7 @@
 //! Digital signatures (execution plan M9; ISO 32000-2 §12.8; ETSI EN 319 142 PAdES).
 //!
 //! - [`der`], [`x509`], [`cms`], [`pkcs12`], [`keys`]: the cryptographic formats, on RustCrypto
-//!   primitives (RSA private-key operations use aws-lc-rs on native targets, ADR-0009).
+//!   primitives (RSA private-key operations blind-sign with the `rsa` crate on native targets).
 //! - [`pdf`]: signature fields in a document — listing and validating them, and signing
 //!   (PAdES B-B, `ETSI.CAdES.detached`) with an incremental save.
 
