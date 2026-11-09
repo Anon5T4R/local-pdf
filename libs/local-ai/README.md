@@ -9,5 +9,5 @@ do próprio provider + segredo no keychain do SO (`keyring`, v1).
 
 Cada app da suíte carrega a própria identidade via [`App`]: pasta de config
 (`<data dir>/<id>/ai-connections.json`), serviço do keychain e URL do projeto
-nos headers do OpenRouter. Extraído do `localpdf-ai` (Local PDF) — apps da
+nos headers do OpenRouter. Extraído do `localpdf-ai` (LocalPDF) — apps da
 suíte fazem um wrapper fino com a identidade deles e mantêm a API antiga.

@@ -11,7 +11,17 @@ publish = false
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-ureq = { version = "3", default-features = false, features = ["rustls", "platform-verifier"] }
+# No `rustls` feature here: it turns on ureq's `_ring`, and ring is C/asm. `rustls-no-provider`
+# keeps the rustls stack without picking a crypto provider; every agent this crate builds gets
+# `rustls-rustcrypto` (pure Rust) explicitly. `rustls-webpki-roots` is the same root bundle the
+# default feature used, so trust behaviour does not change.
+#
+# Vendoring apps redirect `rustls-rustcrypto` to their own fork via `[patch.crates-io]`; a
+# workspace patch reaches path dependencies too, so the crates.io version declared here is
+# replaced by the fork (no rustls-webpki 0.102) in their resolves.
+ureq = { version = "3", default-features = false, features = ["rustls-no-provider", "rustls-webpki-roots"] }
+rustls = { version = "0.23", default-features = false, features = ["std", "tls12"] }
+rustls-rustcrypto = { version = "0.0.2-alpha", default-features = false, features = ["std", "tls12"] }
 keyring = { version = "4", default-features = false, features = ["v1"] }
 dirs = "7"
 

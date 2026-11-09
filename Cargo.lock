@@ -3721,6 +3721,8 @@ version = "0.1.0"
 dependencies = [
  "dirs",
  "keyring",
+ "rustls",
+ "rustls-rustcrypto",
  "serde",
  "serde_json",
  "ureq",
@@ -6397,7 +6399,6 @@ dependencies = [
  "aws-lc-rs",
  "log",
  "once_cell",
- "ring",
  "rustls-pki-types",
  "rustls-webpki",
  "subtle",

@@ -9,9 +9,32 @@
 //! Each suite app carries its own identity ([`App`]): the config folder its connections file
 //! lives in, the keychain service its keys are grouped under, and the project URL the OpenRouter
 //! headers advertise. Nothing else differs between apps.
+//!
+//! Requests go out through one shared `ureq::Agent` whose TLS provider is `rustls-rustcrypto`
+//! (pure Rust): no C/asm crypto backend is compiled into the BYOK path.
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use std::sync::{Arc, OnceLock};
+
+/// The one crypto provider this crate uses: `rustls-rustcrypto`, pure Rust, so no C/asm TLS
+/// backend (ring, aws-lc-rs, CNG) is ever compiled or loaded through the BYOK path.
+fn pure_provider() -> Arc<rustls::crypto::CryptoProvider> {
+    Arc::new(rustls_rustcrypto::provider())
+}
+
+/// The one HTTP agent every request shares: ureq is built without a default provider, so this
+/// agent carries the pure one explicitly. A handshake it cannot complete surfaces as an error to
+/// the caller; nothing falls back to another provider.
+fn agent() -> &'static ureq::Agent {
+    static AGENT: OnceLock<ureq::Agent> = OnceLock::new();
+    AGENT.get_or_init(|| {
+        let tls = ureq::tls::TlsConfig::builder()
+            .unversioned_rustls_crypto_provider(pure_provider())
+            .build();
+        ureq::Agent::config_builder().tls_config(tls).build().new_agent()
+    })
+}
 
 /// The identity of the app consuming this crate: where its connections file lives, where its
 /// keys are grouped in the OS keychain, and what OpenRouter should see as referer.
@@ -178,7 +201,7 @@ fn models_url(app: &App, conn: &Connection, key: &str) -> Result<(String, Vec<(S
 pub fn list_models(app: &App, conn: &Connection) -> Result<Vec<String>, String> {
     let key = conn.key(app)?;
     let (url, headers) = models_url(app, conn, &key)?;
-    let mut req = ureq::get(&url);
+    let mut req = agent().get(&url);
     for (k, v) in headers {
         req = req.header(&k, &v);
     }
@@ -213,7 +236,7 @@ pub fn chat(app: &App, conn: &Connection, history: &[Msg]) -> Result<String, Str
         })
         .collect();
     let body = serde_json::json!({ "model": conn.model, "messages": messages }).to_string();
-    let mut builder = ureq::post(&format!("{base}/chat/completions"));
+    let mut builder = agent().post(&format!("{base}/chat/completions"));
     for (k, v) in authorize(app, conn, &key) {
         builder = builder.header(&k, &v);
     }
@@ -241,7 +264,7 @@ pub fn vision(app: &App, conn: &Connection, instruction: &str, png: &[u8]) -> Re
         ]}]
     })
     .to_string();
-    let mut builder = ureq::post(&format!("{base}/chat/completions"));
+    let mut builder = agent().post(&format!("{base}/chat/completions"));
     for (k, v) in authorize(app, conn, &key) {
         builder = builder.header(&k, &v);
     }
@@ -299,6 +322,23 @@ mod tests {
         assert_eq!(base64(b"fo"), "Zm8=");
         assert_eq!(base64(b"foo"), "Zm9v");
         assert_eq!(base64(b"foobar"), "Zm9vYmFy");
+    }
+
+    /// The shared agent is wired to the pure provider: TLS 1.3 suites can only come from
+    /// `rustls-rustcrypto`, never from a feature-enabled C backend.
+    #[test]
+    fn the_shared_agent_is_wired_to_the_pure_provider() {
+        let provider = pure_provider();
+        assert!(provider.cipher_suites.iter().any(|s| s.suite() == rustls::CipherSuite::TLS13_AES_256_GCM_SHA384));
+    }
+
+    /// End to end: the configured agent completes a real TLS handshake. Ignored by default (it
+    /// needs the network); run with `cargo test -- --ignored`.
+    #[test]
+    #[ignore = "network: real TLS handshake with api.github.com"]
+    fn the_shared_agent_completes_a_real_handshake() -> Result<(), String> {
+        let mut response = agent().get("https://api.github.com/").call().map_err(|e| e.to_string())?;
+        response.body_mut().read_to_string().map(|_body| ()).map_err(|e| e.to_string())
     }
 
     #[test]
