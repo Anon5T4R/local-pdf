@@ -4130,7 +4130,6 @@ name = "localpdf-sign"
 version = "0.14.13"
 dependencies = [
  "aes 0.9.3",
- "aws-lc-rs",
  "base64 0.23.1",
  "bp256",
  "bp384",
@@ -5372,9 +5371,9 @@ dependencies = [
 
 [[package]]
 name = "pkcs1"
-version = "0.8.0-rc.5"
+version = "0.8.0-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f485dbafe293ea6ccaa7d82bc591651a796eb8a9aec3df040b057b706073dbc3"
+checksum = "986d2e952779af96ea048f160fd9194e1751b4faea78bcf3ceb456efe008088e"
 dependencies = [
  "der 0.8.3",
  "spki 0.8.1",
@@ -6226,10 +6225,12 @@ dependencies = [
  "crypto-bigint 0.7.10",
  "crypto-primes",
  "digest 0.11.3",
- "pkcs1 0.8.0-rc.5",
+ "pkcs1 0.8.0-rc.4",
  "pkcs8 0.11.0",
  "rand_core 0.10.1",
+ "sha2 0.11.1",
  "signature 3.0.0",
+ "spki 0.8.1",
  "zeroize",
 ]
 

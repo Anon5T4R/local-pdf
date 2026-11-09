@@ -1,8 +1,8 @@
 //! Digests, public keys (verification everywhere) and private keys (signing).
 //!
-//! Verification uses RustCrypto. RSA private-key operations use `aws-lc-rs` on native targets
-//! (constant-time; ADR-0009: the `rsa` crate is never used for private keys there). ECDSA
-//! signing uses RustCrypto with deterministic nonces (RFC 6979).
+//! Verification uses RustCrypto. RSA private-key operations (signing and key generation) run
+//! on the `rsa` crate with blinding on native targets, so nothing C is linked; the browser still
+//! refuses RSA private keys. ECDSA signing uses RustCrypto with deterministic nonces (RFC 6979).
 
 use crate::SignError;
 use crate::der::{self, Tlv, tag};
@@ -568,7 +568,7 @@ fn ecdsa_rs(sig: &[u8], field_len: usize, notes: &mut Vec<&'static str>) -> Opti
 
 enum Inner {
     #[cfg(not(target_arch = "wasm32"))]
-    Rsa(aws_lc_rs::signature::RsaKeyPair),
+    Rsa(rsa::RsaPrivateKey),
     #[cfg(target_arch = "wasm32")]
     Rsa,
     P256(p256::ecdsa::SigningKey),
@@ -581,6 +581,16 @@ enum Inner {
 pub trait ExternalKey: Send + Sync {
     /// Sign `msg`, hashing it with `alg` (PKCS #1 v1.5 for RSA, DER-encoded ECDSA).
     fn sign(&self, alg: DigestAlg, msg: &[u8]) -> Result<Vec<u8>, SignError>;
+}
+
+/// An RSA private key from its PKCS#8 `PrivateKeyInfo`, or from the bare PKCS #1 key it wraps.
+#[cfg(not(target_arch = "wasm32"))]
+fn rsa_private_key(pkcs8: &[u8], pkcs1: &[u8]) -> Result<rsa::RsaPrivateKey, SignError> {
+    use rsa::pkcs1::DecodeRsaPrivateKey;
+    use rsa::pkcs8::DecodePrivateKey;
+    rsa::RsaPrivateKey::from_pkcs8_der(pkcs8)
+        .or_else(|_| rsa::RsaPrivateKey::from_pkcs1_der(pkcs1))
+        .map_err(|e| SignError::Malformed(format!("RSA private key: {e}")))
 }
 
 /// A private key that can sign.
@@ -624,11 +634,7 @@ impl PrivateKey {
                     _ => return Err(SignError::Malformed("RSAPrivateKey".into())),
                 };
                 #[cfg(not(target_arch = "wasm32"))]
-                let inner = Inner::Rsa(
-                    aws_lc_rs::signature::RsaKeyPair::from_pkcs8(info)
-                        .or_else(|_| aws_lc_rs::signature::RsaKeyPair::from_der(key.value))
-                        .map_err(|e| SignError::Malformed(format!("RSA private key: {e}")))?,
-                );
+                let inner = Inner::Rsa(rsa_private_key(info, key.value)?);
                 #[cfg(target_arch = "wasm32")]
                 let inner = Inner::Rsa;
                 Ok(PrivateKey { inner, public: PublicKey::Rsa { n, e }, pkcs8: info.to_vec() })
@@ -667,17 +673,19 @@ impl PrivateKey {
     /// A new RSA key (Acrobat's default for a self-signed digital ID is 2048-bit RSA).
     #[cfg(not(target_arch = "wasm32"))]
     pub fn generate_rsa(bits: usize) -> Result<PrivateKey, SignError> {
-        use aws_lc_rs::encoding::AsDer;
-        use aws_lc_rs::rsa::KeySize;
-        let size = match bits {
-            2048 => KeySize::Rsa2048,
-            3072 => KeySize::Rsa3072,
-            4096 => KeySize::Rsa4096,
-            _ => return Err(SignError::Unsupported(format!("{bits}-bit RSA keys"))),
-        };
-        let kp = aws_lc_rs::signature::RsaKeyPair::generate(size).map_err(|_| SignError::Crypto("RSA key generation failed".into()))?;
-        let der = kp.as_der().map_err(|_| SignError::Crypto("RSA key encoding failed".into()))?;
-        PrivateKey::from_pkcs8(der.as_ref())
+        use rsa::pkcs8::EncodePrivateKey;
+        if !matches!(bits, 2048 | 3072 | 4096) {
+            return Err(SignError::Unsupported(format!("{bits}-bit RSA keys")));
+        }
+        // The `rsa` key generator takes an infallible RNG. Probe the OS source first so a
+        // broken one comes back as an error; `UnwrapErr` then only turns a failure that shows
+        // up between the probe and the generation into its (unreachable in practice) panic.
+        let mut probe = [0u8; 1];
+        getrandom::fill(&mut probe).map_err(|e| SignError::Crypto(format!("no randomness: {e}")))?;
+        let mut rng = rsa::rand_core::UnwrapErr(getrandom::SysRng);
+        let key = rsa::RsaPrivateKey::new(&mut rng, bits).map_err(|e| SignError::Crypto(format!("RSA key generation failed: {e}")))?;
+        let der = key.to_pkcs8_der().map_err(|e| SignError::Crypto(format!("RSA key encoding failed: {e}")))?;
+        PrivateKey::from_pkcs8(der.as_bytes())
     }
 
     /// RSA keys are generated only on native targets (ADR-0009).
@@ -737,15 +745,15 @@ impl PrivateKey {
         match &self.inner {
             #[cfg(not(target_arch = "wasm32"))]
             Inner::Rsa(kp) => {
-                use aws_lc_rs::signature::{RSA_PKCS1_SHA256, RSA_PKCS1_SHA384, RSA_PKCS1_SHA512};
-                let enc: &'static dyn aws_lc_rs::signature::RsaEncoding = match alg {
-                    DigestAlg::Sha384 => &RSA_PKCS1_SHA384,
-                    DigestAlg::Sha512 => &RSA_PKCS1_SHA512,
-                    _ => &RSA_PKCS1_SHA256,
+                use rsa::traits::SignatureScheme as _;
+                let scheme = match alg {
+                    DigestAlg::Sha384 => rsa::pkcs1v15::Pkcs1v15Sign::new::<rsa::sha2::Sha384>(),
+                    DigestAlg::Sha512 => rsa::pkcs1v15::Pkcs1v15Sign::new::<rsa::sha2::Sha512>(),
+                    _ => rsa::pkcs1v15::Pkcs1v15Sign::new::<rsa::sha2::Sha256>(),
                 };
-                let mut sig = vec![0u8; kp.public_modulus_len()];
-                kp.sign(enc, &aws_lc_rs::rand::SystemRandom::new(), msg, &mut sig).map_err(|_| SignError::Crypto("RSA signing failed".into()))?;
-                Ok(sig)
+                // The RNG blinds the private-key operation (the mitigation RUSTSEC-2023-0071 asks for).
+                let mut rng = getrandom::SysRng;
+                scheme.sign(Some(&mut rng), kp, &alg.digest(&[msg])).map_err(|e| SignError::Crypto(format!("RSA signing failed: {e}")))
             }
             #[cfg(target_arch = "wasm32")]
             Inner::Rsa => Err(SignError::Unsupported("RSA signing in the browser".into())),

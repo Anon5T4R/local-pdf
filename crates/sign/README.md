@@ -14,10 +14,10 @@ for s in signatures(&doc, &bytes, &trust) {                                // li
   certificates (`x509`), CMS SignedData (`cms`), and PKCS #12 digital ID files (`pkcs12`):
   PBES2 (PBKDF2 + AES/3DES), the legacy SHA-1 3DES/RC2 schemes, and MAC checks. Writing uses
   OpenSSL 3's defaults (AES-256-CBC, HMAC-SHA-256).
-- **Keys:** RSA, ECDSA P-256 and P-384. Verification uses RustCrypto everywhere. RSA
-  private-key operations (signing, key generation) use `aws-lc-rs` on native targets and are
-  refused in the browser (ADR-0009: the `rsa` crate's Marvin advisory, RUSTSEC-2023-0071, has
-  no fix, so `rsa` is only used to verify). ECDSA signs with deterministic nonces (RFC 6979).
+- **Keys:** RSA, ECDSA P-256 and P-384. RustCrypto everywhere: RSA private-key operations
+  (signing, key generation) blind-sign with the `rsa` crate on native targets - blinding is the
+  mitigation RUSTSEC-2023-0071 asks for, and nothing C is linked - and are refused in the
+  browser (ADR-0009). ECDSA signs with deterministic nonces (RFC 6979).
 - **Signing:** PAdES B-B (`ETSI.CAdES.detached`, signing-certificate-v2, SHA-256/384, no SHA-1).
   An existing unsigned field or a new one (visible with Acrobat's name-and-details appearance,
   or invisible); certification with DocMDP P=1/2/3. A visible signature can show a `Graphic`

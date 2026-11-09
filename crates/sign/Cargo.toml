@@ -28,9 +28,12 @@ p521 = { version = "0.14", default-features = false, features = ["ecdsa", "std"]
 bp256 = { version = "0.14", default-features = false, features = ["arithmetic", "ecdsa", "std"] }
 bp384 = { version = "0.14", default-features = false, features = ["arithmetic", "ecdsa", "std"] }
 ecdsa = { version = "0.17", default-features = false, features = ["algorithm", "der"] }
-# Verification only on native targets (RSA private-key operations use aws-lc-rs, ADR-0009).
+# Verification everywhere and, on native targets, RSA private-key operations (signing and key
+# generation): RustCrypto only, so the binary carries no C. Every signature is blind-signed
+# (`sign(Some(&mut rng), ...)`), the mitigation RUSTSEC-2023-0071 asks for. `encoding` is the
+# PKCS #1/#8 reader and writer, `sha2` names the DigestInfo prefix of PKCS #1 v1.5.
 crypto-bigint = { version = "0.7", default-features = false, features = ["alloc"] }
-rsa = { version = "=0.10.0-rc.18", default-features = false, features = ["std", "hazmat"] }
+rsa = { version = "=0.10.0-rc.18", default-features = false, features = ["std", "hazmat", "encoding", "sha2"] }
 pbkdf2 = { version = "0.13", default-features = false, features = ["hmac"] }
 hmac = "0.13"
 aes = "0.9"
@@ -42,7 +45,7 @@ ripemd = "0.2.0"
 ed25519-dalek = "3.0.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-aws-lc-rs = { version = "1.18", default-features = false, features = ["aws-lc-sys", "prebuilt-nasm"] }
+# `SysRng` feeds RSA blinding and key generation from the OS; nothing C is linked.
 getrandom = "0.4"
 
 [target.'cfg(target_os = "windows")'.dependencies]

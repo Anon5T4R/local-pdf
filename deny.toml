@@ -39,11 +39,11 @@ allow-git = []
 [advisories]
 yanked = "warn"
 ignore = [
-    # Marvin (RSA private-key timing side channel, no fixed `rsa` release). localpdf-sign uses
-    # `rsa` only for public-key signature verification, which the advisory does not affect; RSA
-    # private-key operations use aws-lc-rs on native targets and are refused in the browser
-    # (ADR-0009). Revisit when a fixed `rsa` ships.
-    { id = "RUSTSEC-2023-0071", reason = "rsa is used for verification only (ADR-0009)" },
+    # Marvin (RSA private-key timing side channel, no fixed `rsa` release). localpdf-sign now
+    # runs RSA private-key operations (signing, key generation) on `rsa` too, always with RSA
+    # blinding - the mitigation the advisory names - and refuses them in the browser (ADR-0009).
+    # Revisit when a fixed `rsa` ships.
+    { id = "RUSTSEC-2023-0071", reason = "rsa signs and generates keys only with blinding (ADR-0009); no fixed release exists" },
     # crypto-bigint 0.5.5 chega pelo rsa 0.9 (fork do updater e localpdf-sign). A correção só
     # existe na série 0.7, que o rsa 0.9 não aceita; as operações secret-dependentes são de
     # chave privada e aqui o rsa só verifica assinatura com chave pública. // local-pdf:
