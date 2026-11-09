@@ -5,7 +5,7 @@
     wix build localpdf.wxs installer-ui.wxs -arch x64 -d Version=1.2.3 -d BinDir=... -d ModelsDir=... -d IconPath=... -o out.msi
 
   Per-machine install into Program Files, a Start Menu shortcut, a desktop shortcut (on by default,
-  optional, and an update keeps it only if it is still there), an App Paths entry, Local PDF registered as a PDF handler (offered under "Open with"
+  optional, and re-created by every update), an App Paths entry, Local PDF registered as a PDF handler (offered under "Open with"
   and in Default apps, never forced as the default), "Edit with Local PDF" on PDF files'
   right-click menu and "Create PDF with Local PDF…" on image files' right-click menu (both on by
   default, optional, and an update keeps the installed version's choice). Files opened with
@@ -41,27 +41,23 @@
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/Anon5T4R/apps/localpdf" />
     <Property Id="ARPURLUPDATEINFO" Value="https://github.com/Anon5T4R/apps/localpdf" />
     <Property Id="ARPHELPLINK" Value="https://github.com/Anon5T4R/local-pdf/discussions" />
-    <!-- Desktop shortcut (#143): on by default for a first install, a checkbox in the full-UI
-         welcome dialog, and INSTALLDESKTOPSHORTCUT=0 on the msiexec command line for unattended
-         installs. Secure, so the choice made in the (unelevated) UI reaches the elevated install.
-         An update keeps the shortcut only if it is still on the desktop (#1058): the launcher
-         updates with /passive and no properties, so deleting the shortcut is the only way its
-         users can say no. A value given on the command line wins. -->
-    <Property Id="INSTALLDESKTOPSHORTCUT" Secure="yes" />
-    <Property Id="EXISTINGDESKTOPSHORTCUT">
-      <DirectorySearch Id="DesktopSearch" Path="[DesktopFolder]" Depth="0">
-        <FileSearch Name="LocalPDF.lnk" />
-      </DirectorySearch>
-    </Property>
-    <SetProperty Id="INSTALLDESKTOPSHORTCUT" Value="1" After="AppSearch" Sequence="first"
-        Condition="NOT INSTALLDESKTOPSHORTCUT AND (NOT WIX_UPGRADE_DETECTED OR EXISTINGDESKTOPSHORTCUT)" />
+    <!-- Desktop shortcut (#143): on by default, a checkbox in the full-UI welcome dialog, and
+         INSTALLDESKTOPSHORTCUT=0 on the msiexec command line for unattended installs. Secure, so the
+         choice made in the (unelevated) UI reaches the elevated install.
+         Every update installs it again, like the suite's other installers (Local Word, Local Paint):
+         the launcher updates with /passive and no properties, and an update is also how someone
+         whose link went missing gets it back. It used to be kept on an update only while AppSearch
+         found the old .lnk (#1058), the way the menus below use their registry keys; that broke on
+         0.14.12 because 0.14.11 renamed the shortcut to "Local PDF.lnk" and the search still looked
+         for "LocalPDF.lnk" — the update removed the link and never re-created it. A static default
+         cannot drift from the link's name, and a value given on the command line still wins. -->
+    <Property Id="INSTALLDESKTOPSHORTCUT" Secure="yes" Value="1" />
     <!-- The File Explorer menus: "Edit with Local PDF" for PDF files (#682) and "Create PDF with
          Local PDF…" for images (#190). Each is on by default for a first install and has a property
          to leave it out of unattended installs: INSTALLPDFCONTEXTMENU=0 (also a welcome-dialog
          checkbox) and INSTALLIMAGECONTEXTMENU=0. Secure, like the desktop shortcut's.
          An update keeps the installed version's choice (#305) by looking for the menu's registry
-         key, the way the desktop shortcut looks for its file: AppSearch runs before the old version
-         is removed. Releases from before a menu existed (the PDF one came in 0.7.1, the image one in
+         key: AppSearch runs before the old version is removed. Releases from before a menu existed (the PDF one came in 0.7.1, the image one in
          0.4.0) never had the key, so updating from one of them counts as a first install; the
          OnlyDetect rows below tell them apart. A value given on the command line wins. -->
     <Upgrade Id="EA00C367-7270-4C50-9D8B-A7A5C88AD27F">

@@ -118,7 +118,8 @@ foreach ($entry in @(@('StartMenuShortcut', 'ProgramMenuFolder', 'LocalpdfStartM
   Assert-Equal $component[0] $entry[1] "$($entry[2]) directory"
   Assert-Equal $component[1] $entry[3] "$($entry[2]) condition"
 }
-# Defaults an update keeps (#1058, #305). No static default: a SetProperty after AppSearch turns it on
+# The two File Explorer menus keep the installed version's choice on an update (#305). No static
+# default: a SetProperty after AppSearch turns it on
 # for a first install and, for an update from a release that offered it ($Release set), only while what
 # it installed is still there ($Found, from AppSearch). A command-line value is left alone. Windows
 # Installer's evaluator runs the SetProperty condition and then $Component's own condition.
@@ -161,7 +162,27 @@ function Assert-KeptOnUpdate([string] $Property, [string] $Release, [string] $Fo
     if ($session) { [void] [Runtime.InteropServices.Marshal]::FinalReleaseComObject($session) }
   }
 }
-Assert-KeptOnUpdate 'INSTALLDESKTOPSHORTCUT' 'WIX_UPGRADE_DETECTED' 'EXISTINGDESKTOPSHORTCUT' 'C:\Users\Public\Desktop\LocalPDF.lnk' 'LocalpdfDesktopShortcut' 'Desktop shortcut'
+# Desktop shortcut (#143, #1058): a static default, not the AppSearch/SetProperty pair the two menus
+# use below. Every update installs it again, like Local Word's and Local Paint's installers. Keeping
+# it on an update only while the old .lnk was found broke on 0.14.12: 0.14.11 renamed the shortcut to
+# "Local PDF.lnk" while the search still looked for "LocalPDF.lnk", so the update removed the link and
+# never re-created it. A static default cannot drift from the link's name; a command-line 0 still
+# leaves it out and the welcome checkbox still clears it.
+$desktopDefault = Read-Row 'SELECT `Value` FROM `Property` WHERE `Property` = ''INSTALLDESKTOPSHORTCUT''' 1
+Assert-Equal $desktopDefault[0] '1' 'Desktop shortcut default'
+Assert-NoRow 'SELECT `Property` FROM `AppSearch` WHERE `Property` = ''EXISTINGDESKTOPSHORTCUT''' 'Desktop shortcut search'
+Assert-NoRow 'SELECT `Action` FROM `CustomAction` WHERE `Source` = ''INSTALLDESKTOPSHORTCUT''' 'Desktop shortcut SetProperty'
+$desktopCondition = Read-Row 'SELECT `Condition` FROM `Component` WHERE `Component` = ''LocalpdfDesktopShortcut''' 1
+$session = $null
+try {
+  $session = $Installer.OpenPackage((Resolve-Path -LiteralPath $Path).Path, 1)
+  foreach ($case in @(@('installed by default', '1', 1), @('left out on the command line', '0', 0))) {
+    $session.Property('INSTALLDESKTOPSHORTCUT') = $case[1]
+    Assert-Equal ($session.EvaluateCondition($desktopCondition[0])) $case[2] "Desktop shortcut: $($case[0])"
+  }
+} finally {
+  if ($session) { [void] [Runtime.InteropServices.Marshal]::FinalReleaseComObject($session) }
+}
 $secure = Read-Row 'SELECT `Value` FROM `Property` WHERE `Property` = ''SecureCustomProperties''' 1
 if (($secure[0] -split ';') -notcontains 'INSTALLDESKTOPSHORTCUT') { throw "INSTALLDESKTOPSHORTCUT is not secure: '$($secure[0])'" }
 $checkbox = Read-Row 'SELECT `Type`, `Property`, `Text` FROM `Control` WHERE `Dialog_` = ''InstallWelcome'' AND `Control` = ''DesktopShortcut''' 3
@@ -299,4 +320,4 @@ $rm = Read-Row 'SELECT `Dialog` FROM `Dialog` WHERE `Dialog` = ''MsiRMFilesInUse
 Assert-Equal $rm[0] 'MsiRMFilesInUse' 'Files-in-use dialog'
 [void] [Runtime.InteropServices.Marshal]::FinalReleaseComObject($Database)
 [void] [Runtime.InteropServices.Marshal]::FinalReleaseComObject($Installer)
-Write-Output 'ok MSI: per-machine scope guard, publisher, persistent progress text, Start Menu shortcut, optional desktop shortcut and PDF and image context menus (on for a first install, kept on update only while present; checkboxes for the first two), icon/key path, full-UI success/cancel/error and Finish controls, files-in-use dialog, OCR models'
+Write-Output 'ok MSI: per-machine scope guard, publisher, persistent progress text, Start Menu shortcut, desktop shortcut (on by default, re-created by every update) and PDF and image context menus (on for a first install, kept on update only while present; checkboxes for the desktop shortcut and PDF menu), icon/key path, full-UI success/cancel/error and Finish controls, files-in-use dialog, OCR models'

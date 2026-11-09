@@ -123,9 +123,11 @@ neither the MSI nor the portable zip needs the Visual C++ redistributable.
   right-click menu checkbox, both ticked by default. `/qn` and `/qb` stay unattended and create
   both unless `INSTALLDESKTOPSHORTCUT=0` or `INSTALLPDFCONTEXTMENU=0` is passed;
   `INSTALLIMAGECONTEXTMENU=0` (no checkbox) leaves out the image menu. An update (the launcher runs
-  `msiexec /passive` with no properties) keeps the desktop shortcut only if `LocalPDF.lnk` is still
-  on the all-users desktop, so deleting it once keeps it away (#1058), and keeps each menu only if
-  its key path is still in HKLM (#305). Both are AppSearch results read before the old version is
+  `msiexec /passive` with no properties) installs the desktop shortcut again, like the rest of the
+  suite, so an update is also how a link that went missing comes back. (It used to be kept only
+  while AppSearch found `LocalPDF.lnk`; after 0.14.11 renamed the shortcut to `Local PDF.lnk` the
+  search stopped matching and the 0.14.12 update dropped it.) Each menu is kept only if
+  its key path is still in HKLM (#305) — an AppSearch result read before the old version is
   removed. An update from a release that didn't have a menu yet (before 0.7.1 for the PDF menu,
   before 0.4.0 for the image menu, found by `OnlyDetect` Upgrade rows) adds it like a first install.
   A value given on the command line wins.
@@ -140,8 +142,8 @@ neither the MSI nor the portable zip needs the Visual C++ redistributable.
   types, in its own component (`LocalpdfImageContextMenu`) since it became optional. Its rows moved
   out of `LocalpdfApp`; that's safe because `MajorUpgrade` removes the old version before installing
   the new one (`afterInstallValidate`), which `test-msi.ps1` checks.
-- `test-msi.ps1 <file.msi>` checks the compiled shortcut, context-menu and dialog tables, and
-  evaluates the first-install and update conditions of the desktop shortcut and both menus. Packaging
+- `test-msi.ps1 <file.msi>` checks the compiled shortcut, context-menu and dialog tables, evaluates the
+  desktop shortcut's install condition and both menus' first-install and update conditions. Packaging
   runs it in a child process before signing, so the MSI isn't held open when signtool runs. The ARM64 install
   smoke test checks that both all-users shortcuts point at the installed `localpdf.exe` and are
   removed on uninstall, and that `INSTALLDESKTOPSHORTCUT=0` skips the desktop one.
