@@ -25,6 +25,8 @@ pub mod source;
 pub mod status;
 pub mod suite;
 pub mod time;
+// // local-pdf: provider cripto 100% Rust no caminho do update.
+pub mod tls;
 pub mod version;
 
 #[cfg(feature = "egui")]

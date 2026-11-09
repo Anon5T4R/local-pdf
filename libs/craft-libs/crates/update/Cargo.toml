@@ -23,7 +23,21 @@ log = "0.4"
 getrandom = "0.3"
 tempfile = "3"
 sha2 = "0.10"
-ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring", "gzip", "platform-verifier"] }
+# // local-pdf: sem `_ring` — tirar o ring do caminho do update é o objetivo do experimento
+# (nenhum provider C compilado ali). O provider vem SEMPRE do `TlsConfig`
+# (`unversioned_rustls_crypto_provider`), então o ureq nunca procura um default.
+ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "gzip", "platform-verifier"] }
+# // local-pdf: provider 100% Rust para o rustls (experimento do app; ver src/tls.rs).
+# `rustls` entra direto só para o tipo `CryptoProvider` que o ureq aceita
+# (`unversioned_rustls_crypto_provider`), sem feature de provider C.
+rustls = { version = "0.23", default-features = false, features = ["std", "tls12"] }
+# // local-pdf: fork vendored em `libs/rustls-rustcrypto` (via [patch.crates-io] do
+# Cargo.toml do app): troca o webpki 0.102 do upstream pelas constantes `alg_id` do
+# rustls-pki-types.
+rustls-rustcrypto = { version = "0.0.2-alpha", default-features = false, features = ["std", "tls12"] }
+# // local-pdf: verificação da cadeia pelo SO com um provider arbitrário — o
+# `probe_pure` do teste (opcional) ignora o ureq e faz o handshake direto.
+rustls-platform-verifier = { version = "0.7", default-features = false }
 chrono = { workspace = true }
 semver = { version = "1", features = ["serde"] }
 

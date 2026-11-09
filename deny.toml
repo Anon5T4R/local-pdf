@@ -44,6 +44,11 @@ ignore = [
     # private-key operations use aws-lc-rs on native targets and are refused in the browser
     # (ADR-0009). Revisit when a fixed `rsa` ships.
     { id = "RUSTSEC-2023-0071", reason = "rsa is used for verification only (ADR-0009)" },
+    # crypto-bigint 0.5.5 chega pelo rsa 0.9 (fork do updater e localpdf-sign). A correção só
+    # existe na série 0.7, que o rsa 0.9 não aceita; as operações secret-dependentes são de
+    # chave privada e aqui o rsa só verifica assinatura com chave pública. // local-pdf:
+    # revisitar quando o rustls-rustcrypto migrar para rsa 0.10.
+    { id = "RUSTSEC-2026-0387", reason = "crypto-bigint 0.5.5 via rsa 0.9 (fix exige rsa 0.10); uso é verificação com chave pública" },
     # proc-macro-error is unmaintained (no vulnerability). It reaches the tree as a proc macro of
     # winprint's fmt-derive (craft-print's Windows spooler), so it runs at compile time on Windows
     # and is not in the binary.
