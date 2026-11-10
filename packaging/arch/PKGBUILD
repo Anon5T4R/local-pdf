@@ -1,6 +1,6 @@
 # Maintainer: Anon5T4R <https://github.com/Anon5T4R>
 pkgname=localpdf
-pkgver=0.14.0
+pkgver=0.14.15
 pkgrel=1
 pkgdesc="Editor de PDF local e open-source, escrito em Rust puro"
 arch=('x86_64' 'aarch64')

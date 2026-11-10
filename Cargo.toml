@@ -5,7 +5,7 @@ exclude = ["vendor", "libs"]
 default-members = ["crates/*", "apps/localpdf", "apps/localpdf-cli", "xtask"]
 
 [workspace.package]
-version = "0.14.14"
+version = "0.14.15"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
