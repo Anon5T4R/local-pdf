@@ -67,10 +67,15 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: dist
+      - name: Checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          find . -type f ! -name 'SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
       - name: Publica a release
         run: |
           set -euo pipefail
-          gh release create "${GITHUB_REF_NAME}" dist/windows/* dist/linux/* \
+          gh release create "${GITHUB_REF_NAME}" dist/windows/* dist/linux/* dist/SHA256SUMS.txt \
             --title "Local PDF ${GITHUB_REF_NAME}" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
