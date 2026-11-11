@@ -86,7 +86,7 @@ jobs:
           sed -i "s|^source=.*|source=(\"localpdf-$pkgver-linux-x86_64.tar.gz\")|; s|^sha256sums=.*|sha256sums=('$sha')|" "$work/PKGBUILD"
           chown -R builder "$work"
           cd "$work"
-          su builder -c 'makepkg --noconfirm --noprogressbar'
+          su builder -c 'makepkg --noconfirm --noprogressbar -d'
           mv localpdf-*.pkg.tar.zst "$GITHUB_WORKSPACE/"
           ls -lh "$GITHUB_WORKSPACE"/*.pkg.tar.zst
       - uses: actions/upload-artifact@v7
