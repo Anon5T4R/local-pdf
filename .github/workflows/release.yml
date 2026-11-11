@@ -56,8 +56,46 @@ jobs:
           name: linux
           path: dist/release/*
 
+  arch:
+    needs: linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container: archlinux:base
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: linux
+          path: dist/release
+      - name: Pacote Arch (makepkg a partir do tarball da release)
+        run: |
+          set -euo pipefail
+          # makepkg recusa root: usuário sem privilégio constrói; fakeroot
+          # normaliza a posse dos arquivos do pacote.
+          pacman -Sy --noconfirm fakeroot >/dev/null
+          useradd -m builder
+          version=$(grep -m1 '^version = ' Cargo.toml | sed 's/.*"\(.*\)".*/\1/')
+          work=$(mktemp -d)
+          cp packaging/arch/PKGBUILD "$work/"
+          cp "dist/release/localpdf-$version-linux-x86_64.tar.gz" "$work/localpdf-$version-linux-x86_64.tar.gz"
+          # Fonte local (a URL da release ainda não existe neste ponto do
+          # pipeline) + checksum REAL do artefato em vez de SKIP.
+          sha=$(sha256sum "$work/localpdf-$version-linux-x86_64.tar.gz" | cut -d' ' -f1)
+          sed -i "s|^source=.*|source=(\"localpdf-$pkgver-linux-x86_64.tar.gz\")|; s|^sha256sums=.*|sha256sums=('$sha')|" "$work/PKGBUILD"
+          chown -R builder "$work"
+          cd "$work"
+          su builder -c 'makepkg --noconfirm --noprogressbar'
+          mv localpdf-*.pkg.tar.zst "$GITHUB_WORKSPACE/"
+          ls -lh "$GITHUB_WORKSPACE"/*.pkg.tar.zst
+      - uses: actions/upload-artifact@v7
+        with:
+          name: arch
+          path: '*.pkg.tar.zst'
+          if-no-files-found: error
   publish:
-    needs: [windows, linux]
+    needs: [windows, linux, arch]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -75,7 +113,7 @@ jobs:
       - name: Publica a release
         run: |
           set -euo pipefail
-          gh release create "${GITHUB_REF_NAME}" dist/windows/* dist/linux/* dist/SHA256SUMS.txt \
+          gh release create "${GITHUB_REF_NAME}" dist/windows/* dist/linux/* dist/arch/* dist/SHA256SUMS.txt \
             --title "Local PDF ${GITHUB_REF_NAME}" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}

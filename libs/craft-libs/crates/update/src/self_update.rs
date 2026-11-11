@@ -247,10 +247,17 @@ fn detect(app: &App, exe: &Path) -> Option<Install> {
     if process::capture("rpm", &["-q", app.id], t).is_some() {
         return Some(Install::Package(PackageKind::Rpm, exe.to_path_buf()));
     }
-    // A pacman install of the app. We detect the release's own Arch package (by bundle id).
-    // AUR builds (`<id>`, `<id>-bin`, `<id>-git`) are left to pacman and the AUR helper.
-    if crate::detect::linux::has_pacman_db() && process::capture("pacman", &["-Q", &app.bundle_id()], t).is_some() {
-        return Some(Install::Package(PackageKind::ArchPkg, exe.to_path_buf()));
+    // A pacman install of the app. Matched by any release stem — the current
+    // id, former ids and the upstream bundle id — so our PKGBUILDs
+    // (`<id>`) and the upstream-era Arch package are both recognised. AUR
+    // builds (`<id>`, `<id>-bin`, `<id>-git`) are left to pacman and the AUR
+    // helper either way.
+    if crate::detect::linux::has_pacman_db() {
+        let mut stems: Vec<String> = app.stems().map(str::to_string).collect();
+        stems.push(app.bundle_id());
+        if stems.iter().any(|s| process::capture("pacman", &["-Q", s], t).is_some()) {
+            return Some(Install::Package(PackageKind::ArchPkg, exe.to_path_buf()));
+        }
     }
     if exe.is_file() {
         return Some(Install::Standalone(exe.to_path_buf()));

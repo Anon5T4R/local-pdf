@@ -1,33 +1,26 @@
-# Maintainer: Anon5T4R <https://github.com/Anon5T4R>
+# PKGBUILD do localpdf para Arch (uso pessoal do João; não publicado no AUR).
+# Instala a árvore FHS (bin/ + share/) do tarball da release — o mesmo artefato
+# que o package.sh gera. O sha256 fica SKIP no repo (o hash só existe após a
+# release); o job arch do CI substitui pelo real ao construir o pacote.
+#
+#   makepkg -si   (local, com o tarball da release ao lado)
+
 pkgname=localpdf
 pkgver=0.14.16
 pkgrel=1
-pkgdesc="Editor de PDF local e open-source, escrito em Rust puro"
-arch=('x86_64' 'aarch64')
-url="https://github.com/Anon5T4R/local-pdf"
-license=('MIT' 'Apache-2.0')
-depends=('glibc' 'gcc-libs' 'vulkan-driver' 'libxkbcommon')
-makedepends=('rust' 'clang' 'lld')
-source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+pkgdesc='Editor de PDF local e open-source, escrito em Rust puro'
+arch=(x86_64)
+url='https://github.com/Anon5T4R/local-pdf'
+license=('MIT OR Apache-2.0')
+depends=(glibc gcc-libs libxcb libxrandr libxi libxcursor libxkbcommon cups-client)
+optdepends=('xdg-desktop-portal: seletor nativo de arquivos (GNOME/KDE já trazem)')
+options=(!debug)
+source=("localpdf-$pkgver-linux-x86_64.tar.gz")
 sha256sums=('SKIP')
-options=('!lto')
-
-build() {
-  cd "$pkgname-$pkgver"
-  cargo build --locked --release
-}
-
-check() {
-  cd "$pkgname-$pkgver"
-  cargo test --locked --release
-}
 
 package() {
-  cd "$pkgname-$pkgver"
-  install -Dm755 target/release/localpdf "$pkgdir/usr/bin/localpdf"
-  install -Dm755 target/release/localpdf-cli "$pkgdir/usr/bin/localpdf-cli"
-  install -Dm644 packaging/linux/com.local.localpdf.desktop \
-    "$pkgdir/usr/share/applications/com.local.localpdf.desktop"
-  install -Dm644 assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg \
-    "$pkgdir/usr/share/icons/hicolor/scalable/apps/com.local.localpdf.svg"
+  cd "$srcdir"
+  install -dm755 "$pkgdir/usr"
+  cp -a "localpdf-$pkgver-linux-x86_64/bin" "$pkgdir/usr/"
+  cp -a "localpdf-$pkgver-linux-x86_64/share" "$pkgdir/usr/"
 }
