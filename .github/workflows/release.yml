@@ -83,7 +83,7 @@ jobs:
           # Fonte local (a URL da release ainda não existe neste ponto do
           # pipeline) + checksum REAL do artefato em vez de SKIP.
           sha=$(sha256sum "$work/localpdf-$version-linux-x86_64.tar.gz" | cut -d' ' -f1)
-          sed -i "s|^source=.*|source=(\"localpdf-$pkgver-linux-x86_64.tar.gz\")|; s|^sha256sums=.*|sha256sums=('$sha')|" "$work/PKGBUILD"
+          sed -i "s|^source=.*|source=(\"localpdf-\$pkgver-linux-x86_64.tar.gz\")|; s|^sha256sums=.*|sha256sums=('$sha')|" "$work/PKGBUILD"
           chown -R builder "$work"
           cd "$work"
           su builder -c 'makepkg --noconfirm --noprogressbar -d'
