@@ -6,7 +6,7 @@
 #   makepkg -si   (local, com o tarball da release ao lado)
 
 pkgname=localpdf
-pkgver=0.14.16
+pkgver=0.14.17
 pkgrel=1
 pkgdesc='Editor de PDF local e open-source, escrito em Rust puro'
 arch=(x86_64)
