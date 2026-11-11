@@ -33,18 +33,19 @@ jobs:
           ok=0
           for try in 1 2 3 4 5; do
             sudo apt-get update && ok=1 && break
+            echo "apt: tentativa $try falhou — repetindo em 20s (blip de mirror do runner)"
             sleep 20
           done
           [ "$ok" = 1 ]
           ok=0
           for try in 1 2 3 4 5; do
-            sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev \ && ok=1 && break
+            sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev \
+              libxi-dev libgl1-mesa-dev libgtk-3-dev qpdf poppler-utils mesa-vulkan-drivers \
+              fonts-dejavu-core && ok=1 && break
             echo "apt: tentativa $try falhou — repetindo em 20s (blip de mirror do runner)"
             sleep 20
           done
           [ "$ok" = 1 ]
-            libxi-dev libgl1-mesa-dev libgtk-3-dev qpdf poppler-utils mesa-vulkan-drivers \
-            fonts-dejavu-core
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
