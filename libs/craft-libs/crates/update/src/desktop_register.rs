@@ -46,15 +46,25 @@ enum LaunchTarget {
 }
 
 fn launch_target() -> Option<LaunchTarget> {
-    if let Some(p) = std::env::var_os("APPIMAGE") {
+    let exe = std::env::current_exe().ok()?.canonicalize().ok()?;
+    // #3: o runtime AppImage exporta APPIMAGE/APPDIR no ambiente — que pode
+    // ter sido herdado de OUTRO AppImage (launcher, terminal). Só confia no
+    // par se ESTE processo veio do mount em questão.
+    if let (Some(p), Some(dir)) = (std::env::var_os("APPIMAGE"), std::env::var_os("APPDIR"))
+        && let Ok(mount) = PathBuf::from(&dir).canonicalize()
+        && exe.starts_with(&mount)
+    {
         let p = PathBuf::from(p);
-        if p.is_file() {
-            return Some(LaunchTarget::AppImage(p));
-        }
+        // #4: AppImage apagado enquanto roda — o env aponta pra um
+        // arquivo que não existe e current_exe é o mount efêmero
+        // (/tmp/.mount_XXX). Nada durável pra registrar.
+        return p.is_file().then_some(LaunchTarget::AppImage(p));
     }
-    let exe = std::env::current_exe().ok()?;
-    let exe = exe.canonicalize().unwrap_or(exe);
     if !exe.is_file() {
+        return None;
+    }
+    // Mount efêmero sem env válido: idem #4.
+    if exe.starts_with("/tmp/.mount_") {
         return None;
     }
     // Dev builds (`cargo run`) must not pollute the menu with target/debug.
@@ -178,6 +188,14 @@ fn entry_text(app: &App, share: &Path, target: &Path) -> Option<(String, String,
 }
 
 fn copy_icons(share: &Path, data: &Path, icon: &str) {
+    // Fluxo install.sh em ~/.local: os ícones já estão NO data dir — copiar
+    // cada arquivo sobre ele mesmo zera o conteúdo (fs::copy abre o destino
+    // com truncate). Nada a fazer.
+    if let (Ok(a), Ok(b)) = (share.canonicalize(), data.canonicalize())
+        && a == b
+    {
+        return;
+    }
     let src_root = share.join("icons/hicolor");
     let Ok(levels) = std::fs::read_dir(&src_root) else { return };
     for level in levels.flatten() {
@@ -195,7 +213,7 @@ fn copy_icons(share: &Path, data: &Path, icon: &str) {
 }
 
 fn remove_entry(data: &Path, desktop: &str, icon: &str) {
-    let _ = std::fs::remove_file(data.join("applications").join(&desktop));
+    let _ = std::fs::remove_file(data.join("applications").join(desktop));
     if let Ok(levels) = std::fs::read_dir(data.join("icons/hicolor")) {
         for level in levels.flatten() {
             for ext in ["png", "svg", "svgz"] {
@@ -208,20 +226,23 @@ fn remove_entry(data: &Path, desktop: &str, icon: &str) {
 fn ensure_registered_in(app: &App, version: &str, target: &Path, appdir: Option<&Path>, data: &Path) -> Result<(), String> {
     // Self-cleaning: our previous target is gone — the user deleted or moved
     // the file away from us. Remove the entry we wrote (only ours).
-    if let Some((prev, _v, desktop, icon)) = read_marker(data, app) {
-        if !Path::new(&prev).is_file() {
-            remove_entry(data, &desktop, &icon);
-            let _ = std::fs::remove_file(marker_path(data, app));
-        }
+    let mut old: Option<(String, String, String, String)> = read_marker(data, app);
+    if let Some((prev, _v, desktop, icon)) = old.clone()
+        && !Path::new(&prev).is_file()
+    {
+        remove_entry(data, &desktop, &icon);
+        let _ = std::fs::remove_file(marker_path(data, app));
+        old = None;
     }
     // Fast path: same target, same version, entry still there.
     let installed = data.join("applications");
-    if let Some((prev, v, desktop, icon)) = read_marker(data, app) {
-        if prev == target.display().to_string() && v == version {
-            let entry = installed.join(&desktop);
-            if entry.is_file() {
-                return Ok(());
-            }
+    if let Some((prev, v, desktop, _icon)) = old.clone()
+        && prev == target.display().to_string()
+        && v == version
+    {
+        let entry = installed.join(&desktop);
+        if entry.is_file() {
+            return Ok(());
         }
     }
     // A target that vanished between resolution and here registers nothing.
@@ -241,6 +262,22 @@ fn ensure_registered_in(app: &App, version: &str, target: &Path, appdir: Option<
             (name, app.id.to_string(), text)
         }
     };
+    // Cópia nova com outro nome de entrada (layout diferente, rename no
+    // empacotamento): remove a antiga, senão vira morta no menu pra sempre.
+    if let Some((_prev, _v, old_desktop, old_icon)) = &old
+        && *old_desktop != name
+    {
+        let _ = std::fs::remove_file(installed.join(old_desktop));
+        if old_icon != &icon
+            && let Ok(levels) = std::fs::read_dir(data.join("icons/hicolor"))
+        {
+            for level in levels.flatten() {
+                for ext in ["png", "svg", "svgz"] {
+                    let _ = std::fs::remove_file(level.path().join("apps").join(format!("{old_icon}.{ext}")));
+                }
+            }
+        }
+    }
     std::fs::create_dir_all(&installed).map_err(|e| e.to_string())?;
     std::fs::write(installed.join(&name), text).map_err(|e| e.to_string())?;
     if let Some(s) = &share {
@@ -285,7 +322,7 @@ mod tests {
         let share = d.path().join("share");
         layout(&share, "com.local.localimage.desktop", "local-image", "local-image", false);
         layout(&share, "outro.desktop", "other-bin", "other", false);
-        let (name, icon) = discover_desktop(&share, &app()).unwrap();
+        let (name, icon) = discover_desktop(&share, app()).unwrap();
         assert_eq!(name, "com.local.localimage.desktop");
         assert_eq!(icon, "local-image");
     }
@@ -304,26 +341,26 @@ mod tests {
         std::fs::write(&b, b"bin").unwrap();
 
         // First run: entry + icon + marker.
-        ensure_registered_in(&app(), "1.0", &a, None, &data).unwrap();
+        ensure_registered_in(app(), "1.0", &a, None, &data).unwrap();
         let entry = std::fs::read_to_string(data.join("applications/local-image.desktop")).unwrap();
         assert!(entry.contains(&a.display().to_string()));
         assert!(data.join("icons/hicolor/128x128/apps/local-image.png").is_file());
-        assert!(marker_path(&data, &app()).is_file());
+        assert!(marker_path(&data, app()).is_file());
 
         // Same target+version: still there (fast path, nothing to assert but no error).
-        ensure_registered_in(&app(), "1.0", &a, None, &data).unwrap();
+        ensure_registered_in(app(), "1.0", &a, None, &data).unwrap();
 
         // Moved file: entry follows the new path.
-        ensure_registered_in(&app(), "1.1", &b, None, &data).unwrap();
+        ensure_registered_in(app(), "1.1", &b, None, &data).unwrap();
         let entry = std::fs::read_to_string(data.join("applications/local-image.desktop")).unwrap();
         assert!(entry.contains(&b.display().to_string()));
 
         // Old path gone: everything we wrote is removed.
         std::fs::remove_file(&b).unwrap();
-        ensure_registered_in(&app(), "1.1", &d.path().join("gone/local-image"), None, &data).unwrap();
+        ensure_registered_in(app(), "1.1", &d.path().join("gone/local-image"), None, &data).unwrap();
         assert!(!data.join("applications/local-image.desktop").exists());
         assert!(!data.join("icons/hicolor/128x128/apps/local-image.png").exists());
-        assert!(!marker_path(&data, &app()).exists());
+        assert!(!marker_path(&data, app()).exists());
     }
 
     #[test]
@@ -333,9 +370,51 @@ mod tests {
         let exe = d.path().join("Downloads/local-image");
         std::fs::create_dir_all(exe.parent().unwrap()).unwrap();
         std::fs::write(&exe, b"bin").unwrap();
-        ensure_registered_in(&app(), "1.0", &exe, None, &data).unwrap();
+        ensure_registered_in(app(), "1.0", &exe, None, &data).unwrap();
         let entry = std::fs::read_to_string(data.join("applications/local-image.desktop")).unwrap();
         assert!(entry.contains("Name=Local Image"));
         assert!(entry.contains(&exe.display().to_string()));
+    }
+
+    #[test]
+    fn icons_survive_when_share_is_the_data_dir() {
+        // Fluxo install.sh em ~/.local: shipped_share == data. Copiar cada
+        // ícone sobre ele mesmo o zerava (fs::copy com truncate).
+        let d = tempfile::tempdir().unwrap();
+        let data = d.path().join("data");
+        let bin = d.path().join("bin/local-image");
+        std::fs::create_dir_all(bin.parent().unwrap()).unwrap();
+        std::fs::write(&bin, b"bin").unwrap();
+        // layout FHS: <root>/bin + <root>/share, instalado EM data
+        std::fs::create_dir_all(data.join("applications")).unwrap();
+        std::fs::create_dir_all(data.join("icons/hicolor/128x128/apps")).unwrap();
+        std::fs::write(data.join("applications/local-image.desktop"), "Exec=local-image %F\nIcon=local-image\n").unwrap();
+        std::fs::write(data.join("icons/hicolor/128x128/apps/local-image.png"), b"PNG-BYTES").unwrap();
+        ensure_registered_in(app(), "1.0", &bin, None, &data).unwrap();
+        let icon = std::fs::read(data.join("icons/hicolor/128x128/apps/local-image.png")).unwrap();
+        assert_eq!(icon, b"PNG-BYTES");
+    }
+
+    #[test]
+    fn renamed_entry_replaces_the_old_one() {
+        // Cópia nova com nome de .desktop diferente (layout variando entre
+        // versões): a entrada antiga sai, senão vira órfã no menu.
+        let d = tempfile::tempdir().unwrap();
+        let data = d.path().join("data");
+        // primeira cópia: layout "flat" (<a>/bin + <a>/share com local-image.desktop)
+        let a = d.path().join("a");
+        std::fs::create_dir_all(a.join("bin")).unwrap();
+        std::fs::write(a.join("bin/local-image"), b"bin").unwrap();
+        layout(&a.join("share"), "local-image.desktop", "local-image", "local-image", true);
+        ensure_registered_in(app(), "1.0", &a.join("bin/local-image"), None, &data).unwrap();
+        assert!(data.join("applications/local-image.desktop").is_file());
+        // segunda cópia: layout rDNS (com.local.localimage.desktop)
+        let b = d.path().join("b");
+        std::fs::create_dir_all(b.join("bin")).unwrap();
+        std::fs::write(b.join("bin/local-image"), b"bin").unwrap();
+        layout(&b.join("share"), "com.local.localimage.desktop", "local-image", "com.local.localimage", true);
+        ensure_registered_in(app(), "1.1", &b.join("bin/local-image"), None, &data).unwrap();
+        assert!(data.join("applications/com.local.localimage.desktop").is_file());
+        assert!(!data.join("applications/local-image.desktop").exists(), "entrada antiga deve sumir");
     }
 }
