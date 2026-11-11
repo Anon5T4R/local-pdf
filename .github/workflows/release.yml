@@ -44,8 +44,19 @@ jobs:
         run: echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/assets/craft-fonts" >> "$GITHUB_ENV"
       - name: Dependências de empacotamento
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libxcb1-dev libxrandr-dev libxi-dev libxcursor-dev \
+          ok=0
+          for try in 1 2 3 4 5; do
+            sudo apt-get update && ok=1 && break
+            sleep 20
+          done
+          [ "$ok" = 1 ]
+          ok=0
+          for try in 1 2 3 4 5; do
+            sudo apt-get install -y libxcb1-dev libxrandr-dev libxi-dev libxcursor-dev \ && ok=1 && break
+            echo "apt: tentativa $try falhou — repetindo em 20s (blip de mirror do runner)"
+            sleep 20
+          done
+          [ "$ok" = 1 ]
             libxkbcommon-dev ninja-build
           curl -sSfL https://github.com/goreleaser/nfpm/releases/download/v2.48.0/nfpm_2.48.0_amd64.deb -o /tmp/nfpm.deb
           sudo dpkg -i /tmp/nfpm.deb
