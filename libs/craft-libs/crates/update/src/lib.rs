@@ -4,6 +4,8 @@
 
 pub mod app;
 pub mod desktop_entry;
+#[cfg(target_os = "linux")]
+pub mod desktop_register;
 pub mod detect;
 pub mod distro;
 mod folders;
