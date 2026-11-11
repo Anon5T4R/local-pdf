@@ -12,8 +12,9 @@ pkgdesc='Editor de PDF local e open-source, escrito em Rust puro'
 arch=(x86_64)
 url='https://github.com/Anon5T4R/local-pdf'
 license=('MIT OR Apache-2.0')
-depends=(glibc gcc-libs libxcb libxrandr libxi libxcursor libxkbcommon cups-client)
-optdepends=('xdg-desktop-portal: seletor nativo de arquivos (GNOME/KDE já trazem)')
+depends=(glibc gcc-libs libxcb libxrandr libxi libxcursor libxkbcommon)
+optdepends=('cups-client: impressão (lp/lpstat via craft-print)'
+            'xdg-desktop-portal: seletor nativo de arquivos (GNOME/KDE já trazem)')
 options=(!debug)
 source=("localpdf-$pkgver-linux-x86_64.tar.gz")
 sha256sums=('SKIP')
