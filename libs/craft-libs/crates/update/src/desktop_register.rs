@@ -122,9 +122,11 @@ fn shipped_share(target: &Path, appdir: Option<&Path>) -> Option<PathBuf> {
 
 /// The shipped entry is the one whose `Exec` runs this app's binary — file
 /// names differ across the suite (`<id>.desktop`, `com.local.<id>.desktop`).
+/// Deliberately no fallback: in a shared applications dir (`~/.local/share`,
+/// the whole suite), "first entry that didn't match" is ANOTHER app's —
+/// cloning it would rewrite that app's desktop to run this binary.
 fn discover_desktop(share: &Path, app: &App) -> Option<(String, String)> {
     let dir = share.join("applications");
-    let mut fallback: Option<(String, String)> = None;
     for entry in std::fs::read_dir(dir).ok()? {
         let entry = entry.ok()?;
         let name = entry.file_name().to_string_lossy().into_owned();
@@ -133,13 +135,14 @@ fn discover_desktop(share: &Path, app: &App) -> Option<(String, String)> {
         }
         let Ok(text) = std::fs::read_to_string(entry.path()) else { continue };
         let program = crate::desktop_entry::exec_program(&text);
-        let icon = icon_of(&text);
-        match program.as_deref() {
-            Some(p) if Path::new(p).file_name().is_some_and(|f| f == app.id) => return Some((name, icon.unwrap_or_else(|| app.id.to_string()))),
-            _ => fallback = fallback.or_else(|| Some((name, icon.unwrap_or_else(|| app.id.to_string())))),
+        if let Some(p) = program.as_deref()
+            && Path::new(p).file_name().is_some_and(|f| f == app.id)
+        {
+            let icon = icon_of(&text).unwrap_or_else(|| app.id.to_string());
+            return Some((name, icon));
         }
     }
-    fallback
+    None
 }
 
 fn icon_of(desktop: &str) -> Option<String> {
@@ -393,6 +396,31 @@ mod tests {
         ensure_registered_in(app(), "1.0", &bin, None, &data).unwrap();
         let icon = std::fs::read(data.join("icons/hicolor/128x128/apps/local-image.png")).unwrap();
         assert_eq!(icon, b"PNG-BYTES");
+    }
+
+    #[test]
+    fn shared_share_leaves_foreign_entries_alone() {
+        // Share compartilhado (~/.local/share: a suíte inteira mora lá) sem
+        // entrada PRÓPRIA deste app. O fallback antigo devolvia o primeiro
+        // .desktop alheio, clonava e sobrescrevia a entrada do OUTRO app com
+        // o Exec deste binário. Sem fallback: entrada própria mínima, a
+        // alheia intocada byte a byte.
+        let d = tempfile::tempdir().unwrap();
+        // layout FHS em <d>: bin + share; data == share (compartilhado)
+        let bin = d.path().join("bin/local-image");
+        std::fs::create_dir_all(bin.parent().unwrap()).unwrap();
+        std::fs::write(&bin, b"bin").unwrap();
+        let data = d.path().join("share");
+        std::fs::create_dir_all(data.join("applications")).unwrap();
+        let foreign = data.join("applications/local-keys.desktop");
+        let foreign_text = "[Desktop Entry]\nType=Application\nName=Local Keys\nExec=local-keys %F\nIcon=local-keys\nStartupWMClass=local-keys\n";
+        std::fs::write(&foreign, foreign_text).unwrap();
+        ensure_registered_in(app(), "1.0", &bin, None, &data).unwrap();
+        // este app ganha entrada própria (mínima, Exec absoluto)
+        let mine = std::fs::read_to_string(data.join("applications/local-image.desktop")).unwrap();
+        assert!(mine.contains(&bin.display().to_string()), "entrada própria com Exec absoluto");
+        // a entrada alheia permanece exatamente como estava
+        assert_eq!(std::fs::read_to_string(&foreign).unwrap(), foreign_text, "entrada de outro app deve ficar intacta");
     }
 
     #[test]
