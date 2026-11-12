@@ -5,13 +5,15 @@
 #
 #   makepkg -si   (local, com o tarball da release ao lado)
 
-pkgname=localpdf
+pkgname=ai.storyteller.localpdf
 pkgver=0.14.19
 pkgrel=1
 pkgdesc='Editor de PDF local e open-source, escrito em Rust puro'
 arch=(x86_64)
 url='https://github.com/Anon5T4R/local-pdf'
 license=('MIT OR Apache-2.0')
+provides=('localpdf')
+conflicts=('localpdf')
 depends=(glibc gcc-libs libxcb libxrandr libxi libxcursor libxkbcommon)
 optdepends=('cups-client: impressão (lp/lpstat via craft-print)'
             'xdg-desktop-portal: seletor nativo de arquivos (GNOME/KDE já trazem)')

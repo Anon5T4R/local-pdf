@@ -99,7 +99,10 @@ jobs:
           chown -R builder "$work"
           cd "$work"
           su builder -c 'makepkg --noconfirm --noprogressbar -d'
-          mv localpdf-*.pkg.tar.zst "$GITHUB_WORKSPACE/"
+          # Asset no padrao da suite (<id>-<ver>-linux-<arch>): o pacman instala pelo
+          # .PKGINFO interno (pkgname=ai.storyteller.localpdf), o nome do arquivo e so o contrato do updater.
+          mv ai.storyteller.localpdf-$version-*.pkg.tar.zst "localpdf-$version-linux-x86_64.pkg.tar.zst"
+          mv "localpdf-$version-linux-x86_64.pkg.tar.zst" "$GITHUB_WORKSPACE/"
           ls -lh "$GITHUB_WORKSPACE"/*.pkg.tar.zst
       - uses: actions/upload-artifact@v7
         with:
