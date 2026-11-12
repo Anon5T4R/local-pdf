@@ -14,7 +14,7 @@ version_schema: semver
 release: ${RELEASE}
 section: graphics
 priority: optional
-maintainer: ${PDFCRAFT_MAINTAINER}
+maintainer: ${LOCALPDF_MAINTAINER}
 vendor: Anon5T4R
 homepage: https://github.com/Anon5T4R/local-pdf
 license: MIT OR Apache-2.0

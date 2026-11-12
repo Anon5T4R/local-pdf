@@ -76,11 +76,39 @@ fn launch_target() -> Option<LaunchTarget> {
 
 fn register(app: &App, version: &str, target: &Path, appdir: Option<&Path>) -> Result<(), String> {
     let s = target.to_string_lossy();
-    if s.starts_with("/usr/") || s.starts_with("/opt/") {
-        return Ok(()); // Package-manager install ships its own entry.
+    if s.starts_with("/usr/") || s.starts_with("/opt/") || s.starts_with("/nix/") {
+        return Ok(()); // Package-manager install ships its own entry (/nix: profile owns it).
     }
     let data = folders::data_local_dir().ok_or("no data dir")?;
     ensure_registered_in(app, version, target, appdir, &data)
+}
+
+/// Write-to-temp-then-rename in the same directory: a crash mid-write (or a
+/// concurrent instance) never leaves a truncated file where menus and icon
+/// caches read them. The temp name carries the pid so parallel instances
+/// don't fight over it.
+fn atomic_write(path: &Path, contents: &str) -> std::io::Result<()> {
+    let tmp = path.with_extension(format!("tmp{}", std::process::id()));
+    std::fs::write(&tmp, contents)?;
+    match std::fs::rename(&tmp, path) {
+        Ok(()) => Ok(()),
+        Err(e) => {
+            let _ = std::fs::remove_file(&tmp);
+            Err(e)
+        }
+    }
+}
+
+fn atomic_copy(src: &Path, dst: &Path) -> std::io::Result<()> {
+    let tmp = dst.with_extension(format!("tmp{}", std::process::id()));
+    std::fs::copy(src, &tmp)?;
+    match std::fs::rename(&tmp, dst) {
+        Ok(()) => Ok(()),
+        Err(e) => {
+            let _ = std::fs::remove_file(&tmp);
+            Err(e)
+        }
+    }
 }
 
 // ---- the core (roots injected; unit-tested) --------------------------------
@@ -103,7 +131,7 @@ fn write_marker(data: &Path, app: &App, target: &Path, version: &str, desktop: &
     if let Some(dir) = p.parent() {
         let _ = std::fs::create_dir_all(dir);
     }
-    let _ = std::fs::write(p, format!("{}\n{version}\n{desktop}\n{icon}\n", target.display()));
+    let _ = atomic_write(&p, &format!("{}\n{version}\n{desktop}\n{icon}\n", target.display()));
 }
 
 /// Where the shipped desktop entry and icons live for this running copy:
@@ -209,7 +237,7 @@ fn copy_icons(share: &Path, data: &Path, icon: &str) {
             if src.is_file() {
                 let dst = data.join("icons/hicolor").join(level.file_name()).join("apps");
                 let _ = std::fs::create_dir_all(&dst);
-                let _ = std::fs::copy(&src, dst.join(format!("{icon}.{ext}")));
+                let _ = atomic_copy(&src, &dst.join(format!("{icon}.{ext}")));
             }
         }
     }
@@ -282,7 +310,7 @@ fn ensure_registered_in(app: &App, version: &str, target: &Path, appdir: Option<
         }
     }
     std::fs::create_dir_all(&installed).map_err(|e| e.to_string())?;
-    std::fs::write(installed.join(&name), text).map_err(|e| e.to_string())?;
+    atomic_write(&installed.join(&name), &text).map_err(|e| e.to_string())?;
     if let Some(s) = &share {
         copy_icons(s, data, &icon);
     }
@@ -396,6 +424,42 @@ mod tests {
         ensure_registered_in(app(), "1.0", &bin, None, &data).unwrap();
         let icon = std::fs::read(data.join("icons/hicolor/128x128/apps/local-image.png")).unwrap();
         assert_eq!(icon, b"PNG-BYTES");
+    }
+
+    #[test]
+    fn no_temp_files_left_behind() {
+        // Escritas atômicas (tmp+rename): nenhum resíduo tmpN sobra na árvore
+        // do data dir — menus/caches leem esses arquivos a qualquer momento.
+        let d = tempfile::tempdir().unwrap();
+        let data = d.path().join("data");
+        let a = d.path().join("a");
+        std::fs::create_dir_all(a.join("bin")).unwrap();
+        std::fs::write(a.join("bin/local-image"), b"bin").unwrap();
+        layout(&a.join("share"), "local-image.desktop", "local-image", "local-image", true);
+        ensure_registered_in(app(), "1.0", &a.join("bin/local-image"), None, &data).unwrap();
+        let mut leftovers = Vec::new();
+        for e in walk_files(&data) {
+            if e.file_name().to_string_lossy().contains("tmp") {
+                leftovers.push(e.path());
+            }
+        }
+        assert!(leftovers.is_empty(), "sobrou tmp: {leftovers:?}");
+        // e o ícone copiado chegou inteiro
+        assert!(data.join("icons/hicolor/128x128/apps/local-image.png").is_file());
+    }
+
+    fn walk_files(dir: &Path) -> Vec<std::fs::DirEntry> {
+        let mut out = Vec::new();
+        if let Ok(rd) = std::fs::read_dir(dir) {
+            for e in rd.flatten() {
+                if e.path().is_dir() {
+                    out.extend(walk_files(&e.path()));
+                } else {
+                    out.push(e);
+                }
+            }
+        }
+        out
     }
 
     #[test]

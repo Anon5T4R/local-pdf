@@ -46,7 +46,7 @@ case "$ARCH" in
   aarch64 | arm64) ARCH=aarch64; DEB_ARCH=arm64 ;;
   *) echo "unsupported architecture $ARCH" >&2; exit 2 ;;
 esac
-export PDFCRAFT_MAINTAINER="${PDFCRAFT_MAINTAINER:-Local PDF maintainers <localpdf@local.ai>}"
+export LOCALPDF_MAINTAINER="${LOCALPDF_MAINTAINER:-Local PDF maintainers <localpdf@local.ai>}"
 LABEL_SUFFIX="${PDFCRAFT_BUILD_LABEL:+-$PDFCRAFT_BUILD_LABEL}"
 BASENAME="localpdf-$VERSION$LABEL_SUFFIX-linux-$ARCH"
 
