@@ -12,6 +12,8 @@ use sha2::{Digest, Sha256};
 
 /// Largest JSON or text answer we read.
 const MAX_SMALL: u64 = 4 << 20;
+/// Largest GitHub API answer we read: 100 releases of an app with 49 assets are about 10 MB.
+const MAX_API: u64 = 16 << 20;
 
 /// What a GET of a small resource produced.
 #[derive(Debug, PartialEq, Eq)]
@@ -31,7 +33,7 @@ pub enum Fetched {
 
 #[derive(Clone)]
 pub struct Http {
-    /// // local-keys: um único conjunto de agentes, sempre com o provider
+    /// // craft-update: um único conjunto de agentes, sempre com o provider
     /// `rustls-rustcrypto` (o caminho puro; não há fallback).
     agents: Agents,
     token: Option<String>,
@@ -138,7 +140,7 @@ impl Http {
         // The OS checks each certificate chain itself: Windows fetches roots it hasn't stored yet
         // and trusts what antivirus HTTPS scanning installs. Reading the store ourselves missed
         // both ("invalid peer certificate: UnknownIssuer").
-        // // local-keys: provider puro (rustls-rustcrypto) é o caminho ÚNICO do app - não há
+        // // craft-update: provider puro (rustls-rustcrypto) é o caminho ÚNICO do app - não há
         // conjunto de agentes com o provider padrão (ring): ele nem é compilado.
         let tls = ureq::tls::TlsConfig::builder()
             .root_certs(ureq::tls::RootCerts::PlatformVerifier)
@@ -186,7 +188,7 @@ impl Http {
         match status {
             200 => {
                 let etag = header("etag");
-                let text = read_text_capped(&mut resp, MAX_SMALL).map_err(|e| format!("unreadable answer from GitHub ({e})"))?;
+                let text = read_text_capped(&mut resp, MAX_API).map_err(|e| format!("unreadable answer from GitHub ({e})"))?;
                 Ok(Fetched::Body { text, etag })
             }
             304 => Ok(Fetched::NotModified),
@@ -1039,6 +1041,19 @@ pub(crate) mod tests {
         // A small answer still comes back intact.
         let (url, _) = serve(b"{\"ok\":true}".to_vec(), vec![Reply::Full]);
         assert_eq!(http.get_feed(&url).unwrap(), "{\"ok\":true}");
+    }
+
+    #[test]
+    fn a_long_release_list_is_read_up_to_the_api_cap() {
+        // SolidCraft's list of 100 releases was 6.5 MB, past MAX_SMALL (craft-launcher#1021).
+        let long = vec![b' '; (MAX_SMALL as usize) + 1024];
+        let (url, _) = serve(long.clone(), vec![Reply::Full]);
+        let http = Http::new(crate::TEST_AGENT).unwrap();
+        assert!(matches!(http.get_api(&url, None), Ok(Fetched::Body { text, .. }) if text.len() == long.len()));
+        // Past MAX_API it is refused outright, not truncated and parsed.
+        let (url, _) = serve(vec![b' '; (MAX_API as usize) + 1024], vec![Reply::Full]);
+        let err = http.get_api(&url, None).unwrap_err();
+        assert!(err.contains("larger than"), "{err}");
     }
 
     #[test]

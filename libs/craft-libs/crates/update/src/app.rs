@@ -17,17 +17,47 @@ pub struct App {
     pub former_names: &'static [&'static str],
     /// Its 128 px PNG icon, for the menu entry written beside an AppImage. `None`: no icon.
     pub icon_png: Option<&'static [u8]>,
+    /// Its accent colour (sRGB), for the update prompt's buttons and highlights: the app's brand
+    /// colour, as ArtCraft Launcher shows it. `None`: the default blue.
+    pub accent: Option<[u8; 3]>,
+    /// Who makes it, shown as "by <developer>" in the update prompt. [`DEVELOPER`] unless the app
+    /// says otherwise.
+    pub developer: &'static str,
+    /// Who its Windows Installer packages name as their publisher (`Manufacturer` in the app's
+    /// WiX, the `Publisher` of its uninstall entry). [`UPSTREAM_PUBLISHER`] unless the suite
+    /// entry overrides it: a rebranded app publishes under its own name.
+    pub publisher: &'static str,
 }
+
+/// The developer of every app in the Local suite.
+pub const DEVELOPER: &str = "Anon5T4R";
+
+/// Who the upstream suite's Windows Installer packages name as their publisher.
+pub const UPSTREAM_PUBLISHER: &str = "Learning Machines LLC";
 
 impl App {
     /// An app with no former names and no icon.
     pub const fn new(id: &'static str, name: &'static str, tagline: &'static str, repo: &'static str) -> Self {
-        Self { id, name, tagline, repo, former_ids: &[], former_names: &[], icon_png: None }
+        Self {
+            id,
+            name,
+            tagline,
+            repo,
+            former_ids: &[],
+            former_names: &[],
+            icon_png: None,
+            accent: None,
+            developer: DEVELOPER,
+            publisher: UPSTREAM_PUBLISHER,
+        }
     }
 
     /// `ai.storyteller.<id>`: macOS bundle id, Flatpak id and Linux desktop-file id.
+    /// The suite's own app uses its packaging id (`com.localpaint.app`) instead —
+    /// the fork's installers, desktop entry and metainfo all use it, and macOS
+    /// self-update detection must match what `Info.plist` carries.
     pub fn bundle_id(&self) -> String {
-        format!("ai.storyteller.{}", self.id)
+        if self.id == "localpaint" { "com.localpaint.app".into() } else { format!("ai.storyteller.{}", self.id) }
     }
 
     pub fn releases_url(&self) -> String {

@@ -13,29 +13,33 @@ workspace = true
 [features]
 default = []
 egui = ["dep:egui"]
+# Decodes the app icon the update prompt shows (`App::icon_png`); PNG only. Off for apps whose
+# workspace has no `image` dependency: their prompt draws the app's initial instead.
+icons = ["egui", "dep:image"]
 local-mirror = []
+# tests/dialog_screenshots.rs: renders the dialogs to PNG with egui_kittest's wgpu renderer.
+snapshot = ["egui", "egui_kittest/wgpu"]
 
 [dependencies]
 egui = { workspace = true, optional = true }
+# Decodes the app icon the startup prompt shows (`App::icon_png`); PNG only.
+image = { version = "0.25", default-features = false, features = ["png"], optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 log = "0.4"
 getrandom = "0.3"
 tempfile = "3"
 sha2 = "0.10"
-# // local-pdf: sem `_ring` — tirar o ring do caminho do update é o objetivo do experimento
-# (nenhum provider C compilado ali). O provider vem SEMPRE do `TlsConfig`
-# (`unversioned_rustls_crypto_provider`), então o ureq nunca procura um default.
 ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "gzip", "platform-verifier"] }
-# // local-pdf: provider 100% Rust para o rustls (experimento do app; ver src/tls.rs).
+# Provider 100% Rust para o rustls (ver src/tls.rs).
 # `rustls` entra direto só para o tipo `CryptoProvider` que o ureq aceita
 # (`unversioned_rustls_crypto_provider`), sem feature de provider C.
 rustls = { version = "0.23", default-features = false, features = ["std", "tls12"] }
-# // local-pdf: fork vendored em `libs/rustls-rustcrypto` (via [patch.crates-io] do
+# Fork vendored em `libs/rustls-rustcrypto` (via [patch.crates-io] do
 # Cargo.toml do app): troca o webpki 0.102 do upstream pelas constantes `alg_id` do
 # rustls-pki-types.
 rustls-rustcrypto = { version = "0.0.2-alpha", default-features = false, features = ["std", "tls12"] }
-# // local-pdf: verificação da cadeia pelo SO com um provider arbitrário — o
+# Verificação da cadeia pelo SO com um provider arbitrário — o
 # `probe_pure` do teste (opcional) ignora o ureq e faz o handshake direto.
 rustls-platform-verifier = { version = "0.7", default-features = false }
 chrono = { workspace = true }
@@ -43,6 +47,9 @@ semver = { version = "1", features = ["serde"] }
 
 [dev-dependencies]
 flate2 = "1"
+egui_kittest = "0.37"
+# egui's own Hack and Ubuntu Light for the screenshots (egui is built without default fonts).
+epaint_default_fonts = "0.37"
 
 [target.'cfg(unix)'.dependencies]
 flate2 = "1"

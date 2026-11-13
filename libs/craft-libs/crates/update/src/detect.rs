@@ -1,7 +1,7 @@
 //! Finding Craft Apps that are already installed, however they got there.
 //!
 //! - macOS: `<App>.app` in `/Applications` or `~/Applications`, read from its `Info.plist`.
-//! - Windows: the Windows Installer's uninstall entries (`Local PDF contributors`), and portable
+//! - Windows: the Windows Installer's uninstall entries (each app's own publisher), and portable
 //!   copies the launcher unpacked.
 //! - Linux: AppImages in `~/Applications` (where the launcher and AppImageLauncher put them),
 //!   `~/AppImages` (Gear Lever) and `~/.local/bin`, Debian/RPM packages, Flatpaks, and tarball
@@ -88,20 +88,11 @@ pub(crate) fn appimage_version(name: &str, stems: &[&str]) -> Option<Option<Stri
     (parsed.kind == crate::PackageKind::AppImage && parsed.token.starts_with("linux-")).then_some(Some(parsed.version))
 }
 
-/// Who our Windows Installer packages name as their publisher.
-#[cfg_attr(not(windows), allow(dead_code))]
-const PUBLISHER: &str = "Local PDF contributors";
-
-/// The publisher earlier releases (and the upstream app) named, so the uninstall entries they
-/// left are still recognised after the display rename.
-#[cfg_attr(not(windows), allow(dead_code))]
-const LEGACY_PUBLISHER: &str = "Learning Machines LLC";
-
 /// Whether an uninstall entry's `DisplayName` and `Publisher` are `app`'s, under any name its
-/// installers have registered.
+/// installers have registered and the publisher its WiX names as `Manufacturer`.
 #[cfg_attr(not(windows), allow(dead_code))]
 fn is_installer_entry(app: &App, display_name: &str, publisher: &str) -> bool {
-    (publisher == PUBLISHER || publisher == LEGACY_PUBLISHER) && app.names().any(|n| n == display_name)
+    publisher == app.publisher && app.names().any(|n| n == display_name)
 }
 
 /// Where a Windows install of `app` may keep its exe, in the order to try: the entry's
@@ -148,12 +139,12 @@ pub mod macos {
 
     use super::{App, InstallSource, Installed, version};
 
-    /// Where a `.app` might be: the system and the user's Applications folders. Former names too:
-    /// a renamed app still finds the bundle the earlier name installed.
+    /// Where a `.app` might be: the system and the user's Applications folders. Every name the app
+    /// has had, too: a renamed app still finds the bundle the earlier name installed.
     pub fn candidates(app: &App) -> Vec<PathBuf> {
         let mut out = Vec::new();
         for name in app.names() {
-            let bundle = format!("{}.app", name);
+            let bundle = format!("{name}.app");
             out.push(Path::new("/Applications").join(&bundle));
             if let Some(home) = crate::folders::home_dir() {
                 out.push(home.join("Applications").join(&bundle));
@@ -174,10 +165,12 @@ pub mod macos {
             return None;
         }
         // `<App>Version` carries the full version including a pre-release suffix;
-        // CFBundleShortVersionString only has the numbers.
-        let full_key = format!("{}Version", app.name);
-        let text =
-            [full_key.as_str(), "CFBundleShortVersionString", "CFBundleVersion"].iter().find_map(|k| dict.get(k).and_then(plist::Value::as_string));
+        // CFBundleShortVersionString only has the numbers. Every name the app has had: the key
+        // keeps the name its `Info.plist` was written with.
+        let full_keys: Vec<String> = app.names().map(|name| format!("{name}Version")).collect();
+        let mut keys: Vec<&str> = full_keys.iter().map(String::as_str).collect();
+        keys.extend(["CFBundleShortVersionString", "CFBundleVersion"]);
+        let text = keys.iter().find_map(|k| dict.get(k).and_then(plist::Value::as_string));
         Some(Installed { version: text.and_then(version::parse), source: InstallSource::MacApp, location: path.display().to_string(), package: None })
     }
 }
@@ -247,12 +240,12 @@ pub mod windows {
     }
 
     /// The folder the app's MSI remembers for its next upgrade, which is where it went when the
-    /// launcher chose the folder.
+    /// launcher chose the folder. Every name the app has had: the key keeps the name the MSI was
+    /// installed under.
     fn install_dir(app: &App) -> Option<PathBuf> {
-        // Former names too: a renamed app still finds the folder the earlier name recorded.
         [KEY_WOW64_64KEY, KEY_WOW64_32KEY].into_iter().find_map(|flags| {
             app.names().find_map(|name| {
-                let key = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(format!(r"SOFTWARE\{}", name), KEY_READ | flags).ok()?;
+                let key = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(format!(r"SOFTWARE\{name}"), KEY_READ | flags).ok()?;
                 key.get_value::<String, _>("InstallDir").ok().filter(|d| !d.is_empty()).map(PathBuf::from)
             })
         })
@@ -728,33 +721,44 @@ mod tests {
         );
     }
 
+    const LEARNING_MACHINES: &str = "Learning Machines LLC";
+
     fn roots() -> Vec<PathBuf> {
         vec![PathBuf::from(r"C:\Program Files"), PathBuf::from(r"C:\Program Files (x86)")]
     }
 
     #[test]
+    fn the_apps_installer_publisher_matches_its_wix_manufacturer() {
+        let app = App::by_id("localpaint").unwrap();
+        assert!(is_installer_entry(app, "Local Paint", "Local Paint contributors"), "the WiX names Manufacturer=\"Local Paint contributors\"");
+        assert!(is_installer_entry(app, "LocalPaint", "Local Paint contributors"), "an MSI from before the rename is still this app's");
+        assert!(!is_installer_entry(app, "Local Paint", LEARNING_MACHINES), "the upstream publisher is not this app's");
+        assert!(!is_installer_entry(app, "Local Paint", "Anon5T4R"), "the old publisher is not this app's any more");
+    }
+
+    #[test]
     fn pdfcraft_matches_its_former_printcraft_installer_name() {
         let pdf = App::by_id("pdfcraft").unwrap();
-        assert!(is_installer_entry(pdf, "PrintCraft", PUBLISHER), "a PrintCraft entry from {PUBLISHER} should be PdfCraft's");
-        assert!(
-            is_installer_entry(pdf, "PrintCraft", LEGACY_PUBLISHER),
-            "an entry left by the publisher earlier releases named is still PdfCraft's"
-        );
+        assert!(is_installer_entry(pdf, "PrintCraft", LEARNING_MACHINES), "a PrintCraft entry from {LEARNING_MACHINES} should be PdfCraft's");
     }
 
     #[test]
     fn pdfcraft_still_matches_its_own_installer_name() {
         let pdf = App::by_id("pdfcraft").unwrap();
-        assert!(is_installer_entry(pdf, "PdfCraft", PUBLISHER));
+        assert!(is_installer_entry(pdf, "PdfCraft", LEARNING_MACHINES));
     }
 
     #[test]
     fn printcraft_entries_match_nothing_else() {
         let pdf = App::by_id("pdfcraft").unwrap();
+        let local = App::by_id("localpdf").unwrap();
         assert!(!is_installer_entry(pdf, "PrintCraft", "Some Other Publisher"));
-        assert!(!is_installer_entry(pdf, "PhotoCraft", PUBLISHER));
-        for a in SUITE.iter().filter(|a| a.id != "pdfcraft") {
-            assert!(!is_installer_entry(a, "PrintCraft", PUBLISHER), "PrintCraft matched {}", a.name);
+        assert!(!is_installer_entry(pdf, "PhotoCraft", LEARNING_MACHINES));
+        // Local PDF is the fork of the same PrintCraft, so it claims those entries too (its own
+        // catalog did before the unification); nothing else may.
+        assert!(is_installer_entry(local, "PrintCraft", LEARNING_MACHINES), "the fork keeps detecting its upstream install");
+        for a in SUITE.iter().filter(|a| !matches!(a.id, "pdfcraft" | "localpdf")) {
+            assert!(!is_installer_entry(a, "PrintCraft", LEARNING_MACHINES), "PrintCraft matched {}", a.name);
         }
     }
 
@@ -778,9 +782,9 @@ mod tests {
         let roots = roots();
         let location = PathBuf::from(r"D:\Apps\Somewhere");
         for a in SUITE.iter().filter(|a| a.former_ids.is_empty() && a.former_names.is_empty()) {
-            assert!(is_installer_entry(a, a.name, PUBLISHER), "{}", a.name);
+            assert!(is_installer_entry(a, a.name, a.publisher), "{}", a.name);
             assert!(!is_installer_entry(a, a.name, "Some Other Publisher"), "{}", a.name);
-            assert!(!is_installer_entry(a, &a.name.to_lowercase(), PUBLISHER), "{}", a.name);
+            assert!(!is_installer_entry(a, &a.name.to_lowercase(), a.publisher), "{}", a.name);
             let exe = format!("{}.exe", a.id);
             let in_program_files: Vec<PathBuf> = roots.iter().map(|r| r.join(a.name).join(&exe)).collect();
             assert_eq!(exe_candidates(a, None, &roots), in_program_files);

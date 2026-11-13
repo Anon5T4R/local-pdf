@@ -1,6 +1,6 @@
-//! // local-pdf: provider cripto do rustls no caminho do craft-update.
+//! // craft-update: provider cripto do rustls no caminho do craft-update.
 //!
-//! Experimento do Local PDF (não é padrão da suíte): as requisições de update (check de
+//! As requisições de update (check de
 //! release e download do instalador) usam o provider **100% Rust** (`rustls-rustcrypto`, fork
 //! vendored em `libs/rustls-rustcrypto`) como caminho **ÚNICO**. Um handshake que falhe vira erro
 //! normal - visível na linha de status do app (botão "Verificar atualizações") e no log de sessão -
