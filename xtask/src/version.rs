@@ -86,6 +86,43 @@ fn find_line(manifest: &str) -> Result<(usize, &str), String> {
     Err("no `version = \"…\"` in [workspace.package] of the root Cargo.toml".into())
 }
 
+/// `pkgver` line replaced with `new`; everything else byte-for-byte unchanged.
+///
+/// The Arch job of the release pipeline copies the tarball of exactly this version and lets
+/// `makepkg` verify it, so a stale `pkgver` fails the release with "source not found".
+pub fn replace_pkgver(pkgbuild: &str, new: &str) -> Result<String, String> {
+    let mut out = String::with_capacity(pkgbuild.len());
+    let mut found = false;
+    for line in pkgbuild.split_inclusive('\n') {
+        let eol = if line.ends_with("\r\n") {
+            "\r\n"
+        } else if line.ends_with('\n') {
+            "\n"
+        } else {
+            ""
+        };
+        if line.trim_start().starts_with("pkgver=") {
+            out.push_str(&format!("pkgver={new}{eol}"));
+            found = true;
+        } else {
+            out.push_str(line);
+        }
+    }
+    if found { Ok(out) } else { Err("no `pkgver=…` line in packaging/arch/PKGBUILD".into()) }
+}
+
+/// Keeps `packaging/arch/PKGBUILD` in sync with the workspace version.
+fn sync_pkgbuild(root: &Path, new: &str) -> Result<(), String> {
+    let path = root.join("packaging/arch/PKGBUILD");
+    let text = std::fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let updated = replace_pkgver(&text, new)?;
+    // Atomic write: a half-written PKGBUILD breaks the Arch packaging job.
+    let tmp = root.join("target").join("PKGBUILD.xtask-version");
+    std::fs::write(&tmp, updated).map_err(|e| format!("write {}: {e}", tmp.display()))?;
+    std::fs::rename(&tmp, &path).map_err(|e| format!("replace {}: {e}", path.display()))?;
+    Ok(())
+}
+
 pub fn run(root: &Path, args: &[&str]) -> Result<(), String> {
     let path = root.join("Cargo.toml");
     let text = std::fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
@@ -115,6 +152,7 @@ pub fn run(root: &Path, args: &[&str]) -> Result<(), String> {
             if cargo_update(&["--offline"]).is_err() {
                 cargo_update(&[])?;
             }
+            sync_pkgbuild(root, new)?;
             println!("version: {old} -> {new}");
             Ok(())
         }
@@ -159,6 +197,25 @@ mod tests {
         let crlf = MANIFEST.replace('\n', "\r\n");
         let out = replace(&crlf, "2.0.0").unwrap();
         assert_eq!(out, crlf.replace("\"0.1.0\"", "\"2.0.0\""));
+    }
+
+    #[test]
+    fn replaces_the_arch_pkgver() {
+        let pkgbuild = "pkgname=ai.storyteller.localpdf\npkgver=0.14.21\npkgrel=1\n";
+        let out = replace_pkgver(pkgbuild, "0.14.22").unwrap();
+        assert_eq!(out, "pkgname=ai.storyteller.localpdf\npkgver=0.14.22\npkgrel=1\n");
+        assert!(replace_pkgver("pkgname=x\n", "1.0.0").is_err());
+        let crlf = pkgbuild.replace('\n', "\r\n");
+        assert_eq!(replace_pkgver(&crlf, "2.0.0").unwrap(), crlf.replace("0.14.21", "2.0.0"));
+    }
+
+    #[test]
+    fn the_real_pkgbuild_matches_the_workspace_version() {
+        let root = crate::gates::root();
+        let manifest = std::fs::read_to_string(root.join("Cargo.toml")).unwrap();
+        let pkgbuild = std::fs::read_to_string(root.join("packaging/arch/PKGBUILD")).unwrap();
+        let v = read(&manifest).unwrap();
+        assert!(pkgbuild.contains(&format!("pkgver={v}")), "PKGBUILD pkgver divergiu do Cargo.toml ({v}) — rode `cargo xtask version set {v}`");
     }
 
     #[test]
