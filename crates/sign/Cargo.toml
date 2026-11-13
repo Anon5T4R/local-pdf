@@ -33,7 +33,7 @@ ecdsa = { version = "0.17", default-features = false, features = ["algorithm", "
 # (`sign(Some(&mut rng), ...)`), the mitigation RUSTSEC-2023-0071 asks for. `encoding` is the
 # PKCS #1/#8 reader and writer, `sha2` names the DigestInfo prefix of PKCS #1 v1.5.
 crypto-bigint = { version = "0.7", default-features = false, features = ["alloc"] }
-rsa = { version = "=0.10.0-rc.18", default-features = false, features = ["std", "hazmat", "encoding", "sha2"] }
+rsa = { version = "=0.10.0-rc.21", default-features = false, features = ["std", "hazmat", "encoding"] }
 pbkdf2 = { version = "0.13", default-features = false, features = ["hmac"] }
 hmac = "0.13"
 aes = "0.9"
