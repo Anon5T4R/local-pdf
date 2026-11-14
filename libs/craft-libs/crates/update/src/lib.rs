@@ -12,6 +12,7 @@ mod folders;
 pub mod http;
 pub mod install;
 pub mod manifest;
+mod minisign;
 pub mod msi_context;
 mod msi_copy;
 mod msi_migrate;

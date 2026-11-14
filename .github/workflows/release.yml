@@ -95,7 +95,7 @@ jobs:
           # Fonte local (a URL da release ainda não existe neste ponto do
           # pipeline) + checksum REAL do artefato em vez de SKIP.
           sha=$(sha256sum "$work/localpdf-$version-linux-x86_64.tar.gz" | cut -d' ' -f1)
-          sed -i "s|^source=.*|source=(\"localpdf-\$pkgver-linux-x86_64.tar.gz\")|; s|^sha256sums=.*|sha256sums=('$sha')|" "$work/PKGBUILD"
+          sed -i "s|^pkgver=.*|pkgver=$version|; s|^source=.*|source=(\"localpdf-\$pkgver-linux-x86_64.tar.gz\")|; s|^sha256sums=.*|sha256sums=('$sha')|" "$work/PKGBUILD"
           chown -R builder "$work"
           cd "$work"
           su builder -c 'makepkg --noconfirm --noprogressbar -d'
@@ -125,6 +125,40 @@ jobs:
           set -euo pipefail
           cd dist
           find . -type f ! -name 'SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+      - name: Assina os assets (minisign)
+        run: |
+          set -euo pipefail
+          # Política transitória: falha de assinatura NUNCA trava a release —
+          # pula com aviso e a release sai sem .minisig (auditável na release).
+          if [ -z "${MINISIGN_KEY:-}" ] || [ -z "${MINISIGN_PASSPHRASE:-}" ]; then
+            echo "::warning::MINISIGN_KEY/MINISIGN_PASSPHRASE ausentes — release publicada SEM assinatura"
+            exit 0
+          fi
+          if ! sudo apt-get -o Acquire::Retries=5 install -y minisign >/dev/null 2>&1; then
+            echo "::warning::apt não instalou minisign — release publicada SEM assinatura"
+            exit 0
+          fi
+          key="$RUNNER_TEMP/minisign-suite.key"
+          printf '%s' "$MINISIGN_KEY" > "$key"
+          chmod 600 "$key"
+          cd dist
+          files=$(find windows linux arch -type f ! -name '*.minisig' | sort)
+          while IFS= read -r f; do
+            printf '%s\n' "$MINISIGN_PASSPHRASE" |
+              minisign -HSm "$f" -s "$key" -x "$f.minisig" -t "Anon5T4R suite ${GITHUB_REF_NAME}" ||
+              { echo "::warning::falha ao assinar $f — release SEM assinatura"; find windows linux arch -name '*.minisig' -delete; exit 0; }
+            # Auto-verificação contra a pubkey commitada: garante que a chave dos
+            # secrets bate com o molde que o updater embute (nunca publica sig inútil).
+            if ! minisign -Vm "$f" -p "$GITHUB_WORKSPACE/packaging/minisign.pub" -x "$f.minisig" >/dev/null 2>&1; then
+              echo "::warning::chave dos secrets NÃO bate com packaging/minisign.pub — release SEM assinatura"
+              find windows linux arch -name '*.minisig' -delete
+              exit 0
+            fi
+          done <<< "$files"
+          rm -f "$key"
+        env:
+          MINISIGN_KEY: ${{ secrets.MINISIGN_KEY }}
+          MINISIGN_PASSPHRASE: ${{ secrets.MINISIGN_PASSPHRASE }}
       - name: Publica a release (idempotente)
         run: |
           set -euo pipefail

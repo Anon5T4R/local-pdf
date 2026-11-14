@@ -52,6 +52,12 @@ impl Release {
     pub fn sums_asset(&self) -> Option<&Asset> {
         self.assets.iter().find(|a| a.name == "SHA256SUMS.txt")
     }
+
+    /// The `<name>.minisig` sidecar attached by the release workflow's signing step.
+    pub fn minisig_asset(&self, asset_name: &str) -> Option<&Asset> {
+        let sidecar = format!("{asset_name}.minisig");
+        self.assets.iter().find(|a| a.name == sidecar)
+    }
 }
 
 const MAX_NOTES: usize = 64 * 1024;

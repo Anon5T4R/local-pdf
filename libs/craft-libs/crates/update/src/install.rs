@@ -393,6 +393,8 @@ pub(crate) fn download(release: &Release, asset: &Asset, job: &mut Job<'_>) -> R
         Transfer::Reconnecting { done, total } => phase(JobPhase::Reconnecting { done, total }),
     })?;
     (job.phase)(JobPhase::Verifying);
+    // Transitional policy: advisory minisign check over the downloaded asset — logs, never blocks.
+    crate::minisign::check(release, asset, &dest, job.http);
     Ok(dest)
 }
 
