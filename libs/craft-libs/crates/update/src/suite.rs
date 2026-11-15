@@ -13,6 +13,10 @@ pub const LOCALPAINT: App = App {
     publisher: "Local Paint contributors",
     ..App::new("localpaint", "Local Paint", "Image editing", "Anon5T4R/Local-Paint")
 };
+pub const LOCALPHOTO: App = App {
+    publisher: "Local Photo contributors",
+    ..App::new("localphoto", "Local Photo", "Photo library and raw development", "Anon5T4R/Local-Photo")
+};
 pub const LOCALVECTOR: App = App {
     former_names: &["LocalVector"],
     publisher: "Local Vector contributors",
@@ -65,10 +69,11 @@ pub const GRIDCRAFT: App = App::new("gridcraft", "GridCraft", "Spreadsheets and 
 pub const LAUNCHER: App = App::new("artcraft-launcher", "ArtCraft Launcher", "Installs and updates the Craft App Suite", "storytold/craft-launcher");
 
 /// The Craft App Suite, in getartcraft.com's display order.
-pub const SUITE: [App; 23] = [
+pub const SUITE: [App; 24] = [
     PHOTOCRAFT,
     LOCALIMAGE,
     LOCALPAINT,
+    LOCALPHOTO,
     LOCALVECTOR,
     VECTORCRAFT,
     FILMCRAFT,
@@ -125,6 +130,10 @@ mod tests {
         assert_eq!(by_id("localpdf").map(|a| a.former_names), Some(&["PrintCraft", "LocalPDF"][..]));
         assert_eq!(by_id("localoffice").map(|a| (a.name, a.publisher)), Some(("Local Word", "Local Word contributors")));
         assert_eq!(by_id("localpaint").map(|a| a.repo), Some("Anon5T4R/Local-Paint"));
+        assert_eq!(
+            by_id("localphoto").map(|a| (a.name, a.publisher, a.repo)),
+            Some(("Local Photo", "Local Photo contributors", "Anon5T4R/Local-Photo"))
+        );
         assert_eq!(by_id("localvector").map(|a| (a.publisher, a.repo)), Some(("Local Vector contributors", "Anon5T4R/Local-Vector")));
         assert_eq!(by_id("localslides").map(|a| (a.name, a.publisher)), Some(("Local Slides", "Local Slides contributors")));
         assert_eq!(by_id("localsheets").map(|a| (a.name, a.publisher, a.repo)), Some(("Local Sheets", "Anon5T4R", "Anon5T4R/local-sheets")));

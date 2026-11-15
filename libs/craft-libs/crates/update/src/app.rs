@@ -53,11 +53,15 @@ impl App {
     }
 
     /// `ai.storyteller.<id>`: macOS bundle id, Flatpak id and Linux desktop-file id.
-    /// The suite's own app uses its packaging id (`com.localpaint.app`) instead —
-    /// the fork's installers, desktop entry and metainfo all use it, and macOS
-    /// self-update detection must match what `Info.plist` carries.
+    /// The suite's own apps use their packaging ids instead — the forks' installers, desktop
+    /// entries and metainfo all use them, and macOS self-update detection must match what
+    /// `Info.plist` carries.
     pub fn bundle_id(&self) -> String {
-        if self.id == "localpaint" { "com.localpaint.app".into() } else { format!("ai.storyteller.{}", self.id) }
+        match self.id {
+            "localpaint" => "com.localpaint.app".into(),
+            "localphoto" => "com.localphoto.app".into(),
+            _ => format!("ai.storyteller.{}", self.id),
+        }
     }
 
     pub fn releases_url(&self) -> String {
@@ -101,5 +105,14 @@ mod tests {
         assert_eq!(pdf.names().collect::<Vec<_>>(), ["PdfCraft", "PrintCraft"]);
         assert_eq!(pdf.bundle_id(), "ai.storyteller.pdfcraft");
         assert_eq!(pdf.releases_url(), "https://github.com/storytold/pdfcraft/releases");
+    }
+
+    #[test]
+    fn the_suites_own_apps_use_their_packaging_bundle_ids() {
+        for (id, bundle) in [("localpaint", "com.localpaint.app"), ("localphoto", "com.localphoto.app")] {
+            let app = App::new(id, id, "", "");
+            assert_eq!(app.bundle_id(), bundle);
+        }
+        assert_eq!(App::new("localsheets", "Local Sheets", "", "").bundle_id(), "ai.storyteller.localsheets");
     }
 }
