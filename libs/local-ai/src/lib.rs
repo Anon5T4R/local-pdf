@@ -16,6 +16,19 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
+use std::time::Duration;
+
+/// How long a request may spend resolving DNS, and then connecting. A provider that is down or a
+/// name that does not resolve must fail fast, not leave a worker thread waiting.
+const RESOLVE_TIMEOUT: Duration = Duration::from_secs(10);
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+/// How long the request may spend sending and waiting for the response headers.
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
+const RESPONSE_TIMEOUT: Duration = Duration::from_secs(60);
+/// Total budget for reading the body. An SSE stream that never sends `[DONE]` and never closes
+/// would otherwise block the reader forever; two minutes is long enough for a slow model and short
+/// enough that a stuck stream ends with a visible error instead of a silent wait.
+const BODY_TIMEOUT: Duration = Duration::from_secs(120);
 
 /// The one crypto provider this crate uses: `rustls-rustcrypto`, pure Rust, so no C/asm TLS
 /// backend (ring, aws-lc-rs, CNG) is ever compiled or loaded through the BYOK path.
@@ -26,6 +39,10 @@ fn pure_provider() -> Arc<rustls::crypto::CryptoProvider> {
 /// The one HTTP agent every request shares: ureq is built without a default provider, so this
 /// agent carries the pure one explicitly. A handshake it cannot complete surfaces as an error to
 /// the caller; nothing falls back to another provider.
+///
+/// Every phase has a deadline: without them a provider that goes quiet mid-stream leaves the
+/// caller blocked until the TCP connection times out (which may be never), and the UI shows a
+/// spinner forever. The deadlines turn that into an ordinary error the app can show.
 fn agent() -> &'static ureq::Agent {
     static AGENT: OnceLock<ureq::Agent> = OnceLock::new();
     AGENT.get_or_init(|| {
@@ -34,6 +51,15 @@ fn agent() -> &'static ureq::Agent {
             .build();
         ureq::Agent::config_builder()
             .tls_config(tls)
+            // A non-2xx is a response, not a transport failure: the body carries the provider's
+            // own message ("invalid api key", "model not found"), which is the only useful thing
+            // to show. Without this, `send` errors with "http status: 401" and the body is lost.
+            .http_status_as_error(false)
+            .timeout_resolve(Some(RESOLVE_TIMEOUT))
+            .timeout_connect(Some(CONNECT_TIMEOUT))
+            .timeout_send_request(Some(REQUEST_TIMEOUT))
+            .timeout_recv_response(Some(RESPONSE_TIMEOUT))
+            .timeout_recv_body(Some(BODY_TIMEOUT))
             .build()
             .new_agent()
     })
@@ -95,7 +121,10 @@ pub const PROVIDERS: &[Provider] = &[
     Provider {
         id: "opencode-go",
         label: "OpenCode GO",
-        base_url: "https://opencode.ai/zen/v1",
+        // The Go subscription is served from its own base, not the Zen pay-as-you-go one: pointing
+        // it at Zen makes a Go key bill against Zen credits (or fail). Requests also need the
+        // per-conversation session header, added in `authorize`.
+        base_url: "https://opencode.ai/inference/go/openai/v1",
         vision: false,
     },
     Provider {
@@ -236,6 +265,13 @@ fn authorize(app: &App, conn: &Connection, key: &str) -> Vec<(String, String)> {
         headers.push(("HTTP-Referer".to_owned(), app.url.to_owned()));
         headers.push(("X-Title".to_owned(), app.id.to_owned()));
     }
+    if conn.provider == "opencode-go" {
+        // OpenCode Go routes and prompt-caches per conversation and asks clients to identify
+        // themselves: the connection is the conversation here, so its id is the stable session id,
+        // and the app's own user agent is sent instead of the HTTP library's.
+        headers.push(("x-opencode-session".to_owned(), conn.id.clone()));
+        headers.push(("User-Agent".to_owned(), format!("{}/1.0", app.id)));
+    }
     headers
 }
 
@@ -260,12 +296,12 @@ pub fn list_models(app: &App, conn: &Connection) -> Result<Vec<String>, String> 
     for (k, v) in headers {
         req = req.header(&k, &v);
     }
-    let body = req
-        .call()
-        .map_err(|e| format!("{e}"))?
-        .body_mut()
-        .read_to_string()
-        .map_err(|e| e.to_string())?;
+    let mut response = req.call().map_err(|e| format!("{e}"))?;
+    let status = response.status();
+    let body = response.body_mut().read_to_string().map_err(|e| e.to_string())?;
+    if !status.is_success() {
+        return Err(provider_error(status, &body));
+    }
     let value: serde_json::Value = serde_json::from_str(&body).map_err(|e| e.to_string())?;
     let mut out: Vec<String> = value
         .get("data")
@@ -305,10 +341,14 @@ pub fn chat(app: &App, conn: &Connection, history: &[Msg]) -> Result<String, Str
         builder = builder.header(&k, &v);
     }
     let mut response = builder.send(body.as_bytes()).map_err(|e| e.to_string())?;
+    let status = response.status();
     let text = response
         .body_mut()
         .read_to_string()
         .map_err(|e| e.to_string())?;
+    if !status.is_success() {
+        return Err(provider_error(status, &text));
+    }
     parse_chat(&text)
 }
 
@@ -341,10 +381,14 @@ pub fn vision(
         builder = builder.header(&k, &v);
     }
     let mut response = builder.send(body.as_bytes()).map_err(|e| e.to_string())?;
+    let status = response.status();
     let text = response
         .body_mut()
         .read_to_string()
         .map_err(|e| e.to_string())?;
+    if !status.is_success() {
+        return Err(provider_error(status, &text));
+    }
     parse_chat(&text)
 }
 
@@ -359,6 +403,21 @@ pub fn chat_stream(
     app: &App,
     conn: &Connection,
     history: &[Msg],
+    on_delta: impl FnMut(&str),
+) -> Result<String, String> {
+    let key = conn.key(app)?;
+    chat_stream_with_key(app, conn, &key, history, on_delta)
+}
+
+/// [`chat_stream`], with the key handed over by the caller instead of read from the OS keychain.
+/// The suite keeps its key there; a test (or a caller that stores the secret elsewhere) supplies it
+/// directly, so the transport can be exercised end to end without touching the keychain. The key is
+/// never written anywhere by this crate.
+pub fn chat_stream_with_key(
+    app: &App,
+    conn: &Connection,
+    key: &str,
+    history: &[Msg],
     mut on_delta: impl FnMut(&str),
 ) -> Result<String, String> {
     let base = conn.effective_base();
@@ -368,7 +427,6 @@ pub fn chat_stream(
     if conn.model.is_empty() {
         return Err("no model chosen".into());
     }
-    let key = conn.key(app)?;
     let messages: Vec<serde_json::Value> = history
         .iter()
         .map(|m| match m {
@@ -380,7 +438,7 @@ pub fn chat_stream(
     let body = serde_json::json!({ "model": conn.model, "messages": messages, "stream": true })
         .to_string();
     let mut builder = agent().post(&format!("{base}/chat/completions"));
-    for (k, v) in authorize(app, conn, &key) {
+    for (k, v) in authorize(app, conn, key) {
         builder = builder.header(&k, &v);
     }
     let mut response = builder.send(body.as_bytes()).map_err(|e| e.to_string())?;
@@ -388,9 +446,7 @@ pub fn chat_stream(
     if !status.is_success() {
         // The provider's own message is the only useful thing here (a bad key, a moved model).
         let text = response.body_mut().read_to_string().unwrap_or_default();
-        return Err(parse_chat(&text)
-            .err()
-            .unwrap_or_else(|| format!("HTTP {status}: {text}")));
+        return Err(provider_error(status, &text));
     }
     read_stream(
         std::io::BufReader::new(response.body_mut().as_reader()),
@@ -406,7 +462,18 @@ fn read_stream(
 ) -> Result<String, String> {
     let mut answer = String::new();
     for line in reader.lines() {
-        let line = line.map_err(|e| e.to_string())?;
+        let line = match line {
+            Ok(line) => line,
+            Err(error) => {
+                // A provider that never sends `[DONE]` and never closes the stream (keep-alive)
+                // hits the body deadline. If the text already arrived, keep it; if nothing came,
+                // the timeout is the error the user has to see.
+                if answer.is_empty() {
+                    return Err(format!("reading the answer failed: {error}"));
+                }
+                break;
+            }
+        };
         // SSE comments (`:`), the blank line between events, and `event:`/`id:` fields carry nothing
         // this client shows.
         let Some(data) = line.strip_prefix("data:") else {
@@ -447,6 +514,26 @@ fn read_stream(
         Err("the stream ended without text".into())
     } else {
         Ok(answer)
+    }
+}
+
+/// The provider's reason for a non-2xx answer: the `error.message` every OpenAI-compatible gateway
+/// sends, else the raw body, else the status. Never empty, so the caller always has something to
+/// show the user.
+fn provider_error(status: impl std::fmt::Display, body: &str) -> String {
+    if let Ok(value) = serde_json::from_str::<serde_json::Value>(body) {
+        if let Some(message) = value.get("error").and_then(|e| e.get("message")).and_then(|m| m.as_str()) {
+            return message.to_owned();
+        }
+        if let Some(message) = value.get("message").and_then(|m| m.as_str()) {
+            return message.to_owned();
+        }
+    }
+    let text = body.trim();
+    if text.is_empty() {
+        format!("HTTP {status}")
+    } else {
+        format!("HTTP {status}: {text}")
     }
 }
 
@@ -581,6 +668,88 @@ data: [DONE]\n";
         );
     }
 
+    /// Every phase of the shared agent has a deadline. Without them a provider that goes quiet
+    /// mid-stream leaves the caller blocked until the TCP stack gives up (possibly never).
+    #[test]
+    fn the_shared_agent_has_deadlines() {
+        let timeouts = agent().config().timeouts();
+        assert_eq!(timeouts.resolve, Some(RESOLVE_TIMEOUT));
+        assert_eq!(timeouts.connect, Some(CONNECT_TIMEOUT));
+        assert_eq!(timeouts.send_request, Some(REQUEST_TIMEOUT));
+        assert_eq!(timeouts.recv_response, Some(RESPONSE_TIMEOUT));
+        assert_eq!(timeouts.recv_body, Some(BODY_TIMEOUT));
+    }
+
+    /// A provider that sends the headers and then holds the connection open without a byte of body
+    /// must end as an error at the body deadline, not block forever.
+    #[test]
+    fn a_stream_with_no_body_times_out() {
+        use std::io::{Read, Write};
+        use std::net::TcpListener;
+        use std::time::{Duration, Instant};
+
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let port = listener.local_addr().expect("addr").port();
+        std::thread::spawn(move || {
+            if let Ok((mut socket, _)) = listener.accept() {
+                let mut buf = [0u8; 4096];
+                let _ = socket.read(&mut buf);
+                let _ = socket.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\n\r\n");
+                let _ = socket.flush();
+                std::thread::sleep(Duration::from_secs(3));
+            }
+        });
+
+        let started = Instant::now();
+        let mut response = short_agent(1)
+            .post(&format!("http://127.0.0.1:{port}/v1/chat/completions"))
+            .send(b"{}".as_slice())
+            .expect("headers");
+        let error = read_stream(std::io::BufReader::new(response.body_mut().as_reader()), &mut |_| {}).expect_err("no body must time out");
+        assert!(started.elapsed() < Duration::from_secs(3), "the deadline stops the wait");
+        assert!(!error.is_empty());
+    }
+
+    /// A stream that delivered text and then went quiet (no `[DONE]`, no close) keeps the text: the
+    /// answer is not thrown away because the provider forgot to close.
+    #[test]
+    fn a_stream_that_goes_quiet_after_text_keeps_the_text() {
+        use std::io::{Read, Write};
+        use std::net::TcpListener;
+        use std::time::{Duration, Instant};
+
+        let body = "data: {\"choices\":[{\"delta\":{\"content\":\"pronto\"}}]}\n\n";
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let port = listener.local_addr().expect("addr").port();
+        std::thread::spawn(move || {
+            if let Ok((mut socket, _)) = listener.accept() {
+                let mut buf = [0u8; 4096];
+                let _ = socket.read(&mut buf);
+                let head = format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\n\r\n{:x}\r\n{}\r\n", body.len(), body);
+                let _ = socket.write_all(head.as_bytes());
+                let _ = socket.flush();
+                std::thread::sleep(Duration::from_secs(3));
+            }
+        });
+
+        let started = Instant::now();
+        let mut response = short_agent(1)
+            .post(&format!("http://127.0.0.1:{port}/v1/chat/completions"))
+            .send(b"{}".as_slice())
+            .expect("headers");
+        let answer = read_stream(std::io::BufReader::new(response.body_mut().as_reader()), &mut |_| {}).expect("the text arrives before the deadline");
+        assert_eq!(answer, "pronto");
+        assert!(started.elapsed() < Duration::from_secs(3), "the deadline stops the wait");
+    }
+
+    /// An agent with a short body deadline, for the socket tests.
+    fn short_agent(body_secs: u64) -> ureq::Agent {
+        ureq::Agent::config_builder()
+            .timeout_recv_body(Some(Duration::from_secs(body_secs)))
+            .build()
+            .new_agent()
+    }
+
     /// End to end: the configured agent completes a real TLS handshake. Ignored by default (it
     /// needs the network); run with `cargo test -- --ignored`.
     #[test]
@@ -607,5 +776,24 @@ data: [DONE]\n";
         let path = Connection::store_path(&app).unwrap();
         assert!(path.to_string_lossy().contains("TestApp"));
         assert!(path.ends_with("ai-connections.json"));
+    }
+
+    /// The Go preset points at Go's own base (not Zen, the pay-as-you-go one) and identifies the
+    /// app per conversation. Pointing Go at Zen is what makes a Go key bill the wrong account; the
+    /// session header is what the Go gateway requires to route a request at all.
+    #[test]
+    fn the_opencode_go_preset_uses_the_go_base_and_session() {
+        let go = provider("opencode-go").expect("the Go preset exists");
+        assert_eq!(go.base_url, "https://opencode.ai/inference/go/openai/v1");
+
+        let app = App { id: "LocalMind", url: "" };
+        let conn = Connection { id: "conv-7".into(), provider: "opencode-go".into(), label: "Go".into(), base_url: String::new(), model: "deepseek-v4.1-flash".into() };
+        let headers = authorize(&app, &conn, "k");
+        assert!(headers.iter().any(|(k, v)| k == "x-opencode-session" && v == "conv-7"));
+        assert!(headers.iter().any(|(k, v)| k == "User-Agent" && v == "LocalMind/1.0"));
+
+        let mut zen = conn.clone();
+        zen.provider = "opencode-zen".into();
+        assert!(!authorize(&app, &zen, "k").iter().any(|(k, _)| k == "x-opencode-session"));
     }
 }
