@@ -60,6 +60,10 @@ pub const LOCALUTILS: App =
     App { publisher: "Local Utils contributors", ..App::new("local-utils", "Local Utils", "Everyday utilities", "Anon5T4R/Local-Utils") };
 pub const LOCALPLAYER: App =
     App { publisher: "LocalPlayer contributors", ..App::new("local-player", "Local Player", "Media player", "Anon5T4R/Local-Player-RS") };
+pub const LOCALOBSIDIAN: App = App {
+    publisher: "Local Obsidian contributors",
+    ..App::new("localobsidian", "Local Obsidian", "Notes, wikilinks and attachments", "Anon5T4R/Local-Obsidian")
+};
 pub const CADCRAFT: App = App::new("cadcraft", "CADCraft", "Computer-aided design and drafting", "storytold/cadcraft");
 pub const GRIDCRAFT: App = App::new("gridcraft", "GridCraft", "Spreadsheets and data", "storytold/gridcraft");
 
@@ -69,7 +73,7 @@ pub const GRIDCRAFT: App = App::new("gridcraft", "GridCraft", "Spreadsheets and 
 pub const LAUNCHER: App = App::new("artcraft-launcher", "ArtCraft Launcher", "Installs and updates the Craft App Suite", "storytold/craft-launcher");
 
 /// The Craft App Suite, in getartcraft.com's display order.
-pub const SUITE: [App; 24] = [
+pub const SUITE: [App; 25] = [
     PHOTOCRAFT,
     LOCALIMAGE,
     LOCALPAINT,
@@ -92,6 +96,7 @@ pub const SUITE: [App; 24] = [
     LOCALKEYS,
     LOCALUTILS,
     LOCALPLAYER,
+    LOCALOBSIDIAN,
     CADCRAFT,
     GRIDCRAFT,
 ];
@@ -141,5 +146,9 @@ mod tests {
         assert_eq!(by_id("local-keys").map(|a| a.publisher), Some("LocalKeys contributors"));
         assert_eq!(by_id("local-utils").map(|a| a.publisher), Some("Local Utils contributors"));
         assert_eq!(by_id("local-player").map(|a| a.publisher), Some("LocalPlayer contributors"));
+        assert_eq!(
+            by_id("localobsidian").map(|a| (a.name, a.publisher, a.repo)),
+            Some(("Local Obsidian", "Local Obsidian contributors", "Anon5T4R/Local-Obsidian"))
+        );
     }
 }
