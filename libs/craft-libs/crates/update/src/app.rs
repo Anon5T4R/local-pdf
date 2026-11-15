@@ -111,7 +111,12 @@ mod tests {
 
     #[test]
     fn the_suites_own_apps_use_their_packaging_bundle_ids() {
-        for (id, bundle) in [("localpaint", "com.localpaint.app"), ("localphoto", "com.localphoto.app"), ("localobsidian", "com.localobsidian.app"), ("localmind", "com.localmind.app")] {
+        for (id, bundle) in [
+            ("localpaint", "com.localpaint.app"),
+            ("localphoto", "com.localphoto.app"),
+            ("localobsidian", "com.localobsidian.app"),
+            ("localmind", "com.localmind.app"),
+        ] {
             let app = App::new(id, id, "", "");
             assert_eq!(app.bundle_id(), bundle);
         }

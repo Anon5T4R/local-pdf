@@ -64,10 +64,8 @@ pub const LOCALOBSIDIAN: App = App {
     publisher: "Local Obsidian contributors",
     ..App::new("localobsidian", "Local Obsidian", "Notes, wikilinks and attachments", "Anon5T4R/Local-Obsidian")
 };
-pub const LOCALMIND: App = App {
-    publisher: "Local Mind contributors",
-    ..App::new("localmind", "Local Mind", "Mind maps with a balanced layout", "Anon5T4R/Local-Mind")
-};
+pub const LOCALMIND: App =
+    App { publisher: "Local Mind contributors", ..App::new("localmind", "Local Mind", "Mind maps with a balanced layout", "Anon5T4R/Local-Mind") };
 pub const CADCRAFT: App = App::new("cadcraft", "CADCraft", "Computer-aided design and drafting", "storytold/cadcraft");
 pub const GRIDCRAFT: App = App::new("gridcraft", "GridCraft", "Spreadsheets and data", "storytold/gridcraft");
 
@@ -155,9 +153,6 @@ mod tests {
             by_id("localobsidian").map(|a| (a.name, a.publisher, a.repo)),
             Some(("Local Obsidian", "Local Obsidian contributors", "Anon5T4R/Local-Obsidian"))
         );
-        assert_eq!(
-            by_id("localmind").map(|a| (a.name, a.publisher, a.repo)),
-            Some(("Local Mind", "Local Mind contributors", "Anon5T4R/Local-Mind"))
-        );
+        assert_eq!(by_id("localmind").map(|a| (a.name, a.publisher, a.repo)), Some(("Local Mind", "Local Mind contributors", "Anon5T4R/Local-Mind")));
     }
 }
