@@ -60,6 +60,7 @@ impl App {
         match self.id {
             "localpaint" => "com.localpaint.app".into(),
             "localphoto" => "com.localphoto.app".into(),
+            "localobsidian" => "com.localobsidian.app".into(),
             _ => format!("ai.storyteller.{}", self.id),
         }
     }
@@ -109,7 +110,7 @@ mod tests {
 
     #[test]
     fn the_suites_own_apps_use_their_packaging_bundle_ids() {
-        for (id, bundle) in [("localpaint", "com.localpaint.app"), ("localphoto", "com.localphoto.app")] {
+        for (id, bundle) in [("localpaint", "com.localpaint.app"), ("localphoto", "com.localphoto.app"), ("localobsidian", "com.localobsidian.app")] {
             let app = App::new(id, id, "", "");
             assert_eq!(app.bundle_id(), bundle);
         }
