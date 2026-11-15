@@ -32,7 +32,10 @@ fn agent() -> &'static ureq::Agent {
         let tls = ureq::tls::TlsConfig::builder()
             .unversioned_rustls_crypto_provider(pure_provider())
             .build();
-        ureq::Agent::config_builder().tls_config(tls).build().new_agent()
+        ureq::Agent::config_builder()
+            .tls_config(tls)
+            .build()
+            .new_agent()
     })
 }
 
@@ -59,13 +62,48 @@ pub struct Provider {
 }
 
 pub const PROVIDERS: &[Provider] = &[
-    Provider { id: "gemini", label: "Google Gemini", base_url: "https://generativelanguage.googleapis.com/v1beta/openai", vision: true },
-    Provider { id: "openai", label: "OpenAI (GPT)", base_url: "https://api.openai.com/v1", vision: true },
-    Provider { id: "groq", label: "Groq", base_url: "https://api.groq.com/openai/v1", vision: true },
-    Provider { id: "openrouter", label: "OpenRouter", base_url: "https://openrouter.ai/api/v1", vision: true },
-    Provider { id: "opencode-zen", label: "OpenCode Zen", base_url: "https://opencode.ai/zen/v1", vision: false },
-    Provider { id: "opencode-go", label: "OpenCode GO", base_url: "https://opencode.ai/zen/v1", vision: false },
-    Provider { id: "custom", label: "Custom (OpenAI-compatible)", base_url: "", vision: false },
+    Provider {
+        id: "gemini",
+        label: "Google Gemini",
+        base_url: "https://generativelanguage.googleapis.com/v1beta/openai",
+        vision: true,
+    },
+    Provider {
+        id: "openai",
+        label: "OpenAI (GPT)",
+        base_url: "https://api.openai.com/v1",
+        vision: true,
+    },
+    Provider {
+        id: "groq",
+        label: "Groq",
+        base_url: "https://api.groq.com/openai/v1",
+        vision: true,
+    },
+    Provider {
+        id: "openrouter",
+        label: "OpenRouter",
+        base_url: "https://openrouter.ai/api/v1",
+        vision: true,
+    },
+    Provider {
+        id: "opencode-zen",
+        label: "OpenCode Zen",
+        base_url: "https://opencode.ai/zen/v1",
+        vision: false,
+    },
+    Provider {
+        id: "opencode-go",
+        label: "OpenCode GO",
+        base_url: "https://opencode.ai/zen/v1",
+        vision: false,
+    },
+    Provider {
+        id: "custom",
+        label: "Custom (OpenAI-compatible)",
+        base_url: "",
+        vision: false,
+    },
 ];
 
 pub fn provider(id: &str) -> Option<&'static Provider> {
@@ -100,7 +138,9 @@ impl Connection {
     /// Load every saved connection. A missing file is no connections, not an error; a broken
     /// one is an error, so a silent wipe can never pretend the setup is gone.
     pub fn load_all(app: &App) -> Result<Vec<Connection>, String> {
-        let Some(path) = Self::store_path(app) else { return Ok(Vec::new()) };
+        let Some(path) = Self::store_path(app) else {
+            return Ok(Vec::new());
+        };
         match std::fs::read_to_string(path) {
             Ok(text) => serde_json::from_str(&text).map_err(|e| e.to_string()),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Vec::new()),
@@ -110,7 +150,9 @@ impl Connection {
 
     /// Save every connection: write a sibling then rename over the real file.
     pub fn save_all(app: &App, all: &[Connection]) -> Result<(), String> {
-        let Some(path) = Self::store_path(app) else { return Err("no data directory".into()) };
+        let Some(path) = Self::store_path(app) else {
+            return Err("no data directory".into());
+        };
         if let Some(dir) = path.parent() {
             std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
         }
@@ -122,11 +164,14 @@ impl Connection {
 
     /// The keychain entry for this connection's key. The service name groups them under the app.
     fn keyring_entry(&self, app: &App) -> Result<keyring::Entry, String> {
-        keyring::Entry::new(app.id, &format!("ai-connection-{}", self.id)).map_err(|e| e.to_string())
+        keyring::Entry::new(app.id, &format!("ai-connection-{}", self.id))
+            .map_err(|e| e.to_string())
     }
 
     pub fn set_key(&self, app: &App, key: &str) -> Result<(), String> {
-        self.keyring_entry(app)?.set_password(key).map_err(|e| e.to_string())
+        self.keyring_entry(app)?
+            .set_password(key)
+            .map_err(|e| e.to_string())
     }
 
     pub fn key(&self, app: &App) -> Result<String, String> {
@@ -151,7 +196,13 @@ impl Connection {
 
     fn effective_base(&self) -> String {
         let base = self.base_url.trim().trim_end_matches('/').to_owned();
-        if base.is_empty() { provider(&self.provider).map(|p| p.base_url.trim_end_matches('/').to_owned()).unwrap_or_default() } else { base }
+        if base.is_empty() {
+            provider(&self.provider)
+                .map(|p| p.base_url.trim_end_matches('/').to_owned())
+                .unwrap_or_default()
+        } else {
+            base
+        }
     }
 }
 
@@ -189,7 +240,11 @@ fn authorize(app: &App, conn: &Connection, key: &str) -> Vec<(String, String)> {
 }
 
 /// The `/models` URL and its headers.
-fn models_url(app: &App, conn: &Connection, key: &str) -> Result<(String, Vec<(String, String)>), String> {
+fn models_url(
+    app: &App,
+    conn: &Connection,
+    key: &str,
+) -> Result<(String, Vec<(String, String)>), String> {
     let base = conn.effective_base();
     if base.is_empty() {
         return Err("the connection has no base URL".into());
@@ -205,12 +260,21 @@ pub fn list_models(app: &App, conn: &Connection) -> Result<Vec<String>, String> 
     for (k, v) in headers {
         req = req.header(&k, &v);
     }
-    let body = req.call().map_err(|e| format!("{e}"))?.body_mut().read_to_string().map_err(|e| e.to_string())?;
+    let body = req
+        .call()
+        .map_err(|e| format!("{e}"))?
+        .body_mut()
+        .read_to_string()
+        .map_err(|e| e.to_string())?;
     let value: serde_json::Value = serde_json::from_str(&body).map_err(|e| e.to_string())?;
     let mut out: Vec<String> = value
         .get("data")
         .and_then(|d| d.as_array())
-        .map(|a| a.iter().filter_map(|m| m.get("id").and_then(|i| i.as_str()).map(str::to_owned)).collect())
+        .map(|a| {
+            a.iter()
+                .filter_map(|m| m.get("id").and_then(|i| i.as_str()).map(str::to_owned))
+                .collect()
+        })
         .unwrap_or_default();
     out.sort();
     Ok(out)
@@ -241,12 +305,20 @@ pub fn chat(app: &App, conn: &Connection, history: &[Msg]) -> Result<String, Str
         builder = builder.header(&k, &v);
     }
     let mut response = builder.send(body.as_bytes()).map_err(|e| e.to_string())?;
-    let text = response.body_mut().read_to_string().map_err(|e| e.to_string())?;
+    let text = response
+        .body_mut()
+        .read_to_string()
+        .map_err(|e| e.to_string())?;
     parse_chat(&text)
 }
 
 /// A vision request: one picture plus the instruction, as a one-turn conversation.
-pub fn vision(app: &App, conn: &Connection, instruction: &str, png: &[u8]) -> Result<String, String> {
+pub fn vision(
+    app: &App,
+    conn: &Connection,
+    instruction: &str,
+    png: &[u8],
+) -> Result<String, String> {
     let base = conn.effective_base();
     if base.is_empty() {
         return Err("the connection has no base URL".into());
@@ -269,19 +341,132 @@ pub fn vision(app: &App, conn: &Connection, instruction: &str, png: &[u8]) -> Re
         builder = builder.header(&k, &v);
     }
     let mut response = builder.send(body.as_bytes()).map_err(|e| e.to_string())?;
-    let text = response.body_mut().read_to_string().map_err(|e| e.to_string())?;
+    let text = response
+        .body_mut()
+        .read_to_string()
+        .map_err(|e| e.to_string())?;
     parse_chat(&text)
+}
+
+/// A streaming chat: `on_delta` receives each piece of the answer as it arrives, and the whole text
+/// comes back at the end.
+///
+/// The wire format is the OpenAI `stream: true` one (SSE): the provider sends `data:` lines, one
+/// JSON object per event carrying `choices[0].delta.content`, and `data: [DONE]` closes it. Ollama,
+/// llama-server and every OpenAI-compatible gateway speak it; a provider that ignores `stream`
+/// answers with a plain body, which [`read_stream`] still reads (one event, whole text).
+pub fn chat_stream(
+    app: &App,
+    conn: &Connection,
+    history: &[Msg],
+    mut on_delta: impl FnMut(&str),
+) -> Result<String, String> {
+    let base = conn.effective_base();
+    if base.is_empty() {
+        return Err("the connection has no base URL".into());
+    }
+    if conn.model.is_empty() {
+        return Err("no model chosen".into());
+    }
+    let key = conn.key(app)?;
+    let messages: Vec<serde_json::Value> = history
+        .iter()
+        .map(|m| match m {
+            Msg::System(t) => serde_json::json!({ "role": "system", "content": t }),
+            Msg::User(t) => serde_json::json!({ "role": "user", "content": t }),
+            Msg::Assistant(t) => serde_json::json!({ "role": "assistant", "content": t }),
+        })
+        .collect();
+    let body = serde_json::json!({ "model": conn.model, "messages": messages, "stream": true })
+        .to_string();
+    let mut builder = agent().post(&format!("{base}/chat/completions"));
+    for (k, v) in authorize(app, conn, &key) {
+        builder = builder.header(&k, &v);
+    }
+    let mut response = builder.send(body.as_bytes()).map_err(|e| e.to_string())?;
+    let status = response.status();
+    if !status.is_success() {
+        // The provider's own message is the only useful thing here (a bad key, a moved model).
+        let text = response.body_mut().read_to_string().unwrap_or_default();
+        return Err(parse_chat(&text)
+            .err()
+            .unwrap_or_else(|| format!("HTTP {status}: {text}")));
+    }
+    read_stream(
+        std::io::BufReader::new(response.body_mut().as_reader()),
+        &mut on_delta,
+    )
+}
+
+/// Reads an OpenAI-style SSE body. Split from the request so the contract is testable without a
+/// network: the deltas in order, the joined answer, the provider's error, and a plain body.
+fn read_stream(
+    reader: impl std::io::BufRead,
+    on_delta: &mut impl FnMut(&str),
+) -> Result<String, String> {
+    let mut answer = String::new();
+    for line in reader.lines() {
+        let line = line.map_err(|e| e.to_string())?;
+        // SSE comments (`:`), the blank line between events, and `event:`/`id:` fields carry nothing
+        // this client shows.
+        let Some(data) = line.strip_prefix("data:") else {
+            continue;
+        };
+        let data = data.trim();
+        if data.is_empty() {
+            continue;
+        }
+        if data == "[DONE]" {
+            break;
+        }
+        let value: serde_json::Value = match serde_json::from_str(data) {
+            Ok(value) => value,
+            // A provider that ignored `stream` sends the plain chat JSON: read it whole.
+            Err(_) => return parse_chat(data),
+        };
+        if let Some(error) = value.get("error") {
+            let message = error
+                .get("message")
+                .and_then(|m| m.as_str())
+                .unwrap_or("unknown provider error");
+            return Err(message.to_owned());
+        }
+        // A non-streaming answer inside a `data:` line: the whole chat JSON, done.
+        if value.pointer("/choices/0/message/content").is_some() {
+            return parse_chat(data);
+        }
+        if let Some(delta) = value
+            .pointer("/choices/0/delta/content")
+            .and_then(|c| c.as_str())
+        {
+            answer.push_str(delta);
+            on_delta(delta);
+        }
+    }
+    if answer.is_empty() {
+        Err("the stream ended without text".into())
+    } else {
+        Ok(answer)
+    }
 }
 
 /// The one shape every OpenAI-compatible chat answer takes. A provider error body has no
 /// choices: surface its text so the panel can show why.
 fn parse_chat(body: &str) -> Result<String, String> {
-    let value: serde_json::Value = serde_json::from_str(body).map_err(|e| format!("unreadable answer: {e}"))?;
+    let value: serde_json::Value =
+        serde_json::from_str(body).map_err(|e| format!("unreadable answer: {e}"))?;
     if let Some(err) = value.get("error") {
-        let message = err.get("message").and_then(|m| m.as_str()).unwrap_or("unknown provider error");
+        let message = err
+            .get("message")
+            .and_then(|m| m.as_str())
+            .unwrap_or("unknown provider error");
         return Err(message.to_owned());
     }
-    value.pointer("/choices/0/message/content").and_then(|c| c.as_str()).map(str::to_owned).ok_or_else(|| format!("the answer has no text: {body}"))
+    value
+        .pointer("/choices/0/message/content")
+        .and_then(|c| c.as_str())
+        .map(str::to_owned)
+        .ok_or_else(|| format!("the answer has no text: {body}"))
 }
 
 /// Standard base64 (RFC 4648), padding included: data URIs want it.
@@ -289,12 +474,24 @@ fn base64(data: &[u8]) -> String {
     const TABLE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     let mut out = String::with_capacity(data.len().div_ceil(3) * 4);
     for chunk in data.chunks(3) {
-        let b = [chunk[0], *chunk.get(1).unwrap_or(&0), *chunk.get(2).unwrap_or(&0)];
+        let b = [
+            chunk[0],
+            *chunk.get(1).unwrap_or(&0),
+            *chunk.get(2).unwrap_or(&0),
+        ];
         let n = (u32::from(b[0]) << 16) | (u32::from(b[1]) << 8) | u32::from(b[2]);
         out.push(TABLE[(n >> 18) as usize & 63] as char);
         out.push(TABLE[(n >> 12) as usize & 63] as char);
-        out.push(if chunk.len() > 1 { TABLE[(n >> 6) as usize & 63] as char } else { '=' });
-        out.push(if chunk.len() > 2 { TABLE[n as usize & 63] as char } else { '=' });
+        out.push(if chunk.len() > 1 {
+            TABLE[(n >> 6) as usize & 63] as char
+        } else {
+            '='
+        });
+        out.push(if chunk.len() > 2 {
+            TABLE[n as usize & 63] as char
+        } else {
+            '='
+        });
     }
     out
 }
@@ -324,12 +521,64 @@ mod tests {
         assert_eq!(base64(b"foobar"), "Zm9vYmFy");
     }
 
+    /// The contract of the streaming reader: the deltas arrive in order, the answer is their join,
+    /// and the SSE scaffolding (`event:`, comments, blank lines) is not text.
+    #[test]
+    fn a_stream_delivers_the_deltas_in_order() {
+        let body = "\
+: keep-alive\n\
+event: message\n\
+data: {\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\"}}]}\n\
+\n\
+data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Se\"}}]}\n\
+\n\
+data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"pse\"}}]}\n\
+\n\
+data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\" é grave\"}}]}\n\
+\n\
+data: [DONE]\n";
+        let mut deltas = Vec::new();
+        let answer = read_stream(std::io::Cursor::new(body), &mut |delta| {
+            deltas.push(delta.to_owned())
+        })
+        .unwrap();
+        assert_eq!(deltas, ["Se", "pse", " é grave"]);
+        assert_eq!(answer, "Sepse é grave");
+    }
+
+    #[test]
+    fn a_stream_surfaces_a_provider_error() {
+        let body = "data: {\"error\":{\"message\":\"bad key\"}}\n";
+        let error = read_stream(std::io::Cursor::new(body), &mut |_| {}).unwrap_err();
+        assert_eq!(error, "bad key");
+    }
+
+    #[test]
+    fn a_provider_that_ignores_stream_sends_the_plain_answer() {
+        // One `data:` line holding the whole chat JSON, which is what a gateway does when it does
+        // not stream: the client still gets the text.
+        let body = "data: {\"choices\":[{\"message\":{\"content\":\"pronto\"}}]}\n";
+        let answer = read_stream(std::io::Cursor::new(body), &mut |_| {}).unwrap();
+        assert_eq!(answer, "pronto");
+    }
+
+    #[test]
+    fn an_empty_stream_is_an_error_not_an_empty_answer() {
+        let error = read_stream(std::io::Cursor::new("data: [DONE]\n"), &mut |_| {}).unwrap_err();
+        assert!(error.contains("without text"), "{error}");
+    }
+
     /// The shared agent is wired to the pure provider: TLS 1.3 suites can only come from
     /// `rustls-rustcrypto`, never from a feature-enabled C backend.
     #[test]
     fn the_shared_agent_is_wired_to_the_pure_provider() {
         let provider = pure_provider();
-        assert!(provider.cipher_suites.iter().any(|s| s.suite() == rustls::CipherSuite::TLS13_AES_256_GCM_SHA384));
+        assert!(
+            provider
+                .cipher_suites
+                .iter()
+                .any(|s| s.suite() == rustls::CipherSuite::TLS13_AES_256_GCM_SHA384)
+        );
     }
 
     /// End to end: the configured agent completes a real TLS handshake. Ignored by default (it
@@ -337,13 +586,23 @@ mod tests {
     #[test]
     #[ignore = "network: real TLS handshake with api.github.com"]
     fn the_shared_agent_completes_a_real_handshake() -> Result<(), String> {
-        let mut response = agent().get("https://api.github.com/").call().map_err(|e| e.to_string())?;
-        response.body_mut().read_to_string().map(|_body| ()).map_err(|e| e.to_string())
+        let mut response = agent()
+            .get("https://api.github.com/")
+            .call()
+            .map_err(|e| e.to_string())?;
+        response
+            .body_mut()
+            .read_to_string()
+            .map(|_body| ())
+            .map_err(|e| e.to_string())
     }
 
     #[test]
     fn the_store_path_lives_under_the_apps_folder() {
-        let app = App { id: "TestApp", url: "" };
+        let app = App {
+            id: "TestApp",
+            url: "",
+        };
         // Path separators differ per OS; the identity folder and file name are what matter.
         let path = Connection::store_path(&app).unwrap();
         assert!(path.to_string_lossy().contains("TestApp"));
