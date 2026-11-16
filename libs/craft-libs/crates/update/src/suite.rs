@@ -78,10 +78,13 @@ pub const LOCALUTILS: App = App {
     icon_png: Some(include_bytes!("../assets/icons/local-utils.png")),
     ..App::new("local-utils", "Local Utils", "Everyday utilities", "Anon5T4R/Local-Utils")
 };
+/// Local Player (the player app; "RS" is the fork's old name, the binary keeps `local-player-rs`).
 pub const LOCALPLAYER: App = App {
-    publisher: "LocalPlayer contributors",
+    former_ids: &["local-player-rs"],
+    former_names: &["Local Player RS"],
+    publisher: "Local Player RS contributors",
     icon_png: Some(include_bytes!("../assets/icons/local-player.png")),
-    ..App::new("local-player", "Local Player", "Media player", "Anon5T4R/Local-Player-RS")
+    ..App::new("local-player", "Local Player", "Media player", "Anon5T4R/Local-Player")
 };
 pub const LOCALOBSIDIAN: App = App {
     publisher: "Local Obsidian contributors",
@@ -148,6 +151,17 @@ mod tests {
         assert_eq!(ids.len(), SUITE.len());
     }
 
+    /// Local Player kept its filename (`local-player-rs`) and its pre-rename display name as former
+    /// names, so a copy installed before the rename is still recognised (and upgraded in place).
+    #[test]
+    fn the_player_carries_its_old_name_and_binary() {
+        let player = by_id("local-player").expect("the player is in the suite");
+        assert_eq!((player.name, player.repo), ("Local Player", "Anon5T4R/Local-Player"));
+        assert_eq!(player.publisher, "Local Player RS contributors", "the MSI's Manufacturer");
+        assert!(player.names().any(|name| name == "Local Player RS"));
+        assert!(player.stems().any(|stem| stem == "local-player-rs"));
+    }
+
     #[test]
     fn the_upstream_apps_are_named_after_their_ids_and_repositories() {
         for a in &SUITE {
@@ -175,7 +189,7 @@ mod tests {
         assert_eq!(by_id("local-image").map(|a| a.publisher), Some("LocalImage contributors"));
         assert_eq!(by_id("local-keys").map(|a| a.publisher), Some("LocalKeys contributors"));
         assert_eq!(by_id("local-utils").map(|a| a.publisher), Some("Local Utils contributors"));
-        assert_eq!(by_id("local-player").map(|a| a.publisher), Some("LocalPlayer contributors"));
+        assert_eq!(by_id("local-player").map(|a| a.publisher), Some("Local Player RS contributors"));
         assert_eq!(
             by_id("localobsidian").map(|a| (a.name, a.publisher, a.repo)),
             Some(("Local Obsidian", "Local Obsidian contributors", "Anon5T4R/Local-Obsidian"))
