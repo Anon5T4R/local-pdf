@@ -23,7 +23,7 @@ craft-keymap = { path = "libs/craft-libs/crates/keymap/", default-features = fal
 craft-print = { path = "libs/craft-libs/crates/print/" }
 # Whether a path stored in a document may be opened (GoToR link targets).
 craft-docpath = { version = "0.1.0", path = "libs/craft-libs/crates/docpath/" }
-craft-update = { path = "libs/craft-libs/crates/update/", features = ["egui"] }
+craft-update = { path = "libs/craft-libs/crates/update/", features = ["egui", "icons"] }
 # internal
 localpdf-geom = { path = "crates/geom" }
 localpdf-filters = { path = "crates/filters" }
