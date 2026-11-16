@@ -18,6 +18,8 @@ use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
 use std::time::Duration;
 
+pub mod extract;
+
 /// How long a request may spend resolving DNS, and then connecting. A provider that is down or a
 /// name that does not resolve must fail fast, not leave a worker thread waiting.
 const RESOLVE_TIMEOUT: Duration = Duration::from_secs(10);
