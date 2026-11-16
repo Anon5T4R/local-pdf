@@ -88,11 +88,36 @@ pub(crate) fn appimage_version(name: &str, stems: &[&str]) -> Option<Option<Stri
     (parsed.kind == crate::PackageKind::AppImage && parsed.token.starts_with("linux-")).then_some(Some(parsed.version))
 }
 
+/// How an uninstall entry relates to `app`.
+#[cfg_attr(not(windows), allow(dead_code))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum EntryMatch {
+    /// This app's own installer: one of its display names and its publisher.
+    Owned,
+    /// One of its display names under a publisher the catalog doesn't name (an older
+    /// `Manufacturer`, before the catalog was updated). Only used when nothing is `Owned`.
+    Named,
+    NotThisApp,
+}
+
+/// How an uninstall entry's `DisplayName` and `Publisher` relate to `app`. The name decides
+/// whether the entry is this app's at all; the publisher only decides how much it is trusted.
+#[cfg_attr(not(windows), allow(dead_code))]
+pub(crate) fn entry_match(app: &App, display_name: &str, publisher: &str) -> EntryMatch {
+    if !app.names().any(|n| n == display_name) {
+        EntryMatch::NotThisApp
+    } else if publisher == app.publisher {
+        EntryMatch::Owned
+    } else {
+        EntryMatch::Named
+    }
+}
+
 /// Whether an uninstall entry's `DisplayName` and `Publisher` are `app`'s, under any name its
 /// installers have registered and the publisher its WiX names as `Manufacturer`.
-#[cfg_attr(not(windows), allow(dead_code))]
+#[cfg(test)]
 fn is_installer_entry(app: &App, display_name: &str, publisher: &str) -> bool {
-    publisher == app.publisher && app.names().any(|n| n == display_name)
+    entry_match(app, display_name, publisher) == EntryMatch::Owned
 }
 
 /// Where a Windows install of `app` may keep its exe, in the order to try: the entry's
@@ -182,7 +207,7 @@ pub mod windows {
     use winreg::RegKey;
     use winreg::enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_READ, KEY_WOW64_32KEY, KEY_WOW64_64KEY};
 
-    use super::{App, InstallSource, Installed, exe_candidates, is_installer_entry, version};
+    use super::{App, EntryMatch, InstallSource, Installed, entry_match, exe_candidates, version};
 
     const UNINSTALL: &str = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
 
@@ -212,24 +237,42 @@ pub mod windows {
         pub exe: Option<PathBuf>,
     }
 
-    /// Every Windows Installer entry for `app`, newest first.
+    /// Every Windows Installer entry for `app`, newest first. An entry whose `Publisher` is one
+    /// the catalog names comes first, and when there is any the entries whose publisher it does
+    /// not name are left out: a package that changed its `Manufacturer` before the catalog did
+    /// still has exactly one copy, it is just published under the newer name. A copy that is only
+    /// recognised by name is used when nothing else matches, so a rebrand never hides the copy
+    /// that is actually installed.
     pub fn msi_installs(app: &App) -> Vec<MsiInstall> {
-        let mut out = Vec::new();
+        let mut owned = Vec::new();
+        let mut named = Vec::new();
+        let mut seen: Vec<String> = Vec::new();
         for (hive, flags) in [(HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY), (HKEY_LOCAL_MACHINE, KEY_WOW64_32KEY), (HKEY_CURRENT_USER, 0)] {
             let Ok(root) = RegKey::predef(hive).open_subkey_with_flags(UNINSTALL, KEY_READ | flags) else { continue };
             for code in root.enum_keys().flatten() {
+                if seen.contains(&code) {
+                    continue;
+                }
                 let Ok(key) = root.open_subkey_with_flags(&code, KEY_READ | flags) else { continue };
                 let name: String = key.get_value("DisplayName").unwrap_or_default();
                 let publisher: String = key.get_value("Publisher").unwrap_or_default();
-                if !is_installer_entry(app, &name, &publisher) || out.iter().any(|m: &MsiInstall| m.product_code == code) {
+                let is_msi = key.get_value::<u32, _>("WindowsInstaller").is_ok_and(|installer| installer == 1);
+                let matched = entry_match(app, &name, &publisher);
+                if !is_msi || matched == EntryMatch::NotThisApp {
                     continue;
                 }
+                seen.push(code.clone());
                 let version = key.get_value::<String, _>("DisplayVersion").ok().and_then(|v| version::parse(&v));
                 let location: String = key.get_value("InstallLocation").unwrap_or_default();
                 let exe = exe_path(app, (!location.is_empty()).then(|| PathBuf::from(location)).or_else(|| install_dir(app)));
-                out.push(MsiInstall { product_code: code, version, exe });
+                let install = MsiInstall { product_code: code, version, exe };
+                match matched {
+                    EntryMatch::Owned => owned.push(install),
+                    _ => named.push(install),
+                }
             }
         }
+        let mut out = if owned.is_empty() { named } else { owned };
         out.sort_by(|a, b| match (&b.version, &a.version) {
             (Some(x), Some(y)) => version::compare(x, y),
             (Some(_), None) => std::cmp::Ordering::Greater,
@@ -749,16 +792,35 @@ mod tests {
     }
 
     #[test]
-    fn printcraft_entries_match_nothing_else() {
+    fn a_printcraft_entry_is_the_forks_and_only_the_forks() {
         let pdf = App::by_id("pdfcraft").unwrap();
         let local = App::by_id("localpdf").unwrap();
         assert!(!is_installer_entry(pdf, "PrintCraft", "Some Other Publisher"));
         assert!(!is_installer_entry(pdf, "PhotoCraft", LEARNING_MACHINES));
-        // Local PDF is the fork of the same PrintCraft, so it claims those entries too (its own
-        // catalog did before the unification); nothing else may.
-        assert!(is_installer_entry(local, "PrintCraft", LEARNING_MACHINES), "the fork keeps detecting its upstream install");
+        // Local PDF is the fork of the same PrintCraft, so it keeps detecting its upstream install
+        // by name; its own packages publish under another name than that upstream one did.
+        assert_eq!(entry_match(local, "PrintCraft", LEARNING_MACHINES), EntryMatch::Named);
         for a in SUITE.iter().filter(|a| !matches!(a.id, "pdfcraft" | "localpdf")) {
-            assert!(!is_installer_entry(a, "PrintCraft", LEARNING_MACHINES), "PrintCraft matched {}", a.name);
+            assert_eq!(entry_match(a, "PrintCraft", LEARNING_MACHINES), EntryMatch::NotThisApp, "PrintCraft matched {}", a.name);
+        }
+    }
+
+    #[test]
+    fn an_entry_named_like_the_app_is_still_its_own_under_another_publisher() {
+        let local = App::by_id("localpdf").unwrap();
+        // What the PDF's own MSI writes, as the registry of an installed copy shows.
+        assert_eq!(entry_match(local, "Local PDF", "Local PDF contributors"), EntryMatch::Owned);
+        // A publisher the catalog doesn't know is only a fallback, never the first pick.
+        assert_eq!(entry_match(local, "Local PDF", "Anon5T4R"), EntryMatch::Named);
+        // A name the app never shipped under is never its own, whatever the publisher.
+        assert_eq!(entry_match(local, "Local Spread", "Local PDF contributors"), EntryMatch::NotThisApp);
+    }
+
+    #[test]
+    fn the_suites_own_apps_publish_under_their_own_name_and_carry_their_icon() {
+        for app in SUITE.iter().filter(|app| app.repo.starts_with("Anon5T4R/")) {
+            assert_ne!(app.publisher, LEARNING_MACHINES, "{} still carries the upstream publisher, so its own MSI is not recognised", app.name);
+            assert!(app.icon_png.is_some(), "{} carries no icon for its update prompt", app.name);
         }
     }
 

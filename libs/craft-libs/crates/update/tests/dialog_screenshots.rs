@@ -1,13 +1,14 @@
 #![cfg(feature = "snapshot")]
 //! Renders the update dialogs to PNG, light and dark at 1.5x:
-//! `CRAFT_UPDATE_SNAPSHOT_DIR=~/.cache/cl-update-shots cargo test -p craft-update --features snapshot --test dialog_screenshots`
+//! `CRAFT_UPDATE_SNAPSHOT_DIR=~/.cache/cl-update-shots cargo test -p craft-update --features snapshot,egui,icons --test dialog_screenshots`
+//! (`icons` brings the `image` PNG encoder the renderer's save needs.)
 //! Without the directory variable the test does nothing; these are not golden comparisons.
 
 use std::path::PathBuf;
 
 use craft_update::dialog::{CheckResultDialog, StartupPrompt};
 use craft_update::release::Release;
-use craft_update::suite::PHOTOCRAFT;
+use craft_update::suite::LOCALPDF;
 use craft_update::updater::Status;
 use egui::Theme;
 use egui_kittest::Harness;
@@ -32,7 +33,7 @@ fn fonts(ctx: &egui::Context) {
     ctx.set_fonts(defs);
 }
 
-static APP: craft_update::App = PHOTOCRAFT;
+static APP: craft_update::App = LOCALPDF;
 
 #[test]
 fn dialog_screenshots() {
@@ -40,13 +41,16 @@ fn dialog_screenshots() {
     std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
     let long_error = "couldn't reach https://api.github.com/repos/storytold/photocraft/releases/latest: \
         connection timed out after 30 seconds (os error 110); check the network or proxy settings";
-    let states: [(&str, Option<Status>); 4] = [
-        ("checking", Some(Status::Checking)),
-        ("up-to-date", Some(Status::UpToDate)),
-        ("failed", Some(Status::Failed(long_error.into()))),
-        ("startup-prompt", None),
+    const AMBIGUOUS: &str = "Windows lists this app's installation more than once or not at all, so it can't tell which \
+        copy to update. Use the app's installer instead.";
+    let states: [(&str, Option<Status>, Option<&str>); 5] = [
+        ("checking", Some(Status::Checking), None),
+        ("up-to-date", Some(Status::UpToDate), None),
+        ("failed", Some(Status::Failed(long_error.into())), None),
+        ("startup-prompt", None, None),
+        ("startup-ambiguous", None, Some(AMBIGUOUS)),
     ];
-    for (name, status) in states {
+    for (name, status, ambiguous) in states {
         for (theme_name, theme) in [("light", Theme::Light), ("dark", Theme::Dark)] {
             let dialog = CheckResultDialog::new(&APP, "0.1.0");
             let mut prompt = StartupPrompt::new(
@@ -54,7 +58,13 @@ fn dialog_screenshots() {
                 Release { version: Some(semver::Version::new(0, 2, 0)), tag: "v0.2.0".into(), ..Release::default() },
                 "0.1.0",
             );
-            prompt.is_self_updating = false;
+            // The plain prompt is a copy that cannot update itself here; the ambiguous one could,
+            // and is stopped by the copy it cannot tell apart.
+            prompt.is_self_updating = ambiguous.is_some();
+            if let Some(reason) = ambiguous {
+                prompt.download_only = true;
+                prompt.status_message = Some(reason.to_string());
+            }
             let mut h = Harness::builder()
                 .with_size(egui::vec2(560.0, 360.0))
                 .with_pixels_per_point(1.5)

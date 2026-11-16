@@ -6,20 +6,26 @@
 use crate::app::App;
 
 pub const PHOTOCRAFT: App = App::new("photocraft", "PhotoCraft", "Image editing", "storytold/photocraft");
-pub const LOCALIMAGE: App =
-    App { publisher: "LocalImage contributors", ..App::new("local-image", "Local Image", "Image viewer", "Anon5T4R/Local-Image") };
+pub const LOCALIMAGE: App = App {
+    publisher: "LocalImage contributors",
+    icon_png: Some(include_bytes!("../assets/icons/local-image.png")),
+    ..App::new("local-image", "Local Image", "Image viewer", "Anon5T4R/Local-Image")
+};
 pub const LOCALPAINT: App = App {
     former_names: &["LocalPaint"],
     publisher: "Local Paint contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localpaint.png")),
     ..App::new("localpaint", "Local Paint", "Image editing", "Anon5T4R/Local-Paint")
 };
 pub const LOCALPHOTO: App = App {
     publisher: "Local Photo contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localphoto.png")),
     ..App::new("localphoto", "Local Photo", "Photo library and raw development", "Anon5T4R/Local-Photo")
 };
 pub const LOCALVECTOR: App = App {
     former_names: &["LocalVector"],
     publisher: "Local Vector contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localvector.png")),
     ..App::new("localvector", "Local Vector", "Vector illustration", "Anon5T4R/Local-Vector")
 };
 pub const VECTORCRAFT: App = App::new("vectorcraft", "VectorCraft", "Vector illustration", "storytold/vectorcraft");
@@ -33,6 +39,8 @@ pub const PDFCRAFT: App = App {
 pub const LOCALPDF: App = App {
     former_ids: &["printcraft"],
     former_names: &["PrintCraft", "LocalPDF"],
+    publisher: "Local PDF contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localpdf.png")),
     ..App::new("localpdf", "Local PDF", "Reading, organizing and protecting PDFs", "Anon5T4R/local-pdf")
 };
 pub const EFFECTCRAFT: App = App::new("effectcraft", "EffectCraft", "Motion graphics and visual effects", "storytold/effectcraft");
@@ -43,6 +51,7 @@ pub const LOCALOFFICE: App = App {
     former_ids: &["wordcraft"],
     former_names: &["WordCraft", "LocalOffice"],
     publisher: "Local Word contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localoffice.png")),
     ..App::new("localoffice", "Local Word", "Writing and document design", "Anon5T4R/local-office")
 };
 pub const SOUNDCRAFT: App = App::new("soundcraft", "SoundCraft", "Recording, editing and mixing audio", "storytold/soundcraft");
@@ -50,22 +59,40 @@ pub const DECKCRAFT: App = App::new("deckcraft", "DeckCraft", "Presentations and
 pub const LOCALSLIDES: App = App {
     developer: "Local Slides contributors",
     publisher: "Local Slides contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localslides.png")),
     ..App::new("localslides", "Local Slides", "Slide decks and presentations", "Anon5T4R/local-slides")
 };
-pub const LOCALSHEETS: App =
-    App { developer: "Anon5T4R", publisher: "Anon5T4R", ..App::new("localsheets", "Local Sheets", "Spreadsheets and data", "Anon5T4R/local-sheets") };
-pub const LOCALKEYS: App =
-    App { publisher: "LocalKeys contributors", ..App::new("local-keys", "Local Keys", "Password manager", "Anon5T4R/Local-Keys") };
-pub const LOCALUTILS: App =
-    App { publisher: "Local Utils contributors", ..App::new("local-utils", "Local Utils", "Everyday utilities", "Anon5T4R/Local-Utils") };
-pub const LOCALPLAYER: App =
-    App { publisher: "LocalPlayer contributors", ..App::new("local-player", "Local Player", "Media player", "Anon5T4R/Local-Player-RS") };
+pub const LOCALSHEETS: App = App {
+    developer: "Anon5T4R",
+    publisher: "Anon5T4R",
+    icon_png: Some(include_bytes!("../assets/icons/localsheets.png")),
+    ..App::new("localsheets", "Local Sheets", "Spreadsheets and data", "Anon5T4R/local-sheets")
+};
+pub const LOCALKEYS: App = App {
+    publisher: "LocalKeys contributors",
+    icon_png: Some(include_bytes!("../assets/icons/local-keys.png")),
+    ..App::new("local-keys", "Local Keys", "Password manager", "Anon5T4R/Local-Keys")
+};
+pub const LOCALUTILS: App = App {
+    publisher: "Local Utils contributors",
+    icon_png: Some(include_bytes!("../assets/icons/local-utils.png")),
+    ..App::new("local-utils", "Local Utils", "Everyday utilities", "Anon5T4R/Local-Utils")
+};
+pub const LOCALPLAYER: App = App {
+    publisher: "LocalPlayer contributors",
+    icon_png: Some(include_bytes!("../assets/icons/local-player.png")),
+    ..App::new("local-player", "Local Player", "Media player", "Anon5T4R/Local-Player-RS")
+};
 pub const LOCALOBSIDIAN: App = App {
     publisher: "Local Obsidian contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localobsidian.png")),
     ..App::new("localobsidian", "Local Obsidian", "Notes, wikilinks and attachments", "Anon5T4R/Local-Obsidian")
 };
-pub const LOCALMIND: App =
-    App { publisher: "Local Mind contributors", ..App::new("localmind", "Local Mind", "Mind maps with a balanced layout", "Anon5T4R/Local-Mind") };
+pub const LOCALMIND: App = App {
+    publisher: "Local Mind contributors",
+    icon_png: Some(include_bytes!("../assets/icons/localmind.png")),
+    ..App::new("localmind", "Local Mind", "Mind maps with a balanced layout", "Anon5T4R/Local-Mind")
+};
 pub const CADCRAFT: App = App::new("cadcraft", "CADCraft", "Computer-aided design and drafting", "storytold/cadcraft");
 pub const GRIDCRAFT: App = App::new("gridcraft", "GridCraft", "Spreadsheets and data", "storytold/gridcraft");
 

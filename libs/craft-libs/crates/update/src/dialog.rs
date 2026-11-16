@@ -29,13 +29,26 @@ pub struct StartupPrompt {
     pub open: bool,
     pub status_message: Option<String>,
     pub is_installing: bool,
+    /// This copy can't be updated in place (its installation can't be told apart from another
+    /// one), so the prompt offers the manual download alone instead of promising a restart that
+    /// could never happen.
+    pub download_only: bool,
 }
 
 impl StartupPrompt {
     /// Creates a new prompt dialog state for the given app and newly discovered release.
     pub fn new(app: &'static App, release: Release, running_version: impl Into<String>) -> Self {
         let is_self_updating = crate::self_update::is_self_updating(app);
-        Self { app, release, running_version: running_version.into(), is_self_updating, open: true, status_message: None, is_installing: false }
+        Self {
+            app,
+            release,
+            running_version: running_version.into(),
+            is_self_updating,
+            open: true,
+            status_message: None,
+            is_installing: false,
+            download_only: false,
+        }
     }
 
     /// Renders the modal window on the given egui context.
@@ -134,7 +147,11 @@ impl StartupPrompt {
                                         response = StartupPromptResponse::Later;
                                     }
                                 } else {
-                                    if self.is_self_updating {
+                                    // An ambiguous copy (or one that can't update itself here) is
+                                    // only ever offered the manual download: the reason is the
+                                    // alert above, and a restart that cannot happen must not be
+                                    // promised beside it.
+                                    if self.is_self_updating && !self.download_only {
                                         let update_btn =
                                             egui::Button::new(RichText::new("UPDATE AND RESTART").size(10.5).strong().monospace().color(on_fill))
                                                 .fill(fill)
@@ -510,6 +527,7 @@ mod tests {
             open: true,
             status_message: None,
             is_installing: false,
+            download_only: false,
         }
     }
 
@@ -861,6 +879,57 @@ mod tests {
         assert!(!painted.contains("DOWNLOAD"), "self-updating copy must not offer the manual download button: {painted:?}");
         let card = rect_fills(&output).iter().any(|(_, fill)| *fill == DARK_CARD);
         assert!(card, "dialog card missing");
+    }
+
+    #[test]
+    fn an_ambiguous_copy_offers_only_the_download() {
+        let ctx = dark_context();
+        let mut prompt = prompt_for(true);
+        // What `msi_copy` answers when the copy can't be told apart, and the prompt reports.
+        prompt.status_message =
+            Some("Windows lists this app's installation more than once or not at all, so it can't tell which copy to update. Use the app's installer instead.".to_string());
+        prompt.download_only = true;
+        // A new Area first measures itself invisibly; inspect the following visible frame.
+        let (sizing, _) = frame(&ctx, &mut prompt, Vec::new());
+        assert_eq!(sizing, StartupPromptResponse::Pending);
+        let (response, output) = frame(&ctx, &mut prompt, Vec::new());
+        assert_eq!(response, StartupPromptResponse::Pending);
+        let painted = painted_text(&output);
+        for expected in ["DOWNLOAD", "LATER", "more than once or not at all"] {
+            assert!(painted.contains(expected), "missing {expected:?} in painted text {painted:?}");
+        }
+        assert!(
+            !painted.contains("UPDATE AND RESTART"),
+            "an installation it cannot tell apart must not offer the restart beside the reason: {painted:?}"
+        );
+    }
+
+    #[test]
+    fn clicking_download_on_an_ambiguous_copy_answers_download() {
+        let ctx = dark_context();
+        let mut prompt = prompt_for(true);
+        prompt.download_only = true;
+        frame(&ctx, &mut prompt, Vec::new());
+        let (_, output) = frame(&ctx, &mut prompt, Vec::new());
+        let at = text_pos(&output, "DOWNLOAD").expect("DOWNLOAD is painted");
+        let button = |pressed| Event::PointerButton { pos: at, button: egui::PointerButton::Primary, pressed, modifiers: Modifiers::NONE };
+        frame(&ctx, &mut prompt, vec![Event::PointerMoved(at)]);
+        frame(&ctx, &mut prompt, vec![button(true)]);
+        let (response, _) = frame(&ctx, &mut prompt, vec![button(false)]);
+        assert_eq!(response, StartupPromptResponse::Download);
+    }
+
+    #[cfg(feature = "icons")]
+    #[test]
+    fn every_suite_app_that_is_ours_carries_its_own_icon() {
+        let mut seen = 0;
+        for app in crate::suite::SUITE.iter().filter(|app| app.repo.starts_with("Anon5T4R/")) {
+            let png = app.icon_png.unwrap_or_else(|| panic!("{} carries no icon", app.name));
+            let image = decode_icon(png, ICON_MAX_SIDE).unwrap_or_else(|| panic!("{}'s icon does not decode", app.name));
+            assert_eq!(image.size, [128, 128], "{}'s icon is not 128 px", app.name);
+            seen += 1;
+        }
+        assert_eq!(seen, 13, "every one of the suite's own apps carries its icon");
     }
 
     #[test]

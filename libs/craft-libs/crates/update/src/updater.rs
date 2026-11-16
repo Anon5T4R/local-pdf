@@ -274,6 +274,9 @@ impl Updater {
                         }
                         if let Some(prompt) = &mut self.prompt {
                             prompt.is_installing = false;
+                            // A copy it cannot tell apart can only be updated by its own installer:
+                            // the prompt keeps the reason and stops offering the restart.
+                            prompt.download_only |= crate::msi_copy::is_ambiguity(&e);
                             prompt.status_message = Some(e);
                         }
                     }
@@ -338,6 +341,7 @@ impl Updater {
         let Some(installed) = self_update::current(self.app) else {
             prompt.status_message = Some("Cannot auto-update this installation type. Please download manually.".into());
             prompt.is_installing = false;
+            prompt.download_only = true;
             return;
         };
         prompt.is_installing = true;

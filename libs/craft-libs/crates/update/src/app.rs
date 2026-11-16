@@ -15,7 +15,8 @@ pub struct App {
     pub former_ids: &'static [&'static str],
     /// Older display names its installers registered (PdfCraft's MSI said PrintCraft until 0.2.1).
     pub former_names: &'static [&'static str],
-    /// Its 128 px PNG icon, for the menu entry written beside an AppImage. `None`: no icon.
+    /// Its 128 px PNG icon: the update prompt's header and the menu entry written beside an
+    /// AppImage. `None`: the prompt shows the app's initial instead.
     pub icon_png: Option<&'static [u8]>,
     /// Its accent colour (sRGB), for the update prompt's buttons and highlights: the app's brand
     /// colour, as ArtCraft Launcher shows it. `None`: the default blue.

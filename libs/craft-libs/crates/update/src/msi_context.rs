@@ -29,10 +29,23 @@ pub fn scope_arguments(scope: MsiScope) -> &'static [&'static str] {
 const UNKNOWN_CONTEXT: &str = "Windows could not confirm who this app is installed for. No changes were made. Try the app's installer instead.";
 const CONFLICTING_CONTEXT: &str = "This app is installed for both your account and everyone. Use its installer to choose which copy to update.";
 
+#[cfg(test)]
+pub(crate) const UNKNOWN_CONTEXT_TEST: &str = UNKNOWN_CONTEXT;
+#[cfg(test)]
+pub(crate) const CONFLICTING_CONTEXT_TEST: &str = CONFLICTING_CONTEXT;
+
+/// Whether `error` is one of the answers only the app's own installer can settle: this copy can't
+/// be told apart from another one. The update prompt then offers the manual download alone.
+#[cfg_attr(not(feature = "egui"), allow(dead_code))]
+pub(crate) fn is_ambiguity(error: &str) -> bool {
+    error == UNKNOWN_CONTEXT || error == CONFLICTING_CONTEXT
+}
+
 /// Why the Windows Installer lookup gave no context.
 #[derive(Debug, PartialEq, Eq)]
 pub enum ProbeError {
-    /// The lookup ran but gave no usable answer. The context is never guessed from that.
+    /// The lookup ran but gave no usable answer. The copy's own uninstall record decides; with no
+    /// clear record the update stops.
     Unknown,
     /// The same product is registered for this account and for everyone.
     Conflicting,
@@ -41,10 +54,11 @@ pub enum ProbeError {
     Unavailable(String),
 }
 
-/// The context an update must keep. Windows Installer's own registration decides. Only when that
-/// lookup cannot run at all does the context come from the uninstall record the copy was found by
-/// (`record_scope`): the machine's records are per-machine and the account's own are per-user. A
-/// lookup that ran and gave no answer, or a copy registered twice, still stops the update.
+/// The context an update must keep. Windows Installer's own registration decides. When that
+/// registration gives no answer, or cannot run at all, the context comes from the uninstall record
+/// the copy was found by (`record_scope`): the machine's records are per-machine and the account's
+/// own are per-user, and one clear record is enough. Only a copy registered in both contexts still
+/// stops the update.
 pub fn update_scope(
     is_msi: bool,
     product_code: Option<&str>,
@@ -58,7 +72,12 @@ pub fn update_scope(
     match probe(code) {
         Ok(scope) => Ok(Some(scope)),
         Err(ProbeError::Conflicting) => Err(CONFLICTING_CONTEXT.into()),
-        Err(ProbeError::Unknown) => Err(UNKNOWN_CONTEXT.into()),
+        Err(ProbeError::Unknown) => {
+            log::warn!("Windows Installer listed no context for {code}; reading its uninstall record instead");
+            let scope = record_scope(code).ok_or(UNKNOWN_CONTEXT)?;
+            log::info!("{code}: keeping the {scope:?} context of its uninstall record");
+            Ok(Some(scope))
+        }
         Err(ProbeError::Unavailable(reason)) => {
             log::warn!("Windows Installer context lookup for {code} could not run: {reason}");
             let scope = record_scope(code).ok_or(UNKNOWN_CONTEXT)?;
@@ -241,11 +260,22 @@ mod tests {
     }
 
     #[test]
-    fn an_answer_that_is_unclear_or_doubled_never_uses_the_uninstall_record() {
-        for failure in [ProbeError::Unknown, ProbeError::Conflicting] {
-            let result = update_scope(true, Some(CODE), |_| Err(failure), |_| panic!("must not consult the record"));
-            assert!(result.is_err());
+    fn an_answer_with_no_context_falls_back_to_the_single_uninstall_record() {
+        for scope in [MsiScope::PerUser, MsiScope::PerMachine] {
+            assert_eq!(update_scope(true, Some(CODE), |_| Err(ProbeError::Unknown), |_| Some(scope)), Ok(Some(scope)));
         }
+    }
+
+    #[test]
+    fn an_answer_with_no_context_and_no_clear_record_stops_the_update() {
+        assert_eq!(update_scope(true, Some(CODE), |_| Err(ProbeError::Unknown), |_| None), Err(UNKNOWN_CONTEXT.to_string()));
+        assert_eq!(update_scope(true, Some(CODE), |_| Err(ProbeError::Conflicting), |_| None), Err(CONFLICTING_CONTEXT.to_string()));
+    }
+
+    #[test]
+    fn a_copy_registered_in_both_contexts_never_uses_the_uninstall_record() {
+        let result = update_scope(true, Some(CODE), |_| Err(ProbeError::Conflicting), |_| panic!("must not consult the record"));
+        assert_eq!(result, Err(CONFLICTING_CONTEXT.to_string()));
     }
 
     #[test]

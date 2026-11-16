@@ -8,8 +8,8 @@
 //!
 //! Which context to update in is a separate, slower question that only an update asks. Windows
 //! Installer's own registration answers it ([`crate::msi_context`]), as it does for the launcher;
-//! only when that lookup cannot run at all do the product's own uninstall records answer, and
-//! only when they all agree. The answer must
+//! when that registration gives no answer, or cannot run at all, the product's own uninstall
+//! records answer, and only when they all agree. The answer must
 //! match the hive that named this exe: a package writes `App Paths` under `HKMU`, which is always
 //! the hive of its own context, so a registration in the other context belongs to another copy and
 //! the update stops. So a copy installed for everyone is never unpacked over without permission,
@@ -42,12 +42,20 @@ const ANOTHER_COPY: &str = "Windows lists this app for a different account setti
 const NOT_ONE_PRODUCT: &str =
     "Windows lists this app's installation more than once or not at all, so it can't tell which copy to update. Use the app's installer instead.";
 
+/// Whether `error` is one of the answers only the app's own installer can settle: this copy can't
+/// be told apart from another one, so retrying the update can't help. The prompt offers the manual
+/// download alone then.
+#[cfg_attr(not(feature = "egui"), allow(dead_code))]
+pub(crate) fn is_ambiguity(error: &str) -> bool {
+    [CONFLICTING, ANOTHER_COPY, NOT_ONE_PRODUCT].contains(&error) || crate::msi_context::is_ambiguity(error)
+}
+
 /// The `msiexec` properties for `copy`'s update (as [`crate::msi_migrate`] uses them). `product_codes` are the app's Windows Installer
 /// registrations; `probe` asks Windows Installer for one product's context, and `record_scopes`
-/// lists the context of every uninstall record of that product, read only when the lookup cannot
-/// run. Exactly one product must be registered: with two, either could be the copy that runs. The
-/// records must agree on one context. Whichever answers, it must be the context of the hive that
-/// named this exe, or the registration is another copy's.
+/// lists the context of every uninstall record of that product, read when the lookup gives no
+/// context or cannot run. Exactly one product must be registered: with two, either could be the
+/// copy that runs. The records must agree on one context. Whichever answers, it must be the
+/// context of the hive that named this exe, or the registration is another copy's.
 #[cfg(test)]
 pub(crate) fn update_arguments(
     copy: MsiCopy,
@@ -224,6 +232,18 @@ mod tests {
 
     const CODE: &str = "{500F5254-26F4-4AAA-B90D-6F3FD9947D14}";
 
+    #[test]
+    fn only_an_ambiguous_copy_switches_the_prompt_to_the_download() {
+        assert!(is_ambiguity(NOT_ONE_PRODUCT));
+        assert!(is_ambiguity(CONFLICTING));
+        assert!(is_ambiguity(ANOTHER_COPY));
+        assert!(is_ambiguity(crate::msi_context::UNKNOWN_CONTEXT_TEST), "the lookup's own stop is ambiguous too");
+        assert!(is_ambiguity(crate::msi_context::CONFLICTING_CONTEXT_TEST));
+        for other in ["couldn't reach https://api.github.com: timed out", "The update is installed.", ""] {
+            assert!(!is_ambiguity(other), "{other:?}");
+        }
+    }
+
     fn p(s: &str) -> PathBuf {
         PathBuf::from(s)
     }
@@ -281,13 +301,21 @@ mod tests {
     }
 
     #[test]
-    fn the_uninstall_records_answer_only_when_the_lookup_cannot_run() {
+    fn the_uninstall_records_answer_when_the_lookup_gives_no_context() {
         let copy = MsiCopy::Registered { hive: MsiScope::PerMachine };
         let blocked = |_: &str| Err(ProbeError::Unavailable("PowerShell is blocked".into()));
         assert_eq!(update_arguments(copy, &codes(&[CODE]), blocked, |_| vec![MsiScope::PerMachine]).unwrap(), ["ALLUSERS=1"]);
-        for unclear in [ProbeError::Unknown, ProbeError::Conflicting] {
-            assert!(update_arguments(copy, &codes(&[CODE]), |_| Err(unclear), |_| panic!("must not read the records")).is_err());
-        }
+        // Windows Installer listed no context for it either: one clear record decides, which is
+        // exactly what a copy installed for everyone has.
+        let unclear = |_: &str| Err(ProbeError::Unknown);
+        assert_eq!(update_arguments(copy, &codes(&[CODE]), unclear, |_| vec![MsiScope::PerMachine]).unwrap(), ["ALLUSERS=1"]);
+        assert_eq!(
+            update_arguments(copy, &codes(&[CODE]), unclear, |_| vec![MsiScope::PerMachine, MsiScope::PerUser]).unwrap_err(),
+            crate::msi_context::UNKNOWN_CONTEXT_TEST,
+            "two contexts are an ambiguity, not a fallback"
+        );
+        // A copy Windows Installer lists for both contexts stops without reading anything.
+        assert!(update_arguments(copy, &codes(&[CODE]), |_| Err(ProbeError::Conflicting), |_| panic!("must not read the records")).is_err());
     }
 
     #[test]
