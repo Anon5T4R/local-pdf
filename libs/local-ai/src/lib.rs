@@ -171,7 +171,13 @@ impl Connection {
             return Ok(Vec::new());
         };
         match std::fs::read_to_string(path) {
-            Ok(text) => serde_json::from_str(&text).map_err(|e| e.to_string()),
+            Ok(text) => {
+                let mut all: Vec<Connection> = serde_json::from_str(&text).map_err(|e| e.to_string())?;
+                for connection in &mut all {
+                    normalize_connection(connection);
+                }
+                Ok(all)
+            }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Vec::new()),
             Err(e) => Err(e.to_string()),
         }
@@ -266,16 +272,54 @@ fn authorize(app: &App, conn: &Connection, key: &str) -> Vec<(String, String)> {
         headers.push(("X-Title".to_owned(), app.id.to_owned()));
     }
     if conn.provider == "opencode-go" {
-        // OpenCode Go routes and prompt-caches per conversation and asks clients to identify
-        // themselves: the connection is the conversation here, so its id is the stable session id,
-        // and the app's own user agent is sent instead of the HTTP library's.
-        headers.push(("x-opencode-session".to_owned(), conn.id.clone()));
+        // The Go gateway routes by a session id; a missing/invalid one turns the request into a
+        // pay-as-you-go Models request. The validated recipe (the user's working extension and the
+        // opencode harnesses) is a fresh UUID per request: `crypto.randomUUID()`.
+        headers.push(("x-opencode-session".to_owned(), uuid_v4()));
+        headers.push(("x-opencode-client".to_owned(), app.id.to_owned()));
         headers.push(("User-Agent".to_owned(), format!("{}/1.0", app.id)));
     }
     headers
 }
 
-/// The `/models` URL and its headers.
+/// A UUID v4-shaped id (8-4-4-4-12 hex, version 4, variant 10xx). The Go gateway only needs a unique
+/// session id per request; this is the shape `crypto.randomUUID()` produces, without a `uuid` crate.
+fn uuid_v4() -> String {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    use std::time::{SystemTime, UNIX_EPOCH};
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let nanos = SystemTime::now().duration_since(UNIX_EPOCH).map(|elapsed| elapsed.as_nanos()).unwrap_or(0);
+    let counter = COUNTER.fetch_add(1, Ordering::Relaxed);
+    let bits = (nanos as u128) ^ ((counter as u128) << 64) ^ 0x9E37_79B9_7F4A_7C15_1234_5678_9ABC_DEF0;
+    let mut bytes = bits.to_be_bytes();
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    format!(
+        "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+        bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
+    )
+}
+
+/// Fix the base URL of a connection saved before a preset moved. The `opencode-go` preset pointed at
+/// the Zen (`/zen/v1`) base in earlier versions; a connection created then keeps billing the Zen
+/// pay-as-you-go account even though the Go plan is paid. A saved base equal to the *other* preset's
+/// default is the stale copy, so it is replaced by the provider's own base. A hand-edited base that
+/// is neither default is left alone.
+fn normalize_connection(conn: &mut Connection) {
+    let Some(own) = provider(&conn.provider) else { return };
+    let base = conn.base_url.trim().trim_end_matches('/');
+    if own.base_url.is_empty() || base.is_empty() || base == own.base_url.trim_end_matches('/') {
+        return;
+    }
+    let stale = PROVIDERS
+        .iter()
+        .any(|other| other.id != own.id && !other.base_url.is_empty() && other.base_url.trim_end_matches('/') == base);
+    if stale {
+        conn.base_url = own.base_url.to_owned();
+    }
+}
+
+/// The `/models` URL and its headers for the OpenAI-compatible providers.
 fn models_url(
     app: &App,
     conn: &Connection,
@@ -288,10 +332,58 @@ fn models_url(
     Ok((format!("{base}/models"), authorize(app, conn, key)))
 }
 
+/// Gemini's OpenAI-compatible base (`…/v1beta/openai`) has **no** `/models` list: that route is 404
+/// (verified against the live service). The native list lives one level up (`…/v1beta/models`),
+/// authenticates with `x-goog-api-key`, and answers `{ "models": [{ "name": "models/…" }] }`.
+fn gemini_models_base(conn: &Connection) -> String {
+    let base = conn.effective_base();
+    base.strip_suffix("/openai").map(str::to_owned).unwrap_or(base)
+}
+
+/// The ids from Gemini's native model list, keeping only the chat models (`generateContent`) and
+/// dropping the `models/` prefix the OpenAI-compatible chat endpoint does not expect.
+fn parse_gemini_models(body: &str) -> Result<Vec<String>, String> {
+    let value: serde_json::Value = serde_json::from_str(body).map_err(|e| e.to_string())?;
+    let models = value.get("models").and_then(|m| m.as_array()).ok_or("the answer has no models")?;
+    let mut out: Vec<String> = models
+        .iter()
+        .filter(|model| {
+            model
+                .get("supportedGenerationMethods")
+                .and_then(|methods| methods.as_array())
+                .map_or(true, |methods| methods.iter().any(|method| method.as_str() == Some("generateContent")))
+        })
+        .filter_map(|model| model.get("name").and_then(|name| name.as_str()).map(|name| name.strip_prefix("models/").unwrap_or(name).to_owned()))
+        .collect();
+    out.sort();
+    Ok(out)
+}
+
 /// The provider's model list, sorted for the picker.
 pub fn list_models(app: &App, conn: &Connection) -> Result<Vec<String>, String> {
     let key = conn.key(app)?;
-    let (url, headers) = models_url(app, conn, &key)?;
+    list_models_with_key(app, conn, &key)
+}
+
+/// [`list_models`] with the key handed over by the caller (the keychain is skipped), so the transport
+/// can be exercised end to end in tests.
+pub fn list_models_with_key(app: &App, conn: &Connection, key: &str) -> Result<Vec<String>, String> {
+    // Gemini's OpenAI-compatible route has no model list; use its native one.
+    if conn.provider == "gemini" {
+        let base = gemini_models_base(conn);
+        if base.is_empty() {
+            return Err("the connection has no base URL".into());
+        }
+        let url = format!("{base}/models");
+        let mut response = agent().get(&url).header("x-goog-api-key", key).call().map_err(|e| format!("{e}"))?;
+        let status = response.status();
+        let body = response.body_mut().read_to_string().map_err(|e| e.to_string())?;
+        if !status.is_success() {
+            return Err(provider_error(status, &body));
+        }
+        return parse_gemini_models(&body);
+    }
+    let (url, headers) = models_url(app, conn, key)?;
     let mut req = agent().get(&url);
     for (k, v) in headers {
         req = req.header(&k, &v);
@@ -306,11 +398,7 @@ pub fn list_models(app: &App, conn: &Connection) -> Result<Vec<String>, String> 
     let mut out: Vec<String> = value
         .get("data")
         .and_then(|d| d.as_array())
-        .map(|a| {
-            a.iter()
-                .filter_map(|m| m.get("id").and_then(|i| i.as_str()).map(str::to_owned))
-                .collect()
-        })
+        .map(|a| a.iter().filter_map(|m| m.get("id").and_then(|i| i.as_str()).map(str::to_owned)).collect())
         .unwrap_or_default();
     out.sort();
     Ok(out)
@@ -336,7 +424,7 @@ pub fn chat(app: &App, conn: &Connection, history: &[Msg]) -> Result<String, Str
         })
         .collect();
     let body = serde_json::json!({ "model": conn.model, "messages": messages }).to_string();
-    let mut builder = agent().post(&format!("{base}/chat/completions"));
+    let mut builder = agent().post(&format!("{base}/chat/completions")).header("Content-Type", "application/json");
     for (k, v) in authorize(app, conn, &key) {
         builder = builder.header(&k, &v);
     }
@@ -376,7 +464,7 @@ pub fn vision(
         ]}]
     })
     .to_string();
-    let mut builder = agent().post(&format!("{base}/chat/completions"));
+    let mut builder = agent().post(&format!("{base}/chat/completions")).header("Content-Type", "application/json");
     for (k, v) in authorize(app, conn, &key) {
         builder = builder.header(&k, &v);
     }
@@ -437,7 +525,7 @@ pub fn chat_stream_with_key(
         .collect();
     let body = serde_json::json!({ "model": conn.model, "messages": messages, "stream": true })
         .to_string();
-    let mut builder = agent().post(&format!("{base}/chat/completions"));
+    let mut builder = agent().post(&format!("{base}/chat/completions")).header("Content-Type", "application/json");
     for (k, v) in authorize(app, conn, key) {
         builder = builder.header(&k, &v);
     }
@@ -819,11 +907,60 @@ data: [DONE]\n";
         let app = App { id: "LocalMind", url: "" };
         let conn = Connection { id: "conv-7".into(), provider: "opencode-go".into(), label: "Go".into(), base_url: String::new(), model: "deepseek-v4.1-flash".into() };
         let headers = authorize(&app, &conn, "k");
-        assert!(headers.iter().any(|(k, v)| k == "x-opencode-session" && v == "conv-7"));
-        assert!(headers.iter().any(|(k, v)| k == "User-Agent" && v == "LocalMind/1.0"));
+        let session = headers.iter().find(|(key, _)| key == "x-opencode-session").map(|(_, value)| value.clone()).expect("the session header");
+        assert_eq!(session.len(), 36, "a UUID, like crypto.randomUUID(): {session}");
+        let groups: Vec<&str> = session.split('-').collect();
+        assert_eq!(groups.iter().map(|group| group.len()).collect::<Vec<_>>(), [8, 4, 4, 4, 12], "{session}");
+        assert!(groups[2].starts_with('4'), "version 4: {session}");
+        assert!(groups[3].starts_with(['8', '9', 'a', 'b']), "variant 10xx: {session}");
+        assert!(session.chars().filter(|c| *c != '-').all(|c| c.is_ascii_hexdigit()), "{session}");
+        assert!(headers.iter().any(|(key, value)| key == "x-opencode-client" && value == "LocalMind"));
+        assert!(headers.iter().any(|(key, value)| key == "User-Agent" && value == "LocalMind/1.0"));
+
+        // Two requests get different session ids (the recipe is one per request).
+        let other = authorize(&app, &conn, "k");
+        let other_session = other.iter().find(|(key, _)| key == "x-opencode-session").map(|(_, value)| value.clone()).expect("session");
+        assert_ne!(session, other_session);
 
         let mut zen = conn.clone();
         zen.provider = "opencode-zen".into();
-        assert!(!authorize(&app, &zen, "k").iter().any(|(k, _)| k == "x-opencode-session"));
+        assert!(!authorize(&app, &zen, "k").iter().any(|(key, _)| key == "x-opencode-session"));
+    }
+
+    /// A connection saved before the Go preset moved still points at the Zen base, which bills the
+    /// pay-as-you-go account even though the user pays Go. Loading fixes that; a hand-edited base
+    /// that is neither preset's default is left alone.
+    #[test]
+    fn a_stale_opencode_go_base_moves_to_the_go_base() {
+        let mut stale = Connection { id: "go".into(), provider: "opencode-go".into(), label: "Go".into(), base_url: "https://opencode.ai/zen/v1".into(), model: "deepseek-v4.1-flash".into() };
+        normalize_connection(&mut stale);
+        assert_eq!(stale.base_url, "https://opencode.ai/inference/go/openai/v1");
+
+        let mut edited = stale.clone();
+        edited.base_url = "https://gateway.example.com/v1".into();
+        normalize_connection(&mut edited);
+        assert_eq!(edited.base_url, "https://gateway.example.com/v1", "a custom base is the user's choice");
+    }
+
+    /// Gemini's OpenAI-compatible base has no `/models` route (404 live); the native list is one
+    /// level up, and its ids drop the `models/` prefix and the non-chat models.
+    #[test]
+    fn gemini_models_use_the_native_list_and_keep_only_chat_models() {
+        let conn = Connection {
+            id: "g".into(),
+            provider: "gemini".into(),
+            label: "Gemini".into(),
+            base_url: "https://generativelanguage.googleapis.com/v1beta/openai".into(),
+            model: String::new(),
+        };
+        // The native list lives one level up from the OpenAI-compatible base; the caller appends
+        // `/models` to this root.
+        assert_eq!(gemini_models_base(&conn), "https://generativelanguage.googleapis.com/v1beta");
+        let body = r#"{"models":[
+            {"name":"models/gemini-2.5-flash","supportedGenerationMethods":["generateContent","countTokens"]},
+            {"name":"models/gemini-embedding-001","supportedGenerationMethods":["embedContent"]},
+            {"name":"models/gemini-2.5-pro","supportedGenerationMethods":["generateContent"]}
+        ]}"#;
+        assert_eq!(parse_gemini_models(body).unwrap(), ["gemini-2.5-flash", "gemini-2.5-pro"]);
     }
 }
