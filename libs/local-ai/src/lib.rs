@@ -522,11 +522,23 @@ fn read_stream(
 /// show the user.
 fn provider_error(status: impl std::fmt::Display, body: &str) -> String {
     if let Ok(value) = serde_json::from_str::<serde_json::Value>(body) {
-        if let Some(message) = value.get("error").and_then(|e| e.get("message")).and_then(|m| m.as_str()) {
-            return message.to_owned();
-        }
-        if let Some(message) = value.get("message").and_then(|m| m.as_str()) {
-            return message.to_owned();
+        let error = value.get("error");
+        // The most useful reason first: OpenRouter puts the upstream provider's own message in
+        // `error.metadata.raw` (the plain `error.message` there is only "Provider returned error"),
+        // then the usual `error.message`, then a top-level `message`.
+        let message = error
+            .and_then(|e| e.get("metadata"))
+            .and_then(|m| m.get("raw"))
+            .and_then(|r| r.as_str())
+            .or_else(|| error.and_then(|e| e.get("message")).and_then(|m| m.as_str()))
+            .or_else(|| value.get("message").and_then(|m| m.as_str()));
+        if let Some(message) = message {
+            // The provider name turns "rate-limited" into something actionable.
+            let provider = error.and_then(|e| e.get("metadata")).and_then(|m| m.get("provider_name")).and_then(|p| p.as_str());
+            return match provider {
+                Some(provider) => format!("{provider}: {message}"),
+                None => message.to_owned(),
+            };
         }
     }
     let text = body.trim();
@@ -597,6 +609,24 @@ mod tests {
     fn surfaces_a_provider_error() {
         let body = serde_json::json!({ "error": { "message": "bad key" } }).to_string();
         assert_eq!(parse_chat(&body).unwrap_err(), "bad key");
+    }
+
+    /// OpenRouter's 429 hides the useful reason in `error.metadata.raw`; the banner must show that
+    /// and the provider name, not the generic "Provider returned error".
+    #[test]
+    fn a_provider_error_prefers_the_raw_metadata_reason() {
+        let body = r#"{"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"google/gemma-4-31b-it:free is temporarily rate-limited upstream.","provider_name":"Google AI Studio"}}}"#;
+        let error = provider_error(429, body);
+        assert!(error.contains("Google AI Studio"), "{error}");
+        assert!(error.contains("temporarily rate-limited upstream"), "{error}");
+        assert!(!error.contains("Provider returned error"), "{error}");
+    }
+
+    /// A plain provider error (no metadata) keeps its own message.
+    #[test]
+    fn a_plain_provider_error_keeps_its_message() {
+        let body = r#"{"error":{"message":"invalid api key"}}"#;
+        assert_eq!(provider_error(401, body), "invalid api key");
     }
 
     #[test]
