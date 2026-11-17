@@ -59,6 +59,13 @@ fn fake_app() -> (u16, Arc<Mutex<Vec<String>>>, std::thread::JoinHandle<()>) {
 fn control_file(dir: &Path, port: u16) -> PathBuf {
     let path = dir.join("control.json");
     std::fs::write(&path, json!({"port": port, "token": "test-token", "pid": 0}).to_string()).unwrap();
+    // The app writes the control file with owner-only permissions, and the CLI refuses anything
+    // other users can read. Tests write it themselves, so they set the same mode on Unix.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+    }
     path
 }
 
