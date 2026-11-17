@@ -21,6 +21,8 @@ localpdf-cos = { workspace = true }
 localpdf-preflight = { workspace = true }
 localpdf-automation = { workspace = true }
 localpdf-platform = { workspace = true }
+# The suite's MCP plumbing, for `mcp --connect` (the live server over the app's control channel).
+craft-mcp = { workspace = true, optional = true }
 base64 = "0.23"
 
 [dev-dependencies]
@@ -39,4 +41,4 @@ winresource = "0.1"
 [features]
 default = ["mcp"]
 # The opt-in MCP server (`localpdf-cli mcp`). Build with --no-default-features to leave it out.
-mcp = ["localpdf-automation/mcp"]
+mcp = ["localpdf-automation/mcp", "dep:craft-mcp"]

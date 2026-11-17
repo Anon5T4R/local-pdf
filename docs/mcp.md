@@ -1,8 +1,10 @@
 # MCP conventions
 
-Start explicitly with `localpdf-cli mcp [--root DIR] [--compact] [--automation-read-root DIR] [--automation-write-root DIR]`. The server uses JSON lines on
-stdin/stdout, opens no port, and stops on EOF. `--root` confines all reads and writes, including
-commands invoked through the common tools. Logs stay on stderr.
+Start explicitly with `localpdf-cli mcp [--root DIR] [--compact | --connect CONTROL_FILE]
+[--automation-read-root DIR] [--automation-write-root DIR]`. The server uses JSON lines on
+stdin/stdout and stops on EOF; `--connect` drives a running app over its loopback control channel,
+and the other forms run in their own process and open no port. `--root` confines all reads and
+writes, including commands invoked through the common tools. Logs stay on stderr.
 
 Supply `--root` at most once, followed by a nonempty directory path. Missing operands,
 repeated roots and another long option in place of the directory are refused before any
@@ -103,8 +105,9 @@ config works across the suite) keep the agent to the folders you give it:
 - `--root DIR` still works and can be combined with these flags. Both then apply: a path must be
   inside `--root` and inside the matching automation root.
 
-`localpdf-cli mcp` always runs the session in its own process (there is no flag to connect it to a
-running app), so the roots cover every server it starts. The desktop app is not confined by them.
+`localpdf-cli mcp` runs the session in its own process, so the roots cover every server it starts.
+`--connect` drives a running app instead (see the live session below); that app opens its own files,
+and these roots do not apply to it.
 
 What the roots do not cover: tools that take no path still read and change the open documents, and
 `text_extract` and the other inspection tools return their content. Keychain and Windows
@@ -116,6 +119,64 @@ without it.
 A path is checked, then opened: another program that swaps a link in between can still win that
 race, so the roots keep an agent to the files it was given rather than guarding against other
 software on the computer.
+
+## Live session (`mcp --connect`)
+
+`localpdf-cli mcp --connect CONTROL_FILE` drives the **running** app instead of a private session:
+the user watches every change. Start the app with a control file first (`localpdf --control FILE`
+writes it: a random loopback port and the token every connection must present):
+
+```sh
+localpdf --control ~/.localpdf-control.json
+localpdf-cli mcp --connect ~/.localpdf-control.json
+```
+
+```json
+{"mcpServers": {"localpdf-live": {"command": "localpdf-cli",
+  "args": ["mcp", "--connect", "/home/me/.localpdf-control.json"]}}}
+```
+
+There is no bare-port form: the token in the control file is what makes the channel yours, so give
+the file. The CLI refuses a control file that is a link, another user's, or open to other users
+(the app writes it with owner-only permissions).
+
+The live session lists the app's control tools, not the headless automation set:
+
+| Tool | What it runs |
+|---|---|
+| `ui_state`, `doc_inspect` | `ui.state`: open documents, page, zoom, mode, panels and window size |
+| `ui_inspect`, `ui_click`, `ui_focus`, `ui_type`, `ui_key`, `ui_drag`, `ui_move`, `ui_resize` | the real widgets and page |
+| `ui_open`, `doc_open` | `ui.open`: open a PDF in the app (or focus its tab) |
+| `ui_commands`, `command_list` | `ui.commands`: the registry commands, with their menus and shortcuts |
+| `ui_command`, `command_run` | `ui.command`, exactly as the menu runs it: **parameters are not forwarded** (the control channel takes none); use the headless server for those |
+| `ui_screenshot`, `render_preview` | `ui.screenshot`: the window as a PNG |
+| `ui_set`, `ui_quit` | view options and preferences, and a normal quit (refused with unsaved edits) |
+
+Saving, exporting, OCR, forms and every other document operation need the headless server
+(`localpdf-cli mcp`). The live session takes no `--root`, `--compact` or automation roots: the app
+opens its own files and enforces its own settings. It needs the app already running: a missing or
+closed control channel is an error when it starts. The framing, lifecycle and error shapes are the
+suite's `craft-mcp`, the same server every Craft app uses.
+
+## Scripts and the catalogue from the command line
+
+`run --script FILE` runs automation steps headlessly: a JSON array of `{"tool", "args"}` objects,
+or one such object per line (JSON Lines: blank lines are skipped and a byte order mark is
+skipped), as the rest of the suite takes its job files. It prints one result per step, and
+`--report` prints a single JSON document for the run.
+
+```json
+{"tool": "doc_create", "args": {"from": "blank", "width": 400, "height": 300}}
+{"tool": "page_render", "args": {"doc": 1, "page": 1, "dpi": 96}, "out": "page.png"}
+```
+
+`localpdf-cli tools` lists every automation tool with its JSON Schema; `tools --search TEXT` keeps
+those whose name, title or description contains `TEXT` (case-insensitive), the same idea as the
+suite's `commands --search`:
+
+```sh
+localpdf-cli tools --search redact
+```
 
 ## Tools
 

@@ -24,6 +24,9 @@ craft-print = { path = "libs/craft-libs/crates/print/" }
 # Whether a path stored in a document may be opened (GoToR link targets).
 craft-docpath = { version = "0.1.0", path = "libs/craft-libs/crates/docpath/" }
 craft-update = { path = "libs/craft-libs/crates/update/", features = ["egui", "icons"] }
+# Shared MCP plumbing of the suite (stdio server skeleton, script/batch steps and the automation
+# root flags); source of truth in local-libs, vendored here and replicated by its sync.ps1.
+craft-mcp = { path = "libs/craft-libs/crates/mcp/" }
 # internal
 localpdf-geom = { path = "crates/geom" }
 localpdf-filters = { path = "crates/filters" }

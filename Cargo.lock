@@ -1317,6 +1317,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "craft-mcp"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+]
+
+[[package]]
 name = "craft-menu"
 version = "0.1.0"
 dependencies = [
@@ -3825,6 +3832,7 @@ name = "localpdf-cli"
 version = "0.14.25"
 dependencies = [
  "base64 0.23.1",
+ "craft-mcp",
  "localpdf-audit",
  "localpdf-automation",
  "localpdf-cos",

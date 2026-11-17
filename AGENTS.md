@@ -24,6 +24,14 @@ Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de t
 - `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, web
 - `xtask/` — tarefas de build/CI (`cargo xtask ci`)
 
+## Agent-native (MCP)
+O app é dirigido por agente por dois caminhos: `localpdf-cli mcp` (headless, os ~141 tools de
+`crates/automation`) e `localpdf-cli mcp --connect CONTROL_FILE` (live: o app aberto com
+`localpdf --control FILE`, por TCP loopback com token no arquivo). O modo live é servido pela crate
+compartilhada **`craft-mcp`** (`libs/craft-libs/crates/mcp`, fonte no repo `local-libs`, espelhada
+por `sync.ps1 -Crate mcp`); o headless continua em `crates/automation`. `run --script` aceita JSON
+array ou JSON Lines; `tools --search TEXT` filtra o catálogo. Docs: `docs/mcp.md`.
+
 ## Build
 ```
 cargo build --locked          # debug

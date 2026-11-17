@@ -20,6 +20,8 @@
 #[cfg(feature = "mcp")]
 mod automation_args;
 mod batch;
+#[cfg(feature = "mcp")]
+mod live;
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -35,9 +37,14 @@ use localpdf_render::{PageRenderer, RenderConfig, RenderRequest, RequestKind, in
 macro_rules! mcp_usage {
     () => {
         "\
-localpdf-cli mcp    [--root DIR] [--compact] [--automation-read-root DIR] [--automation-write-root DIR]
+localpdf-cli mcp    [--root DIR] [--compact | --connect CONTROL_FILE]
+                    [--automation-read-root DIR] [--automation-write-root DIR]
                                                            MCP server on stdin/stdout (opt-in)
                                                            --compact lists a core set of tools plus tool_search and tool_call
+                                                           --connect drives the app started with
+                                                           `localpdf --control CONTROL_FILE` (loopback, token-authenticated):
+                                                           the app's ui_* tools plus command_list, command_run, doc_open,
+                                                           doc_inspect and render_preview; no headless tools
                                                            --automation-read-root / --automation-write-root confine the files the
                                                            agent's tools read (open, combine, import, fonts, certificates…) and
                                                            write (save, export, extract, split, reports…) to DIR, links followed;
@@ -71,7 +78,9 @@ localpdf-cli audit  <file.pdf> [--password PW]            find faux redactions (
 localpdf-cli batch <files or dirs...> --steps convert,ocr,optimize --out-dir DIR
                       [--recursive] [--root DIR] [--stop-on-error]
                       [--ppi 150] [--quality 60] [--dpi 300] [--language en] [--ocr-all-pages]
-localpdf-cli tools                                       automation tools and their JSON Schemas
+localpdf-cli tools  [--search TEXT]                       automation tools and their JSON Schemas
+                                                           (--search keeps those whose name, title or
+                                                           description contains TEXT)
 localpdf-cli run    <tool> [key=value …] [--root DIR] [--out image.png]
 localpdf-cli run    --script steps.json [--root DIR] [--report]
                       [{\"tool\": \"doc_open\", \"args\": {…}}, …]; --report prints one JSON document for the run
@@ -120,7 +129,7 @@ fn main() -> ExitCode {
         Some("check") => check(&args[1..]),
         Some("check-one") => check_one(&args[1..]),
         Some("audit") => audit(&args[1..]),
-        Some("tools") => tools(),
+        Some("tools") => tools(&args[1..]),
         Some("run") => run(&args[1..]),
         Some("batch") => batch::run(&args[1..]),
         Some("ui") => ui(&args[1..]),
@@ -322,10 +331,15 @@ const RUN_OPTIONS: &[OptionSpec] = &[
     OptionSpec { name: "--out", takes_value: true },
     OptionSpec { name: "--report", takes_value: false },
 ];
+const TOOLS_OPTIONS: &[OptionSpec] = &[OptionSpec { name: "--search", takes_value: true }];
 const UI_OPTIONS: &[OptionSpec] = &[OptionSpec { name: "--control", takes_value: true }, OptionSpec { name: "--out", takes_value: true }];
 
 #[cfg(feature = "mcp")]
-const MCP_OPTIONS: &[OptionSpec] = &[OptionSpec { name: "--root", takes_value: true }, OptionSpec { name: "--compact", takes_value: false }];
+const MCP_OPTIONS: &[OptionSpec] = &[
+    OptionSpec { name: "--root", takes_value: true },
+    OptionSpec { name: "--compact", takes_value: false },
+    OptionSpec { name: "--connect", takes_value: true },
+];
 
 /// The arguments that are not options or their values. Which tokens are values is the spec's
 /// answer: skipping the one after every option made `check-one --edit file.pdf` report "missing
@@ -937,9 +951,19 @@ fn automation(args: &[String]) -> Result<localpdf_automation::Automation, String
     }
 }
 
-fn tools() -> Result<(), CliError> {
+/// `tools [--search TEXT]`: the automation tools and their JSON Schemas, optionally narrowed by a
+/// case-insensitive substring of the name, title or description (the same idea as the suite's
+/// `commands --search`).
+fn tools(args: &[String]) -> Result<(), CliError> {
+    validate_options("tools", args, TOOLS_OPTIONS)?;
+    let search = flag(args, "--search").map(str::to_lowercase);
+    let hit = |t: &localpdf_automation::ToolDef| match search.as_deref() {
+        None => true,
+        Some(needle) => [t.name, t.title, t.description].iter().any(|s| s.to_lowercase().contains(needle)),
+    };
     let list: Vec<serde_json::Value> = localpdf_automation::tools()
         .iter()
+        .filter(|t| hit(t))
         .map(|t| serde_json::json!({ "name": t.name, "description": t.description, "read_only": t.read_only, "command": t.command, "input_schema": t.input_schema }))
         .collect();
     stdout_line(format_args!("{}", serde_json::to_string_pretty(&list).unwrap_or_default()))?;
@@ -1035,7 +1059,7 @@ fn run(args: &[String]) -> Result<(), CliError> {
     let mut auto = automation(args)?;
     if let Some(script) = flag(args, "--script") {
         let text = std::fs::read_to_string(script).map_err(|e| format!("{script}: {e}"))?;
-        let steps: Vec<serde_json::Value> = serde_json::from_str(&text).map_err(|e| format!("{script}: {e}"))?;
+        let steps: Vec<serde_json::Value> = parse_steps(script, &text)?;
         if report {
             return run_script_report(&mut auto, &steps);
         }
@@ -1058,6 +1082,22 @@ fn run(args: &[String]) -> Result<(), CliError> {
     }
     let content = auto.call(tool, &serde_json::Value::Object(obj)).map_err(|e| e.to_string())?;
     print_output(&auto, content, flag(args, "--out"))
+}
+
+/// The steps of a `--script` file: a JSON array of `{"tool", "args"}` objects, or one object per
+/// line (JSON Lines, blank lines skipped; a byte order mark is skipped), as the rest of the suite
+/// takes its job files. Errors name the step, counting from 1 as the run's own messages do.
+fn parse_steps(script: &str, text: &str) -> Result<Vec<serde_json::Value>, String> {
+    let text = text.strip_prefix('\u{feff}').unwrap_or(text);
+    if text.trim_start().starts_with('[') {
+        return serde_json::from_str(text).map_err(|e| format!("{script}: {e}"));
+    }
+    let mut steps = Vec::new();
+    for (line, body) in text.lines().enumerate().filter(|(_, l)| !l.trim().is_empty()) {
+        let step = serde_json::from_str(body).map_err(|e| format!("{script}: step {} (line {}): {e}", steps.len() + 1, line + 1))?;
+        steps.push(step);
+    }
+    Ok(steps)
 }
 
 /// Take `--automation-read-root` / `--automation-write-root` (each `--flag DIR` or `--flag=DIR`,
@@ -1083,6 +1123,24 @@ fn mcp(args: &[String]) -> Result<(), CliError> {
     let (roots, args) = automation_roots("mcp", args)?;
     let args = args.as_slice();
     validate_options("mcp", args, MCP_OPTIONS)?;
+    if let Some(file) = flag(args, "--connect") {
+        // A live session talks to the running app, which enforces its own files and lists its own
+        // tools: the headless confinement and the headless tool switches do not apply.
+        if roots.is_some() {
+            return Err(
+                "mcp: --connect drives a running app, which enforces its own automation roots; drop --automation-read-root/--automation-write-root"
+                    .to_string()
+                    .into(),
+            );
+        }
+        if flag(args, "--root").is_some() {
+            return Err("mcp: --connect drives a running app, which opens its own files; --root does not apply".to_string().into());
+        }
+        if args.iter().any(|a| a == "--compact") {
+            return Err("mcp: --connect lists the live app's own tools; drop --compact".to_string().into());
+        }
+        return live::serve(file).map_err(CliError::Message);
+    }
     let compact = args.iter().any(|a| a == "--compact");
     let mut auto = automation(args)?;
     if let Some(roots) = roots {
@@ -1164,7 +1222,7 @@ const CONTROL_FILE_ADVICE: &str =
 /// first; the app then can't write it, and the CLI would talk to the other user's listener.
 /// Refused: a symbolic link, anything but a regular file, and on Unix a file owned by someone
 /// else or open to other users (the app writes it with mode 600).
-fn read_control_file(file: &str) -> Result<serde_json::Value, String> {
+pub(crate) fn read_control_file(file: &str) -> Result<serde_json::Value, String> {
     use std::io::Read as _;
     let at_path = std::fs::symlink_metadata(file).map_err(|e| format!("{file}: {e}"))?;
     if at_path.file_type().is_symlink() {
