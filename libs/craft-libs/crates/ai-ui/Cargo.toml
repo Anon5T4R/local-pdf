@@ -1,0 +1,20 @@
+[package]
+name = "craft-ai-ui"
+description = "The AI surface of the Craft App Suite: the connections form, the status strip and the chat panel, over callbacks (the apps keep their prompts, context and apply)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+# The suite's egui fork: the apps patch `egui` to the same rev, so the panels look like the app.
+egui = { workspace = true }
+log = "0.4"
+
+[dev-dependencies]
+# Layout and input tests in a real (headless) egui context; the renderer is the app's own QA.
+egui_kittest = { version = "0.37" }

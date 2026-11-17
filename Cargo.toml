@@ -14,6 +14,8 @@ repository = "https://github.com/Anon5T4R/local-pdf"
 [workspace.dependencies]
 # Shared frontend components; engines remain independent of egui.
 craft-ui = { path = "libs/craft-libs/crates/ui/", features = ["serde"] }
+# The AI surface of the suite (local-libs): the chat panel, the connections form and the strip.
+craft-ai-ui = { path = "libs/craft-libs/crates/ai-ui/" }
 # Quit the macOS way (#1136): Ã¢Å’ËœQ asks about unsaved changes, and closing quits through `terminate:`.
 craft-quit = { path = "libs/craft-libs/crates/quit/" }
 # One menu definition for the native macOS menu bar and the in-window bar elsewhere.

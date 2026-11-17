@@ -90,6 +90,66 @@ pub fn list_models(conn: &Connection) -> Result<Vec<String>, String> {
     local_ai::list_models(&APP, &conn.shared())
 }
 
+/// One streamed answer: `on_delta` receives each piece as it arrives and the whole text comes back.
+pub fn chat_stream(conn: &Connection, history: &[Msg], on_delta: &mut dyn FnMut(&str)) -> Result<String, String> {
+    local_ai::chat_stream(&APP, &conn.shared(), history, on_delta)
+}
+
+/// [`chat_stream`] with the key handed in instead of read from the OS keychain: for the tests that
+/// exercise the transport end to end (a loopback provider, a real provider) without the keychain.
+pub fn chat_stream_with_key(conn: &Connection, key: &str, history: &[Msg], on_delta: &mut dyn FnMut(&str)) -> Result<String, String> {
+    local_ai::chat_stream_with_key(&APP, &conn.shared(), key, history, on_delta)
+}
+
+/// A streaming answer on a worker thread: the pieces arrive on `deltas` as the provider sends them,
+/// and the joined text (or the error) on `done`. Both channels close when the request ends.
+pub struct Stream {
+    pub deltas: std::sync::mpsc::Receiver<String>,
+    pub done: std::sync::mpsc::Receiver<Result<String, String>>,
+    cancelled: std::sync::Arc<std::sync::atomic::AtomicBool>,
+}
+
+impl Stream {
+    /// Starts the request on a worker thread. The UI polls [`Stream::poll`] every frame.
+    pub fn start(conn: Connection, history: Vec<Msg>) -> Self {
+        use std::sync::atomic::{AtomicBool, Ordering};
+        use std::sync::mpsc::channel;
+        let (deltas_tx, deltas) = channel();
+        let (done_tx, done) = channel();
+        let cancelled = std::sync::Arc::new(AtomicBool::new(false));
+        let stop = cancelled.clone();
+        std::thread::Builder::new()
+            .name("ai-chat".into())
+            .spawn(move || {
+                let result = local_ai::chat_stream(&APP, &conn.shared(), &history, |delta| {
+                    // A cancelled request stops forwarding: closing the panel must not keep
+                    // spending the user's tokens.
+                    if stop.load(Ordering::Relaxed) {
+                        return;
+                    }
+                    let _ = deltas_tx.send(delta.to_owned());
+                });
+                let _ = done_tx.send(result);
+            })
+            .ok();
+        Self { deltas, done, cancelled }
+    }
+
+    /// What arrived since the last frame, and the final result once there is one.
+    pub fn poll(&self) -> (Vec<String>, Option<Result<String, String>>) {
+        let mut pieces = Vec::new();
+        while let Ok(delta) = self.deltas.try_recv() {
+            pieces.push(delta);
+        }
+        (pieces, self.done.try_recv().ok())
+    }
+
+    /// Tells the worker to stop forwarding (the answer in flight is discarded by the caller).
+    pub fn cancel(&self) {
+        self.cancelled.store(true, std::sync::atomic::Ordering::Relaxed);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -102,10 +162,71 @@ mod tests {
         assert!(path.ends_with("ai-connections.json"));
     }
 
+    /// The saved shape is the suite's file format (the shared crate's `Connection`), so an existing
+    /// `ai-connections.json` keeps working. The round trip is in memory: a test never writes the
+    /// user's real store.
     #[test]
     fn round_trips_like_the_old_file_format() {
         let saved = vec![Connection { id: "a".into(), provider: "gemini".into(), label: "g".into(), base_url: String::new(), model: "m".into() }];
-        Connection::save_all(&saved).unwrap();
-        assert_eq!(Connection::load_all().unwrap(), saved);
+        let json = serde_json::to_string(&saved).expect("the file's JSON");
+        let back: Vec<Connection> = serde_json::from_str(&json).expect("read back");
+        assert_eq!(back, saved);
+        // The shared crate reads the same file: its own shape has the same five fields.
+        let shared: Vec<local_ai::Connection> = serde_json::from_str(&json).expect("the shared crate reads the same file");
+        assert_eq!(shared.iter().map(|c| c.model.as_str()).collect::<Vec<_>>(), vec!["m"]);
+    }
+
+    /// A provider on the loopback: it answers the first POST with `body` as an SSE response and
+    /// sends back the request (head and body). The CI gate for the streaming path, no network and
+    /// no keychain.
+    fn serve_sse(body: String) -> (String, std::sync::mpsc::Receiver<String>) {
+        use std::io::{BufRead, BufReader, Read, Write};
+        use std::net::TcpListener;
+        let listener = TcpListener::bind("127.0.0.1:0").expect("a loopback port");
+        let port = listener.local_addr().expect("the bound address").port();
+        let (tx, rx) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let Ok((mut stream, _)) = listener.accept() else { return };
+            let mut reader = BufReader::new(stream.try_clone().expect("a reading handle"));
+            let mut head = String::new();
+            loop {
+                let mut line = String::new();
+                if reader.read_line(&mut line).unwrap_or(0) == 0 || line == "\r\n" {
+                    break;
+                }
+                head.push_str(&line);
+            }
+            let length = head
+                .lines()
+                .find_map(|line| line.to_ascii_lowercase().strip_prefix("content-length:").map(str::trim).map(str::to_owned))
+                .and_then(|length| length.parse::<usize>().ok())
+                .unwrap_or(0);
+            let mut posted = vec![0u8; length];
+            let _ = reader.read_exact(&mut posted);
+            let _ = tx.send(format!("{head}\n{}", String::from_utf8_lossy(&posted)));
+            let response = format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nConnection: close\r\n\r\n{body}");
+            let _ = stream.write_all(response.as_bytes());
+            let _ = stream.flush();
+        });
+        (format!("http://127.0.0.1:{port}/v1"), rx)
+    }
+
+    /// The streaming path end to end over SSE: the pieces arrive in order and the answer joins.
+    #[test]
+    fn a_streamed_answer_arrives_in_pieces() {
+        let answer = "O documento fala de **sepse**;\n- triagem\n- antibiótico";
+        let cut = answer.char_indices().nth(answer.chars().count() / 2).map(|(i, _)| i).unwrap_or(answer.len());
+        let chunk = |text: &str| format!("data: {{\"choices\":[{{\"delta\":{{\"content\":{}}}}}]}}\n\n", serde_json::to_string(text).unwrap());
+        let body = format!("{}{}data: [DONE]\n\n", chunk(&answer[..cut]), chunk(&answer[cut..]));
+        let (base_url, received) = serve_sse(body);
+        let conn = Connection { id: "loopback".into(), provider: "custom".into(), label: "Loopback".into(), base_url, model: "mock".into() };
+        let history = vec![Msg::System("sistema".into()), Msg::User("resuma".into())];
+        let mut pieces = Vec::new();
+        let whole = chat_stream_with_key(&conn, "test-key", &history, &mut |piece: &str| pieces.push(piece.to_owned())).expect("the streamed answer");
+        assert_eq!(whole, answer, "the pieces join into the answer");
+        assert_eq!(pieces, vec![answer[..cut].to_owned(), answer[cut..].to_owned()], "the pieces arrived in order");
+        let request = received.recv().expect("the request");
+        assert!(request.contains("POST /v1/chat/completions"), "{request}");
+        assert!(request.contains("\"stream\":true"), "{request}");
     }
 }

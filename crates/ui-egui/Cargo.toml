@@ -21,6 +21,8 @@ localpdf-fonts = { workspace = true }
 localpdf-engine = { workspace = true }
 localpdf-cos = { workspace = true }
 localpdf-ai = { workspace = true }
+# The suite's AI surface: the chat panel, the connections form and the status strip (local-libs).
+craft-ai-ui = { workspace = true }
 localpdf-ocr = { workspace = true }
 localpdf-render = { workspace = true }
 localpdf-model = { workspace = true }

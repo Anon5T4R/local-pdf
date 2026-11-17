@@ -3798,6 +3798,8 @@ impl eframe::App for LocalPDFApp {
             self.all_tools_full = false;
         }
         side_panels::show(self, ui);
+        // The AI panel is the suite's chat panel, anchored on the right before the page.
+        ai_ui::panel(self, ui);
         let t = theme::Tokens::get(&ctx);
         egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.pasteboard)).show(ui, |ui| {
             if self.mode == Mode::AllTools && self.all_tools_full {

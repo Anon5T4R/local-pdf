@@ -2557,3 +2557,28 @@ animation effects	Off	オフ
 	Rotate the selected pages clockwise	選択したページを時計回りに回転
 	Extract the selected pages…	選択したページを抽出…
 	Delete the selected pages	選択したページを削除
+	Configure a connection first.	先に接続を設定してください。
+	The connection has no API key	接続に API キーがありません
+	Choose a model first	先にモデルを選んでください
+	Summarize this document: what it is, its main points and any actions it asks of the reader.	この文書を要約してください: 何の文書か、主な要点、読者に求める行動。
+	Stop	停止
+	Summarize the document	文書を要約
+	Whole document	文書全体
+	OCR (AI) → save in file	OCR (AI) → ファイルに保存
+	A vision model reads this page; its text is saved into the PDF as an invisible layer, so it stays forever	視覚モデルがこのページを読み、そのテキストは見えないレイヤーとして PDF に保存されるため、ずっと残ります
+	{name} (whole document)	{name} (文書全体)
+	{name} (this page)	{name} (このページ)
+	Send	送信
+	Retry	再試行
+	Ask about the document.	文書について質問する。
+	Write to the assistant.	アシスタントに書く。
+	reading: {label} · {sent} of {total} chars · {kept} of {turns} turns	読み込み中: {label} · {total} 文字中 {sent} 文字 · {turns} ターン中 {kept} ターン
+	To the end	最後へ
+	AI connections	AI 接続
+	Provider	プロバイダー
+	Base URL	ベース URL
+	API key	API キー
+	Fetch models	モデルを取得
+	Empty uses the provider's own address.	空欄ならプロバイダー自身のアドレスを使います。
+	The key stays in the operating system's keychain.	キーは OS のキーチェーンに保存されます。
+	The answer was copied.	回答をコピーしました。

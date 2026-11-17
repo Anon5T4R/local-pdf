@@ -2842,3 +2842,28 @@ theme	Appearance	Aparência
 	Rotate the selected pages clockwise	Girar as páginas selecionadas no sentido horário
 	Extract the selected pages…	Extrair as páginas selecionadas…
 	Delete the selected pages	Excluir as páginas selecionadas
+	Configure a connection first.	Configure uma conexão primeiro.
+	The connection has no API key	A conexão não tem chave de API
+	Choose a model first	Escolha um modelo primeiro
+	Summarize this document: what it is, its main points and any actions it asks of the reader.	Resuma este documento: o que ele é, seus pontos principais e qualquer ação que ele peça ao leitor.
+	Stop	Parar
+	Summarize the document	Resumir o documento
+	Whole document	Documento inteiro
+	OCR (AI) → save in file	OCR (IA) → salvar no arquivo
+	A vision model reads this page; its text is saved into the PDF as an invisible layer, so it stays forever	Um modelo de visão lê esta página; o texto é salvo no PDF como uma camada invisível, então fica para sempre
+	{name} (whole document)	{name} (documento inteiro)
+	{name} (this page)	{name} (esta página)
+	Send	Enviar
+	Retry	Tentar de novo
+	Ask about the document.	Pergunte sobre o documento.
+	Write to the assistant.	Escreva para o assistente.
+	reading: {label} · {sent} of {total} chars · {kept} of {turns} turns	lendo: {label} · {sent} de {total} caracteres · {kept} de {turns} turnos
+	To the end	Até o fim
+	AI connections	Conexões de IA
+	Provider	Provedor
+	Base URL	URL base
+	API key	Chave de API
+	Fetch models	Buscar modelos
+	Empty uses the provider's own address.	Vazio usa o endereço do próprio provedor.
+	The key stays in the operating system's keychain.	A chave fica no cofre do sistema operacional.
+	The answer was copied.	A resposta foi copiada.

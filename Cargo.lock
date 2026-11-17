@@ -1278,6 +1278,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "craft-ai-ui"
+version = "0.1.0"
+dependencies = [
+ "egui",
+ "log",
+]
+
+[[package]]
 name = "craft-docpath"
 version = "0.1.0"
 
@@ -3781,6 +3789,7 @@ version = "0.14.25"
 dependencies = [
  "local-ai",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -4185,6 +4194,7 @@ dependencies = [
  "block2 0.6.2",
  "bytemuck",
  "chrono",
+ "craft-ai-ui",
  "craft-keymap",
  "craft-menu",
  "craft-quit",
