@@ -837,6 +837,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "craft-ai-ui"
+version = "0.1.0"
+dependencies = [
+ "egui",
+ "egui_kittest",
+ "log",
+]
+
+[[package]]
 name = "craft-atomic"
 version = "0.1.0"
 dependencies = [
