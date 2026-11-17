@@ -581,4 +581,44 @@ mod tests {
         assert!(!a.ai.busy(), "no request is running");
         assert!(a.ai.panel.retry(), "the request is kept for Retry");
     }
+
+    /// The key the ignored real-model test uses: the environment first, then the suite's
+    /// `ai-test.env` on the Desktop (never printed).
+    fn real_key() -> String {
+        if let Some(key) = std::env::var("OPENROUTER_API_KEY").ok().filter(|key| !key.trim().is_empty()) {
+            return key.trim().to_string();
+        }
+        let path = std::path::PathBuf::from(std::env::var("USERPROFILE").unwrap_or_default()).join("Desktop").join("ai-test.env");
+        let text = std::fs::read_to_string(&path).unwrap_or_else(|error| panic!("OPENROUTER_API_KEY or {}: {error}", path.display()));
+        for line in text.lines() {
+            let line = line.trim();
+            if let Some(value) = line.strip_prefix("OPENROUTER_API_KEY=") {
+                return value.trim().trim_matches('"').to_string();
+            }
+        }
+        panic!("OPENROUTER_API_KEY is in neither the environment nor {}", path.display());
+    }
+
+    /// The real-model end-to-end of the chat path: network and a key, so `#[ignore]`. A free model
+    /// works with the suite's zero-credit key. Run with
+    /// `AI_TEST_MODEL=nvidia/nemotron-3-ultra-550b-a55b:free cargo test -p localpdf-ui-egui --lib ai_ui::tests::a_real_model_answers -- --ignored --nocapture`.
+    #[test]
+    #[ignore = "network + a real provider key"]
+    fn a_real_model_answers() {
+        let key = real_key();
+        let conn = Connection {
+            id: "real".into(),
+            provider: "openrouter".into(),
+            label: "OpenRouter".into(),
+            base_url: String::new(),
+            model: std::env::var("AI_TEST_MODEL").unwrap_or_else(|_| "nvidia/nemotron-3-ultra-550b-a55b:free".into()),
+        };
+        let history =
+            vec![localpdf_ai::Msg::System(SYSTEM_PROMPT.to_string()), localpdf_ai::Msg::User("Em uma frase, o que é um arquivo PDF?".into())];
+        let mut pieces = 0;
+        let whole = localpdf_ai::chat_stream_with_key(&conn, &key, &history, &mut |_: &str| pieces += 1).expect("a real answer");
+        println!("--- answer ({pieces} pieces) ---\n{whole}\n--------------");
+        assert!(whole.split_whitespace().count() > 5, "real content, not a stub: {whole}");
+        assert!(pieces > 1, "the answer streamed in pieces");
+    }
 }
