@@ -1,6 +1,6 @@
 # Developing Local PDF
 
-Working instructions for agents and contributors are in `AGENTS.md` and `CLAUDE.md`. This page
+Working instructions for agents and contributors are in `AGENTS.md`. This page
 collects what the desktop app reads from its environment and where it writes its diagnostics.
 
 ## Low-disk Cargo profile
