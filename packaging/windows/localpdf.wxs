@@ -119,11 +119,11 @@
              run as a file handler ("This app can't run on your PC"). -->
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document" Value="PDF Document" Type="string" />
         <!-- A negative index selects the stable icon resource ID, rather than its position.
-             Resource 1 is the app's lion; resource 2 is the PDF document (build.rs). -->
+             Resource 1 is the app icon (red-orange document tile); resource 2 is the PDF document (build.rs). -->
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document\DefaultIcon" Value="&quot;[#LocalpdfExe]&quot;,-2" Type="string" />
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document\shell\open\command" Value="&quot;[#LocalpdfExe]&quot; &quot;%1&quot;" Type="string" />
         <!-- No overlay on thumbnails and in the preview pane: without TypeOverlay, Windows paints
-             the default program's icon (the lion) over the lower-right corner of every PDF
+             the default program's icon (the app icon) over the lower-right corner of every PDF
              thumbnail, covering part of the page. An empty string means none ("Thumbnail
              Handlers", Microsoft Learn). -->
         <RegistryValue Root="HKLM" Key="Software\Classes\LocalPDF.Document" Name="TypeOverlay" Value="" Type="string" />

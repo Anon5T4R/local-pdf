@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png" width="128" height="128" alt="Local PDF icon: an engraved lion on a teal tile">
+  <img src="assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png" width="128" height="128" alt="Local PDF icon: a white document with a folded corner and text lines on a red-to-orange gradient tile">
 </p>
 
 <h1 align="center">Local PDF</h1>

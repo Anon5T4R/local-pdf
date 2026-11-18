@@ -18,7 +18,7 @@ trap 'rm -rf "$TMP"' EXIT
 
 command -v resvg >/dev/null || { echo "error: resvg not found (brew install resvg)" >&2; exit 1; }
 
-# The master is a full-bleed 512 tile (rx=112): right for Windows and Linux. macOS icons follow
+# The master is a 1024 viewBox with a rounded-square tile inset 64 units (rx=200): right for Windows and Linux. macOS icons follow
 # Apple's grid instead: an 824 px body centred on a transparent 1024 canvas.
 MAC="$TMP/macos.svg"
 {
