@@ -1286,6 +1286,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "craft-desktop-theme"
+version = "0.1.0"
+dependencies = [
+ "craft-platform",
+ "egui",
+]
+
+[[package]]
 name = "craft-docpath"
 version = "0.1.0"
 
@@ -1341,6 +1349,18 @@ dependencies = [
  "muda",
  "objc2 0.6.5",
  "objc2-app-kit 0.3.2",
+]
+
+[[package]]
+name = "craft-platform"
+version = "0.1.0"
+dependencies = [
+ "async-channel",
+ "async-io",
+ "async-process",
+ "egui",
+ "futures-lite",
+ "zbus",
 ]
 
 [[package]]
@@ -3752,6 +3772,7 @@ name = "localpdf"
 version = "0.14.26"
 dependencies = [
  "chrono",
+ "craft-desktop-theme",
  "craft-update",
  "eframe",
  "egui",
@@ -4082,10 +4103,7 @@ dependencies = [
 name = "localpdf-platform"
 version = "0.14.26"
 dependencies = [
- "async-channel",
- "futures-lite",
  "rustix 1.1.6",
- "zbus",
 ]
 
 [[package]]

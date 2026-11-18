@@ -406,8 +406,8 @@ fn app_creator<'a>(
         let mut app = LocalPDFApp::new();
         // First start (or settings from before Units existed): the region's unit.
         app.units = localpdf_ui_egui::units::Unit::system();
-        #[cfg(target_os = "linux")]
-        app.enable_desktop_theme();
+        // Linux: the desktop's light/dark choice, which winit does not report.
+        craft_desktop_theme::follow(&cc.egui_ctx);
         // The system's reopen-windows choice (macOS) starts the preference; a saved choice replaces it.
         app.reopen_last_session = reopen::system_default();
         if let Some(json) = cc.storage.and_then(|s| s.get_string("localpdf").or_else(|| s.get_string(LEGACY_STORAGE_KEY))) {

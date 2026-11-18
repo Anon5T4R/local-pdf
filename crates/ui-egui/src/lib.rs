@@ -678,11 +678,6 @@ pub struct LocalPDFApp {
     /// The reading-colours preference (Preferences ▸ Reading colours): applied to every open
     /// document, and documents open with it (Acrobat's Replace Document Colors).
     pub reading_colors: localpdf_render::ReadingColors,
-    /// The Linux portal is enabled only by the native host, and starts on the first System choice.
-    #[cfg(target_os = "linux")]
-    desktop_theme: Option<localpdf_platform::desktop_theme::DesktopTheme>,
-    #[cfg(target_os = "linux")]
-    desktop_theme_enabled: bool,
     /// How far a mouse-wheel notch scrolls.
     pub scroll_speed: scroll_speed::ScrollSpeed,
     /// Preferences ▸ Animation effects: on, off, or as the system's animation setting says.
@@ -1130,10 +1125,6 @@ impl LocalPDFApp {
             // A fresh install follows the desktop's appearance (#1248); saved settings override.
             theme_preference: ThemePreference::System,
             reading_colors: Default::default(),
-            #[cfg(target_os = "linux")]
-            desktop_theme: None,
-            #[cfg(target_os = "linux")]
-            desktop_theme_enabled: false,
             scroll_speed: scroll_speed::ScrollSpeed::default(),
             animation_effects: motion::AnimationEffects::default(),
             motion: motion::Motion::default(),
@@ -2386,13 +2377,6 @@ impl LocalPDFApp {
         }
     }
 
-    /// Enable the Linux desktop portal in a native window. Headless contexts keep
-    /// their supplied input and never connect to the user's session bus.
-    #[cfg(target_os = "linux")]
-    pub fn enable_desktop_theme(&mut self) {
-        self.desktop_theme_enabled = true;
-    }
-
     /// Draw the running job's progress card and pass a Cancel click on to the job.
     fn show_progress(&mut self, ctx: &egui::Context) {
         if widgets::progress_notice(self, ctx) {
@@ -2401,22 +2385,9 @@ impl LocalPDFApp {
     }
 
     fn sync_theme(&mut self, ctx: &egui::Context) {
-        #[cfg_attr(not(target_os = "linux"), expect(unused_mut))]
-        let mut system = ctx.system_theme().map(|theme| theme == egui::Theme::Dark);
-        #[cfg(target_os = "linux")]
-        {
-            let active = self.theme_preference == ThemePreference::System;
-            if self.desktop_theme_enabled && active && self.desktop_theme.is_none() {
-                let ctx = ctx.clone();
-                self.desktop_theme = Some(localpdf_platform::desktop_theme::DesktopTheme::start(move || ctx.request_repaint()));
-            }
-            if let Some(desktop) = &self.desktop_theme {
-                desktop.set_active(active);
-                // The standard portal supplies Linux desktop appearance. No preference
-                // must clear an earlier answer rather than retaining stale dark chrome.
-                system = desktop.get().map(|appearance| appearance == localpdf_platform::desktop_theme::DesktopAppearance::Dark);
-            }
-        }
+        // On Linux, where winit reports no theme, the native host's `craft_desktop_theme` fills in
+        // the desktop portal's answer; headless contexts keep their supplied input.
+        let system = ctx.system_theme().map(|theme| theme == egui::Theme::Dark);
         let kind = self.theme_preference.resolve(system, ThemeKind::Light);
         if kind != self.theme {
             self.theme = kind;
