@@ -4,7 +4,7 @@ description = "Local PDF in the browser (wasm32; build with `trunk build --relea
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+publish.workspace = true
 
 [lints]
 workspace = true

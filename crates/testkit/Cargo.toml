@@ -4,6 +4,7 @@ description = "Synthetic PDF fixtures for Local PDF's tests: one way to write th
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 
 [lints]
 workspace = true

@@ -4,6 +4,7 @@ description = "External oracle processes Local PDF checks its own output against
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 
 [lints]
 workspace = true

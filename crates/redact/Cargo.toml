@@ -4,6 +4,7 @@ description = "Redaction (architecture §11.2): marks, apply (glyphs, images, ve
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 
 [lints]
 workspace = true

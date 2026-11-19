@@ -4,6 +4,7 @@ description = "Typed views over the PDF object graph (page tree with inherited a
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 
 [lints]
 workspace = true

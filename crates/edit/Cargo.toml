@@ -4,6 +4,7 @@ description = "Page content editing: headers and footers, watermarks, background
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 
 [lints]
 workspace = true

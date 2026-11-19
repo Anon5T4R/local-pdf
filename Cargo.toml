@@ -9,6 +9,9 @@ version = "0.14.27"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
+# Nada da suíte vai ao crates.io: dependência `path` sem versão numa crate publicável reprova o
+# `cargo-deny` (wildcards). Cada membro herda com `publish.workspace = true`.
+publish = false
 repository = "https://github.com/Anon5T4R/local-pdf"
 
 [workspace.dependencies]

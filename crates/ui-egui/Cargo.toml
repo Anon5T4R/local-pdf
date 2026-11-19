@@ -4,6 +4,7 @@ description = "The egui shell of Local PDF"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish.workspace = true
 rust-version = "1.95"
 
 [lints]
