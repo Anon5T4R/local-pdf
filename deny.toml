@@ -60,6 +60,9 @@ ignore = [
     { id = "RUSTSEC-2026-0370", reason = "zvariant unmaintained; Linux a11y stack via accesskit_unix" },
     { id = "RUSTSEC-2026-0371", reason = "zbus_names unmaintained; Linux a11y stack via accesskit_unix" },
     { id = "RUSTSEC-2026-0372", reason = "zvariant_derive unmaintained; Linux a11y stack via accesskit_unix" },
+    # chrono é do craft-update e paste é macro de compilação: sem vulnerabilidade, só abandono.
+    { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained (craft-update); troca por jiff/std no backlog" },
+    { id = "RUSTSEC-2024-0436", reason = "paste unmaintained; proc macro só em tempo de compilação" },
 ]
 
 # egui's default UI fonts (Ubuntu-Light, Hack, emoji-icon-font): font licences on the AGENTS.md
@@ -75,3 +78,14 @@ allow = ["OFL-1.1", "Ubuntu-font-1.0"]
 [[licenses.exceptions]]
 crate = "webpki-root-certs"
 allow = ["CDLA-Permissive-2.0"]
+
+# As raízes de CA que o rustls usa no BYOK (webpki-roots) são dado CDLA-Permissive-2.0 (permissiva).
+[[licenses.exceptions]]
+crate = "webpki-roots"
+allow = ["CDLA-Permissive-2.0"]
+
+# MPL-2.0 é copyleft só no nível de arquivo e o option-ext (dep de dirs, via local-ai) entra sem
+# modificação; nada do app é derivado dele. Exceção só para esta crate, não entra no allow geral.
+[[licenses.exceptions]]
+crate = "option-ext"
+allow = ["MPL-2.0"]
