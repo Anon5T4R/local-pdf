@@ -62,7 +62,7 @@ jobs:
       - name: Formatação (nightly; só o nosso código — libs/ e vendor/ mantêm o estilo de origem)
         shell: bash
         run: |
-          files=$(git ls-files '*.rs' | grep -v -E '^(libs|vendor)/')
+          files=$(git ls-files '*.rs' | grep -v -E '^(libs|vendor|assets)/')
           rustfmt +nightly --edition 2024 --check $files
       - uses: dtolnay/rust-toolchain@stable
         with:
