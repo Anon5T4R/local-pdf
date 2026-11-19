@@ -109,7 +109,7 @@ pub fn test(_: &[String]) -> anyhow::Result<()> {
 pub fn ci(_: &[String]) -> anyhow::Result<()> {
     type Step = (&'static str, Box<dyn Fn() -> anyhow::Result<()>>);
     let steps: Vec<Step> = vec![
-        ("fmt", Box::new(|| run_args(&["fmt", "--all", "--", "--check"]))),
+        ("fmt", Box::new(|| fmt(&[]))),
         ("clippy", Box::new(|| run_args(&["clippy", "--workspace", "--all-targets", "--", "-D", "warnings"]))),
         ("cli-no-default-features", Box::new(|| run_args(&["check", "-p", "localpdf-cli", "--no-default-features"]))),
         ("test", Box::new(|| test(&[]))),
@@ -118,6 +118,7 @@ pub fn ci(_: &[String]) -> anyhow::Result<()> {
         ("wasm", Box::new(|| wasm(&[]))),
         ("assets", Box::new(|| crate::assets::run(&[]))),
         ("deny", Box::new(|| deny(&[]))),
+        ("mirror", Box::new(|| mirror(&[]))),
         ("parity", Box::new(|| crate::parity::run(&[]))),
     ];
     for (i, (name, f)) in steps.iter().enumerate() {
@@ -173,6 +174,38 @@ pub fn deny(_: &[String]) -> anyhow::Result<()> {
         return Ok(());
     }
     run_args(&["deny", "--log-level", "error", "check"])
+}
+
+/// `cargo xtask fmt`: `fmt --check` for the workspace's own packages. `cargo fmt --all` would also
+/// reformat the path dependencies under `libs/`, which keep their origin style.
+pub fn fmt(_: &[String]) -> anyhow::Result<()> {
+    let meta = metadata()?;
+    let names: Vec<&str> = meta["packages"].as_array().into_iter().flatten().filter_map(|p| p["name"].as_str()).collect();
+    if names.is_empty() {
+        bail!("cargo metadata: the workspace lists no packages");
+    }
+    let mut c = cargo();
+    c.arg("fmt");
+    for name in &names {
+        c.args(["-p", name]);
+    }
+    c.args(["--", "--check"]);
+    run(c, "cargo fmt -p <workspace packages> -- --check")
+}
+
+/// The crates and assets mirrored from the local-libs against their source
+/// (`scripts/check-mirror.sh`); skipped with a note when bash is unavailable.
+pub fn mirror(_: &[String]) -> anyhow::Result<()> {
+    let mut c = Command::new("bash");
+    c.current_dir(root()).arg("scripts/check-mirror.sh");
+    match c.status() {
+        Ok(status) if status.success() => Ok(()),
+        Ok(status) => bail!("scripts/check-mirror.sh: exited with {status}"),
+        Err(e) => {
+            eprintln!("note: bash unavailable ({e}): mirror check skipped, the CI runs it");
+            Ok(())
+        }
+    }
 }
 
 fn run_args(args: &[&str]) -> anyhow::Result<()> {

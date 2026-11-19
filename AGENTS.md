@@ -22,7 +22,8 @@ Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de t
   `C:\Dev\underworld\local-ai`, NÃO é o app LocalAI da suíte antiga)
 - `vendor/` — patches de terceiros (hayro, lopdf, vello_common, provenance winit/egui-wgpu)
 - `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, web
-- `xtask/` — tarefas de build/CI (`cargo xtask ci`)
+- `scripts/check-mirror.sh` — confere as crates e os assets (`craft-fonts`) espelhados do `local-libs` contra a fonte (CI e `xtask ci`)
+- `xtask/` — tarefas de build/CI (`cargo xtask ci`, `fmt`)
 
 ## Agent-native (MCP)
 O app é dirigido por agente por dois caminhos: `localpdf-cli mcp` (headless, os ~141 tools de
@@ -35,7 +36,8 @@ array ou JSON Lines; `tools --search TEXT` filtra o catálogo. Docs: `docs/mcp.m
 ## Build
 ```
 cargo build --locked          # debug
-cargo test --locked           # testes
+cargo test --locked           # testes (as fontes vendored entram sempre: .cargo/config.toml, igual ao CI)
+cargo xtask ci                # o gate local: fmt, clippy, testes, camadas, wasm, assets, cargo-deny, espelhos do local-libs, parity
 packaging/windows/package.ps1 # MSI + portable (Windows)
 packaging/linux/package.sh    # AppImage/deb/rpm/tar (Linux)
 ```

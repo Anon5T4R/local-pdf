@@ -20,10 +20,12 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ("version", "Print the workspace version, or `version set X.Y.Z[-pre]` to change it and refresh Cargo.lock", version_cmd),
     ("layers", "Enforce the crate dependency layering (plan/architecture.md §3)", gates::layers),
     ("wasm", "cargo check --target wasm32-unknown-unknown for every crate below L8, in one call", gates::wasm),
+    ("fmt", "fmt --check for the workspace's own packages (never the vendored trees in libs/)", gates::fmt),
+    ("mirror", "The crates and assets mirrored from the local-libs, against their source (scripts/check-mirror.sh)", gates::mirror),
     ("deny", "Dependency licences, bans, sources and advisories (deny.toml; needs cargo-deny)", gates::deny),
     (
         "ci",
-        "fmt --check, clippy -D warnings, the CLI without default features, test, i18n-report, layers, wasm, assets, deny, parity (stops at first failure)",
+        "fmt --check, clippy -D warnings, the CLI without default features, test, i18n-report, layers, wasm, assets, deny, mirror, parity (stops at first failure)",
         gates::ci,
     ),
     ("test", "Workspace tests: cargo nextest (cargo test when it is missing), then doctests", gates::test),
