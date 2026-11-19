@@ -6,3 +6,6 @@ xtask = "run -p xtask --"
 # testes de UI com CJK/árabe/símbolos falham por glifo só na máquina local. Uma variável já definida
 # no ambiente vence (cargo não sobrescreve sem `force`).
 CRAFT_FONTS_DIR = { value = "assets/craft-fonts", relative = true }
+# Testes de UI em paralelo com o conjunto novo de fontes estouram a memória no notebook (access violation
+# com 12 threads; passam com 4). Os runners do CI já têm 4 núcleos; definir a variável no ambiente vence.
+RUST_TEST_THREADS = "4"
