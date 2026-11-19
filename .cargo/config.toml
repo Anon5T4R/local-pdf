@@ -1,2 +1,8 @@
 [alias]
 xtask = "run -p xtask --"
+
+[env]
+# As fontes vendored (assets/craft-fonts) entram em todo build e teste, local e CI iguais: sem isto,
+# testes de UI com CJK/árabe/símbolos falham por glifo só na máquina local. Uma variável já definida
+# no ambiente vence (cargo não sobrescreve sem `force`).
+CRAFT_FONTS_DIR = { value = "assets/craft-fonts", relative = true }

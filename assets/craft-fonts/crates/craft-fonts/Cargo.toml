@@ -1,0 +1,18 @@
+[package]
+name = "craft-fonts"
+description = "The Crafting Apps' shared font assets: the manifest, finding a craft-fonts checkout, and loading or embedding the fonts."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+# Compile every font in fonts/manifest.txt into the binary (about 43.8 MiB).
+embed = []
+# Compile every font in fonts/latin-manifest.txt into the binary (about 19.5 MiB).
+embed-latin = []
+
+[lints]
+workspace = true
