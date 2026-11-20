@@ -304,7 +304,7 @@
 	Local PDF web page	Local PDF 웹 페이지
 	Local PDF on GitHub	GitHub의 Local PDF
 	Local website	Local 웹사이트
-	Check for updates…	업데이트 확인…
+	Check for Updates…	업데이트 확인…
 	About Local PDF	Local PDF 정보
 	Export a PDF	PDF 내보내기
 	Export to	내보내기 형식
@@ -2794,3 +2794,15 @@ theme	Appearance	모양
 	Rotate the selected pages clockwise	선택한 페이지를 시계 방향으로 회전
 	Extract the selected pages…	선택한 페이지 추출…
 	Delete the selected pages	선택한 페이지 삭제
+	Settings…	설정…
+	Automatic	자동
+	Theme: {mode}	테마: {mode}
+	Settings ({key})	설정 ({key})
+	Find tools and commands ({key})	도구 및 명령 찾기 ({key})
+	Paste the API key first: this provider asks for one.	먼저 API 키를 붙여넣으세요. 이 제공업체는 키가 필요합니다.
+	Choose a provider or type its address first.	먼저 제공업체를 선택하거나 주소를 입력하세요.
+	Choose a model first (Fetch models lists them).	먼저 모델을 선택하세요(모델 가져오기에서 목록을 볼 수 있습니다).
+	Window	창
+	AI	AI
+	Exit	종료
+	Quit	종료

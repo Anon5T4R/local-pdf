@@ -319,7 +319,7 @@
 	Local PDF web page	Веб-страница Local PDF
 	Local PDF on GitHub	Local PDF на GitHub
 	Local website	Веб-сайт Local
-	Check for updates…	Проверить обновления…
+	Check for Updates…	Проверить обновления…
 	About Local PDF	О программе Local PDF
 	Export a PDF	Экспортировать PDF
 	Export to	Экспортировать в
@@ -2470,3 +2470,15 @@ animation effects	Off	Выкл
 	Rotate the selected pages clockwise	Повернуть выбранные страницы по часовой стрелке
 	Extract the selected pages…	Извлечь выбранные страницы…
 	Delete the selected pages	Удалить выбранные страницы
+	Settings…	Настройки…
+	Automatic	Автоматически
+	Theme: {mode}	Тема: {mode}
+	Settings ({key})	Настройки ({key})
+	Find tools and commands ({key})	Найти инструменты и команды ({key})
+	Paste the API key first: this provider asks for one.	Сначала вставьте ключ API: этот провайдер его требует.
+	Choose a provider or type its address first.	Сначала выберите провайдера или введите его адрес.
+	Choose a model first (Fetch models lists them).	Сначала выберите модель (список покажет «Получить модели»).
+	Window	Окно
+	AI	ИИ
+	Exit	Выход
+	Quit	Выход

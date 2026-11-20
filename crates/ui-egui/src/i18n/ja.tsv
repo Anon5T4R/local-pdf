@@ -326,7 +326,7 @@
 	Local PDF web page	Local PDF の Web 版
 	Local PDF on GitHub	GitHub の Local PDF
 	Local website	Local のウェブサイト
-	Check for updates…	更新を確認…
+	Check for Updates…	更新を確認…
 	About Local PDF	Local PDF について
 	Export a PDF	PDF を書き出す
 	Export to	書き出し形式
@@ -2582,3 +2582,15 @@ animation effects	Off	オフ
 	Empty uses the provider's own address.	空欄ならプロバイダー自身のアドレスを使います。
 	The key stays in the operating system's keychain.	キーは OS のキーチェーンに保存されます。
 	The answer was copied.	回答をコピーしました。
+	Settings…	設定…
+	Automatic	自動
+	Theme: {mode}	テーマ: {mode}
+	Settings ({key})	設定 ({key})
+	Find tools and commands ({key})	ツールとコマンドを検索 ({key})
+	Paste the API key first: this provider asks for one.	先に API キーを貼り付けてください。このプロバイダーには必要です。
+	Choose a provider or type its address first.	先にプロバイダーを選ぶか、そのアドレスを入力してください。
+	Choose a model first (Fetch models lists them).	先にモデルを選んでください(「モデルを取得」で一覧が表示されます)。
+	Window	ウィンドウ
+	AI	AI
+	Exit	終了
+	Quit	終了

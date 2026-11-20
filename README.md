@@ -47,4 +47,4 @@ Fork independente, mantido por Anon5T4R na suíte Local. Créditos de código or
   <sub>Suíte Local — apps locais, sem conta, sem telemetria.</sub>
 </p>
 
-The Tools panel sits on the left, or on the right with Preferences ▸ Tools panel side. The rail stays at the right edge and opens one side panel beside it. Drag a panel's inner edge to resize it; widths are remembered. F4 shows or hides the side panel and Shift+F4 the Tools panel (also in the View menu); View ▸ Reset side panels restores the default arrangement.
+The Tools panel sits on the left, or on the right with Settings ▸ Tools panel side. The rail stays at the right edge and opens one side panel beside it. Drag a panel's inner edge to resize it; widths are remembered. F4 shows or hides the side panel and Shift+F4 the Tools panel (also in the View menu); View ▸ Reset side panels restores the default arrangement.

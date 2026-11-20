@@ -24,6 +24,24 @@ pub enum ThemePreference {
 }
 
 impl ThemePreference {
+    /// The suite's name for this mode (its icon and its "Automatic"/"Light"/"Dark" label).
+    pub const fn mode(self) -> craft_icons::ThemeMode {
+        match self {
+            Self::System => craft_icons::ThemeMode::System,
+            Self::Light => craft_icons::ThemeMode::Light,
+            Self::Dark => craft_icons::ThemeMode::Dark,
+        }
+    }
+
+    /// The registry command that selects this mode.
+    pub const fn command(self) -> &'static str {
+        match self {
+            Self::System => "view.theme.system",
+            Self::Light => "view.theme.light",
+            Self::Dark => "view.theme.dark",
+        }
+    }
+
     /// The colours to draw. `system` is what the operating system says, `None` when it says
     /// nothing; `fallback` is supplied by the caller. LocalPDF uses Light for an unknown desktop.
     pub fn resolve(self, system: Option<bool>, fallback: ThemeKind) -> ThemeKind {

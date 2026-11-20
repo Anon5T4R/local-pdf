@@ -299,7 +299,7 @@
 	Local PDF web page	Page web de Local PDF
 	Local PDF on GitHub	Local PDF sur GitHub
 	Local website	Site web d'Local
-	Check for updates…	Rechercher des mises à jour…
+	Check for Updates…	Rechercher des mises à jour…
 	About Local PDF	À propos de Local PDF
 	Export a PDF	Exporter un PDF
 	Export to	Exporter vers
@@ -2823,3 +2823,15 @@ certificate	Version	Version
 	Rotate the selected pages clockwise	Faire pivoter les pages sélectionnées dans le sens horaire
 	Extract the selected pages…	Extraire les pages sélectionnées…
 	Delete the selected pages	Supprimer les pages sélectionnées
+	Settings…	Réglages…
+	Automatic	Automatique
+	Theme: {mode}	Thème : {mode}
+	Settings ({key})	Réglages ({key})
+	Find tools and commands ({key})	Rechercher des outils et des commandes ({key})
+	Paste the API key first: this provider asks for one.	Collez d'abord la clé d'API : ce fournisseur en demande une.
+	Choose a provider or type its address first.	Choisissez d'abord un fournisseur ou saisissez son adresse.
+	Choose a model first (Fetch models lists them).	Choisissez d'abord un modèle (la récupération des modèles les liste).
+	Window	Fenêtre
+	AI	IA
+	Exit	Quitter
+	Quit	Quitter

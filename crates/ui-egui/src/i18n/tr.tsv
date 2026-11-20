@@ -284,7 +284,7 @@
 	Local PDF web page	Local PDF web sayfası
 	Local PDF on GitHub	GitHub'da Local PDF
 	Local website	Local web sitesi
-	Check for updates…	Güncellemeleri denetle…
+	Check for Updates…	Güncellemeleri denetle…
 	About Local PDF	Local PDF hakkında
 	Export a PDF	PDF'i dışa aktar
 	Export to	Şuraya aktar
@@ -2553,3 +2553,15 @@ animation effects	Off	Kapalı
 	Rotate the selected pages clockwise	Seçili sayfaları saat yönünde döndür
 	Extract the selected pages…	Seçili sayfaları ayıkla…
 	Delete the selected pages	Seçili sayfaları sil
+	Settings…	Ayarlar…
+	Automatic	Otomatik
+	Theme: {mode}	Tema: {mode}
+	Settings ({key})	Ayarlar ({key})
+	Find tools and commands ({key})	Araçları ve komutları bul ({key})
+	Paste the API key first: this provider asks for one.	Önce API anahtarını yapıştırın: bu sağlayıcı bir anahtar ister.
+	Choose a provider or type its address first.	Önce bir sağlayıcı seçin veya adresini yazın.
+	Choose a model first (Fetch models lists them).	Önce bir model seçin (Modelleri getir bunları listeler).
+	Window	Pencere
+	AI	YZ
+	Exit	Çıkış
+	Quit	Çık

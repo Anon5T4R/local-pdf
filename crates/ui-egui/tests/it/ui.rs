@@ -605,7 +605,7 @@ fn overflowing_tabs_can_be_reached_by_scrolling() {
     h.get_by_label("document-19.pdf").click();
     h.run_steps(3);
     assert_eq!(h.state().active, Some(19));
-    assert!(h.get_by_label_contains("Display theme:").rect().center().x < 1400.0);
+    assert!(h.get_by_label_contains("Theme:").rect().center().x < 1400.0);
     let close = last.right_center() - egui::vec2(16.0, 0.0);
     h.event(egui::Event::PointerMoved(close));
     h.event(egui::Event::PointerButton { pos: close, button: egui::PointerButton::Primary, pressed: true, modifiers: egui::Modifiers::NONE });
@@ -728,7 +728,7 @@ fn narrow_tab_strips_accept_vertical_wheel_scrolling() {
         h.get_by_label("narrow-11.pdf").click();
         h.run_steps(4);
         assert_eq!(h.state().active, Some(11));
-        assert!(h.get_by_label_contains("Display theme:").rect().right() <= width);
+        assert!(h.get_by_label_contains("Theme:").rect().right() <= width);
         if let Ok(dir) = std::env::var("PDFCRAFT_TAB_SHOTS") {
             let _gpu = crate::gpu();
             crate::support::settle(&mut h);

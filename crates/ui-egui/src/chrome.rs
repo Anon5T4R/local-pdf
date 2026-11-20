@@ -1,5 +1,6 @@
 //! Window chrome: tab strip (with the integrated macOS title bar), mode bar, right rail.
 
+use craft_icons::Icon;
 use craft_ui::panes::{Edge, Rail, RailItem, RailRequest};
 use egui::{Align, Color32, CornerRadius, Layout, Rect, Sense, Stroke, vec2};
 
@@ -70,7 +71,7 @@ pub fn tab_strip(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                     app.combine_tab.focused = false;
                 }
                 // Keep the two icon buttons and three gaps outside the scrolling tabs.
-                let controls_width = 2.0 * button + 50.0 + window_controls::width(&controls.right);
+                let controls_width = 4.0 * button + 58.0 + window_controls::width(&controls.right);
                 // Open stays in sight after the tabs: its icon, text and padding, and the gaps around it.
                 let open_width = ui.fonts_mut(|f| f.layout_no_wrap(tl!("Open").into(), theme::medium(13.0), t.text).size().x) + 38.0 + 12.0;
                 let mut tabs_width = (ui.available_width() - controls_width - open_width).max(0.0);
@@ -280,23 +281,32 @@ pub fn tab_strip(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                         });
                         ui.add_space(window_controls::SIDE_GAP - 4.0);
                     }
-                    let (icon, label) = match app.theme_preference {
-                        ThemePreference::System => ("monitor", tl!("Use system setting")),
-                        ThemePreference::Light => ("sun", tl!("Light gray")),
-                        ThemePreference::Dark => ("moon", tl!("Dark gray")),
-                    };
-                    let tip = format!("{}: {label}", tl!("Display theme"));
-                    let response = icons::button(ui, icon, button, false, &tip);
-                    // A click cycles System, Light, Dark; a right-click opens the menu.
+                    // The suite's three controls, right to left: Settings, the theme, and the search
+                    // over tools and commands.
+                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Settings ({key})"), "app.preferences");
+                    if icons::button(ui, Icon::Settings.name(), button, false, &tip).clicked() {
+                        app.execute("app.preferences");
+                    }
+                    let mode = app.theme_preference.mode();
+                    let tip = crate::i18n::fmt(tl!("Theme: {mode}"), &[("mode", tl!(mode.label()))]);
+                    let response = icons::button(ui, mode.icon().name(), button, false, &tip);
+                    // A click cycles Automatic, Light, Dark; a right-click opens the menu.
                     if response.clicked() {
-                        app.execute(match app.theme_preference {
-                            ThemePreference::System => "view.theme.light",
-                            ThemePreference::Light => "view.theme.dark",
-                            ThemePreference::Dark => "view.theme.system",
-                        });
+                        app.execute(
+                            match app.theme_preference {
+                                ThemePreference::System => ThemePreference::Light,
+                                ThemePreference::Light => ThemePreference::Dark,
+                                ThemePreference::Dark => ThemePreference::System,
+                            }
+                            .command(),
+                        );
                     }
                     egui::Popup::context_menu(&response).id(response.id.with("theme_menu")).show(|ui| appearance_menu(app, ui));
-                    if icons::button(ui, "circle-help", button, false, tl!("Keyboard shortcuts")).clicked() {
+                    let tip = crate::commands::command_tip(ui.ctx(), tl!("Find tools and commands ({key})"), "view.palette");
+                    if icons::button(ui, Icon::Search.name(), button, false, &tip).clicked() {
+                        app.palette_open = true;
+                    }
+                    if icons::button(ui, Icon::Help.name(), button, false, tl!("Keyboard shortcuts")).clicked() {
                         app.dialog = Some(Dialog::Shortcuts);
                     }
                 });
@@ -451,7 +461,7 @@ fn tab(
     if dirty && !resp.hovered() && !x.hovered() {
         ui.painter().circle_filled(x_rect.center(), 4.0, if active { t.text } else { t.text_muted });
     } else if active || resp.hovered() || x.hovered() {
-        icons::paint(ui, x_rect.translate(x_press.offset()), "x", 13.0, t.text_muted);
+        icons::paint(ui, x_rect.translate(x_press.offset()), Icon::Close.name(), 13.0, t.text_muted);
     }
     if theme::hand(x).clicked() {
         *close = Some(index);
@@ -498,7 +508,7 @@ pub fn mode_bar(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                         let tip = crate::commands::command_tip(ui.ctx(), tl!("Print ({key})"), "print.dialog");
                         // A document that forbids printing says so here, before the dialog (#2669).
                         let may_print = !has_doc || localpdf_engine::commands::command("print.dialog").is_some_and(|c| app.command_enabled(c));
-                        let mut print = ui.add_enabled_ui(may_print, |ui| icons::button(ui, "printer", 32.0, false, &tip)).inner;
+                        let mut print = ui.add_enabled_ui(may_print, |ui| icons::button(ui, Icon::Print.name(), 32.0, false, &tip)).inner;
                         if !may_print {
                             print = print.on_disabled_hover_text(crate::print_refused());
                         }
@@ -506,11 +516,11 @@ pub fn mode_bar(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                             app.run_command("print.dialog");
                         }
                         let tip = crate::commands::command_tip(ui.ctx(), tl!("Save ({key})"), "file.save");
-                        if icons::button(ui, "save", 32.0, false, &tip).clicked() {
+                        if icons::button(ui, Icon::Save.name(), 32.0, false, &tip).clicked() {
                             app.run_command("file.save");
                         }
                         let tip = crate::commands::command_tip(ui.ctx(), tl!("Document properties ({key})"), "file.properties");
-                        if icons::button(ui, "info", 32.0, false, &tip).clicked() {
+                        if icons::button(ui, Icon::Info.name(), 32.0, false, &tip).clicked() {
                             app.dialog = Some(Dialog::Properties(PropsTab::Description));
                         }
                     });

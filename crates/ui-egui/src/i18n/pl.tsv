@@ -321,7 +321,7 @@
 	Local PDF web page	Strona internetowa Local PDF
 	Local PDF on GitHub	Local PDF na GitHubie
 	Local website	Strona internetowa Local
-	Check for updates…	Sprawdź aktualizacje…
+	Check for Updates…	Sprawdź aktualizacje…
 	About Local PDF	O Local PDF
 	Export a PDF	Eksportuj PDF
 	Export to	Eksportuj do
@@ -2653,3 +2653,15 @@ animation effects	Off	Wyłączone
 	Rotate the selected pages clockwise	Obróć zaznaczone strony w prawo
 	Extract the selected pages…	Wyodrębnij zaznaczone strony…
 	Delete the selected pages	Usuń zaznaczone strony
+	Settings…	Ustawienia…
+	Automatic	Automatyczny
+	Theme: {mode}	Motyw: {mode}
+	Settings ({key})	Ustawienia ({key})
+	Find tools and commands ({key})	Znajdź narzędzia i polecenia ({key})
+	Paste the API key first: this provider asks for one.	Najpierw wklej klucz API: ten dostawca go wymaga.
+	Choose a provider or type its address first.	Najpierw wybierz dostawcę lub wpisz jego adres.
+	Choose a model first (Fetch models lists them).	Najpierw wybierz model (lista pojawi się po pobraniu modeli).
+	Window	Okno
+	AI	AI
+	Exit	Zakończ
+	Quit	Zakończ

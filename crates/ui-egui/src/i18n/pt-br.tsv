@@ -1761,7 +1761,7 @@
 	Local PDF web page	Página da Web do Local PDF
 	Local PDF on GitHub	Local PDF no GitHub
 	Local website	Site do Local
-	Check for updates…	Verificar atualizações…
+	Check for Updates…	Verificar atualizações…
 	About Local PDF	Sobre o Local PDF
 	JavaScript console…	Console JavaScript…
 	Document JavaScripts…	JavaScripts do documento…
@@ -2867,3 +2867,15 @@ theme	Appearance	Aparência
 	Empty uses the provider's own address.	Vazio usa o endereço do próprio provedor.
 	The key stays in the operating system's keychain.	A chave fica no cofre do sistema operacional.
 	The answer was copied.	A resposta foi copiada.
+	Settings…	Configurações…
+	Automatic	Automático
+	Theme: {mode}	Tema: {mode}
+	Settings ({key})	Configurações ({key})
+	Find tools and commands ({key})	Localizar ferramentas e comandos ({key})
+	Paste the API key first: this provider asks for one.	Cole primeiro a chave de API: este provedor exige uma.
+	Choose a provider or type its address first.	Escolha primeiro um provedor ou digite o endereço dele.
+	Choose a model first (Fetch models lists them).	Escolha primeiro um modelo (Buscar modelos mostra a lista).
+	Window	Janela
+	AI	IA
+	Exit	Sair
+	Quit	Sair

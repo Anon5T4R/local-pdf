@@ -315,7 +315,7 @@ fn date_language_picker_name(l: &localpdf_engine::dates::DateLanguage, drawable:
 /// Preferences: interface language and size, appearance, identity and JavaScript. Drawn in a scroll
 /// area; [`preferences_buttons`] goes below it, outside the scroll, so OK is always in reach.
 pub(crate) fn preferences_body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) {
-    ui.label(egui::RichText::new(tl!("Preferences")).font(theme::semibold(18.0)));
+    ui.label(egui::RichText::new(tl!("Settings")).font(theme::semibold(18.0)));
     ui.horizontal(|ui| {
         let label = ui.label(tl!("Interface language"));
         // A native name is only drawn when these fonts can draw it; otherwise the English name

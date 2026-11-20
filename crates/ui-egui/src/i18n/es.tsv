@@ -322,7 +322,7 @@
 	Local PDF web page	Página web de Local PDF
 	Local PDF on GitHub	Local PDF en GitHub
 	Local website	Sitio web de Local
-	Check for updates…	Buscar actualizaciones…
+	Check for Updates…	Buscar actualizaciones…
 	About Local PDF	Acerca de Local PDF
 	Export a PDF	Exportar un PDF
 	Export to	Exportar a
@@ -1298,7 +1298,7 @@
 	Also recognize pages that already have text	Reconocer también las páginas que ya tienen texto
 	Pictures on those pages are recognized too; words already in the page's text are not added again	También se reconocen las imágenes de esas páginas; las palabras que ya están en el texto de la página no se vuelven a añadir
 	Text recognition isn't installed: its model files are missing. Reinstall Local PDF, or set PDFCRAFT_MODELS to the folder that holds them.	El reconocimiento de texto no está instalado: faltan sus archivos de modelo. Reinstala Local PDF o define PDFCRAFT_MODELS con la carpeta que los contiene.
-	Settings	Ajustes
+	Settings	Configuración
 	Optional	Opcional
 	Planned · {m}	Previsto · {m}
 	Planned for milestone {m} — open to see what it will include	Previsto para el hito {m}: abre para ver qué incluirá
@@ -2905,3 +2905,15 @@ theme	Appearance	Aspecto
 	Empty uses the provider's own address.	Vacío usa la dirección del propio proveedor.
 	The key stays in the operating system's keychain.	La clave se queda en el llavero del sistema operativo.
 	The answer was copied.	La respuesta se copió.
+	Settings…	Configuración…
+	Automatic	Automático
+	Theme: {mode}	Tema: {mode}
+	Settings ({key})	Configuración ({key})
+	Find tools and commands ({key})	Buscar herramientas y comandos ({key})
+	Paste the API key first: this provider asks for one.	Pegue primero la clave de API: este proveedor la exige.
+	Choose a provider or type its address first.	Elija primero un proveedor o escriba su dirección.
+	Choose a model first (Fetch models lists them).	Elija primero un modelo (Obtener modelos los lista).
+	Window	Ventana
+	AI	IA
+	Exit	Salir
+	Quit	Salir

@@ -1895,7 +1895,7 @@
 	Local PDF web page	Local PDF 网页
 	Local PDF on GitHub	GitHub 上的 Local PDF
 	Local website	Local 官网
-	Check for updates…	检查更新…
+	Check for Updates…	检查更新…
 	About Local PDF	关于 Local PDF
 	JavaScript console…	JavaScript 控制台…
 	Document JavaScripts…	文档 JavaScript…
@@ -2521,3 +2521,15 @@ animation effects	Off	关
 	Rotate the selected pages clockwise	顺时针旋转所选页面
 	Extract the selected pages…	提取所选页面…
 	Delete the selected pages	删除所选页面
+	Settings…	设置…
+	Automatic	自动
+	Theme: {mode}	主题:{mode}
+	Settings ({key})	设置 ({key})
+	Find tools and commands ({key})	查找工具和命令 ({key})
+	Paste the API key first: this provider asks for one.	请先粘贴 API 密钥:此提供商需要密钥。
+	Choose a provider or type its address first.	请先选择提供商或输入其地址。
+	Choose a model first (Fetch models lists them).	请先选择模型(“获取模型”会列出它们)。
+	Window	窗口
+	AI	AI
+	Exit	退出
+	Quit	退出

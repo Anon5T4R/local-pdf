@@ -320,7 +320,7 @@
 	Local PDF web page	Pàgina web de Local PDF
 	Local PDF on GitHub	Local PDF a GitHub
 	Local website	Lloc web d'Local
-	Check for updates…	Cerca actualitzacions…
+	Check for Updates…	Cerca actualitzacions…
 	About Local PDF	Quant a Local PDF
 	Export a PDF	Exporta un PDF
 	Export to	Exporta a
@@ -2818,3 +2818,15 @@ theme	Appearance	Aspecte
 	Rotate the selected pages clockwise	Gira les pàgines seleccionades en sentit horari
 	Extract the selected pages…	Extreu les pàgines seleccionades…
 	Delete the selected pages	Suprimeix les pàgines seleccionades
+	Settings…	Configuració…
+	Automatic	Automàtic
+	Theme: {mode}	Tema: {mode}
+	Settings ({key})	Configuració ({key})
+	Find tools and commands ({key})	Cerca eines i ordres ({key})
+	Paste the API key first: this provider asks for one.	Enganxeu primer la clau d'API: aquest proveïdor en demana una.
+	Choose a provider or type its address first.	Trieu primer un proveïdor o escriviu-ne l'adreça.
+	Choose a model first (Fetch models lists them).	Trieu primer un model (Obtén els models els llista).
+	Window	Finestra
+	AI	IA
+	Exit	Surt
+	Quit	Surt

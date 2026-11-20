@@ -324,7 +324,7 @@
 	Local PDF web page	Вебсторінка Local PDF
 	Local PDF on GitHub	Local PDF на GitHub
 	Local website	Вебсайт Local
-	Check for updates…	Перевірити оновлення…
+	Check for Updates…	Перевірити оновлення…
 	About Local PDF	Про Local PDF
 	Export a PDF	Експортувати PDF
 	Export to	Експортувати в
@@ -2579,3 +2579,15 @@ animation effects	Off	Вимкнено
 	Rotate the selected pages clockwise	Повернути вибрані сторінки за годинниковою стрілкою
 	Extract the selected pages…	Витягнути вибрані сторінки…
 	Delete the selected pages	Видалити вибрані сторінки
+	Settings…	Налаштування…
+	Automatic	Автоматично
+	Theme: {mode}	Тема: {mode}
+	Settings ({key})	Налаштування ({key})
+	Find tools and commands ({key})	Знайти інструменти й команди ({key})
+	Paste the API key first: this provider asks for one.	Спершу вставте ключ API: цей постачальник його вимагає.
+	Choose a provider or type its address first.	Спершу виберіть постачальника або введіть його адресу.
+	Choose a model first (Fetch models lists them).	Спершу виберіть модель (список покаже «Отримати моделі»).
+	Window	Вікно
+	AI	ШІ
+	Exit	Вихід
+	Quit	Вихід

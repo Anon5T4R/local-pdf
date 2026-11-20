@@ -31,7 +31,7 @@ fn assert_theme(h: &Harness<'static, LocalPDFApp>, preference: ThemePreference, 
 
 /// A click on the title bar's theme button cycles Light, Dark, System.
 fn click_toolbar(h: &mut Harness<'static, LocalPDFApp>, label: &str) {
-    h.get_by_label(&format!("Display theme: {label}")).click();
+    h.get_by_label(&format!("Theme: {label}")).click();
     h.run_steps(3);
 }
 
@@ -40,7 +40,7 @@ fn open_view_menu(h: &mut Harness<'static, LocalPDFApp>) {
     assert!(h.query_by_label("Switch light / dark theme").is_none());
     crate::support::menu_row(h, "Display theme").hover();
     h.run_steps(3);
-    for choice in ["Use system setting", "Light gray", "Dark gray"] {
+    for choice in ["Automatic", "Light", "Dark"] {
         h.get_by_label(choice);
     }
 }
@@ -69,29 +69,29 @@ fn toolbar_and_view_menu_share_three_state_preferences() {
     // Fresh, on a dark desktop: System, shown dark. One click on, explicit light wins even on a
     // dark desktop, including egui's popup style.
     assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
-    click_toolbar(&mut h, "Use system setting");
+    click_toolbar(&mut h, "Automatic");
     assert_theme(&h, ThemePreference::Light, ThemeKind::Light);
-    click_toolbar(&mut h, "Light gray");
+    click_toolbar(&mut h, "Light");
     assert_theme(&h, ThemePreference::Dark, ThemeKind::Dark);
-    click_toolbar(&mut h, "Dark gray");
+    click_toolbar(&mut h, "Dark");
     assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
 
     open_view_menu(&mut h);
-    h.get_by_label("Light gray").click();
+    h.get_by_label("Light").click();
     h.run_steps(3);
     assert_theme(&h, ThemePreference::Light, ThemeKind::Light);
-    click_toolbar(&mut h, "Light gray");
+    click_toolbar(&mut h, "Light");
     assert_theme(&h, ThemePreference::Dark, ThemeKind::Dark);
 
     open_view_menu(&mut h);
-    h.get_by_label("Use system setting").click();
+    h.get_by_label("Automatic").click();
     h.run_steps(3);
     assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
     h.input_mut().system_theme = Some(egui::Theme::Light);
     h.run_steps(3);
     assert_theme(&h, ThemePreference::System, ThemeKind::Light);
-    click_toolbar(&mut h, "Use system setting");
-    click_toolbar(&mut h, "Light gray");
+    click_toolbar(&mut h, "Automatic");
+    click_toolbar(&mut h, "Light");
     // A manual choice exits system mode and survives subsequent OS changes.
     h.input_mut().system_theme = Some(egui::Theme::Dark);
     h.run_steps(2);
@@ -229,18 +229,17 @@ fn native_appearance_remains_inherited_for_every_saved_choice() {
 fn preferences_theme_cards_and_use_system_setting_stay_in_sync() {
     use egui::accesskit::Role;
     fn mode_shown(h: &Harness<'static, LocalPDFApp>) -> String {
-        let combo =
-            h.get_by(|n| n.role() == Role::ComboBox && n.value().is_some_and(|v| ["Use system setting", "Light", "Dark"].contains(&v.as_str())));
+        let combo = h.get_by(|n| n.role() == Role::ComboBox && n.value().is_some_and(|v| ["Automatic", "Light", "Dark"].contains(&v.as_str())));
         combo.value().unwrap_or_default()
     }
     let mut h = harness();
-    h.get_by_label("Display theme: Use system setting").click_secondary();
+    h.get_by_label("Theme: Automatic").click_secondary();
     h.run_steps(4);
     h.get_by_label("Appearance settings…").click();
     h.run_steps(10);
     // A fresh install follows the OS (#1248), which is dark here.
     assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
-    assert_eq!(mode_shown(&h), "Use system setting");
+    assert_eq!(mode_shown(&h), "Automatic");
 
     // The OS is dark: the Dark card's radio row picks Dark, and the combo box says so.
     // The cards sit below the fold of the Preferences scroll area at this window size.
@@ -266,10 +265,10 @@ fn preferences_theme_cards_and_use_system_setting_stay_in_sync() {
     h.get_by(|n| n.role() == Role::ComboBox && n.value().as_deref() == Some("Light")).click();
     h.run_steps(3);
     // Motion has a "Use system setting" radio of its own; this is the combo box's item.
-    h.get_by_role_and_label(Role::Button, "Use system setting").click();
+    h.get_by_role_and_label(Role::Button, "Automatic").click();
     h.run_steps(3);
     assert_theme(&h, ThemePreference::System, ThemeKind::Dark);
-    assert_eq!(mode_shown(&h), "Use system setting");
+    assert_eq!(mode_shown(&h), "Automatic");
     h.input_mut().system_theme = Some(egui::Theme::Light);
     h.run_steps(3);
     assert_theme(&h, ThemePreference::System, ThemeKind::Light);

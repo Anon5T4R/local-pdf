@@ -1839,7 +1839,7 @@
 	Local PDF web page	Local PDF 網頁
 	Local PDF on GitHub	GitHub 上的 Local PDF
 	Local website	Local 網站
-	Check for updates…	尋找更新…
+	Check for Updates…	尋找更新…
 	About Local PDF	關於 Local PDF
 	JavaScript console…	JavaScript 主控台…
 	Document JavaScripts…	文件 JavaScript…
@@ -2507,3 +2507,15 @@ animation effects	Off	關
 	Rotate the selected pages clockwise	順時針旋轉所選頁面
 	Extract the selected pages…	擷取所選頁面…
 	Delete the selected pages	刪除所選頁面
+	Settings…	設定…
+	Automatic	自動
+	Theme: {mode}	主題:{mode}
+	Settings ({key})	設定 ({key})
+	Find tools and commands ({key})	尋找工具與指令 ({key})
+	Paste the API key first: this provider asks for one.	請先貼上 API 金鑰:此供應商需要金鑰。
+	Choose a provider or type its address first.	請先選擇供應商或輸入其位址。
+	Choose a model first (Fetch models lists them).	請先選擇模型(「取得模型」會列出它們)。
+	Window	視窗
+	AI	AI
+	Exit	結束
+	Quit	結束

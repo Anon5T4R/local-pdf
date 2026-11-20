@@ -12,19 +12,11 @@ pub const LIGHT_THEMES: &[(ThemeKind, &str)] = &[(ThemeKind::Light, "Light gray"
 pub const DARK_THEMES: &[(ThemeKind, &str)] = &[(ThemeKind::Dark, "Dark gray")];
 
 fn mode_label(preference: ThemePreference) -> &'static str {
-    match preference {
-        ThemePreference::System => "Use system setting",
-        ThemePreference::Light => "Light",
-        ThemePreference::Dark => "Dark",
-    }
+    preference.mode().label()
 }
 
 fn mode_command(preference: ThemePreference) -> &'static str {
-    match preference {
-        ThemePreference::System => "view.theme.system",
-        ThemePreference::Light => "view.theme.light",
-        ThemePreference::Dark => "view.theme.dark",
-    }
+    preference.command()
 }
 
 /// A miniature LocalPDF window in `kind`'s colours: title bar and tabs, the tool bar, the page
@@ -195,7 +187,7 @@ mod tests {
         assert_eq!(h.state().theme_preference, ThemePreference::Dark);
         h.get_by_role(combo).click();
         h.run();
-        h.get_by_label("Use system setting").click();
+        h.get_by_label("Automatic").click();
         h.run();
         assert_eq!(h.state().theme_preference, ThemePreference::System);
     }

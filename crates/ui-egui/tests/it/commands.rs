@@ -692,3 +692,52 @@ fn ctrl_tab_steps_through_the_tabs_in_order_and_wraps_around() {
         assert!(!doc.dirty, "switching tabs changes no document");
     }
 }
+
+/// The suite's top bar: the gear opens Settings, which holds the interface language and the appearance.
+#[test]
+fn the_gear_opens_settings_with_the_language_and_the_appearance() {
+    let mut h = harness();
+    h.get_by_label_contains("Settings (").click();
+    h.run_steps(6);
+    assert_eq!(h.state().dialog, Some(Dialog::Preferences));
+    h.get_by_label("Settings");
+    h.get_by_label("Interface language");
+    h.get_by_label("Appearance mode");
+}
+
+/// Edit ▸ Settings… opens the same dialog as the gear (the layout's own "Preferences…" wording is the suite's).
+#[test]
+fn edit_settings_opens_the_settings_dialog() {
+    let mut h = harness();
+    support::open_menu(&mut h, "Edit");
+    assert!(h.query_by_label("Preferences…").is_none());
+    support::menu_row(&h, "Settings…").click();
+    h.run_steps(4);
+    assert_eq!(h.state().dialog, Some(Dialog::Preferences));
+}
+
+/// The magnifier next to the theme opens the palette; a command typed there runs.
+#[test]
+fn the_magnifier_opens_the_palette_and_runs_a_command() {
+    let mut h = harness();
+    h.get_by_label_contains("Find tools and commands (").click();
+    h.run_steps(3);
+    assert!(h.state().palette_open);
+    h.state_mut().palette_query = "rotate pages clockwise".into();
+    h.run_steps(3);
+    h.get_by_label("Rotate pages clockwise");
+    h.key_press(Key::Enter);
+    h.run_steps(3);
+    let app = h.state();
+    assert!(!app.palette_open);
+    assert_eq!(app.session.get(app.views[0].id).unwrap().info.pages[0].rotation, 90);
+}
+
+/// Help carries the update check and About under the suite's wording.
+#[test]
+fn help_menu_names_updates_and_about_the_suite_way() {
+    let mut h = harness();
+    support::open_menu(&mut h, "Help");
+    h.get_by_label("Check for Updates…");
+    h.get_by_label("About Local PDF");
+}

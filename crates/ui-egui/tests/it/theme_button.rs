@@ -23,16 +23,14 @@ fn preference(h: &Harness<'static, LocalPDFApp>) -> String {
 fn a_click_cycles_the_theme_and_a_right_click_opens_the_menu() {
     let mut h = harness();
     assert_eq!(preference(&h), "System", "a fresh install follows the desktop (#1248)");
-    for (label, next) in
-        [("Display theme: Use system setting", "Light"), ("Display theme: Light gray", "Dark"), ("Display theme: Dark gray", "System")]
-    {
+    for (label, next) in [("Theme: Automatic", "Light"), ("Theme: Light", "Dark"), ("Theme: Dark", "System")] {
         h.get_by_label(label).click();
         h.run_steps(4);
         assert_eq!(preference(&h), next);
     }
     assert!(h.query_by_label("Appearance settings…").is_none(), "a plain click opens no menu");
 
-    h.get_by_label("Display theme: Use system setting").click_secondary();
+    h.get_by_label("Theme: Automatic").click_secondary();
     h.run_steps(4);
     h.get_by_label("Appearance settings…").click();
     h.run_steps(4);

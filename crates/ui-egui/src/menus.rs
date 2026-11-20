@@ -252,6 +252,12 @@ fn english(labeled: Labeled<'_>) -> Option<String> {
 }
 
 fn translate(english: &'static str) -> String {
+    // The layout words its Settings entry "Preferences…"; the suite calls it Settings.
+    let english = match english {
+        "Preferences…" => "Settings…",
+        "Preferences" => "Settings",
+        other => other,
+    };
     tl!(english).to_owned()
 }
 

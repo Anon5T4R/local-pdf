@@ -323,7 +323,7 @@
 	Local PDF web page	Pagina web di Local PDF
 	Local PDF on GitHub	Local PDF su GitHub
 	Local website	Sito web di Local
-	Check for updates…	Verifica aggiornamenti…
+	Check for Updates…	Verifica aggiornamenti…
 	About Local PDF	Informazioni su Local PDF
 	Export a PDF	Esporta un PDF
 	Export to	Esporta in
@@ -2789,3 +2789,15 @@ certificate	SHA-256 digest	Impronta SHA-256
 	Rotate the selected pages clockwise	Ruota le pagine selezionate in senso orario
 	Extract the selected pages…	Estrai le pagine selezionate…
 	Delete the selected pages	Elimina le pagine selezionate
+	Settings…	Impostazioni…
+	Automatic	Automatico
+	Theme: {mode}	Tema: {mode}
+	Settings ({key})	Impostazioni ({key})
+	Find tools and commands ({key})	Trova strumenti e comandi ({key})
+	Paste the API key first: this provider asks for one.	Incolla prima la chiave API: questo provider ne richiede una.
+	Choose a provider or type its address first.	Scegli prima un provider o digita il suo indirizzo.
+	Choose a model first (Fetch models lists them).	Scegli prima un modello (Recupera modelli li elenca).
+	Window	Finestra
+	AI	IA
+	Exit	Esci
+	Quit	Esci

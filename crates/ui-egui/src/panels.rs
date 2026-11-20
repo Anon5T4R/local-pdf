@@ -52,7 +52,7 @@ pub(crate) fn panel_header(ui: &mut egui::Ui, t: &Tokens, title: &str, lead: Opt
         let title_width = (ui.available_width() - 26.0 - ui.spacing().item_spacing.x).max(1.0);
         ui.add_sized([title_width, 26.0], egui::Label::new(egui::RichText::new(tl!(title)).font(theme::semibold(15.5)).color(t.text)).truncate())
             .on_hover_text(tl!(title));
-        if icons::button(ui, "x", 26.0, false, tl!("Close panel")).clicked() {
+        if icons::button(ui, craft_icons::Icon::Close.name(), 26.0, false, tl!("Close panel")).clicked() {
             close = true;
         }
     });
@@ -317,10 +317,10 @@ fn edit_panel(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens, g: &'static 
         let title_width = (ui.available_width() - 2.0 * (26.0 + ui.spacing().item_spacing.x)).max(1.0);
         ui.add_sized([title_width, 26.0], egui::Label::new(egui::RichText::new(title).font(theme::semibold(15.5)).color(t.text)).truncate())
             .on_hover_text(title);
-        if icons::button(ui, "settings", 26.0, false, tl!("Preferences")).clicked() {
+        if icons::button(ui, craft_icons::Icon::Settings.name(), 26.0, false, tl!("Settings")).clicked() {
             run = Some("app.preferences");
         }
-        if icons::button(ui, "x", 26.0, false, tl!("Close panel")).clicked() {
+        if icons::button(ui, craft_icons::Icon::Close.name(), 26.0, false, tl!("Close panel")).clicked() {
             app.left_open = false;
         }
     });
@@ -730,7 +730,7 @@ pub fn right_panel(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                         ui.label(egui::RichText::new(picked).font(theme::medium(12.0)).color(t.accent_text));
                     }
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                        if icons::button(ui, "x", 26.0, false, tl!("Close")).clicked() {
+                        if icons::button(ui, craft_icons::Icon::Close.name(), 26.0, false, tl!("Close")).clicked() {
                             close = true;
                         }
                         if panel == RightPanel::Pages
@@ -806,7 +806,7 @@ pub fn right_panel(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                             info.label = Some(tl!("Search").to_string());
                             info
                         });
-                        if icons::button(ui, "x", CLEAR, false, tl!("Clear")).clicked() {
+                        if icons::button(ui, craft_icons::Icon::Close.name(), CLEAR, false, tl!("Clear")).clicked() {
                             bookmark_query.clear();
                         }
                     });
