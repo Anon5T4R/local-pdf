@@ -10,6 +10,9 @@
 
 pub mod chat;
 pub mod connections;
+
+/// The suite's close X (craft-icons), kept under this name for the apps that call it from here.
+pub use craft_icons::ui::close_button;
 pub mod policy;
 pub mod strip;
 

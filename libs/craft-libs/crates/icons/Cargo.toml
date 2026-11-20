@@ -1,0 +1,21 @@
+[package]
+name = "craft-icons"
+description = "The suite's icons for shared concepts (theme, settings, help, AI, file, edit, status): Lucide SVGs, one name per concept"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[features]
+# `ui::image` / `ui::button`: the icon tinted with the text colour, through the app's egui fork. The app installs
+# the SVG loader (`egui_extras::install_image_loaders`, feature `svg`) once at start.
+egui = ["dep:egui"]
+
+[dependencies]
+# Only with the `egui` feature: the bare tables need nothing.
+egui = { workspace = true, optional = true }

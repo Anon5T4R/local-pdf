@@ -6,6 +6,8 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
+# Path dependency (craft-icons) without a version: never publishable (cargo-deny `wildcards`).
+publish = false
 
 [lints]
 workspace = true
@@ -13,6 +15,8 @@ workspace = true
 [dependencies]
 # The suite's egui fork: the apps patch `egui` to the same rev, so the panels look like the app.
 egui = { workspace = true }
+# The suite's close X (and, through it, the same look as every other dialog of the suite).
+craft-icons = { path = "../icons", features = ["egui"] }
 log = "0.4"
 
 [dev-dependencies]

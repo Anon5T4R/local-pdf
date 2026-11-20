@@ -1281,6 +1281,7 @@ dependencies = [
 name = "craft-ai-ui"
 version = "0.1.0"
 dependencies = [
+ "craft-icons",
  "egui",
  "log",
 ]
@@ -1321,6 +1322,13 @@ dependencies = [
  "unicode-bidi",
  "windows-registry",
  "writeable",
+]
+
+[[package]]
+name = "craft-icons"
+version = "0.1.0"
+dependencies = [
+ "egui",
 ]
 
 [[package]]
@@ -4213,6 +4221,7 @@ dependencies = [
  "bytemuck",
  "chrono",
  "craft-ai-ui",
+ "craft-icons",
  "craft-keymap",
  "craft-menu",
  "craft-quit",

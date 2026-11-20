@@ -43,6 +43,44 @@ pub struct Labels<'a> {
     pub cancel: &'a str,
     pub hint_url: &'a str,
     pub hint_key: &'a str,
+    /// Tooltip of the close X.
+    pub close: &'a str,
+    /// Why "list models" is off: a remote provider needs the key first.
+    pub needs_key: &'a str,
+    /// Why "list models" or "save" is off: no provider address yet.
+    pub needs_url: &'a str,
+    /// Why "save" is off: no model chosen yet.
+    pub needs_model: &'a str,
+}
+
+/// Whether `base_url` points at this computer (a local server such as Ollama runs without a key).
+fn is_local(base_url: &str) -> bool {
+    let rest = base_url.trim().split_once("://").map_or(base_url.trim(), |(_, rest)| rest);
+    let host = rest.split(['/', '?']).next().unwrap_or_default();
+    let host = host.strip_prefix('[').map_or_else(|| host.split(':').next().unwrap_or_default(), |v6| v6.split(']').next().unwrap_or_default());
+    matches!(host.to_ascii_lowercase().as_str(), "localhost" | "127.0.0.1" | "::1") || host.ends_with(".localhost")
+}
+
+/// What keeps "list models" off, if anything: the address, then the key (only a remote provider needs one).
+fn models_blocker<'a>(draft: &ConnectionDraft, key: &str, labels: &Labels<'a>) -> Option<&'a str> {
+    if draft.base_url.trim().is_empty() {
+        Some(labels.needs_url)
+    } else if key.trim().is_empty() && !is_local(&draft.base_url) {
+        Some(labels.needs_key)
+    } else {
+        None
+    }
+}
+
+/// What keeps "save" off, if anything.
+fn save_blocker<'a>(draft: &ConnectionDraft, labels: &Labels<'a>) -> Option<&'a str> {
+    if draft.base_url.trim().is_empty() {
+        Some(labels.needs_url)
+    } else if draft.model.trim().is_empty() {
+        Some(labels.needs_model)
+    } else {
+        None
+    }
 }
 
 /// The connections dialog.
@@ -104,14 +142,25 @@ impl ConnectionsPanel {
         }
         let mut intent = ConnectionsIntent::None;
         let mut open = true;
+        // The panel draws its own header (title and X on one row, the X centred on the title); egui's title bar
+        // put the X on its own baseline.
         let window = egui::Window::new(labels.title)
-            .open(&mut open)
+            .title_bar(false)
             .collapsible(false)
             .resizable(false)
             .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::ZERO)
             .min_width(Self::WIDTH)
             .max_width(Self::WIDTH)
             .show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    ui.label(egui::RichText::new(labels.title).heading());
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        if crate::close_button(ui, labels.close).clicked() {
+                            open = false;
+                        }
+                    });
+                });
+                ui.separator();
                 // One width for the whole form: the fields ask the dialog, never the screen.
                 let field = ui.available_width();
                 ui.label(egui::RichText::new(labels.provider).small().weak());
@@ -120,7 +169,7 @@ impl ConnectionsPanel {
                     .iter()
                     .find(|preset| preset.id == self.draft.provider)
                     .map(|preset| preset.label.clone())
-                    .unwrap_or_else(|| self.draft.provider.clone());
+                    .unwrap_or_else(|| if self.draft.provider.is_empty() { "—".to_string() } else { self.draft.provider.clone() });
                 egui::ComboBox::from_id_salt("ai-connections-provider").selected_text(selected).width(field).show_ui(ui, |ui| {
                     for preset in &self.presets {
                         if ui.selectable_label(preset.id == self.draft.provider, &preset.label).clicked() {
@@ -135,7 +184,10 @@ impl ConnectionsPanel {
 
                 ui.add_space(4.0);
                 ui.label(egui::RichText::new(labels.base_url).small().weak());
-                ui.add(egui::TextEdit::singleline(&mut self.draft.base_url).hint_text("http://localhost:11434/v1").desired_width(field));
+                // The placeholder is the chosen provider's own address, never a guess.
+                let placeholder =
+                    self.presets.iter().find(|preset| preset.id == self.draft.provider).map(|preset| preset.base_url.clone()).unwrap_or_default();
+                ui.add(egui::TextEdit::singleline(&mut self.draft.base_url).hint_text(placeholder).desired_width(field));
                 ui.label(egui::RichText::new(labels.hint_url).small().weak());
 
                 ui.add_space(4.0);
@@ -143,7 +195,13 @@ impl ConnectionsPanel {
                 ui.horizontal(|ui| {
                     let list = 96.0;
                     ui.add(egui::TextEdit::singleline(&mut self.draft.model).desired_width((field - list).max(120.0)));
-                    if ui.button(labels.list_models).clicked() {
+                    let blocker = models_blocker(&self.draft, &self.key, labels);
+                    let button = ui.add_enabled(blocker.is_none(), egui::Button::new(labels.list_models));
+                    let button = match blocker {
+                        Some(reason) => button.on_disabled_hover_text(reason),
+                        None => button,
+                    };
+                    if button.clicked() {
                         intent = ConnectionsIntent::LoadModels(self.draft.clone(), self.key.trim().to_string());
                     }
                 });
@@ -170,8 +228,13 @@ impl ConnectionsPanel {
                 ui.add_space(10.0);
                 // The actions sit together, bottom right, where the hand looks for them.
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Min), |ui| {
-                    let can_save = !self.draft.base_url.trim().is_empty() && !self.draft.model.trim().is_empty();
-                    if ui.add_enabled(can_save, egui::Button::new(labels.save)).clicked() {
+                    let blocker = save_blocker(&self.draft, labels);
+                    let button = ui.add_enabled(blocker.is_none(), egui::Button::new(labels.save));
+                    let button = match blocker {
+                        Some(reason) => button.on_disabled_hover_text(reason),
+                        None => button,
+                    };
+                    if button.clicked() {
                         intent = ConnectionsIntent::Save(self.draft.clone(), self.key.trim().to_string());
                     }
                     if ui.button(labels.cancel).clicked() {
@@ -211,5 +274,59 @@ mod tests {
         panel.saved();
         assert!(!panel.open);
         assert!(panel.error.is_none());
+    }
+
+    fn labels() -> Labels<'static> {
+        Labels {
+            title: "t",
+            provider: "p",
+            base_url: "u",
+            model: "m",
+            api_key: "k",
+            list_models: "l",
+            save: "s",
+            cancel: "c",
+            hint_url: "hu",
+            hint_key: "hk",
+            close: "x",
+            needs_key: "needs key",
+            needs_url: "needs url",
+            needs_model: "needs model",
+        }
+    }
+
+    #[test]
+    fn local_addresses_are_told_apart_from_remote_ones() {
+        for local in ["http://localhost:11434/v1", "http://127.0.0.1:1234", "http://[::1]:8080/v1", "localhost", "http://ai.localhost/v1"] {
+            assert!(is_local(local), "{local}");
+        }
+        for remote in ["https://api.openai.com/v1", "https://localhost.example.com/v1", "http://10.0.0.2:11434", ""] {
+            assert!(!is_local(remote), "{remote}");
+        }
+    }
+
+    /// Listing models is off (with the reason) until there is an address, and a remote one also needs the key;
+    /// a local server lists without one.
+    #[test]
+    fn listing_models_says_what_is_missing() {
+        let labels = labels();
+        let mut draft = ConnectionDraft::default();
+        assert_eq!(models_blocker(&draft, "", &labels), Some("needs url"));
+        draft.base_url = "https://api.example.com/v1".into();
+        assert_eq!(models_blocker(&draft, " ", &labels), Some("needs key"));
+        assert_eq!(models_blocker(&draft, "sk-1", &labels), None);
+        draft.base_url = "http://localhost:11434/v1".into();
+        assert_eq!(models_blocker(&draft, "", &labels), None);
+    }
+
+    #[test]
+    fn saving_says_what_is_missing() {
+        let labels = labels();
+        let mut draft = ConnectionDraft::default();
+        assert_eq!(save_blocker(&draft, &labels), Some("needs url"));
+        draft.base_url = "http://localhost:11434/v1".into();
+        assert_eq!(save_blocker(&draft, &labels), Some("needs model"));
+        draft.model = "llama".into();
+        assert_eq!(save_blocker(&draft, &labels), None);
     }
 }

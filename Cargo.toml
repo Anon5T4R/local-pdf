@@ -19,6 +19,8 @@ repository = "https://github.com/Anon5T4R/local-pdf"
 craft-ui = { path = "libs/craft-libs/crates/ui/", features = ["serde"] }
 # The AI surface of the suite (local-libs): the chat panel, the connections form and the strip.
 craft-ai-ui = { path = "libs/craft-libs/crates/ai-ui/" }
+# The suite's icons for shared concepts (theme, settings, help, AI...) and the top-bar buttons. Source: local-libs.
+craft-icons = { path = "libs/craft-libs/crates/icons/", features = ["egui"] }
 # Quit the macOS way (#1136): Ã¢Å’ËœQ asks about unsaved changes, and closing quits through `terminate:`.
 craft-quit = { path = "libs/craft-libs/crates/quit/" }
 # One menu definition for the native macOS menu bar and the in-window bar elsewhere.

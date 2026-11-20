@@ -79,7 +79,7 @@ impl StatusStrip {
             ui.horizontal(|ui| {
                 ui.label(egui::RichText::new(error).small().color(ui.visuals().warn_fg_color));
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if ui.small_button("x").on_hover_text(labels.dismiss).clicked() {
+                    if crate::close_button(ui, labels.dismiss).clicked() {
                         action = StripAction::Dismiss;
                     }
                 });

@@ -272,7 +272,7 @@ impl ChatPanel {
             ui.label(egui::RichText::new(labels.title).strong());
             ui.label(egui::RichText::new(labels.model).small().weak());
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if ui.small_button("x").on_hover_text(labels.close).clicked() {
+                if crate::close_button(ui, labels.close).clicked() {
                     action = ChatAction::Close;
                 }
                 if ui.small_button(labels.settings).clicked() {
