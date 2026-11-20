@@ -450,7 +450,7 @@ fn actions_row(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
         widgets::radio_value(ui, &mut app.ai.whole_document, false, tl!("Current page"));
         widgets::radio_value(ui, &mut app.ai.whole_document, true, tl!("Whole document"));
         ui.separator();
-        if widgets::icon_pill(ui, "sparkles", tl!("Summarize"), false).clicked() {
+        if widgets::icon_pill(ui, craft_icons::Icon::Ai.name(), tl!("Summarize"), false).clicked() {
             open_and_summarize(app);
         }
         let ocr_busy = app.ai.ocr_job.is_some();
@@ -523,6 +523,10 @@ fn form_labels<'a>() -> ui::ConnectionsLabels<'a> {
         cancel: tl!("Cancel"),
         hint_url: tl!("Empty uses the provider's own address."),
         hint_key: tl!("The key stays in the operating system's keychain."),
+        close: tl!("Close"),
+        needs_key: tl!("Paste the API key first: this provider asks for one."),
+        needs_url: tl!("Choose a provider or type its address first."),
+        needs_model: tl!("Choose a model first (Fetch models lists them)."),
     }
 }
 
