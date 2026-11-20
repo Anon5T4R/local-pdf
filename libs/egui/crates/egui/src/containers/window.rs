@@ -1537,6 +1537,11 @@ fn close_button(ui: &mut Ui, rect: Rect) -> Response {
     ui.expand_to_include_rect(response.rect);
 
     let visuals = ui.style().interact(&response);
+    // Craft E22: the hover/press background every other button has, so the X reads as a button.
+    if response.hovered() || response.is_pointer_button_down_on() || response.has_focus() {
+        ui.painter()
+            .rect_filled(rect.expand(2.0), visuals.corner_radius, visuals.weak_bg_fill);
+    }
     let rect = rect.shrink(2.0).expand(visuals.expansion);
     let stroke = visuals.fg_stroke;
     ui.painter() // paints \
