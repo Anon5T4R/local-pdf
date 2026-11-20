@@ -1160,7 +1160,7 @@ pub(crate) fn preview(app: &mut LocalPDFApp, ctx: &egui::Context, t: &Tokens) {
         ui.horizontal(|ui| {
             ui.label(egui::RichText::new(f.name.clone()).font(theme::semibold(15.0)));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if icons::button(ui, "x", 30.0, false, tl!("Close")).clicked() {
+                if icons::button(ui, craft_icons::Icon::Close.name(), 30.0, false, tl!("Close")).clicked() {
                     close = true;
                 }
                 let of = crate::i18n::fmt(tl!("Page {p} of {n}"), &[("p", &(at + 1).to_string()), ("n", &n.to_string())]);

@@ -5038,7 +5038,7 @@ fn find_bar(view: &mut DocView, pages: usize, area: Rect, ui: &mut egui::Ui, t: 
                                 find.case_query.clear();
                             }
                         });
-                        if icons::button(ui, "x", 26.0, false, tl!("Close (Esc)")).clicked() {
+                        if icons::button(ui, craft_icons::Icon::Close.name(), 26.0, false, tl!("Close (Esc)")).clicked() {
                             close = true;
                         }
                     });
@@ -5109,7 +5109,7 @@ fn notices(
                     .color(t.text),
                 );
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if icons::button(ui, "x", 22.0, false, tl!("Dismiss")).clicked() {
+                    if icons::button(ui, craft_icons::Icon::Close.name(), 22.0, false, tl!("Dismiss")).clicked() {
                         view.disk_changed = false;
                     }
                     reload = crate::widgets::pill_button(ui, tl!("Reload"), false).clicked();
@@ -5223,7 +5223,7 @@ fn notices(
     };
     let (icon, text, fields) = msg?;
     notice_bar(ui, t, icon, t.accent_text, text, |ui| {
-        if icons::button(ui, "x", 22.0, false, tl!("Dismiss")).clicked() {
+        if icons::button(ui, craft_icons::Icon::Close.name(), 22.0, false, tl!("Dismiss")).clicked() {
             view.notice_dismissed = true;
         }
         if fields {
@@ -5554,7 +5554,7 @@ fn organize_toolbar(view: &mut DocView, info: &DocInfo, editable: bool, dirty: b
                 }
             });
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if widgets::ghost_button(ui, "x", tl!("Close")).on_hover_text(tl!("Back to the document")).clicked() {
+                if widgets::ghost_button(ui, craft_icons::Icon::Close.name(), tl!("Close")).on_hover_text(tl!("Back to the document")).clicked() {
                     view.organize = false;
                 }
                 // What the grid shows is what is saved.

@@ -11,9 +11,21 @@ use egui::{Color32, Rect, Response, Stroke, Vec2};
 use crate::icon_data::ICONS;
 use crate::theme::{self, Tokens};
 
+/// The app's own catalog plus the suite's shared icons (`craft_icons::ALL`) the app does not already carry
+/// under that name: the app's own SVG wins, so what is drawn today stays byte for byte, and a concept the
+/// suite adds later is available through `craft_icons::Icon::name` without touching this file.
+fn catalog() -> &'static [(&'static str, &'static [u8])] {
+    static CATALOG: OnceLock<Vec<(&'static str, &'static [u8])>> = OnceLock::new();
+    CATALOG.get_or_init(|| {
+        let mut all = ICONS.to_vec();
+        all.extend(craft_icons::ALL.iter().filter(|(name, _)| !ICONS.iter().any(|(own, _)| own == name)).copied());
+        all
+    })
+}
+
 fn white_icons() -> &'static SvgIconSet {
     static MAP: OnceLock<SvgIconSet> = OnceLock::new();
-    MAP.get_or_init(|| SvgIconSet::new(ICONS, SvgStyle { current_color: "#ffffff", stroke_width: Some("1.75") }, "bytes://icons/", "square"))
+    MAP.get_or_init(|| SvgIconSet::new(catalog(), SvgStyle { current_color: "#ffffff", stroke_width: Some("1.75") }, "bytes://icons/", "square"))
 }
 
 pub fn exists(name: &str) -> bool {
@@ -94,6 +106,13 @@ mod tests {
     fn every_command_icon_exists() {
         for c in localpdf_engine::commands::COMMANDS {
             assert!(super::exists(c.icon), "missing icon {} ({})", c.icon, c.id);
+        }
+    }
+
+    #[test]
+    fn every_suite_icon_is_in_the_catalog() {
+        for icon in craft_icons::Icon::EVERY {
+            assert!(exists(icon.name()), "the suite's {:?} ({}) is missing", icon, icon.name());
         }
     }
 

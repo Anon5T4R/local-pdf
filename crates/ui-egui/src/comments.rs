@@ -154,7 +154,7 @@ impl CommentTool {
             Self::Oval => "circle",
             Self::Polygon => "pentagon",
             Self::PolyLine => "spline",
-            Self::Cloud => "cloud",
+            Self::Cloud => "circle-dashed",
             Self::Callout => "message-square-quote",
             Self::Caret => "text-cursor-input",
             Self::ReplaceText => "replace",

@@ -109,7 +109,7 @@ pub(crate) fn dialog(app: &mut LocalPDFApp, ctx: &egui::Context) {
     let modal = crate::widgets::show_modal(ctx, "updates", |ui| {
         ui.set_width(420.0);
         ui.horizontal(|ui| {
-            ui.add(crate::icons::image("cloud", 22.0, t.accent));
+            ui.add(crate::icons::image(craft_icons::Icon::CheckForUpdates.name(), 22.0, t.accent));
             ui.label(egui::RichText::new(tl!("Check for updates")).font(theme::semibold(16.0)));
         });
         ui.add_space(8.0);
