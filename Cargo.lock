@@ -3777,7 +3777,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "chrono",
  "craft-desktop-theme",
@@ -3802,7 +3802,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-a11y"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-content",
  "localpdf-cos",
@@ -3814,7 +3814,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-ai"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "local-ai",
  "serde",
@@ -3823,7 +3823,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-annot"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "hayro-syntax",
  "localpdf-cos",
@@ -3834,7 +3834,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-audit"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-content",
  "localpdf-cos",
@@ -3845,7 +3845,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-automation"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "base64 0.23.1",
  "flate2",
@@ -3867,7 +3867,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-cli"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "base64 0.23.1",
  "craft-mcp",
@@ -3886,11 +3886,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-compare"
-version = "0.14.28"
+version = "0.14.29"
 
 [[package]]
 name = "localpdf-content"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "hayro-syntax",
  "localpdf-cos",
@@ -3898,7 +3898,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-cos"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "chrono",
  "hayro-syntax",
@@ -3913,7 +3913,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-create"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "encoding_rs",
  "hayro-syntax",
@@ -3929,7 +3929,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-crypt"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "aes 0.9.3",
  "md-5",
@@ -3941,7 +3941,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-edit"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "hayro-syntax",
  "kurbo 0.13.1",
@@ -3956,7 +3956,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-engine"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "chrono",
  "craft-docpath",
@@ -3997,14 +3997,14 @@ dependencies = [
 
 [[package]]
 name = "localpdf-export"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "flate2",
 ]
 
 [[package]]
 name = "localpdf-filters"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "flate2",
  "proptest",
@@ -4014,7 +4014,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-fonts"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "harfrust",
  "localpdf-cos",
@@ -4024,7 +4024,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-forms"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "hayro-syntax",
  "localpdf-content",
@@ -4037,11 +4037,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-geom"
-version = "0.14.28"
+version = "0.14.29"
 
 [[package]]
 name = "localpdf-js"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "boa_engine",
  "chrono",
@@ -4049,7 +4049,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-measure"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-annot",
  "localpdf-content",
@@ -4062,14 +4062,14 @@ dependencies = [
 
 [[package]]
 name = "localpdf-model"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-cos",
 ]
 
 [[package]]
 name = "localpdf-ocr"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-fonts",
  "ocrs",
@@ -4079,7 +4079,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-optimize"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "image",
  "localpdf-annot",
@@ -4094,11 +4094,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-oracle"
-version = "0.14.28"
+version = "0.14.29"
 
 [[package]]
 name = "localpdf-organize"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "hayro-syntax",
  "localpdf-content",
@@ -4109,14 +4109,14 @@ dependencies = [
 
 [[package]]
 name = "localpdf-platform"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "rustix 1.1.6",
 ]
 
 [[package]]
 name = "localpdf-preflight"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "flate2",
  "localpdf-content",
@@ -4127,7 +4127,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-print"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "craft-print",
  "localpdf-content",
@@ -4139,7 +4139,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-redact"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-annot",
  "localpdf-content",
@@ -4155,7 +4155,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-render"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "bytemuck",
  "flate2",
@@ -4174,7 +4174,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-sign"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "aes 0.9.3",
  "base64 0.23.1",
@@ -4209,11 +4209,11 @@ dependencies = [
 
 [[package]]
 name = "localpdf-testkit"
-version = "0.14.28"
+version = "0.14.29"
 
 [[package]]
 name = "localpdf-ui-egui"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "arboard",
  "base64 0.23.1",
@@ -4269,7 +4269,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-web"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "eframe",
  "egui",
@@ -4281,7 +4281,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-xfa"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "base64 0.23.1",
  "image",
@@ -4295,7 +4295,7 @@ dependencies = [
 
 [[package]]
 name = "localpdf-xfdf"
-version = "0.14.28"
+version = "0.14.29"
 dependencies = [
  "localpdf-annot",
  "localpdf-cos",
