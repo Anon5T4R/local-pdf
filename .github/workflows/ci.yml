@@ -4,7 +4,7 @@ name: CI
 # Autossuficiente: não depende de workflows de outra organização.
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
