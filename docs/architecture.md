@@ -1,10 +1,6 @@
 # Local PDF architecture
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-23 · **Change:** minor (xtask ci: translation gaps report) · **Target:** Adobe Acrobat Pro (Acrobat DC, continuous track 26.002.21931, macOS)
-
-How Local PDF is built today. The design rationale and the planned crates live in
-`plan/architecture.md` and `plan/adr/` (local-only); this file describes what is on `main`. Each
-crate's `README.md` has the detail.
+How Local PDF is built today. Each crate's `README.md` has the detail.
 
 ## Shape
 
@@ -66,7 +62,7 @@ The PDF object graph *is* the model (`crates/engine/README.md` §The editing mod
 - Text extraction (reading order, columns, vertical CJK, rotated text) feeds find, select, copy,
   redaction, export and compare; word-F1 0.98 against `pdftotext` on the corpus.
 - The replacement (M2, ADR-0004) is the `model` crate, our own font engine and DisplayList devices;
-  only the first pieces of `model` exist. See [gaps.md](gaps.md) gap 2.
+  only the first pieces of `model` exist.
 
 ## File I/O
 
@@ -77,7 +73,7 @@ The PDF object graph *is* the model (`crates/engine/README.md` §The editing mod
   combining.
 - Other formats: images and text in (`create`); PNG/JPEG/TIFF, text, RTF, Word and HTML out
   (`export`, `render`); FDF/XFDF/XML/CSV/TXT form and comment data (`xfdf`); PKCS #12, X.509,
-  PEM/DER certificates (`sign`). Full matrix: [file-format-parity.md](file-format-parity.md).
+  PEM/DER certificates (`sign`).
 
 ## Agent control
 
@@ -108,11 +104,3 @@ tools and tests) and `xtask deny` (dependency licences). Other tasks: `xtask fuz
 sweep over the pinned pdf.js corpus), `xtask text-oracle` (word F1 and reading order against `pdftotext`),
 `xtask demo-pdf`, `xtask screenshots`, `xtask models` (OCR models), `xtask version`. Releases are
 built by `.github/workflows/release.yml` ([releasing.md](releasing.md)).
-
-## Revision history
-
-| Date | Change | Summary |
-|---|---|---|
-| 2026-10-23 | minor | `xtask ci` prints the translation gaps (`xtask i18n-report`); a missing translation never fails it |
-| 2026-10-23 | minor | `xtask ci` runs nextest and doctests, checks the CLI without default features, and checks wasm in one call |
-| 2026-10-10 | major | Created from the code on main (crate list, `xtask/src/layers.rs`, crate READMEs, `vendor/README.md`) |
