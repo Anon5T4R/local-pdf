@@ -78,7 +78,7 @@ impl StartupPrompt {
                     .corner_radius(egui::CornerRadius::ZERO)
                     .inner_margin(egui::Margin::symmetric(20, 18))
                     .show(ui, |ui| {
-                        ui.set_width(400.0);
+                        ui.set_width(card_width(ctx));
                         style_card(ui, &pal);
                         let version_line = format!("v{} to {}", self.running_version, self.release.version_label());
                         if card_header(ui, self.app, &pal, true, &version_line) {
@@ -97,7 +97,7 @@ impl StartupPrompt {
                                 .inner_margin(egui::Margin::symmetric(10, 6))
                                 .show(ui, |ui| {
                                     ui.set_width(ui.available_width());
-                                    ui.label(RichText::new(msg).size(12.0).color(alert_color));
+                                    ui.add(egui::Label::new(RichText::new(msg).size(12.0).color(alert_color)).wrap());
                                 });
                             ui.add_space(4.0);
                         }
@@ -110,7 +110,8 @@ impl StartupPrompt {
                         } else {
                             let desc =
                                 format!("{} {} is available with the latest features and bug fixes.", self.app.name, self.release.version_label());
-                            ui.label(RichText::new(desc).size(12.5).color(text_muted));
+                            // Wraps explicitly: an Area does not, and the long line would widen the card past a narrow window.
+                            ui.add(egui::Label::new(RichText::new(desc).size(12.5).color(text_muted)).wrap());
                         }
 
                         ui.add_space(10.0);
@@ -222,6 +223,12 @@ impl Palette {
 
 /// The dimmed modal backdrop; it senses clicks so they don't reach widgets underneath. True when
 /// it was clicked (a click outside the card).
+/// The card's content width: 400, but never wider than the window minus the card's own margins and stroke
+/// (42) and a gutter on each side, so in a narrow window (the suite's minimum is 340) the X stays inside.
+fn card_width(ctx: &egui::Context) -> f32 {
+    (ctx.content_rect().width() - 58.0).clamp(200.0, 400.0)
+}
+
 fn backdrop(ctx: &egui::Context) -> bool {
     let screen_rect = ctx.content_rect();
     egui::Area::new(egui::Id::unique("craft_update_backdrop"))
@@ -360,7 +367,7 @@ impl CheckResultDialog {
                     .corner_radius(egui::CornerRadius::ZERO)
                     .inner_margin(egui::Margin::symmetric(20, 18))
                     .show(ui, |ui| {
-                        ui.set_width(400.0);
+                        ui.set_width(card_width(ctx));
                         style_card(ui, &pal);
                         if card_header(ui, self.app, &pal, false, &format!("v{}", self.running_version)) {
                             response = CheckResultResponse::Close;
@@ -532,8 +539,12 @@ mod tests {
     }
 
     fn frame(ctx: &Context, prompt: &mut StartupPrompt, events: Vec<Event>) -> (StartupPromptResponse, FullOutput) {
+        frame_in(ctx, prompt, events, screen())
+    }
+
+    fn frame_in(ctx: &Context, prompt: &mut StartupPrompt, events: Vec<Event>, screen: Rect) -> (StartupPromptResponse, FullOutput) {
         let mut response = StartupPromptResponse::Pending;
-        let mut output = ctx.run_ui(RawInput { screen_rect: Some(screen()), events, ..RawInput::default() }, |ui| {
+        let mut output = ctx.run_ui(RawInput { screen_rect: Some(screen), events, ..RawInput::default() }, |ui| {
             response = prompt.show(ui.ctx());
         });
         output.textures_delta.clear(); // Headless test: no renderer consumes the font atlas.
@@ -745,6 +756,26 @@ mod tests {
         let link = text_pos(&output, "What's new").expect("the link is painted");
         let button = text_pos(&output, "DOWNLOAD").expect("the button is painted");
         assert!((link.y - button.y).abs() <= 1.0, "link centred at {} but the button at {}", link.y, button.y);
+    }
+
+    /// In the suite's narrowest window (340) the whole card, its X included, stays inside the window.
+    #[test]
+    fn the_prompt_fits_a_narrow_window() {
+        let ctx = dark_context();
+        let mut prompt = prompt_for(false);
+        let narrow = Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(340.0, 480.0));
+        frame_in(&ctx, &mut prompt, Vec::new(), narrow);
+        let (_, output) = frame_in(&ctx, &mut prompt, Vec::new(), narrow);
+        // Every painted shape (text, buttons, the X), not just the card: a line that does not wrap widens the
+        // card and pushes the buttons out. The full-window backdrop is the one shape as wide as the window.
+        for clipped in &output.shapes {
+            let rect = clipped.shape.visual_bounding_rect();
+            if rect.is_finite() && rect.width() < 340.0 {
+                assert!(rect.min.x >= 0.0 && rect.max.x <= 340.0, "{rect:?} leaves the 340 pt window");
+            }
+        }
+        let download = text_pos(&output, "DOWNLOAD").expect("the buttons are painted");
+        assert!(download.x < 340.0);
     }
 
     #[test]
