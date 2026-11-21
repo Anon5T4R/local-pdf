@@ -1,8 +1,6 @@
 # AcroForm JavaScript performance
 
-Status: implemented; proposed as an independent performance PR. Last reviewed and updated:
-2026-10-19. Measurements below are historical synthetic evidence collected before this split,
-not fresh measurements on upstream main. No private document is needed for the benchmark.
+The measurements below are synthetic evidence (no private document is needed for the benchmark).
 
 ## Architecture
 
@@ -262,17 +260,3 @@ was incorporated and all checks below were repeated on the final base.
 Builds used an isolated Cargo target outside the worktrees. No GUI executable was built,
 no private PDF was used, and the compatibility branch was not changed. These are local
 checks, not hosted CI or a new performance speedup claim.
-
-## Revision history
-
-- 2026-10-19: refresh PR #3318 onto upstream `e397efa8`, retain upstream roadmap additions
-  and all performance changes, and repeat focused, scoped, benchmark and headless validation.
-
-- 2026-10-18: rebase onto upstream `932bf9c6`; retain all performance source edits and regression
-  tests; preserve upstream CSV documentation and repeat scoped native/WASM and headless checks.
-- 2026-10-18: separate performance changes for review on current upstream main; add duplicate-name
-  and scripted-display coverage; keep historical optional instrumentation results as evidence only.
-- 2026-10-18: retain shared snapshots after a paired 30% synthetic Release improvement and
-  verify snapshot isolation.
-- 2026-10-17: remove quadratic outcome conversion and repeated display reads; record the
-  synthetic before/after benchmark.

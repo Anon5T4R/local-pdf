@@ -358,8 +358,8 @@ pub fn text_oracle(args: &[String]) -> anyhow::Result<()> {
 
 /// Compare our rendering against Poppler's, page 1 of every PDF in a directory.
 ///
-/// This is the measured half of the fidelity gap (`docs/gaps.md` gap 12): until it exists, every
-/// claim about rendering quality is a judgement. It reports rather than gates, because the corpus
+/// This is the measured half of the rendering-fidelity gap: until it exists, every claim about
+/// rendering quality is a judgement. It reports rather than gates, because the corpus
 /// is not fetched on CI and because a first reading of a borrowed renderer is a baseline to
 /// improve on, not a bar to clear.
 ///

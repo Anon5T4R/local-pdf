@@ -1,4 +1,4 @@
-//! Printing from the browser (docs/gaps.md gap 4). A web page can't reach a spooler, so the
+//! Printing from the browser. A web page can't reach a spooler, so the
 //! print-ready PDF is drawn sheet by sheet with LocalPDF's own renderer, one sheet a frame (the
 //! web build has no threads), and the pictures go to the browser's print dialog in a hidden
 //! iframe, one sheet per printed page. That prints the same in every browser, with or without a
