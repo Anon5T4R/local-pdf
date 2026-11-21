@@ -60,14 +60,16 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> (boo
     }
     let new_name = app.session.get(new).map(|d| d.name.clone()).unwrap_or_default();
     egui::Grid::new("compare-files").num_columns(2).spacing([12.0, 10.0]).show(ui, |ui| {
-        ui.label(tl!("Old file:"));
+        let label = ui.label(tl!("Old file:"));
         let shown =
             others.iter().find(|(id, _)| Some(*id) == app.compare_old).map_or(tl!("Open the older version first").to_string(), |(_, n)| n.clone());
         egui::ComboBox::from_id_salt("compare-old").selected_text(shown).width(320.0).show_ui(ui, |ui| {
             for (id, n) in &others {
                 ui.selectable_value(&mut app.compare_old, Some(*id), n);
             }
-        });
+        })
+        .response
+        .labelled_by(label.id);
         ui.end_row();
         ui.label(tl!("New file:"));
         ui.label(egui::RichText::new(new_name).strong());
