@@ -163,14 +163,14 @@ impl ConnectionsPanel {
                 ui.separator();
                 // One width for the whole form: the fields ask the dialog, never the screen.
                 let field = ui.available_width();
-                ui.label(egui::RichText::new(labels.provider).small().weak());
+                let provider_label = ui.label(egui::RichText::new(labels.provider).small().weak());
                 let selected = self
                     .presets
                     .iter()
                     .find(|preset| preset.id == self.draft.provider)
                     .map(|preset| preset.label.clone())
                     .unwrap_or_else(|| if self.draft.provider.is_empty() { "—".to_string() } else { self.draft.provider.clone() });
-                egui::ComboBox::from_id_salt("ai-connections-provider").selected_text(selected).width(field).show_ui(ui, |ui| {
+                let provider_combo = egui::ComboBox::from_id_salt("ai-connections-provider").selected_text(selected).width(field).show_ui(ui, |ui| {
                     for preset in &self.presets {
                         if ui.selectable_label(preset.id == self.draft.provider, &preset.label).clicked() {
                             self.draft.provider = preset.id.clone();
@@ -181,20 +181,21 @@ impl ConnectionsPanel {
                         }
                     }
                 });
+                provider_combo.response.labelled_by(provider_label.id);
 
                 ui.add_space(4.0);
-                ui.label(egui::RichText::new(labels.base_url).small().weak());
+                let url_label = ui.label(egui::RichText::new(labels.base_url).small().weak());
                 // The placeholder is the chosen provider's own address, never a guess.
                 let placeholder =
                     self.presets.iter().find(|preset| preset.id == self.draft.provider).map(|preset| preset.base_url.clone()).unwrap_or_default();
-                ui.add(egui::TextEdit::singleline(&mut self.draft.base_url).hint_text(placeholder).desired_width(field));
+                ui.add(egui::TextEdit::singleline(&mut self.draft.base_url).hint_text(placeholder).desired_width(field)).labelled_by(url_label.id);
                 ui.label(egui::RichText::new(labels.hint_url).small().weak());
 
                 ui.add_space(4.0);
-                ui.label(egui::RichText::new(labels.model).small().weak());
+                let model_label = ui.label(egui::RichText::new(labels.model).small().weak());
                 ui.horizontal(|ui| {
                     let list = 96.0;
-                    ui.add(egui::TextEdit::singleline(&mut self.draft.model).desired_width((field - list).max(120.0)));
+                    ui.add(egui::TextEdit::singleline(&mut self.draft.model).desired_width((field - list).max(120.0))).labelled_by(model_label.id);
                     let blocker = models_blocker(&self.draft, &self.key, labels);
                     let button = ui.add_enabled(blocker.is_none(), egui::Button::new(labels.list_models));
                     let button = match blocker {
@@ -216,8 +217,8 @@ impl ConnectionsPanel {
                 }
 
                 ui.add_space(4.0);
-                ui.label(egui::RichText::new(labels.api_key).small().weak());
-                ui.add(egui::TextEdit::singleline(&mut self.key).password(true).desired_width(field));
+                let key_label = ui.label(egui::RichText::new(labels.api_key).small().weak());
+                ui.add(egui::TextEdit::singleline(&mut self.key).password(true).desired_width(field)).labelled_by(key_label.id);
                 ui.label(egui::RichText::new(labels.hint_key).small().weak());
 
                 if let Some(error) = &self.error {
