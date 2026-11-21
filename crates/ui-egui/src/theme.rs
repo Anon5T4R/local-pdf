@@ -79,6 +79,9 @@ pub struct Tokens {
     pub selected: Color32,
     pub accent: Color32,
     pub accent_text: Color32,
+    /// Text and icons drawn on top of `accent` (filled buttons). Dark in the dark theme: white on
+    /// its lighter blue is only 3.3:1, under the suite's 4.5:1.
+    pub on_accent: Color32,
     pub accent_soft: Color32,
     pub field: Color32,
     pub badge_new: Color32,
@@ -107,6 +110,7 @@ impl Tokens {
                 selected: Color32::from_rgb(0xE6, 0xEE, 0xFD),
                 accent: Color32::from_rgb(0x1B, 0x63, 0xE0),
                 accent_text: Color32::from_rgb(0x17, 0x55, 0xC4),
+                on_accent: Color32::WHITE,
                 accent_soft: Color32::from_rgb(0xE3, 0xEC, 0xFD),
                 field: Color32::from_rgb(0xFF, 0xFF, 0xFF),
                 badge_new: Color32::from_rgb(0x1B, 0x63, 0xE0),
@@ -131,6 +135,8 @@ impl Tokens {
                 selected: Color32::from_rgb(0x23, 0x3A, 0x63),
                 accent: Color32::from_rgb(0x4B, 0x8B, 0xF5),
                 accent_text: Color32::from_rgb(0x8C, 0xB6, 0xFA),
+                // Dark ink on the lighter dark-theme accent: white there is only 3.3:1 (#guarda).
+                on_accent: Color32::from_rgb(0x11, 0x16, 0x2E),
                 accent_soft: Color32::from_rgb(0x24, 0x36, 0x57),
                 field: Color32::from_rgb(0x1E, 0x1E, 0x22),
                 badge_new: Color32::from_rgb(0x3D, 0x7D, 0xEE),
