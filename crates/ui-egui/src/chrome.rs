@@ -525,8 +525,14 @@ pub fn mode_bar(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                         }
                     });
                     ui.add_space(8.0);
-                    if widgets::search_box(ui, tl!("Find tools and commands"), 260.0).clicked() {
-                        app.palette_open = true;
+                    // The box shrinks with the window and gives way before it could cover the mode
+                    // tabs (E-Sign, AI): the palette still opens from View › Search and its key.
+                    let room = ui.available_width();
+                    if room >= 160.0 {
+                        let width = 260.0_f32.min(room);
+                        if widgets::search_box(ui, tl!("Find tools and commands"), width).clicked() {
+                            app.palette_open = true;
+                        }
                     }
                 });
             });
