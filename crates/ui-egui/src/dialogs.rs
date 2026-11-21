@@ -570,16 +570,16 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                 ui.add_enabled_ui(draft.mode == M::Pages, |ui| {
                     ui.horizontal(|ui| {
                         ui.add_space(24.0);
-                        ui.label(tl!("Pages per file"));
-                        ui.add(egui::DragValue::new(&mut draft.every).range(1..=n.max(1)));
+                        let label = ui.label(tl!("Pages per file"));
+                        ui.add(egui::DragValue::new(&mut draft.every).range(1..=n.max(1))).labelled_by(label.id);
                     });
                 });
                 widgets::radio_value(ui, &mut draft.mode, M::Size, tl!("File size"));
                 ui.add_enabled_ui(draft.mode == M::Size, |ui| {
                     ui.horizontal(|ui| {
                         ui.add_space(24.0);
-                        ui.label(tl!("At most"));
-                        ui.add(egui::DragValue::new(&mut draft.size_mb).range(0.05..=2000.0).speed(0.1).suffix(" MB"));
+                        let label = ui.label(tl!("At most"));
+                        ui.add(egui::DragValue::new(&mut draft.size_mb).range(0.05..=2000.0).speed(0.1).suffix(" MB")).labelled_by(label.id);
                     });
                 });
                 ui.add_enabled_ui(!marks.is_empty(), |ui| {
@@ -1190,15 +1190,15 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                 d.to = d.to.clamp(1, n);
                 d.from = d.from.clamp(1, d.to);
                 egui::Grid::new("number_pages").num_columns(2).spacing([12.0, 8.0]).show(ui, |ui| {
-                    ui.label(tl!("Pages"));
+                    let pages = ui.label(tl!("Pages"));
                     ui.horizontal(|ui| {
-                        ui.add(egui::DragValue::new(&mut d.from).range(1..=n));
-                        ui.label(tl!("to"));
-                        ui.add(egui::DragValue::new(&mut d.to).range(1..=n));
+                        ui.add(egui::DragValue::new(&mut d.from).range(1..=n)).labelled_by(pages.id);
+                        let to = ui.label(tl!("to"));
+                        ui.add(egui::DragValue::new(&mut d.to).range(1..=n)).labelled_by(to.id);
                         ui.label(egui::RichText::new(crate::i18n::fmt(tl!("of {name}"), &[("name", &n.to_string())])).color(t.text_muted));
                     });
                     ui.end_row();
-                    ui.label(tl!("Style"));
+                    let style = ui.label(tl!("Style"));
                     let styles = [
                         (L::Decimal, "1, 2, 3"),
                         (L::LowerRoman, "i, ii, iii"),
@@ -1208,17 +1208,21 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                         (L::None, tl!("None (prefix only)")),
                     ];
                     let current = styles.iter().find(|(s, _)| *s == d.style).map_or("1, 2, 3", |(_, l)| *l);
-                    egui::ComboBox::from_id_salt("label_style").selected_text(current).show_ui(ui, |ui| {
-                        for (s, l) in styles {
-                            ui.selectable_value(&mut d.style, s, l);
-                        }
-                    });
+                    egui::ComboBox::from_id_salt("label_style")
+                        .selected_text(current)
+                        .show_ui(ui, |ui| {
+                            for (s, l) in styles {
+                                ui.selectable_value(&mut d.style, s, l);
+                            }
+                        })
+                        .response
+                        .labelled_by(style.id);
                     ui.end_row();
                     let l = ui.label(tl!("Prefix"));
                     ui.add(widgets::line(&mut d.prefix).desired_width(160.0)).labelled_by(l.id);
                     ui.end_row();
-                    ui.label(tl!("Start"));
-                    ui.add(egui::DragValue::new(&mut d.start).range(1..=99_999));
+                    let start = ui.label(tl!("Start"));
+                    ui.add(egui::DragValue::new(&mut d.start).range(1..=99_999)).labelled_by(start.id);
                     ui.end_row();
                 });
                 d.to = d.to.max(d.from);

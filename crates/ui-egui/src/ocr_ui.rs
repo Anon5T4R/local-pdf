@@ -110,36 +110,51 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> (boo
         widgets::radio_value(ui, &mut d.pages, OcrPages::All, tl!("All pages"));
         widgets::radio_value(ui, &mut d.pages, OcrPages::Current, tl!("Current page"));
         ui.horizontal(|ui| {
-            widgets::radio_value(ui, &mut d.pages, OcrPages::Range, tl!("From"));
+            let from = widgets::radio_value(ui, &mut d.pages, OcrPages::Range, tl!("From"));
             let on = d.pages == OcrPages::Range;
-            ui.add_enabled(on, egui::DragValue::new(&mut d.from).range(1..=pages));
-            ui.label(tl!("to"));
-            ui.add_enabled(on, egui::DragValue::new(&mut d.to).range(1..=pages));
+            ui.add_enabled(on, egui::DragValue::new(&mut d.from).range(1..=pages)).labelled_by(from.id);
+            let to = ui.label(tl!("to"));
+            ui.add_enabled(on, egui::DragValue::new(&mut d.to).range(1..=pages)).labelled_by(to.id);
         });
     });
     group(ui, "Settings", &mut |ui| {
         egui::Grid::new("ocr-settings").num_columns(2).spacing([12.0, 8.0]).show(ui, |ui| {
-            ui.label(tl!("Document language"));
+            let language = ui.label(tl!("Document language"));
             let name = LANGUAGES.iter().find(|l| l.0 == d.language).map_or("English", |l| l.1);
-            egui::ComboBox::from_id_salt("ocr-language").selected_text(tl!(name)).width(220.0).show_ui(ui, |ui| {
-                for (code, name) in LANGUAGES {
-                    ui.selectable_value(&mut d.language, (*code).to_string(), tl!(*name));
-                }
-            });
+            egui::ComboBox::from_id_salt("ocr-language")
+                .selected_text(tl!(name))
+                .width(220.0)
+                .show_ui(ui, |ui| {
+                    for (code, name) in LANGUAGES {
+                        ui.selectable_value(&mut d.language, (*code).to_string(), tl!(*name));
+                    }
+                })
+                .response
+                .labelled_by(language.id);
             ui.end_row();
-            ui.label(tl!("Output"));
-            egui::ComboBox::from_id_salt("ocr-output").selected_text(tl!("Searchable Image (Exact)")).width(220.0).show_ui(ui, |ui| {
-                let _ = ui
-                    .selectable_label(true, tl!("Searchable Image (Exact)"))
-                    .on_hover_text(tl!("Adds invisible text over each word; the page image is not changed"));
-            });
+            let output = ui.label(tl!("Output"));
+            egui::ComboBox::from_id_salt("ocr-output")
+                .selected_text(tl!("Searchable Image (Exact)"))
+                .width(220.0)
+                .show_ui(ui, |ui| {
+                    let _ = ui
+                        .selectable_label(true, tl!("Searchable Image (Exact)"))
+                        .on_hover_text(tl!("Adds invisible text over each word; the page image is not changed"));
+                })
+                .response
+                .labelled_by(output.id);
             ui.end_row();
-            ui.label(tl!("Downsample to"));
-            egui::ComboBox::from_id_salt("ocr-dpi").selected_text(format!("{} dpi", d.dpi)).width(220.0).show_ui(ui, |ui| {
-                for v in [600, 300, 150, 72] {
-                    ui.selectable_value(&mut d.dpi, v, format!("{v} dpi"));
-                }
-            });
+            let downsample = ui.label(tl!("Downsample to"));
+            egui::ComboBox::from_id_salt("ocr-dpi")
+                .selected_text(format!("{} dpi", d.dpi))
+                .width(220.0)
+                .show_ui(ui, |ui| {
+                    for v in [600, 300, 150, 72] {
+                        ui.selectable_value(&mut d.dpi, v, format!("{v} dpi"));
+                    }
+                })
+                .response
+                .labelled_by(downsample.id);
             ui.end_row();
         });
         ui.add_space(4.0);

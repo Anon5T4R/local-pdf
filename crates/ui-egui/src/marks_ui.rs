@@ -54,20 +54,27 @@ impl PageRange {
         ui.horizontal(|ui| {
             widgets::radio_value(ui, &mut self.all, true, tl!("All pages"));
             widgets::radio_value(ui, &mut self.all, false, tl!("Pages from"));
-            ui.add_enabled(!self.all, egui::DragValue::new(&mut self.from).range(1..=count.max(1)));
-            ui.label(tl!("to"));
-            ui.add_enabled(!self.all, egui::DragValue::new(&mut self.to).range(1..=count.max(1)));
-            ui.label(tl!("Subset"));
+            let on = !self.all;
+            // The radio's own text names the first box; the second takes its visible "to".
+            let from = ui.add_enabled(on, egui::DragValue::new(&mut self.from).range(1..=count.max(1)));
+            ui.ctx().accesskit_node_builder(from.id, |node| node.set_label(tl!("From")));
+            let to = ui.label(tl!("to"));
+            ui.add_enabled(on, egui::DragValue::new(&mut self.to).range(1..=count.max(1))).labelled_by(to.id);
+            let subset = ui.label(tl!("Subset"));
             let label = match self.subset {
                 Subset::All => tl!("All pages in range"),
                 Subset::Even => tl!("Even pages only"),
                 Subset::Odd => tl!("Odd pages only"),
             };
-            egui::ComboBox::from_id_salt("mark-subset").selected_text(label).show_ui(ui, |ui| {
-                ui.selectable_value(&mut self.subset, Subset::All, tl!("All pages in range"));
-                ui.selectable_value(&mut self.subset, Subset::Even, tl!("Even pages only"));
-                ui.selectable_value(&mut self.subset, Subset::Odd, tl!("Odd pages only"));
-            });
+            egui::ComboBox::from_id_salt("mark-subset")
+                .selected_text(label)
+                .show_ui(ui, |ui| {
+                    ui.selectable_value(&mut self.subset, Subset::All, tl!("All pages in range"));
+                    ui.selectable_value(&mut self.subset, Subset::Even, tl!("Even pages only"));
+                    ui.selectable_value(&mut self.subset, Subset::Odd, tl!("Odd pages only"));
+                })
+                .response
+                .labelled_by(subset.id);
         });
     }
 }
@@ -226,25 +233,35 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
         MarkKind::HeaderFooter => {
             ui.horizontal(|ui| {
                 // The standard faces a header can be drawn in (#3754).
-                ui.label(tl!("Font:"));
-                egui::ComboBox::from_id_salt("hf-font").selected_text(d.hf.font.label()).width(100.0).show_ui(ui, |ui| {
-                    for f in [FontFamily::Helvetica, FontFamily::Times, FontFamily::Courier] {
-                        ui.selectable_value(&mut d.hf.font, f, f.label());
-                    }
-                });
-                ui.label(tl!("Size"));
-                ui.add(egui::DragValue::new(&mut d.hf.font_size).range(4.0..=72.0).speed(0.5));
+                let font_label = ui.label(tl!("Font:"));
+                egui::ComboBox::from_id_salt("hf-font")
+                    .selected_text(d.hf.font.label())
+                    .width(100.0)
+                    .show_ui(ui, |ui| {
+                        for f in [FontFamily::Helvetica, FontFamily::Times, FontFamily::Courier] {
+                            ui.selectable_value(&mut d.hf.font, f, f.label());
+                        }
+                    })
+                    .response
+                    .labelled_by(font_label.id);
+                let size_label = ui.label(tl!("Size"));
+                ui.add(egui::DragValue::new(&mut d.hf.font_size).range(4.0..=72.0).speed(0.5)).labelled_by(size_label.id);
                 ui.add(widgets::checkbox(&mut d.hf.underline, tl!("Underline")));
                 color_button(ui, &mut d.hf.color);
-                ui.add_space(16.0);
+            });
+            ui.horizontal(|ui| {
+                // The margins on a row of their own: with the font controls they were wider than the
+                // suite's narrowest window (#guardas).
                 ui.label(format!("{} ({})", tl!("Margins"), units.label()));
                 let per = units.per_point();
                 for (label, k) in [(tl!("Top"), 0), (tl!("Bottom"), 1), (tl!("Left"), 2), (tl!("Right"), 3)] {
-                    ui.label(label);
+                    let l = ui.label(label);
                     let mut v = d.hf.margins[k] * per;
                     // Up to 10 inches, whatever the unit.
                     let max = 720.0 * per;
-                    if ui.add(egui::DragValue::new(&mut v).range(0.0..=max).speed(units.speed()).max_decimals(units.decimals())).changed() {
+                    let r =
+                        ui.add(egui::DragValue::new(&mut v).range(0.0..=max).speed(units.speed()).max_decimals(units.decimals())).labelled_by(l.id);
+                    if r.changed() {
                         d.hf.margins[k] = v / per;
                     }
                 }
@@ -252,13 +269,14 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
             ui.add_space(8.0);
             egui::Grid::new("hf-boxes").num_columns(3).spacing([10.0, 4.0]).show(ui, |ui| {
                 for row in 0..2 {
-                    for col in 0..3 {
-                        ui.label(egui::RichText::new(tl!(BOX_NAMES[row * 3 + col])).small());
-                    }
+                    let labels: Vec<egui::Response> =
+                        (0..3).map(|col| ui.label(egui::RichText::new(tl!(BOX_NAMES[row * 3 + col])).small())).collect();
                     ui.end_row();
-                    for col in 0..3 {
+                    for (col, label) in labels.into_iter().enumerate() {
                         let k = row * 3 + col;
-                        let r = ui.add_sized([220.0, 40.0], crate::widgets::block(&mut d.hf.text[k]).desired_rows(2).id_salt(("hf-box", k)));
+                        let r = ui
+                            .add_sized([200.0, 40.0], crate::widgets::block(&mut d.hf.text[k]).desired_rows(2).id_salt(("hf-box", k)))
+                            .labelled_by(label.id);
                         if r.gained_focus() || r.has_focus() {
                             d.focused_box = k;
                         }
@@ -266,33 +284,40 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
                     ui.end_row();
                 }
             });
+            // Two rows: the page number and the date controls together were wider than the suite's
+            // narrowest window (#guardas).
             ui.horizontal(|ui| {
-                egui::ComboBox::from_id_salt("hf-page-format").selected_text(PAGE_FORMATS[d.page_format].trim_matches(['<', '>'])).show_ui(
-                    ui,
-                    |ui| {
+                let page_label = ui.label(tl!("Page number"));
+                egui::ComboBox::from_id_salt("hf-page-format")
+                    .selected_text(PAGE_FORMATS[d.page_format].trim_matches(['<', '>']))
+                    .show_ui(ui, |ui| {
                         for (k, f) in PAGE_FORMATS.iter().enumerate() {
                             ui.selectable_value(&mut d.page_format, k, f.trim_matches(['<', '>']));
                         }
-                    },
-                );
+                    })
+                    .response
+                    .labelled_by(page_label.id);
                 if ui.button(tl!("Insert Page Number")).clicked() {
                     d.hf.text[d.focused_box].push_str(PAGE_FORMATS[d.page_format]);
                 }
                 ui.add_space(12.0);
-                egui::ComboBox::from_id_salt("hf-date-format").selected_text(DATE_FORMATS[d.date_format].trim_matches(['<', '>'])).show_ui(
-                    ui,
-                    |ui| {
+                let start_label = ui.label(tl!("Start page number"));
+                ui.add(egui::DragValue::new(&mut d.hf.start_number).range(1..=999_999)).labelled_by(start_label.id);
+            });
+            ui.horizontal(|ui| {
+                let date_label = ui.label(tl!("Date format"));
+                egui::ComboBox::from_id_salt("hf-date-format")
+                    .selected_text(DATE_FORMATS[d.date_format].trim_matches(['<', '>']))
+                    .show_ui(ui, |ui| {
                         for (k, f) in DATE_FORMATS.iter().enumerate() {
                             ui.selectable_value(&mut d.date_format, k, f.trim_matches(['<', '>']));
                         }
-                    },
-                );
+                    })
+                    .response
+                    .labelled_by(date_label.id);
                 if ui.button(tl!("Insert Date")).clicked() {
                     d.hf.text[d.focused_box].push_str(DATE_FORMATS[d.date_format]);
                 }
-                ui.add_space(12.0);
-                ui.label(tl!("Start page number"));
-                ui.add(egui::DragValue::new(&mut d.hf.start_number).range(1..=999_999));
             });
             ui.add(widgets::checkbox(&mut d.hf.shrink, tl!("Shrink the page content to make room for the header and footer")));
         }
@@ -316,25 +341,25 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
                     ui.horizontal(|ui| {
                         ui.add_enabled_ui(!d.use_file, |ui| ui.add(widgets::checkbox(&mut d.fit, tl!("Fit to page"))));
                         ui.add_enabled_ui(!d.fit, |ui| {
-                            ui.label(tl!("Size"));
+                            let label = ui.label(tl!("Size"));
                             if d.wm.font_size == 0.0 {
                                 d.wm.font_size = 72.0;
                             }
-                            ui.add(egui::DragValue::new(&mut d.wm.font_size).range(6.0..=300.0));
+                            ui.add(egui::DragValue::new(&mut d.wm.font_size).range(6.0..=300.0)).labelled_by(label.id);
                         });
                         color_button(ui, &mut d.wm.color);
                     });
                     ui.horizontal(|ui| {
-                        ui.label(tl!("Rotation"));
+                        let label = ui.label(tl!("Rotation"));
                         for r in [-45.0, 0.0, 45.0] {
                             widgets::radio_value(ui, &mut d.wm.rotation, r, if r == 0.0 { tl!("None").to_string() } else { format!("{r}°") });
                         }
-                        ui.add(egui::DragValue::new(&mut d.wm.rotation).range(-180.0..=180.0).suffix("°"));
+                        ui.add(egui::DragValue::new(&mut d.wm.rotation).range(-180.0..=180.0).suffix("°")).labelled_by(label.id);
                     });
                     ui.horizontal(|ui| {
-                        ui.label(tl!("Opacity"));
+                        let label = ui.label(tl!("Opacity"));
                         let mut pct = d.wm.opacity * 100.0;
-                        if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).changed() {
+                        if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).labelled_by(label.id).changed() {
                             d.wm.opacity = pct / 100.0;
                         }
                     });
@@ -345,10 +370,10 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
                     });
                     ui.horizontal(|ui| {
                         ui.label(tl!("Offset from centre"));
-                        ui.label(tl!("Horizontal"));
-                        ui.add(egui::DragValue::new(&mut d.wm.offset[0]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt"));
-                        ui.label(tl!("Vertical"));
-                        ui.add(egui::DragValue::new(&mut d.wm.offset[1]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt"));
+                        let horizontal = ui.label(tl!("Horizontal"));
+                        ui.add(egui::DragValue::new(&mut d.wm.offset[0]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt")).labelled_by(horizontal.id);
+                        let vertical = ui.label(tl!("Vertical"));
+                        ui.add(egui::DragValue::new(&mut d.wm.offset[1]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt")).labelled_by(vertical.id);
                     });
                 });
             });
@@ -364,9 +389,9 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
                 browse |= file_source(ui, d, MarkKind::Background);
             }
             ui.horizontal(|ui| {
-                ui.label(tl!("Opacity"));
+                let label = ui.label(tl!("Opacity"));
                 let mut pct = d.bg.opacity * 100.0;
-                if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).changed() {
+                if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).labelled_by(label.id).changed() {
                     d.bg.opacity = pct / 100.0;
                 }
             });
