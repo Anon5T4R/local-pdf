@@ -108,36 +108,44 @@ fn summary(r: &OptimizeReport) -> String {
 fn image_row(ui: &mut egui::Ui, id: &str, title: &str, s: &mut ImageSettings) {
     ui.label(egui::RichText::new(tl!(title)).font(theme::semibold(13.0)));
     ui.horizontal(|ui| {
-        ui.add(widgets::checkbox(&mut s.downsample, tl!("Bicubic downsampling to")));
-        ui.add_enabled(s.downsample, egui::DragValue::new(&mut s.target_ppi).range(9.0..=2400.0).suffix(" ppi"));
-        ui.label(tl!("for images above"));
-        ui.add_enabled(s.downsample, egui::DragValue::new(&mut s.above_ppi).range(9.0..=2400.0).suffix(" ppi"));
+        let downsample = ui.add(widgets::checkbox(&mut s.downsample, tl!("Bicubic downsampling to")));
+        ui.add_enabled(s.downsample, egui::DragValue::new(&mut s.target_ppi).range(9.0..=2400.0).suffix(" ppi")).labelled_by(downsample.id);
+        let above = ui.label(tl!("for images above"));
+        ui.add_enabled(s.downsample, egui::DragValue::new(&mut s.above_ppi).range(9.0..=2400.0).suffix(" ppi")).labelled_by(above.id);
     });
     s.above_ppi = s.above_ppi.max(s.target_ppi);
     ui.horizontal(|ui| {
-        ui.label(tl!("Compression"));
+        let compression_label = ui.label(tl!("Compression"));
         let label = match s.compression {
             Compression::Jpeg(_) => "JPEG",
             Compression::Flate => tl!("ZIP"),
             Compression::Retain => tl!("Retain existing"),
         };
-        egui::ComboBox::from_id_salt((id, "compression")).selected_text(label).show_ui(ui, |ui| {
-            let q = match s.compression {
-                Compression::Jpeg(q) => q,
-                _ => 60,
-            };
-            ui.selectable_value(&mut s.compression, Compression::Jpeg(q), "JPEG");
-            ui.selectable_value(&mut s.compression, Compression::Flate, tl!("ZIP"));
-            ui.selectable_value(&mut s.compression, Compression::Retain, tl!("Retain existing"));
-        });
+        egui::ComboBox::from_id_salt((id, "compression"))
+            .selected_text(label)
+            .show_ui(ui, |ui| {
+                let q = match s.compression {
+                    Compression::Jpeg(q) => q,
+                    _ => 60,
+                };
+                ui.selectable_value(&mut s.compression, Compression::Jpeg(q), "JPEG");
+                ui.selectable_value(&mut s.compression, Compression::Flate, tl!("ZIP"));
+                ui.selectable_value(&mut s.compression, Compression::Retain, tl!("Retain existing"));
+            })
+            .response
+            .labelled_by(compression_label.id);
         if let Compression::Jpeg(q) = &mut s.compression {
-            ui.label(tl!("Quality"));
+            let quality_label = ui.label(tl!("Quality"));
             let name = QUALITIES.iter().min_by_key(|(_, v)| (*v as i32 - *q as i32).abs()).map_or(tl!("Medium"), |(n, _)| tl!(n));
-            egui::ComboBox::from_id_salt((id, "quality")).selected_text(name).show_ui(ui, |ui| {
-                for (n, v) in QUALITIES {
-                    ui.selectable_value(q, v, tl!(n));
-                }
-            });
+            egui::ComboBox::from_id_salt((id, "quality"))
+                .selected_text(name)
+                .show_ui(ui, |ui| {
+                    for (n, v) in QUALITIES {
+                        ui.selectable_value(q, v, tl!(n));
+                    }
+                })
+                .response
+                .labelled_by(quality_label.id);
         }
     });
     ui.add_space(8.0);
@@ -159,30 +167,38 @@ pub(crate) fn body(ui: &mut egui::Ui, d: &mut OptimizeDraft, t: &Tokens) -> (boo
     ui.label(egui::RichText::new(tl!("PDF Optimizer")).font(theme::semibold(18.0)));
     ui.add_space(6.0);
     ui.horizontal(|ui| {
-        ui.label(tl!("Settings"));
+        let settings_label = ui.label(tl!("Settings"));
         let name = |p: Preset| match p {
             Preset::Standard => tl!("Standard"),
             Preset::Mobile => tl!("Mobile"),
         };
         let current = Preset::of(&d.settings);
-        egui::ComboBox::from_id_salt("optimize-preset").selected_text(current.map_or(tl!("Custom"), name)).show_ui(ui, |ui| {
-            for p in Preset::ALL {
-                if ui.selectable_label(current == Some(p), name(p)).clicked() {
-                    d.settings = p.settings();
+        egui::ComboBox::from_id_salt("optimize-preset")
+            .selected_text(current.map_or(tl!("Custom"), name))
+            .show_ui(ui, |ui| {
+                for p in Preset::ALL {
+                    if ui.selectable_label(current == Some(p), name(p)).clicked() {
+                        d.settings = p.settings();
+                    }
                 }
-            }
-        });
+            })
+            .response
+            .labelled_by(settings_label.id);
         ui.add_space(8.0);
-        ui.label(tl!("Compatibility"));
+        let compat_heading = ui.label(tl!("Compatibility"));
         let compat_label = |c: Compatibility| match c {
             Compatibility::Retain => tl!("Retain existing").to_string(),
             _ => format!("PDF {}", c.name()),
         };
-        egui::ComboBox::from_id_salt("optimize-compatibility").selected_text(compat_label(d.settings.compatibility)).show_ui(ui, |ui| {
-            for c in Compatibility::ALL {
-                ui.selectable_value(&mut d.settings.compatibility, c, compat_label(c));
-            }
-        });
+        egui::ComboBox::from_id_salt("optimize-compatibility")
+            .selected_text(compat_label(d.settings.compatibility))
+            .show_ui(ui, |ui| {
+                for c in Compatibility::ALL {
+                    ui.selectable_value(&mut d.settings.compatibility, c, compat_label(c));
+                }
+            })
+            .response
+            .labelled_by(compat_heading.id);
     });
     ui.add_space(6.0);
     ui.horizontal_wrapped(|ui| {

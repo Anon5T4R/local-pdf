@@ -52,32 +52,38 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: E
     ui.add_space(8.0);
     if kind == ExportKind::Image {
         ui.horizontal(|ui| {
-            ui.label(tl!("Resolution"));
+            let resolution = ui.label(tl!("Resolution"));
             egui::ComboBox::from_id_salt("export-dpi")
                 .selected_text(crate::i18n::fmt(tl!("{dpi} pixels/inch"), &[("dpi", &d.dpi.to_string())]))
                 .show_ui(ui, |ui| {
                     for dpi in [72.0, 96.0, 150.0, 300.0, 600.0] {
                         ui.selectable_value(&mut d.dpi, dpi, crate::i18n::fmt(tl!("{dpi} pixels/inch"), &[("dpi", &dpi.to_string())]));
                     }
-                });
+                })
+                .response
+                .labelled_by(resolution.id);
         });
         ui.horizontal(|ui| {
-            ui.label(tl!("Format"));
+            let format = ui.label(tl!("Format"));
             let mut quality = match d.format {
                 ImageFormat::Jpeg { quality } => quality,
                 _ => 85,
             };
-            egui::ComboBox::from_id_salt("export-format").selected_text(d.format.label()).show_ui(ui, |ui| {
-                for f in [ImageFormat::Png, ImageFormat::Jpeg { quality }, ImageFormat::Tiff] {
-                    let on = std::mem::discriminant(&d.format) == std::mem::discriminant(&f);
-                    if ui.selectable_label(on, f.label()).clicked() {
-                        d.format = f;
+            egui::ComboBox::from_id_salt("export-format")
+                .selected_text(d.format.label())
+                .show_ui(ui, |ui| {
+                    for f in [ImageFormat::Png, ImageFormat::Jpeg { quality }, ImageFormat::Tiff] {
+                        let on = std::mem::discriminant(&d.format) == std::mem::discriminant(&f);
+                        if ui.selectable_label(on, f.label()).clicked() {
+                            d.format = f;
+                        }
                     }
-                }
-            });
+                })
+                .response
+                .labelled_by(format.id);
             if let ImageFormat::Jpeg { .. } = d.format {
-                ui.label(tl!("Quality"));
-                if ui.add(egui::Slider::new(&mut quality, 10..=100)).changed() {
+                let label = ui.label(tl!("Quality"));
+                if ui.add(egui::Slider::new(&mut quality, 10..=100)).labelled_by(label.id).changed() {
                     d.format = ImageFormat::Jpeg { quality };
                 }
             }
@@ -89,15 +95,19 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: E
         );
     } else if kind == ExportKind::AllImages {
         ui.horizontal(|ui| {
-            ui.label(tl!("Exclude images smaller than"));
-            let label = move |n: u32| {
+            let label = ui.label(tl!("Exclude images smaller than"));
+            let name = move |n: u32| {
                 if n == 0 { tl!("No limit").to_string() } else { crate::i18n::trn(crate::i18n::current(), u64::from(n), "{n} pixel", "{n} pixels") }
             };
-            egui::ComboBox::from_id_salt("export-min").selected_text(label(d.min_side)).show_ui(ui, |ui| {
-                for n in [0, 16, 32, 64, 128, 256] {
-                    ui.selectable_value(&mut d.min_side, n, label(n));
-                }
-            });
+            egui::ComboBox::from_id_salt("export-min")
+                .selected_text(name(d.min_side))
+                .show_ui(ui, |ui| {
+                    for n in [0, 16, 32, 64, 128, 256] {
+                        ui.selectable_value(&mut d.min_side, n, name(n));
+                    }
+                })
+                .response
+                .labelled_by(label.id);
         });
         ui.label(
             egui::RichText::new(tl!("Each image once, named after the document and page. JPEG images are saved unchanged; others as PNG."))

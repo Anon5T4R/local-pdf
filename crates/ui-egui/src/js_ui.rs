@@ -224,8 +224,8 @@ pub(crate) fn document_js_body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tok
     let scripts = app.active_ids().and_then(|(_, id)| app.session.get(id)).map(|d| d.document_scripts()).unwrap_or_default();
     let mut edit: Option<Edit> = None;
     ui.horizontal(|ui| {
-        ui.label(tl!("Script Name:"));
-        ui.add(crate::widgets::line(&mut app.doc_js.name).desired_width(240.0).id_salt("doc-js-name"));
+        let label = ui.label(tl!("Script Name:"));
+        ui.add(crate::widgets::line(&mut app.doc_js.name).desired_width(240.0).id_salt("doc-js-name")).labelled_by(label.id);
     });
     ui.add_space(4.0);
     egui::Frame::new().fill(t.hover).corner_radius(egui::CornerRadius::same(6)).inner_margin(egui::Margin::same(8)).show(ui, |ui| {
@@ -243,7 +243,9 @@ pub(crate) fn document_js_body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tok
         });
     });
     ui.add_space(6.0);
-    ui.add(crate::widgets::block(&mut app.doc_js.script).code_editor().desired_rows(8).desired_width(f32::INFINITY).id_salt("doc-js-script"));
+    let script_label = ui.label(tl!("Script"));
+    ui.add(crate::widgets::block(&mut app.doc_js.script).code_editor().desired_rows(8).desired_width(f32::INFINITY).id_salt("doc-js-script"))
+        .labelled_by(script_label.id);
     ui.add_space(8.0);
     let name = app.doc_js.name.trim().to_string();
     let close = match buttons(ui, "Save", &["Close", "Delete"]).as_deref() {

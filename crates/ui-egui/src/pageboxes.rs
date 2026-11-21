@@ -93,7 +93,7 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> (boo
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
             egui::Grid::new("boxes-grid").num_columns(2).spacing([12.0, 8.0]).show(ui, |ui| {
-                ui.label(tl!("Box"));
+                let box_label = ui.label(tl!("Box"));
                 let names = [
                     (PageBox::Crop, "CropBox"),
                     (PageBox::Trim, "TrimBox"),
@@ -102,18 +102,26 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> (boo
                     (PageBox::Media, "MediaBox"),
                 ];
                 let cur = names.iter().find(|(b, _)| *b == d.which).map_or("CropBox", |(_, l)| *l);
-                egui::ComboBox::from_id_salt("boxes-which").selected_text(cur).show_ui(ui, |ui| {
-                    for (b, l) in names {
-                        ui.selectable_value(&mut d.which, b, l);
-                    }
-                });
+                egui::ComboBox::from_id_salt("boxes-which")
+                    .selected_text(cur)
+                    .show_ui(ui, |ui| {
+                        for (b, l) in names {
+                            ui.selectable_value(&mut d.which, b, l);
+                        }
+                    })
+                    .response
+                    .labelled_by(box_label.id);
                 ui.end_row();
-                ui.label(tl!("Units"));
-                egui::ComboBox::from_id_salt("boxes-unit").selected_text(d.unit.label()).show_ui(ui, |ui| {
-                    for u in Unit::ALL {
-                        ui.selectable_value(&mut d.unit, u, u.label());
-                    }
-                });
+                let units_label = ui.label(tl!("Units"));
+                egui::ComboBox::from_id_salt("boxes-unit")
+                    .selected_text(d.unit.label())
+                    .show_ui(ui, |ui| {
+                        for u in Unit::ALL {
+                            ui.selectable_value(&mut d.unit, u, u.label());
+                        }
+                    })
+                    .response
+                    .labelled_by(units_label.id);
                 ui.end_row();
                 let k = d.unit.per_point();
                 for (label, idx) in [(tl!("Top"), 3), (tl!("Bottom"), 1), (tl!("Left"), 0), (tl!("Right"), 2)] {
@@ -148,12 +156,13 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> (boo
                     };
                     ui.horizontal(|ui| {
                         let on = matches!(d.range, Range::Pages(..));
-                        if ui.add(widgets::radio(on, tl!("From"))).clicked() {
+                        let from = ui.add(widgets::radio(on, tl!("From")));
+                        if from.clicked() {
                             d.range = Range::Pages(a, b);
                         }
-                        let ra = ui.add(egui::DragValue::new(&mut a).range(1..=count));
-                        ui.label(tl!("to"));
-                        let rb = ui.add(egui::DragValue::new(&mut b).range(1..=count));
+                        let ra = ui.add(egui::DragValue::new(&mut a).range(1..=count)).labelled_by(from.id);
+                        let to_label = ui.label(tl!("to"));
+                        let rb = ui.add(egui::DragValue::new(&mut b).range(1..=count)).labelled_by(to_label.id);
                         if ra.changed() || rb.changed() {
                             d.range = Range::Pages(a.min(b), b.max(a));
                         }
