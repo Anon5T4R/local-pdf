@@ -9,6 +9,15 @@ use crate::{CloseRequest, Dialog, LocalPDFApp, PropsTab, panels::human_size, wid
 
 const INFO_KEYS: [&str; 4] = ["Title", "Author", "Subject", "Keywords"];
 
+/// What the dialog draws outside its scrolling body: the frame's padding, the title, the tabs row
+/// and the footer.
+const OUTSIDE: f32 = 180.0;
+/// How tall a body may stand on a tall window (the height the tab fields and the shortcuts had).
+const BODY_MAX: f32 = 460.0;
+
+/// The shortcuts dialog's body has no tabs above it.
+const SHORTCUTS_OUTSIDE: f32 = 126.0;
+
 pub fn show(app: &mut LocalPDFApp, ctx: &egui::Context) {
     // The page sets hover cursors from the raw pointer position (form fields, links, comments)
     // before any dialog is drawn, and nothing under a modal's backdrop takes clicks. Start from
@@ -171,7 +180,9 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                     });
                     ui.end_row();
                 };
-                egui::ScrollArea::vertical().max_height(460.0).auto_shrink([false, true]).show(ui, |ui| {
+                // The tab's fields take whatever the window leaves under the tabs, and the footer of
+                // buttons below stays in view (`padrao-craft.md`, "Guardas").
+                widgets::scrolling_body(ui, "props-body", OUTSIDE, BODY_MAX, |ui| {
                     if tab == PropsTab::SpaceAudit {
                         ui.add_space(4.0);
                         crate::optimize_ui::audit_table(ui, &app.space_audit, &t);
@@ -1305,7 +1316,7 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                 ] {
                     rows.push((k, v));
                 }
-                egui::ScrollArea::vertical().max_height(460.0).show(ui, |ui| {
+                widgets::scrolling_body(ui, "shortcuts-body", SHORTCUTS_OUTSIDE, BODY_MAX, |ui| {
                     egui::Grid::new("keys").num_columns(2).spacing([24.0, 6.0]).show(ui, |ui| {
                         for (k, v) in &rows {
                             ui.label(egui::RichText::new(k).font(egui::FontId::monospace(12.5)));

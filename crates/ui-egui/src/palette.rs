@@ -17,6 +17,10 @@ struct Hit {
     ready: bool,
 }
 
+/// What the palette keeps outside its list of hits: its distance from the top of the window, the
+/// frame's inner margin, the search field and the gap under the list.
+const PALETTE_OUTSIDE: f32 = 172.0;
+
 /// Where `needle` (folded with [`localpdf_render::text::fold_case`]) matches `hay`, for ranking.
 fn score(hay: &str, needle: &str) -> Option<usize> {
     score_for_direction(hay, needle, crate::i18n::current().rtl())
@@ -179,39 +183,43 @@ pub fn show(app: &mut LocalPDFApp, ctx: &egui::Context) {
                     }
                 });
                 ui.separator();
-                for (index, (_, h)) in hits.iter().enumerate() {
-                    let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 36.0), Sense::click());
-                    let press = theme::Press::track(ui, &resp);
-                    press.wash(ui, rect, 6, index == selected);
-                    let body = rect.translate(press.offset());
-                    icons::paint(ui, Rect::from_min_size(body.min + vec2(8.0, 9.0), vec2(18.0, 18.0)), h.icon, 17.0, t.icon);
-                    // Display is translated; matching above already considered both languages.
-                    let shown = crate::i18n::command_label(&h.label);
-                    let shown_detail = tl!(&h.detail).to_string();
-                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, h.ready, &shown));
-                    let fg = if h.ready { t.text } else { t.text_faint };
-                    let detail_font = theme::regular(12.0);
-                    let detail_max = (rect.width() * 0.42).clamp(0.0, 220.0);
-                    let detail = crate::widgets::fit_line(&shown_detail, detail_max, |s| crate::widgets::text_width(ui, s, &detail_font));
-                    let detail_w = crate::widgets::text_width(ui, &detail, &detail_font);
-                    ui.painter().text(body.right_center() - vec2(10.0, 0.0), Align2::RIGHT_CENTER, detail, detail_font, t.text_faint);
-                    crate::widgets::paint_left(
-                        ui,
-                        body.left_center() + vec2(36.0, 0.0),
-                        &shown,
-                        theme::regular(13.5),
-                        fg,
-                        (rect.width() - 36.0 - detail_w - 24.0).max(0.0),
-                    );
-                    if theme::hand(resp).clicked() {
-                        chosen = Some((h.command, h.group));
+                // At the window's minimum height the hits outgrow it: the list scrolls under the
+                // search field rather than running past the bottom edge (padrao-craft.md, "Guardas").
+                crate::widgets::scrolling_body(ui, "palette-hits", PALETTE_OUTSIDE, f32::INFINITY, |ui| {
+                    for (index, (_, h)) in hits.iter().enumerate() {
+                        let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 36.0), Sense::click());
+                        let press = theme::Press::track(ui, &resp);
+                        press.wash(ui, rect, 6, index == selected);
+                        let body = rect.translate(press.offset());
+                        icons::paint(ui, Rect::from_min_size(body.min + vec2(8.0, 9.0), vec2(18.0, 18.0)), h.icon, 17.0, t.icon);
+                        // Display is translated; matching above already considered both languages.
+                        let shown = crate::i18n::command_label(&h.label);
+                        let shown_detail = tl!(&h.detail).to_string();
+                        resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, h.ready, &shown));
+                        let fg = if h.ready { t.text } else { t.text_faint };
+                        let detail_font = theme::regular(12.0);
+                        let detail_max = (rect.width() * 0.42).clamp(0.0, 220.0);
+                        let detail = crate::widgets::fit_line(&shown_detail, detail_max, |s| crate::widgets::text_width(ui, s, &detail_font));
+                        let detail_w = crate::widgets::text_width(ui, &detail, &detail_font);
+                        ui.painter().text(body.right_center() - vec2(10.0, 0.0), Align2::RIGHT_CENTER, detail, detail_font, t.text_faint);
+                        crate::widgets::paint_left(
+                            ui,
+                            body.left_center() + vec2(36.0, 0.0),
+                            &shown,
+                            theme::regular(13.5),
+                            fg,
+                            (rect.width() - 36.0 - detail_w - 24.0).max(0.0),
+                        );
+                        if theme::hand(resp).clicked() {
+                            chosen = Some((h.command, h.group));
+                        }
                     }
-                }
-                if hits.is_empty() {
-                    ui.label(egui::RichText::new(tl!("No matching tools")).color(t.text_muted));
-                }
-                ui.add_space(2.0);
-                let _ = Stroke::NONE;
+                    if hits.is_empty() {
+                        ui.label(egui::RichText::new(tl!("No matching tools")).color(t.text_muted));
+                    }
+                    ui.add_space(2.0);
+                    let _ = Stroke::NONE;
+                });
             });
         });
 

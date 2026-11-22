@@ -14,6 +14,8 @@ const FIELD_MIN_HEIGHT: f32 = 30.0;
 /// Padding inside every modal.
 const DIALOG_PAD_X: i8 = 20;
 const DIALOG_PAD_Y: i8 = 16;
+/// The least room a scrolling dialog body may have.
+const MIN_BODY: f32 = 96.0;
 
 fn dialog_frame(ctx: &egui::Context) -> egui::Frame {
     let t = Tokens::get(ctx);
@@ -41,6 +43,23 @@ pub fn show_modal<R>(ctx: &egui::Context, id: &str, content: impl FnOnce(&mut eg
         ui.ctx().data_mut(|d| d.insert_temp(stored.with("card"), card));
         inner
     })
+}
+
+/// Draw a dialog body that scrolls when the window is shorter than the dialog
+/// (`docs/planos/padrao-craft.md`, "Guardas"): the caller keeps the title above and its buttons
+/// below this, so both stay in view, and the body takes the room left in the window, up to `max`
+/// (the height it may reach on a tall window).
+///
+/// `outside` is what the caller draws outside the body in points: the frame's padding, the title,
+/// any tabs and the footer. The room comes from the window's height and never from the dialog's own
+/// position: a modal is centred on the height it had the frame before, so a budget measured from
+/// the cursor would offer the body more room every frame and the dialog would grow past the window.
+pub fn scrolling_body<R>(ui: &mut egui::Ui, id: &str, outside: f32, max: f32, body: impl FnOnce(&mut egui::Ui) -> R) -> R {
+    let room = (ui.ctx().content_rect().height() - outside).min(max).max(MIN_BODY);
+    // The room the body may take is also the least it may scroll in: an area that starts from what
+    // the frame before left it would grow a little every frame, and the dialog would too (the modal
+    // is centred on the height it had last frame), so the buttons would move while the user aims.
+    egui::ScrollArea::vertical().id_salt(id).max_height(room).min_scrolled_height(room).auto_shrink([false, true]).show(ui, body).inner
 }
 
 /// Outlined controls at a shared 30-point height, with a focus stroke and 4-point corners.
