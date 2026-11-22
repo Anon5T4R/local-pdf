@@ -51,7 +51,6 @@ impl LocalPDFApp {
     pub fn attach_file_comment(&mut self, page: usize, at: [f64; 2]) {
         match self.attach_override.take() {
             Some((file, data)) => self.add_attachment_comment(page, at, file, data),
-            #[cfg(not(target_arch = "wasm32"))]
             None => {
                 // Attached on a later frame, and only to the document it was started on.
                 let target = self.active_ids().map(|(_, id)| id);
@@ -63,8 +62,6 @@ impl LocalPDFApp {
                     Err(e) => app.notify_fmt("Couldn't read {name}: {e}", &[("name", &p.display().to_string()), ("e", &e.to_string())]),
                 });
             }
-            #[cfg(target_arch = "wasm32")]
-            None => {}
         }
     }
 

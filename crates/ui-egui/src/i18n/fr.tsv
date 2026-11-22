@@ -1581,13 +1581,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Ce fichier est déjà aussi petit que possible ({size}). Aucune copie n'a été enregistrée.
 	Saved {place}: {before} → {after} (not smaller){detail}	Enregistré {place} : {before} → {after} (pas plus petit){detail}
 	Couldn't save the image: {e}	Impossible d'enregistrer l'image : {e}
-	Adding images arrives on the web with file pickers for images	L'ajout d'images arrivera sur le web avec les sélecteurs de fichiers d'images
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Le remplacement d'images à la page {p} arrivera sur le web avec les sélecteurs d'images ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name} : le choix d'images arrivera sur le web avec les sélecteurs de fichiers d'images
-	Replacing images arrives on the web with image file pickers	Le remplacement d'images arrivera sur le web avec les sélecteurs de fichiers d'images
 	Couldn't create a PDF: {e}	Impossible de créer un PDF : {e}
 	The clipboard has no image or text	Le presse-papiers ne contient ni image ni texte
-	On the web, open or drop an image to convert it	Sur le web, ouvrez ou déposez une image pour la convertir
 	Couldn't optimize the file: {e}	Impossible d'optimiser le fichier : {e}
 	Couldn't write {path}: {e}	Impossible d'écrire {path} : {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Le formulaire demande un envoi vers {u} ; Local PDF n'envoie pas les données de formulaire. Enregistrez le document pour conserver vos saisies.
@@ -1648,7 +1643,6 @@
 	The document now conforms to {level}; save it to keep the changes	Le document est maintenant conforme à {level} ; enregistrez-le pour conserver les modifications
 	Fixed what could be fixed; 1 problem remains	Ce qui pouvait l'être a été corrigé ; il reste 1 problème
 	Fixed what could be fixed; {n} problems remain	Ce qui pouvait l'être a été corrigé ; il reste {n} problèmes
-	Custom stamps arrive on the web with file pickers for images	Les tampons personnalisés arriveront sur le web avec les sélecteurs de fichiers d'images
 	{file} is too large for a stamp (at most {n} MB)	{file} est trop volumineux pour un tampon ({n} Mo au plus)
 	Sent to {printer}	Envoyé à {printer}
 	Sent to {printer}: {msg}	Envoyé à {printer} : {msg}
@@ -1687,9 +1681,7 @@
 	Couldn't split: {e}	Impossible de fractionner : {e}
 	Couldn't summarize comments: {e}	Impossible de résumer les commentaires : {e}
 	Couldn't open the result: {e}	Impossible d'ouvrir le résultat : {e}
-	Importing data arrives on the web with file pickers for data files	L'importation de données arrivera sur le web avec les sélecteurs de fichiers de données
 	Exported to {path}	Exporté vers {path}
-	Merging data files needs the desktop app	La fusion de fichiers de données nécessite l'application de bureau
 	Merged 1 file into {path}	1 fichier fusionné dans {path}
 	Merged {n} files into {path}	{n} fichiers fusionnés dans {path}
 	Combined {n} files	{n} fichiers combinés
@@ -1701,7 +1693,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Le mode portable est désactivé : impossible d'écrire dans {folder} ({error}). Les réglages sont conservés dans votre dossier utilisateur.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF dessine sans processeur graphique et peut donc être lent. Mettre à jour le pilote graphique peut aider.
 	Couldn't save: {e}	Impossible d'enregistrer : {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Le téléchargement des pièces jointes sur le web arrivera avec M3.10 ({n} octets prêts)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	arrivera dans le jalon {m}
 	needs an AI provider (off by default)	nécessite un fournisseur d'IA (désactivé par défaut)
@@ -2187,7 +2178,6 @@
 	Show less	Afficher moins
 	Show {n} more	Afficher {n} de plus
 	The newest {n} of {total} PDFs	Les {n} PDF les plus récents sur {total}
-	Pinned folders need the desktop app	Les dossiers épinglés nécessitent l'application de bureau
 	Choose a folder on this computer to pin	Choisissez un dossier de cet ordinateur à épingler
 	{folder} is already pinned to Home	{folder} est déjà épinglé à l'Accueil
 	You can pin up to {n} folders. Unpin one first.	Vous pouvez épingler jusqu'à {n} dossiers. Désépinglez-en un d'abord.
@@ -2222,7 +2212,6 @@
 	Add {what}	Ajouter {what}
 	Added the first {n} files in {folder}	Les {n} premiers fichiers de {folder} ont été ajoutés
 	Align fields	Aligner les champs
-	Another file dialog is still open. Finish with it first.	Une autre boîte de dialogue de fichier est encore ouverte. Terminez d'abord avec celle-ci.
 	Basic constraints	Contraintes de base
 	Change document properties	Modifier les propriétés du document
 	Contributors	Contributeurs
@@ -2371,12 +2360,9 @@ animation effects	Off	Désactivés
 	Change the colour of line art as well as text	Changer aussi la couleur des traits, en plus du texte
 	Colours are remapped while rendering; the document itself never changes.	Les couleurs sont réaffectées au rendu ; le document lui-même ne change jamais.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Le pilote de cette imprimante n'accepte pas les réglages recto verso des autres programmes ; son propre réglage s'applique. Modifiez-le dans Propriétés…
-	Browser's print dialog	Boîte de dialogue d'impression du navigateur
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Le nombre de copies, l'impression recto verso et la couleur se choisissent dans la boîte de dialogue d'impression du navigateur.
 	Preparing {n} sheets for printing…	Préparation de {n} feuilles pour l'impression…
 	Preparing sheet {done} of {total} for printing…	Préparation de la feuille {done} sur {total} pour l'impression…
 	Opening the browser's print dialog…	Ouverture de la boîte de dialogue d'impression du navigateur…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Impossible d'imprimer depuis le navigateur ({e}) ; {name} a été téléchargé pour être imprimé
 	Tools panel side	Côté du panneau Outils
 	Add comment	Ajouter un commentaire
 	Change tag properties	Modifier les propriétés de la balise
@@ -2508,7 +2494,6 @@ animation effects	Off	Désactivés
 	Collapse all tools	Réduire tous les outils
 	Attach a file…	Joindre un fichier…
 	Delete attachment	Supprimer la pièce jointe
-	Attaching files is not available on the web yet	Joindre des fichiers n'est pas encore disponible sur le web
 	Attach {name}	Joindre {name}
 	Delete attachment {key}	Supprimer la pièce jointe {key}
 	Font	Police

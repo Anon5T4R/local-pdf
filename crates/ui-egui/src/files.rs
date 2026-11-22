@@ -1,7 +1,7 @@
 //! Multi-document page operations: Combine Files, Insert Pages from File, Extract Pages, Split.
 //!
-//! Files are picked asynchronously and used on a later frame: desktop builds through `pickers`
-//! (a blocking picker crashes the app on macOS), browsers through `requests`.
+//! Files are picked asynchronously and used on a later frame through `pickers`
+//! (a blocking picker crashes the app on macOS).
 
 use std::sync::Arc;
 
@@ -29,7 +29,6 @@ pub enum FilePurpose {
 }
 
 /// Discover installed document fonts off the GUI thread, only when the picker is opened.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn installed_font_files(ctx: &egui::Context) -> Option<Vec<localpdf_engine::text_fonts::FontFile>> {
     use std::sync::{Mutex, OnceLock};
     type Files = Arc<Mutex<Option<Vec<localpdf_engine::text_fonts::FontFile>>>>;
@@ -118,7 +117,7 @@ pub struct FileRequest {
     files: Vec<(String, Vec<u8>)>,
 }
 
-/// Files picked asynchronously (web), waiting to be used.
+/// Files picked asynchronously, waiting to be used.
 pub type Requests = Arc<std::sync::Mutex<Vec<FileRequest>>>;
 
 /// Settings for the Split dialog.
@@ -268,7 +267,6 @@ impl Default for RotateDraft {
 }
 
 /// A picked file's name and bytes, or its name and why it can't be read.
-#[cfg(not(target_arch = "wasm32"))]
 fn read_named(path: &std::path::Path) -> Result<(String, Vec<u8>), (String, String)> {
     let name = path.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "file.pdf".into());
     match std::fs::read(path) {
@@ -317,37 +315,10 @@ impl LocalPDFApp {
     }
 
     pub(crate) fn pick_files(&mut self, purpose: FilePurpose, multiple: bool) {
-        #[cfg(not(target_arch = "wasm32"))]
         self.pick(crate::pickers::PickFor::Files(purpose), files_picker(purpose), multiple);
-        #[cfg(target_arch = "wasm32")]
-        {
-            let requests = self.requests.clone();
-            let ctx = self.ctx.clone();
-            // The document to insert into is the one active now, not whichever is active when
-            // the browser has finished reading the file (#167).
-            let request = self.file_request(purpose, Vec::new());
-            wasm_bindgen_futures::spawn_local(async move {
-                let dialog = files_picker(purpose);
-                let handles = if multiple { dialog.pick_files().await.unwrap_or_default() } else { dialog.pick_file().await.into_iter().collect() };
-                let mut files = Vec::new();
-                for h in handles {
-                    files.push((h.file_name(), h.read().await));
-                }
-                if !files.is_empty()
-                    && let Ok(mut q) = requests.lock()
-                {
-                    q.push(FileRequest { files, ..request });
-                }
-                // The read may finish while the app is idle: wake it to use the files.
-                if let Some(ctx) = ctx {
-                    ctx.request_repaint();
-                }
-            });
-        }
     }
 
     /// Read the picked files and use them.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn use_paths(&mut self, purpose: FilePurpose, paths: &[std::path::PathBuf]) {
         if purpose == FilePurpose::CreateMultiple {
             // Each file is read when its turn comes, so the selection's bytes are not all held at once.
@@ -419,7 +390,6 @@ impl LocalPDFApp {
     }
 
     /// A file dropped on the Combine files tab: added to its list.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn drop_into_combine(&mut self, f: egui::DroppedFileHandle, _ctx: &egui::Context) {
         // A folder: the PDFs in it and in the folders inside it.
         if f.path().is_absolute() && f.path().is_dir() {
@@ -435,23 +405,6 @@ impl LocalPDFApp {
             Ok(bytes) => self.use_files(FilePurpose::Combine, vec![(name, bytes)]),
             Err(e) => self.notify_fmt("Couldn't read {name}: {e}", &[("name", &name), ("e", &e.to_string())]),
         }
-    }
-
-    /// Browsers read dropped files asynchronously; they join the Combine files list next frame.
-    #[cfg(target_arch = "wasm32")]
-    pub(crate) fn drop_into_combine(&mut self, f: egui::DroppedFileHandle, ctx: &egui::Context) {
-        let requests = self.requests.clone();
-        let request = self.file_request(FilePurpose::Combine, Vec::new());
-        let ctx = ctx.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let name = f.path().file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "dropped.pdf".into());
-            if let Ok(bytes) = f.bytes_async().await
-                && let Ok(mut q) = requests.lock()
-            {
-                q.push(FileRequest { files: vec![(name, bytes)], ..request });
-                ctx.request_repaint();
-            }
-        });
     }
 
     /// A request to use `files` for `purpose`, bound to the document it will edit: the active
@@ -715,7 +668,7 @@ impl LocalPDFApp {
         }
     }
 
-    /// Write named files into a chosen folder (desktop) or as downloads (web).
+    /// Write named files into a chosen folder.
     pub(crate) fn write_files(&mut self, named: &[(String, Arc<Vec<u8>>)], title: &str) {
         self.write_files_then(named.to_vec(), title, |_| {});
     }
@@ -728,7 +681,6 @@ impl LocalPDFApp {
             self.notify_fmt("Couldn't write {name}: {e}", &[("name", name), ("e", tl!("the name is not a plain file name"))]);
             return;
         }
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let write = move |app: &mut Self, dir: std::path::PathBuf| {
                 for (name, bytes) in &named {
@@ -751,17 +703,6 @@ impl LocalPDFApp {
                 }
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        {
-            let _ = title;
-            for (name, bytes) in &named {
-                if let Err(e) = crate::editing::download(name, bytes) {
-                    self.notify_fmt("Couldn't download {name}: {e}", &[("name", name), ("e", &e.to_string())]);
-                    return;
-                }
-            }
-            after(self);
-        }
     }
 
     /// Pages ▸ Rotate Pages with the dialog's range and filters.
@@ -783,8 +724,8 @@ impl LocalPDFApp {
         self.apply_edit(localpdf_engine::Edit::RotatePages { pages, degrees: d.degrees });
     }
 
-    /// Split the active document and write the parts: into a chosen folder (desktop, written on
-    /// a later frame once the user has chosen it) or as downloads (web).
+    /// Split the active document and write the parts into a chosen folder (written on
+    /// a later frame once the user has chosen it).
     pub fn split_active(&mut self, plan: &SplitPlan) {
         // What's typed in a form field is part of the document (#166).
         if !self.commit_form_typing() {
@@ -870,7 +811,6 @@ pub(crate) fn strip_pdf(name: &str) -> &str {
 impl LocalPDFApp {
     /// Comments ▸ Import comments / Prepare a form ▸ Import data: XFDF, FDF, XML, CSV or text.
     pub fn import_data_dialog(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let import = |app: &mut Self, path: std::path::PathBuf| match std::fs::read(&path) {
                 Ok(bytes) => {
@@ -891,8 +831,6 @@ impl LocalPDFApp {
                 }
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("Importing data arrives on the web with file pickers for data files");
     }
 
     /// Export all comments / form data: the format follows the file name's extension.
@@ -911,7 +849,6 @@ impl LocalPDFApp {
         let ext = format.extension();
         let folder = doc.path.clone();
         let bytes = doc.export_office(format);
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let write = move |app: &mut Self, path: std::path::PathBuf| match crate::editing::write_atomically(&path.to_string_lossy(), &bytes) {
                 Ok(()) => app.notify_fmt("Exported to {path}", &[("path", &path.display().to_string())]),
@@ -929,16 +866,11 @@ impl LocalPDFApp {
                 }
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        if let Err(e) = crate::editing::download(&format!("{stem}.{ext}"), &bytes) {
-            self.notify_error(e);
-        }
     }
 
     /// Forms ▸ Merge data files into spreadsheet: choose data files (FDF, XFDF or filled-in PDF
     /// forms), then where to save the CSV.
     pub fn merge_data_dialog(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let dialog = rfd::AsyncFileDialog::new()
                 .set_title(tl!("Select data files to merge").to_string())
@@ -958,8 +890,6 @@ impl LocalPDFApp {
                 }
             });
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("Merging data files needs the desktop app");
     }
 
     /// Merge the given data files and save the spreadsheet (asks where; `save_override` in tests).
@@ -968,7 +898,6 @@ impl LocalPDFApp {
             Ok(c) => c,
             Err(e) => return self.notify_error(e),
         };
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let count = files.len();
             let write =
@@ -993,8 +922,6 @@ impl LocalPDFApp {
                 }
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = crate::editing::download("report.csv", csv.as_bytes());
     }
 
     pub fn export_data_dialog(&mut self, comments: bool, fields: bool) {
@@ -1005,7 +932,6 @@ impl LocalPDFApp {
         let Some((_, id)) = self.active_ids() else { return };
         let Some(doc) = self.session.get(id) else { return };
         let stem = doc.name.trim_end_matches(".pdf").trim_end_matches(".PDF").to_string();
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let folder = doc.path.clone();
             let xfa = doc.info.xfa.is_some();
@@ -1051,13 +977,6 @@ impl LocalPDFApp {
                     self.ask_one(crate::pickers::Ask::Save(d), None, write);
                 }
             }
-        }
-        #[cfg(target_arch = "wasm32")]
-        match self.session.export_data(id, localpdf_engine::DataFormat::Xfdf, comments, fields) {
-            Ok(bytes) => {
-                let _ = crate::editing::download(&format!("{stem}.xfdf"), &bytes);
-            }
-            Err(e) => self.notify_error(e),
         }
     }
 }

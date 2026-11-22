@@ -1,8 +1,8 @@
 //! Digests, public keys (verification everywhere) and private keys (signing).
 //!
 //! Verification uses RustCrypto. RSA private-key operations (signing and key generation) run
-//! on the `rsa` crate with blinding on native targets, so nothing C is linked; the browser still
-//! refuses RSA private keys. ECDSA signing uses RustCrypto with deterministic nonces (RFC 6979).
+//! on the `rsa` crate with blinding, so nothing C is linked. ECDSA signing uses RustCrypto with
+//! deterministic nonces (RFC 6979).
 
 use crate::SignError;
 use crate::der::{self, Tlv, tag};
@@ -567,10 +567,7 @@ fn ecdsa_rs(sig: &[u8], field_len: usize, notes: &mut Vec<&'static str>) -> Opti
 }
 
 enum Inner {
-    #[cfg(not(target_arch = "wasm32"))]
     Rsa(rsa::RsaPrivateKey),
-    #[cfg(target_arch = "wasm32")]
-    Rsa,
     P256(p256::ecdsa::SigningKey),
     P384(p384::ecdsa::SigningKey),
     /// A key held elsewhere (the macOS Keychain, a token) that signs on request.
@@ -584,7 +581,6 @@ pub trait ExternalKey: Send + Sync {
 }
 
 /// An RSA private key from its PKCS#8 `PrivateKeyInfo`, or from the bare PKCS #1 key it wraps.
-#[cfg(not(target_arch = "wasm32"))]
 fn rsa_private_key(pkcs8: &[u8], pkcs1: &[u8]) -> Result<rsa::RsaPrivateKey, SignError> {
     use rsa::pkcs1::DecodeRsaPrivateKey;
     use rsa::pkcs8::DecodePrivateKey;
@@ -633,10 +629,7 @@ impl PrivateKey {
                     [_, n, e, ..] => (n.uint_bytes().to_vec(), e.uint_bytes().to_vec()),
                     _ => return Err(SignError::Malformed("RSAPrivateKey".into())),
                 };
-                #[cfg(not(target_arch = "wasm32"))]
                 let inner = Inner::Rsa(rsa_private_key(info, key.value)?);
-                #[cfg(target_arch = "wasm32")]
-                let inner = Inner::Rsa;
                 Ok(PrivateKey { inner, public: PublicKey::Rsa { n, e }, pkcs8: info.to_vec() })
             }
             oid::EC => {
@@ -671,7 +664,6 @@ impl PrivateKey {
     }
 
     /// A new RSA key (Acrobat's default for a self-signed digital ID is 2048-bit RSA).
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn generate_rsa(bits: usize) -> Result<PrivateKey, SignError> {
         use rsa::pkcs8::EncodePrivateKey;
         if !matches!(bits, 2048 | 3072 | 4096) {
@@ -686,12 +678,6 @@ impl PrivateKey {
         let key = rsa::RsaPrivateKey::new(&mut rng, bits).map_err(|e| SignError::Crypto(format!("RSA key generation failed: {e}")))?;
         let der = key.to_pkcs8_der().map_err(|e| SignError::Crypto(format!("RSA key encoding failed: {e}")))?;
         PrivateKey::from_pkcs8(der.as_bytes())
-    }
-
-    /// RSA keys are generated only on native targets (ADR-0009).
-    #[cfg(target_arch = "wasm32")]
-    pub fn generate_rsa(_bits: usize) -> Result<PrivateKey, SignError> {
-        Err(SignError::Unsupported("creating RSA keys in the browser (use a P-256 key)".into()))
     }
 
     /// A new P-256 key.
@@ -743,7 +729,6 @@ impl PrivateKey {
             return Err(SignError::Unsupported(format!("{} for new signatures", alg.name())));
         }
         match &self.inner {
-            #[cfg(not(target_arch = "wasm32"))]
             Inner::Rsa(kp) => {
                 use rsa::traits::SignatureScheme as _;
                 let scheme = match alg {
@@ -755,8 +740,6 @@ impl PrivateKey {
                 let mut rng = getrandom::SysRng;
                 scheme.sign(Some(&mut rng), kp, &alg.digest(&[msg])).map_err(|e| SignError::Crypto(format!("RSA signing failed: {e}")))
             }
-            #[cfg(target_arch = "wasm32")]
-            Inner::Rsa => Err(SignError::Unsupported("RSA signing in the browser".into())),
             Inner::P256(k) => {
                 use p256::ecdsa::signature::hazmat::PrehashSigner;
                 let s: p256::ecdsa::Signature = k.sign_prehash(&alg.digest(&[msg])).map_err(|e| SignError::Crypto(e.to_string()))?;

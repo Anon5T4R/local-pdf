@@ -41,7 +41,6 @@
 	Show less	顯示較少
 	Show {n} more	再顯示 {n} 個
 	The newest {n} of {total} PDFs	共 {total} 個 PDF 中最新的 {n} 個
-	Pinned folders need the desktop app	釘選資料夾需要桌面版應用程式
 	Choose a folder on this computer to pin	請選擇這部電腦上要釘選的資料夾
 	{folder} is already pinned to Home	{folder} 已釘選到首頁
 	You can pin up to {n} folders. Unpin one first.	最多可釘選 {n} 個資料夾。請先取消釘選一個。
@@ -1495,13 +1494,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	此檔案已經是最小的了（{size}）。未儲存副本。
 	Saved {place}: {before} → {after} (not smaller){detail}	已儲存{place}：{before} → {after}（未縮小）{detail}
 	Couldn't save the image: {e}	無法儲存圖片：{e}
-	Adding images arrives on the web with file pickers for images	Web 端新增圖片將使用圖片檔案選擇器
-	Replacing images on page {p} arrives on the web with image pickers ({i})	在 Web 端替換第{p}頁的圖片將使用圖片選擇器（{i}）
-	{name}: choosing images arrives on the web with file pickers for images	{name}：在 Web 端選擇圖片將使用圖片檔案選擇器
-	Replacing images arrives on the web with image file pickers	Web 端替換圖片將使用圖片檔案選擇器
 	Couldn't create a PDF: {e}	無法建立 PDF：{e}
 	The clipboard has no image or text	剪貼簿沒有圖片或文字
-	On the web, open or drop an image to convert it	在 Web 端，開啟或拖入圖片進行轉換
 	Couldn't optimize the file: {e}	無法最佳化檔案：{e}
 	Couldn't write {path}: {e}	無法寫入{path}：{e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	該表單請求送出到{u}；Local PDF 不傳送表單資料。請儲存文件以保留填寫內容。
@@ -1562,7 +1556,6 @@
 	The document now conforms to {level}; save it to keep the changes	文件現已符合{level}；儲存以保留更改
 	Fixed what could be fixed; 1 problem remains	已修復能修復的問題；還剩 1 個問題
 	Fixed what could be fixed; {n} problems remain	已修復能修復的問題；還剩{n}個問題
-	Custom stamps arrive on the web with file pickers for images	Web 端自訂戳記將使用圖片檔案選擇器
 	{file} is too large for a stamp (at most {n} MB)	{file} 對於戳記來說太大了（最大 {n} MB）
 	Sent to {printer}	已傳送到{printer}
 	Sent to {printer}: {msg}	已傳送到{printer}：{msg}
@@ -1661,9 +1654,7 @@
 	Couldn't split: {e}	無法拆分：{e}
 	Couldn't summarize comments: {e}	無法彙總註解：{e}
 	Couldn't open the result: {e}	無法開啟結果：{e}
-	Importing data arrives on the web with file pickers for data files	Web 端匯入資料將使用資料檔案選擇器
 	Exported to {path}	已匯出到{path}
-	Merging data files needs the desktop app	合併資料檔案需要桌面端應用
 	Merged 1 file into {path}	已將 1 個檔案合併到{path}
 	Merged {n} files into {path}	已將{n}個檔案合併到{path}
 	Combined {n} files	已合併{n}個檔案
@@ -1674,7 +1665,6 @@
 	Couldn't read {name}: {e}	無法讀取{name}：{e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	可攜模式已關閉：無法寫入{folder}（{error}）。設定改為儲存在你的使用者資料夾中。
 	Couldn't save: {e}	無法儲存：{e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Web 端附件下載將於 M3.10 到來（{n} 位元組已就緒）
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	將於 {m} 里程碑推出
 	needs an AI provider (off by default)	需要 AI 服務提供者（預設關閉）
@@ -2234,12 +2224,9 @@ animation effects	Off	關
 	Greyscale	灰階
 	Black and white	黑白
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	此印表機的驅動程式不接受其他程式的雙面列印設定，因此使用其自身設定。變更位置：屬性…
-	Browser's print dialog	瀏覽器的列印對話方塊
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	份數、雙面列印和色彩在瀏覽器的列印對話方塊中選擇。
 	Preparing {n} sheets for printing…	正在準備 {n} 張紙以供列印…
 	Preparing sheet {done} of {total} for printing…	正在準備列印第 {done} 張，共 {total} 張…
 	Opening the browser's print dialog…	正在開啟瀏覽器的列印對話方塊…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	無法從瀏覽器列印（{e}）；已改為下載 {name} 以供列印
 	Tools panel side	工具面板位置
 	Add comment	新增註解
 	Change tag properties	變更標籤屬性
@@ -2458,7 +2445,6 @@ animation effects	Off	關
 	Collapse all tools	摺疊所有工具
 	Attach a file…	附加檔案…
 	Delete attachment	刪除附件
-	Attaching files is not available on the web yet	網頁版尚不支援附加檔案
 	Attach {name}	附加 {name}
 	Delete attachment {key}	刪除附件 {key}
 	Font	字型

@@ -1,7 +1,6 @@
 //! Export a PDF ▸ Image (PNG, JPEG, TIFF) and Text (Acrobat's Export a PDF tool, first formats).
 //!
-//! On the desktop the export runs on a worker thread and reports progress in the notice bar;
-//! on the web it runs in place and downloads the files.
+//! The export runs on a worker thread and reports progress in the notice bar.
 
 use std::sync::{Arc, Mutex};
 
@@ -244,7 +243,6 @@ impl LocalPDFApp {
         let format = self.export_draft.format;
         let min_side = self.export_draft.min_side;
         let status: ExportStatus = Arc::new(Mutex::new(Some((0, pages.len(), None))));
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let start = move |app: &mut Self, dir: std::path::PathBuf, inline: bool| {
                 let st = status.clone();
@@ -275,25 +273,6 @@ impl LocalPDFApp {
                     self.ask_one(crate::pickers::Ask::Folder(dialog), None, move |app, dir| start(app, dir, false));
                 }
             }
-        }
-        #[cfg(target_arch = "wasm32")]
-        {
-            let msg = run(
-                src,
-                kind,
-                dpi,
-                format,
-                min_side,
-                pages,
-                stem,
-                |name, bytes| crate::editing::download(name, &bytes),
-                &status,
-                crate::i18n::current(),
-            );
-            if let Ok(mut s) = status.lock() {
-                *s = Some((0, 0, Some(msg)));
-            }
-            self.export_status = Some(status);
         }
     }
 

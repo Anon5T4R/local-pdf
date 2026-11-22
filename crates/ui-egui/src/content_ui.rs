@@ -713,7 +713,6 @@ impl crate::LocalPDFApp {
     /// Pick an image file for the active document, read it, and call `then` with its name and
     /// bytes: now when `save_override` answers (tests and automation never see a native dialog),
     /// otherwise on a later frame, and only if that document is still the active one.
-    #[cfg(not(target_arch = "wasm32"))]
     fn pick_image(&mut self, title: &str, then: impl FnOnce(&mut Self, String, Vec<u8>) + Send + 'static) {
         let read = |app: &mut Self, path: std::path::PathBuf| match std::fs::read(&path) {
             Ok(bytes) => {
@@ -737,15 +736,11 @@ impl crate::LocalPDFApp {
 
     /// Edit a PDF ▸ Add content ▸ Image: pick a file and place it in the middle of the current page.
     pub fn add_image_dialog(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         self.pick_image(tl!("Choose an image"), |app, name, bytes| app.add_image(name, bytes));
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("Adding images arrives on the web with file pickers for images");
     }
 
     /// Edit text & images ▸ Replace Image: pick a file to draw in a page image's place.
     pub(crate) fn replace_page_image_dialog(&mut self, page: usize, index: usize) {
-        #[cfg(not(target_arch = "wasm32"))]
         self.pick_image(tl!("Replace image"), move |app, name, bytes| {
             app.apply_edit(Edit::EditPageImage {
                 page,
@@ -753,11 +748,6 @@ impl crate::LocalPDFApp {
                 change: localpdf_engine::ImageEdit::Replace { name, bytes: std::sync::Arc::new(bytes) },
             });
         });
-        #[cfg(target_arch = "wasm32")]
-        self.notify_fmt(
-            "Replacing images on page {p} arrives on the web with image pickers ({i})",
-            &[("p", &(page + 1).to_string()), ("i", &index.to_string())],
-        );
     }
 
     /// Edit text & images ▸ Save Image As.
@@ -786,14 +776,9 @@ impl crate::LocalPDFApp {
         }
         let Some(pixels) = self.session.get(id).map(|d| d.page_image_rgba(page, index)) else { return false };
         let copied = pixels.and_then(|(w, h, rgba)| {
-            #[cfg(not(target_arch = "wasm32"))]
             if self.system_clipboard {
                 let img = arboard::ImageData { width: w as usize, height: h as usize, bytes: std::borrow::Cow::Borrowed(&rgba) };
                 arboard::Clipboard::new().and_then(|mut c| c.set_image(img)).map_err(|e| e.to_string())?;
-            }
-            #[cfg(target_arch = "wasm32")]
-            if self.system_clipboard {
-                return Err("the web version can't put images on the clipboard yet; use Save Image As".to_string());
             }
             self.last_copied_image = Some((w, h, rgba));
             Ok((w, h))
@@ -852,28 +837,19 @@ impl crate::LocalPDFApp {
 
     /// Click an image field: pick a picture for it.
     pub fn choose_field_image(&mut self, name: &str) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let name = name.to_string();
             self.pick_image(tl!("Select Icon"), move |app, _, bytes| {
                 app.apply_edit(Edit::SetFieldImage { name, image: std::sync::Arc::new(bytes) });
             });
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_fmt("{name}: choosing images arrives on the web with file pickers for images", &[("name", &name)]);
     }
 
     /// Edit image ▸ Replace: pick a file for the selected image.
     pub fn replace_image_dialog(&mut self, page: usize, index: usize) {
-        #[cfg(not(target_arch = "wasm32"))]
         self.pick_image(tl!("Replace image"), move |app, name, bytes| {
             app.apply_edit(Edit::ReplaceImage { page, index, name, bytes: std::sync::Arc::new(bytes) });
         });
-        #[cfg(target_arch = "wasm32")]
-        {
-            let _ = (page, index);
-            self.notify_tr("Replacing images arrives on the web with image file pickers");
-        }
     }
 
     /// Place image `bytes` in the middle of the current page and select it.
@@ -916,7 +892,6 @@ impl crate::LocalPDFApp {
         }
         let clip = match self.clipboard_override.clone() {
             Some(c) => Some(c),
-            #[cfg(not(target_arch = "wasm32"))]
             None if self.system_clipboard => crate::create_ui::read_clipboard(),
             None => None,
         };

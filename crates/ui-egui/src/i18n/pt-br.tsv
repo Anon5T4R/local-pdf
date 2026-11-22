@@ -1488,13 +1488,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Este arquivo já está o menor possível ({size}). Nenhuma cópia foi salva.
 	Saved {place}: {before} → {after} (not smaller){detail}	Salvo {place}: {before} → {after} (não ficou menor){detail}
 	Couldn't save the image: {e}	Não foi possível salvar a imagem: {e}
-	Adding images arrives on the web with file pickers for images	A adição de imagens chegará à Web com seletores de arquivo para imagens
-	Replacing images on page {p} arrives on the web with image pickers ({i})	A substituição de imagens na página {p} chegará à Web com seletores de imagem ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: a seleção de imagens chegará à Web com seletores de arquivo para imagens
-	Replacing images arrives on the web with image file pickers	A substituição de imagens chegará à Web com seletores de arquivo de imagem
 	Couldn't create a PDF: {e}	Não foi possível criar um PDF: {e}
 	The clipboard has no image or text	A área de transferência não contém imagem nem texto
-	On the web, open or drop an image to convert it	Na Web, abra ou solte uma imagem para convertê-la
 	Couldn't optimize the file: {e}	Não foi possível otimizar o arquivo: {e}
 	Couldn't write {path}: {e}	Não foi possível gravar {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	O formulário solicita envio para {u}; o Local PDF não envia dados de formulário. Salve o documento para manter suas entradas.
@@ -1546,7 +1541,6 @@
 	The document now conforms to {level}; save it to keep the changes	O documento agora está em conformidade com {level}; salve para manter as alterações
 	Fixed what could be fixed; 1 problem remains	Corrigido o que pôde ser corrigido; restou 1 problema
 	Fixed what could be fixed; {n} problems remain	Corrigido o que pôde ser corrigido; restaram {n} problemas
-	Custom stamps arrive on the web with file pickers for images	Carimbos personalizados chegarão à Web com seletores de arquivo para imagens
 	{file} is too large for a stamp (at most {n} MB)	{file} é muito grande para um carimbo (no máximo {n} MB)
 	Sent to {printer}	Enviado para {printer}
 	Sent to {printer}: {msg}	Enviado para {printer}: {msg}
@@ -1585,9 +1579,7 @@
 	Couldn't split: {e}	Não foi possível dividir: {e}
 	Couldn't summarize comments: {e}	Não foi possível resumir comentários: {e}
 	Couldn't open the result: {e}	Não foi possível abrir o resultado: {e}
-	Importing data arrives on the web with file pickers for data files	A importação de dados chegará à Web com seletores de arquivo para arquivos de dados
 	Exported to {path}	Exportado para {path}
-	Merging data files needs the desktop app	A mesclagem de arquivos de dados requer o aplicativo para desktop
 	Merged 1 file into {path}	1 arquivo mesclado em {path}
 	Merged {n} files into {path}	{n} arquivos mesclados em {path}
 	Combined {n} files	{n} arquivos combinados
@@ -1597,7 +1589,6 @@
 	Couldn't open {name}: {e}	Não foi possível abrir {name}: {e}
 	Couldn't read {name}: {e}	Não foi possível ler {name}: {e}
 	Couldn't save: {e}	Não foi possível salvar: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	O download de anexos na Web chegará no M3.10 ({n} bytes prontos)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	será lançado no marco {m}
 	needs an AI provider (off by default)	requer um provedor de IA (desativado por padrão)
@@ -2171,7 +2162,6 @@ action wizard	Start	Iniciar
 	Add {what}	Adicionar {what}
 	Added the first {n} files in {folder}	Adicionados os primeiros {n} arquivos de {folder}
 	Align fields	Alinhar campos
-	Another file dialog is still open. Finish with it first.	Outra janela de arquivos ainda está aberta. Conclua-a primeiro.
 	Basic constraints	Restrições básicas
 	Binary assets added	Arquivos binários adicionados
 	Binary assets removed	Arquivos binários removidos
@@ -2217,7 +2207,6 @@ action wizard	Start	Iniciar
 	Optimization is already running	A otimização já está em execução
 	PRs	PRs
 	Pattern	Padrão
-	Pinned folders need the desktop app	As pastas fixadas precisam do aplicativo para desktop
 	Pinned {folder} to Home	{folder} fixada no Início
 	Place saved {what}	Posicionar item salvo: {what}
 	Printer properties	Propriedades da impressora
@@ -2385,12 +2374,9 @@ animation effects	Off	Desativados
 	Change the colour of line art as well as text	Alterar também a cor dos traços, além do texto
 	Colours are remapped while rendering; the document itself never changes.	As cores são remapeadas na renderização; o documento em si nunca muda.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	O driver desta impressora não aceita configurações de frente e verso de outros programas, então vale a configuração dele. Altere em Propriedades…
-	Browser's print dialog	Caixa de diálogo de impressão do navegador
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Cópias, impressão frente e verso e cor são escolhidas na caixa de diálogo de impressão do navegador.
 	Preparing {n} sheets for printing…	Preparando {n} folhas para impressão…
 	Preparing sheet {done} of {total} for printing…	Preparando a folha {done} de {total} para impressão…
 	Opening the browser's print dialog…	Abrindo a caixa de diálogo de impressão do navegador…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Não foi possível imprimir pelo navegador ({e}); {name} foi baixado para impressão
 	Tools panel side	Lado do painel Ferramentas
 	Add comment	Adicionar comentário
 	Change tag properties	Alterar propriedades da tag
@@ -2522,7 +2508,6 @@ animation effects	Off	Desativados
 	Collapse all tools	Recolher todas as ferramentas
 	Attach a file…	Anexar um arquivo…
 	Delete attachment	Excluir anexo
-	Attaching files is not available on the web yet	Anexar arquivos ainda não está disponível na web
 	Attach {name}	Anexar {name}
 	Delete attachment {key}	Excluir anexo {key}
 

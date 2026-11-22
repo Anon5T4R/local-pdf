@@ -48,7 +48,6 @@
 	Show less	表示を減らす
 	Show {n} more	さらに {n} 件表示
 	The newest {n} of {total} PDFs	{total} 件中、新しい {n} 件の PDF
-	Pinned folders need the desktop app	フォルダーのピン留めにはデスクトップ版が必要です
 	Choose a folder on this computer to pin	ピン留めするフォルダーをこのコンピューターから選択してください
 	{folder} is already pinned to Home	{folder} はすでにホームにピン留めされています
 	You can pin up to {n} folders. Unpin one first.	ピン留めできるフォルダーは {n} 個までです。先にいずれかのピン留めを外してください。
@@ -1602,13 +1601,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	このファイルはすでに最小のサイズです（{size}）。コピーは保存されませんでした。
 	Saved {place}: {before} → {after} (not smaller){detail}	{place} に保存: {before} → {after}（縮小なし）{detail}
 	Couldn't save the image: {e}	画像を保存できませんでした: {e}
-	Adding images arrives on the web with file pickers for images	Web 版の画像追加は画像ファイル選択に対応した際に利用可能になります
-	Replacing images on page {p} arrives on the web with image pickers ({i})	ページ {p} の画像置換は Web 版の画像選択に対応した際に利用可能になります（{i}）
-	{name}: choosing images arrives on the web with file pickers for images	{name}: Web 版の画像選択は画像ファイル選択に対応した際に利用可能になります
-	Replacing images arrives on the web with image file pickers	Web 版の画像置換は画像ファイル選択に対応した際に利用可能になります
 	Couldn't create a PDF: {e}	PDF を作成できませんでした: {e}
 	The clipboard has no image or text	クリップボードに画像やテキストがありません
-	On the web, open or drop an image to convert it	Web 版では画像を開くかドロップして変換してください
 	Couldn't optimize the file: {e}	ファイルを最適化できませんでした: {e}
 	Couldn't write {path}: {e}	{path} に書き込めませんでした: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	フォームは {u} への送信を要求していますが、Local PDF はフォームデータを送信しません。入力内容を保持するには文書を保存してください。
@@ -1669,7 +1663,6 @@
 	The document now conforms to {level}; save it to keep the changes	文書は {level} に準拠しました。変更を保持するには保存してください
 	Fixed what could be fixed; 1 problem remains	修正可能な項目を修正しました。問題が 1 件残っています
 	Fixed what could be fixed; {n} problems remain	修正可能な項目を修正しました。問題が {n} 件残っています
-	Custom stamps arrive on the web with file pickers for images	Web 版のカスタムスタンプは画像ファイル選択に対応した際に利用可能になります
 	{file} is too large for a stamp (at most {n} MB)	{file} はスタンプの上限（{n} MB）を超えています
 	Sent to {printer}	{printer} に送信しました
 	Sent to {printer}: {msg}	{printer} に送信しました: {msg}
@@ -1768,9 +1761,7 @@
 	Couldn't split: {e}	分割できませんでした: {e}
 	Couldn't summarize comments: {e}	注釈の一覧を作成できませんでした: {e}
 	Couldn't open the result: {e}	結果を開けませんでした: {e}
-	Importing data arrives on the web with file pickers for data files	Web 版のデータ読み込みはデータファイル選択に対応した際に利用可能になります
 	Exported to {path}	{path} に書き出しました
-	Merging data files needs the desktop app	データファイルの結合にはデスクトップ版が必要です
 	Merged 1 file into {path}	1 ファイルを {path} に結合しました
 	Merged {n} files into {path}	{n} ファイルを {path} に結合しました
 	Combined {n} files	{n} ファイルを結合しました
@@ -1782,7 +1773,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	ポータブルモードは無効です: {folder} に書き込めません ({error})。設定は代わりにユーザーフォルダーに保存されます。
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF はグラフィックプロセッサーを使わずに描画しているため、動作が遅くなることがあります。グラフィックドライバーを更新すると改善する場合があります。
 	Couldn't save: {e}	保存できませんでした: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Web 版の添付ファイルのダウンロードは M3.10 で対応予定です（{n} バイト準備済み）
 	`{command}` {when}	`{command}`: {when}
 	ships in milestone {m}	マイルストーン {m} で対応予定
 	needs an AI provider (off by default)	AI プロバイダーが必要（既定では無効）
@@ -2157,7 +2147,6 @@
 	About	概要
 	Add {what}	{what}を追加
 	Align fields	フィールドを整列
-	Another file dialog is still open. Finish with it first.	別のファイルダイアログがまだ開いています。先にそちらの操作を終えてください。
 	Basic constraints	基本制約
 	Binary assets added	追加したバイナリファイル数
 	Binary assets removed	削除したバイナリファイル数
@@ -2371,12 +2360,9 @@ animation effects	Off	オフ
 	Change the colour of line art as well as text	テキストに加えて線画の色も変更する
 	Colours are remapped while rendering; the document itself never changes.	色は描画時に置き換えられ、文書自体が変わることはありません。
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	このプリンターのドライバーは他のプログラムからの両面印刷の設定を受け付けないため、ドライバー自身の設定が使われます。変更先: プロパティ…
-	Browser's print dialog	ブラウザーの印刷ダイアログ
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	部数、両面印刷、カラーはブラウザーの印刷ダイアログで選びます。
 	Preparing {n} sheets for printing…	{n} 枚のシートを印刷用に準備しています…
 	Preparing sheet {done} of {total} for printing…	印刷用にシート {done}/{total} を準備しています…
 	Opening the browser's print dialog…	ブラウザーの印刷ダイアログを開いています…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	ブラウザーから印刷できませんでした ({e})。代わりに印刷用の {name} をダウンロードしました
 	Tools panel side	ツールパネルの位置
 	Add comment	コメントを追加
 	Change tag properties	タグのプロパティを変更
@@ -2508,7 +2494,6 @@ animation effects	Off	オフ
 	Collapse all tools	すべてのツールを折りたたむ
 	Attach a file…	ファイルを添付…
 	Delete attachment	添付ファイルを削除
-	Attaching files is not available on the web yet	Web 版ではまだファイルを添付できません
 	Attach {name}	{name} を添付
 	Delete attachment {key}	添付ファイル {key} を削除
 	Font	フォント

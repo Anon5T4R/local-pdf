@@ -65,14 +65,9 @@ Generated Japanese Type 3 fonts record the fallback face's family and style in a
 `FontDescriptor`. `pdf::Metrics::base_font` uses its `FontName` when the Type 3 dictionary has
 no `BaseFont`, so text inspection and edit-tool results identify the fallback after save/reopen.
 The descriptor does not change glyph programs or replace the Type 3 `FontBBox` metrics when
-`Ascent`/`Descent` are omitted (PDF Reference 1.7, tables 5.9 and 5.19). The small web input has
-only Gothic Regular, so it cannot preserve bold. No new font assets or changes to that input are
-needed.
+`Ascent`/`Descent` are omitted (PDF Reference 1.7, tables 5.9 and 5.19).
 
-wasm32 builds embed only BIZ UDPGothic Regular and any `Arab`, `Telu`, `Hebr` or `Thai` face, to keep the web build small: the web build
-currently has no Chinese face, so Chinese there still shows the replacement glyph.
-Font files are never
-committed here (`AGENTS.md` §1.4; team members: [craftrules `standards/fonts.md`](https://github.com/storytold/craftrules/blob/main/standards/fonts.md), internal).
+Font files are never committed here (`AGENTS.md` §1.4; team members: [craftrules `standards/fonts.md`](https://github.com/storytold/craftrules/blob/main/standards/fonts.md), internal).
 
 The full font subsystem (parsing, shaping, subsetting and embedding) arrives with M2.2/M7.
 

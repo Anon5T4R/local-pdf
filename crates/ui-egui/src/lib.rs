@@ -92,7 +92,6 @@ mod edit_text_ui;
 pub mod field_table_ui;
 pub use edit_text_ui::CropMode;
 mod editing;
-#[cfg(not(target_arch = "wasm32"))]
 pub mod file_watch;
 mod files;
 pub mod fill_sign;
@@ -111,13 +110,11 @@ mod page_selection_ui;
 mod pageboxes;
 mod palette;
 mod panels;
-#[cfg(not(target_arch = "wasm32"))]
 mod pickers;
 pub mod prepare;
 mod print_ui;
 mod signature_drag;
 pub mod units;
-mod web_print;
 mod word_count_ui;
 pub use print_ui::{Handling as PrintHandling, OptionsSource, PrintDraft, PrinterSource, Which as PrintWhich, system_printers};
 mod redact_ui;
@@ -140,14 +137,12 @@ pub(crate) fn date_text_for_pdf(session: &Session) -> Result<String, String> {
 /// The longest author name kept (Preferences ▸ Identity, restored settings).
 pub(crate) const MAX_AUTHOR_CHARS: usize = 200;
 
-#[cfg(not(target_arch = "wasm32"))]
 mod open_worker;
 mod organize_panel;
 pub mod portable;
 mod protect;
 mod recovery;
 pub mod scroll_speed;
-#[cfg(not(target_arch = "wasm32"))]
 mod system_fonts;
 mod tab_context;
 pub mod theme;
@@ -157,10 +152,9 @@ mod wheel_boost;
 mod wheel_pager;
 mod widgets;
 pub mod window_controls;
-#[cfg(not(target_arch = "wasm32"))]
 pub mod window_state;
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 mod open_worker_tests;
 
 use localpdf_engine::{DocId, Session};
@@ -485,8 +479,8 @@ impl DocumentCopyJob {
     }
 }
 
-/// A whole-document copy reading its pages off the UI thread (in place on the web, which has no
-/// threads). Dropping it (a new copy, the document closed) stops the reading.
+/// A whole-document copy reading its pages off the UI thread. Dropping it (a new copy, the
+/// document closed) stops the reading.
 struct DocumentCopy {
     doc: DocId,
     rx: std::sync::mpsc::Receiver<String>,
@@ -497,7 +491,6 @@ impl DocumentCopy {
     fn start(doc: DocId, job: DocumentCopyJob, ctx: &egui::Context) -> DocumentCopy {
         let (tx, rx) = std::sync::mpsc::channel();
         let cancel = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let (stop, ctx) = (cancel.clone(), ctx.clone());
             let spawned = std::thread::Builder::new().name("copy-document-text".into()).spawn(move || {
@@ -508,13 +501,6 @@ impl DocumentCopy {
             });
             if let Err(e) = spawned {
                 log::warn!("copying the document's text: {e}");
-            }
-        }
-        #[cfg(target_arch = "wasm32")]
-        {
-            let _ = ctx;
-            if let Some(text) = job.text(&cancel) {
-                let _ = tx.send(text);
             }
         }
         DocumentCopy { doc, rx, cancel }
@@ -530,10 +516,6 @@ impl Drop for DocumentCopy {
 /// Files delivered asynchronously: (name, bytes).
 pub type Inbox = std::sync::Arc<std::sync::Mutex<Vec<(String, Vec<u8>)>>>;
 
-/// Files that failed to arrive asynchronously (a browser `?file=` URL that couldn't be fetched):
-/// `(name, error)`, reported to the user on the next frame (#173).
-pub type FailedInbox = std::sync::Arc<std::sync::Mutex<Vec<(String, String)>>>;
-
 /// A request the operating system sends the running app, outside its window: on macOS, Finder
 /// double-clicks, Open With and drops on the Dock icon arrive as Apple events, not arguments.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -547,19 +529,10 @@ pub enum OsEvent {
 /// Returns the [`OsEvent`]s that arrived since it was last called (set by the desktop app).
 pub type OsEventsFn = Box<dyn FnMut() -> Vec<OsEvent>>;
 
-/// Hands a saved PDF to the page embedding LocalPDF (web): `(name, bytes, save_as)`. `save_as`
-/// is `true` for Save As. Set by the web app when a host page (such as a Nextcloud app) asked
-/// for saves; without it the browser downloads the file.
-pub type HostSaveFn = Box<dyn Fn(&str, &[u8], bool) -> Result<(), String>>;
-
-/// Told every frame whether any tab has unsaved work, so a host page can warn before leaving.
-pub type HostDirtyFn = Box<dyn FnMut(bool)>;
-
 pub struct PasswordPrompt {
     pub name: String,
     pub path: Option<String>,
     pub bytes: std::sync::Arc<Vec<u8>>,
-    #[cfg(not(target_arch = "wasm32"))]
     stamp: Option<file_watch::Stamp>,
     pub input: String,
     pub error: Option<String>,
@@ -575,7 +548,6 @@ pub struct PasswordPrompt {
     after_open: Option<localpdf_render::RemoteDestination>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 struct PendingOpen {
     token: u64,
     receiver: std::sync::mpsc::Receiver<open_worker::ResultMessage>,
@@ -588,7 +560,6 @@ struct PendingOpen {
     then: Option<&'static str>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 struct OpenRequest {
     name: String,
     path: Option<String>,
@@ -706,7 +677,6 @@ pub struct LocalPDFApp {
     /// Where Properties… reads a printer's driver options: the spooler's unless a test stands in.
     pub options_source: Option<OptionsSource>,
     // A browser has no background print work: the type is empty there.
-    #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
     pub(crate) print_tasks: print_ui::PrintTasks,
     pub palette_open: bool,
     pub palette_query: String,
@@ -739,16 +709,12 @@ pub struct LocalPDFApp {
     /// layout or zoom it asks for (#1618).
     pub always_default_view: bool,
     /// Open documents' files, watched for changes on disk.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) watch: file_watch::FileWatch,
     /// One native worker prepares opened documents without owning app or session state.
-    #[cfg(not(target_arch = "wasm32"))]
     open_worker: Option<open_worker::OpenWorker>,
-    #[cfg(not(target_arch = "wasm32"))]
     pending_opens: Vec<PendingOpen>,
-    #[cfg(not(target_arch = "wasm32"))]
     next_open_token: u64,
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     open_prepare_gate: Option<std::sync::Arc<open_worker::PrepareGate>>,
     /// Folders pinned to Home, and what they held when last listed.
     pub pinned: folders_ui::PinnedFolders,
@@ -768,22 +734,16 @@ pub struct LocalPDFApp {
     document_copy: Option<DocumentCopy>,
     pub unlock_prompt: Option<UnlockPrompt>,
     pub full_screen: bool,
-    /// Files delivered asynchronously (web drag-and-drop, web file picker).
+    /// Files delivered asynchronously (drag-and-drop, file picker).
     pub inbox: Inbox,
     /// The browser's startup `?file=` download. Unlike a deliberate Open or drop, a late
     /// arrival opens in the background once the user has started working (#171).
     pub startup_inbox: Inbox,
     startup_superseded: bool,
-    /// Asynchronous opens that failed (web `?file=` fetches), shown as a notice.
-    pub failed_inbox: FailedInbox,
-    /// Mirrors "some document has unsaved work" each frame, so the web page's `beforeunload` handler can read it (#812).
+    /// Mirrors "some document has unsaved work" each frame, for a host that asks (#812).
     pub unsaved_flag: std::sync::Arc<std::sync::atomic::AtomicBool>,
     /// Requests from the operating system, polled every frame (macOS Apple events).
     pub os_events: Option<OsEventsFn>,
-    /// Save delivers to the embedding page instead of downloading (web, see [`HostSaveFn`]).
-    pub host_save: Option<HostSaveFn>,
-    /// Reports unsaved work to the embedding page (web, see [`HostDirtyFn`]).
-    pub host_dirty: Option<HostDirtyFn>,
     /// A pending "save changes?" question (closing a dirty tab or quitting).
     pub close_request: Option<CloseRequest>,
     /// The button of the "save changes?" question the keyboard has chosen; Save when it opens.
@@ -794,8 +754,7 @@ pub struct LocalPDFApp {
     /// The "save changes?" question asked for the user's attention and the request still stands
     /// (see `attend_save_prompt`).
     save_prompt_attention: bool,
-    /// A save waiting behind [`Dialog::OverwriteChanged`] (the web build has no files to check).
-    #[cfg(not(target_arch = "wasm32"))]
+    /// A save waiting behind [`Dialog::OverwriteChanged`].
     pub pending_overwrite: Option<editing::PendingOverwrite>,
     /// Save to this path instead of asking (tests and automation).
     pub save_override: Option<String>,
@@ -805,13 +764,11 @@ pub struct LocalPDFApp {
     pub view_draft: Option<(DocId, localpdf_engine::InitialView)>,
     /// Document Properties ▸ Custom being edited.
     pub custom_draft: Option<(DocId, CustomDraft)>,
-    /// Files picked asynchronously for combine / insert (web).
+    /// Files picked asynchronously for combine / insert.
     pub requests: files::Requests,
     /// Native file pickers in flight (they never block the frame; see `pickers`).
-    #[cfg(not(target_arch = "wasm32"))]
     pickers: pickers::Pickers,
     /// Pick these files instead of showing a picker (tests and automation).
-    #[cfg(not(target_arch = "wasm32"))]
     pub pick_override: Option<Vec<String>>,
     /// Write exported files (split) here instead of asking (tests and automation).
     pub export_dir_override: Option<String>,
@@ -916,7 +873,7 @@ pub struct LocalPDFApp {
     pub field_table_draft: Option<field_table_ui::FieldTableDraft>,
     /// Prepare a form ▸ Preview: fill the form instead of editing its fields.
     pub form_preview: bool,
-    /// Where autosaves go (`None`: autosave off, e.g. on the web and in tests).
+    /// Where autosaves go (`None`: autosave off, e.g. in tests).
     pub recovery: Option<RecoveryStore>,
     /// Entries left by a previous session, offered in the Recovery dialog.
     pub recoverable: Vec<RecoveryMeta>,
@@ -937,7 +894,6 @@ pub struct LocalPDFApp {
     /// The egui context, for commands that change window or theme state.
     ctx: Option<egui::Context>,
     /// The window's size and place kept across a minimized close (desktop).
-    #[cfg(not(target_arch = "wasm32"))]
     pub window_state: window_state::WindowState,
     styled: bool,
     fonts_ready: bool,
@@ -974,8 +930,6 @@ pub struct LocalPDFApp {
     /// What visible digital signatures show on their left, and its preview in Sign as.
     pub sign_graphic: sign_ui::SignGraphic,
     pub(crate) sign_graphic_preview: Option<(fill_sign::SavedSig, egui::TextureHandle)>,
-    #[cfg(target_arch = "wasm32")]
-    pub(crate) signature_images: fill_sign::ImageInbox,
     /// The Comment Properties dialog's state.
     pub comment_props: Option<comment_props::PropsDraft>,
     pub field_props: Option<prepare::FieldDraft>,
@@ -1154,15 +1108,11 @@ impl LocalPDFApp {
             reload_changed_files: true,
             show_secured_notice: true,
             always_default_view: false,
-            #[cfg(not(target_arch = "wasm32"))]
             watch: Default::default(),
-            #[cfg(not(target_arch = "wasm32"))]
             open_worker: None,
-            #[cfg(not(target_arch = "wasm32"))]
             pending_opens: Vec::new(),
-            #[cfg(not(target_arch = "wasm32"))]
             next_open_token: 0,
-            #[cfg(all(test, not(target_arch = "wasm32")))]
+            #[cfg(test)]
             open_prepare_gate: None,
             pinned: Default::default(),
             toast: None,
@@ -1177,25 +1127,19 @@ impl LocalPDFApp {
             inbox: Default::default(),
             startup_inbox: Default::default(),
             startup_superseded: false,
-            failed_inbox: Default::default(),
             unsaved_flag: Default::default(),
             os_events: None,
-            host_save: None,
-            host_dirty: None,
             close_request: None,
             save_prompt_button: Default::default(),
             save_prompt_seen: false,
             save_prompt_attention: false,
-            #[cfg(not(target_arch = "wasm32"))]
             pending_overwrite: None,
             save_override: None,
             props_draft: None,
             view_draft: None,
             custom_draft: None,
             requests: Default::default(),
-            #[cfg(not(target_arch = "wasm32"))]
             pickers: Default::default(),
-            #[cfg(not(target_arch = "wasm32"))]
             pick_override: None,
             export_dir_override: None,
             split_draft: SplitDraft::default(),
@@ -1265,7 +1209,6 @@ impl LocalPDFApp {
             dialog_seen: None,
             dialog_epoch: 0,
             ctx: None,
-            #[cfg(not(target_arch = "wasm32"))]
             window_state: Default::default(),
             styled: false,
             fonts_ready: false,
@@ -1289,8 +1232,6 @@ impl LocalPDFApp {
             saved_signature_previews: [None, None],
             sign_graphic: sign_ui::SignGraphic::Name,
             sign_graphic_preview: None,
-            #[cfg(target_arch = "wasm32")]
-            signature_images: Default::default(),
             comment_props: None,
             field_props: None,
             bulk_field_props: None,
@@ -1398,7 +1339,6 @@ impl LocalPDFApp {
         self.try_open(name, path, std::sync::Arc::new(bytes), None, activate)
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn schedule_open(&mut self, request: OpenRequest) -> Result<u64, String> {
         if self.open_worker.is_none() {
             self.open_worker = Some(
@@ -1431,7 +1371,6 @@ impl LocalPDFApp {
         Ok(token)
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn poll_pending_opens(&mut self) {
         let pending_opens = std::mem::take(&mut self.pending_opens);
         let mut remaining = pending_opens.into_iter();
@@ -1459,7 +1398,6 @@ impl LocalPDFApp {
         self.pending_opens = waiting;
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn finish_pending_open(&mut self, pending: PendingOpen, kind: open_worker::ResultKind) {
         match kind {
             open_worker::ResultKind::ReadFailed(reason) => {
@@ -1535,13 +1473,11 @@ impl LocalPDFApp {
             Ok(prepared) => prepared,
             Err(e @ (OpenError::NeedsPassword | OpenError::WrongPassword)) => {
                 let error = matches!(e, OpenError::WrongPassword).then(|| "Incorrect password. Try again.".to_string());
-                #[cfg(not(target_arch = "wasm32"))]
                 let stamp = path.as_deref().and_then(file_watch::Stamp::at);
                 self.password_prompt = Some(PasswordPrompt {
                     name: name.to_string(),
                     path,
                     bytes,
-                    #[cfg(not(target_arch = "wasm32"))]
                     stamp,
                     input: String::new(),
                     error,
@@ -1646,7 +1582,6 @@ impl LocalPDFApp {
         Ok(id)
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn open_dropped(&mut self, f: egui::DroppedFileHandle, _ctx: &egui::Context) {
         let p = f.path().to_string_lossy().into_owned();
         if !p.is_empty() && f.path().is_absolute() {
@@ -1686,7 +1621,6 @@ impl LocalPDFApp {
     }
 
     /// The document whose Pages panel is under the pointer and may take pages, if any.
-    #[cfg(not(target_arch = "wasm32"))]
     fn panel_target(&self, ctx: &egui::Context) -> Option<localpdf_engine::DocId> {
         let view = self.active.and_then(|i| self.views.get(i))?;
         let pointer = ctx.input(|i| i.pointer.hover_pos())?;
@@ -1697,7 +1631,6 @@ impl LocalPDFApp {
     /// Files dropped on the Pages panel, or while the page grid shows, are inserted into the
     /// document rather than opened: they are kept until [`Self::finish_grid_drop`] knows the
     /// gap. Returns the files not taken.
-    #[cfg(not(target_arch = "wasm32"))]
     fn drop_on_grid(&mut self, dropped: Vec<egui::DroppedFileHandle>, ctx: &egui::Context) -> Vec<egui::DroppedFileHandle> {
         if dropped.is_empty() {
             return dropped;
@@ -1757,23 +1690,6 @@ impl LocalPDFApp {
         }
     }
 
-    /// Browsers read dropped files asynchronously; the bytes land in `inbox` and open next frame.
-    #[cfg(target_arch = "wasm32")]
-    fn open_dropped(&mut self, f: egui::DroppedFileHandle, ctx: &egui::Context) {
-        self.startup_superseded = true;
-        let inbox = self.inbox.clone();
-        let ctx = ctx.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let name = f.path().file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| "dropped.pdf".into());
-            if let Ok(bytes) = f.bytes_async().await
-                && let Ok(mut q) = inbox.lock()
-            {
-                q.push((name, bytes));
-                ctx.request_repaint();
-            }
-        });
-    }
-
     /// A number that changes whenever the open dialog changes (opened, closed or replaced by
     /// another), checked every frame. A picker started from a dialog's Browse… button answers
     /// only into the same showing of that dialog.
@@ -1791,14 +1707,11 @@ impl LocalPDFApp {
         if self.active_ids().is_none() {
             return;
         }
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let dialog = rfd::AsyncFileDialog::new().set_title(tl!("Attach a file").to_string());
             let target = self.active_ids().map(|(_, id)| id);
             self.ask_one(pickers::Ask::File(dialog), target, |app, path| app.attach_file(&path));
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("Attaching files is not available on the web yet");
     }
 
     /// Attach the file at `path` to the active document (document level: the Attachments
@@ -1832,7 +1745,6 @@ impl LocalPDFApp {
                 }
             }
             (Ok(bytes), false) => {
-                #[cfg(not(target_arch = "wasm32"))]
                 self.ask_one(
                     pickers::Ask::Save(rfd::AsyncFileDialog::new().set_file_name(crate::files::attachment_file_name(&att.name))),
                     None,
@@ -1841,8 +1753,6 @@ impl LocalPDFApp {
                         Err(e) => app.notify_fmt("Couldn't save: {e}", &[("e", &e.to_string())]),
                     },
                 );
-                #[cfg(target_arch = "wasm32")]
-                self.notify_fmt("Downloading attachments on the web arrives with M3.10 ({n} bytes ready)", &[("n", &bytes.len().to_string())]);
             }
         }
     }
@@ -1926,7 +1836,6 @@ impl LocalPDFApp {
             }
             return;
         };
-        #[cfg(not(target_arch = "wasm32"))]
         if self.ctx.is_some() && !self.run_inline {
             let result = self.schedule_open(OpenRequest {
                 name: p.name.clone(),
@@ -1946,14 +1855,12 @@ impl LocalPDFApp {
             }
             return;
         }
-        #[cfg(not(target_arch = "wasm32"))]
         let (path_for_watch, stamp_for_watch) = (p.path.clone(), p.stamp);
         let after_open = p.after_open.clone();
         match self.try_open(&p.name, p.path, p.bytes, Some(&pw), p.activate) {
             Err(e) => self.notify_fmt("Couldn't open {name}: {e}", &[("name", &p.name), ("e", &e.to_string())]),
             // A recovered encrypted document is open once its prompt is gone.
             Ok(()) if self.password_prompt.is_none() => {
-                #[cfg(not(target_arch = "wasm32"))]
                 if let Some(path) = path_for_watch.as_deref()
                     && let Some(id) = self
                         .views
@@ -2024,14 +1931,10 @@ impl LocalPDFApp {
         if let Some(i) = self.tab_showing(path) {
             self.active = Some(i);
         } else {
-            #[cfg(not(target_arch = "wasm32"))]
             self.open_path(path);
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = path;
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn open_remote_link(&mut self, source: DocId, file: String, destination: localpdf_render::RemoteDestination) {
         if self.pending_remote_link.is_some() || self.pending_link.is_some() {
             return;
@@ -2053,7 +1956,6 @@ impl LocalPDFApp {
     }
 
     /// Take a pending request exactly once. Closing its source invalidates the request.
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn resolve_pending_remote_link(&mut self, open: bool) {
         if let Some(pending) = self.pending_remote_link.take()
             && open
@@ -2063,7 +1965,6 @@ impl LocalPDFApp {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn open_resolved_remote_link(&mut self, path: std::path::PathBuf, destination: localpdf_render::RemoteDestination) {
         let path = path.to_string_lossy().into_owned();
         let name = std::path::Path::new(&path).file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| path.clone());
@@ -2085,16 +1986,6 @@ impl LocalPDFApp {
         }
     }
 
-    #[cfg(target_arch = "wasm32")]
-    pub(crate) fn open_remote_link(&mut self, _source: DocId, _file: String, _destination: localpdf_render::RemoteDestination) {
-        self.notify_tr("Local cross-PDF links require the desktop app");
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    pub fn resolve_pending_remote_link(&mut self, _open: bool) {
-        self.pending_remote_link = None;
-    }
-
     fn apply_remote_destination(&mut self, destination: localpdf_render::RemoteDestination) {
         let Some(index) = self.views.len().checked_sub(1) else { return };
         let Some(doc) = self.session.get(self.views[index].id) else { return };
@@ -2112,7 +2003,6 @@ impl LocalPDFApp {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn open_path(&mut self, path: &str) -> OpenOutcome {
         self.open_path_then(path, None)
     }
@@ -2120,7 +2010,6 @@ impl LocalPDFApp {
     /// Keep a chosen tool with its file until preparation and any password entry finish. The
     /// return value is the programmatic open contract (#1620): callers that must know whether
     /// the file opened, focused its tab, was handed to the background worker, or failed.
-    #[cfg(not(target_arch = "wasm32"))]
     fn open_path_then(&mut self, path: &str, then: Option<&'static str>) -> OpenOutcome {
         // One file, one tab (#2166): a file that is open already comes to the front instead,
         // and the tool it was opened for runs on it. One still being opened is left to that.
@@ -2194,42 +2083,17 @@ impl LocalPDFApp {
     }
 
     /// The File ▸ Open picker: PDFs, and images and text that become PDFs.
-    #[cfg(not(target_arch = "wasm32"))]
     fn open_picker() -> rfd::AsyncFileDialog {
         rfd::AsyncFileDialog::new().add_filter("PDF", &["pdf"]).add_filter(tl!("Images and text (converted to PDF)"), &create_ui::CONVERTIBLE)
     }
 
     pub fn open_dialog(&mut self) {
         self.startup_superseded = true;
-        #[cfg(not(target_arch = "wasm32"))]
         self.pick(
             pickers::PickFor::Open,
             rfd::AsyncFileDialog::new().add_filter("PDF", &["pdf"]).add_filter(tl!("Images and text (converted to PDF)"), &create_ui::CONVERTIBLE),
             true,
         );
-        // Browsers pick files asynchronously; the bytes arrive through `inbox`.
-        #[cfg(target_arch = "wasm32")]
-        {
-            let inbox = self.inbox.clone();
-            let ctx = self.ctx.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                if let Some(h) = rfd::AsyncFileDialog::new()
-                    .add_filter("PDF", &["pdf"])
-                    .add_filter(tl!("Images and text"), &create_ui::CONVERTIBLE)
-                    .pick_file()
-                    .await
-                {
-                    let bytes = h.read().await;
-                    if let Ok(mut q) = inbox.lock() {
-                        q.push((h.file_name(), bytes));
-                    }
-                    // The read may finish while the app is idle: wake it to open the file.
-                    if let Some(ctx) = ctx {
-                        ctx.request_repaint();
-                    }
-                }
-            });
-        }
     }
 
     pub fn close_tab(&mut self, index: usize) {
@@ -2238,7 +2102,6 @@ impl LocalPDFApp {
         }
         self.remember_view(index);
         let id = self.views.remove(index).id;
-        #[cfg(not(target_arch = "wasm32"))]
         if let Some(path) = self.session.get(id).and_then(|d| d.path.clone()) {
             if self.closed_tabs.len() == 10 {
                 self.closed_tabs.remove(0);
@@ -2293,7 +2156,7 @@ impl LocalPDFApp {
         client
     }
 
-    /// Open a web link in the system browser (a new tab on the web). Only for LocalPDF's own
+    /// Open a web link in the system browser. Only for LocalPDF's own
     /// links; an address that came from a document goes through [`Self::request_document_url`].
     pub fn open_url(&mut self, url: &str) {
         if let Some(ctx) = &self.ctx {
@@ -2429,7 +2292,6 @@ impl LocalPDFApp {
 
     /// Ask for a file to open, then run `spec` on it once it is open (or unlocked). Nothing runs
     /// when the picker is cancelled or the file doesn't open.
-    #[cfg(not(target_arch = "wasm32"))]
     fn open_then_run(&mut self, spec: &'static localpdf_engine::commands::CommandSpec) {
         self.startup_superseded = true;
         let dialog = Self::open_picker().set_title(tl!(spec.label).trim_end_matches('…'));
@@ -2438,12 +2300,6 @@ impl LocalPDFApp {
             let path = path.to_string_lossy().into_owned();
             app.open_path_then(&path, Some(command));
         });
-    }
-
-    /// Browsers read the picked file asynchronously; it opens, and the tool can be chosen again.
-    #[cfg(target_arch = "wasm32")]
-    fn open_then_run(&mut self, _spec: &'static localpdf_engine::commands::CommandSpec) {
-        self.open_dialog();
     }
 
     /// Today in `fmt` (or Preferences ▸ Date format), with month and weekday names in the date
@@ -2703,7 +2559,6 @@ impl LocalPDFApp {
         }
         if let Ok(r) = serde_json::from_value::<Vec<RecentFile>>(v["recent"].clone()) {
             // Only keep entries whose files still exist.
-            #[cfg(not(target_arch = "wasm32"))]
             let r: Vec<RecentFile> = r.into_iter().filter(|f| std::path::Path::new(&f.path).exists()).collect();
             self.recent = r;
         }
@@ -3518,7 +3373,6 @@ impl eframe::App for LocalPDFApp {
 
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         // eframe has just stored the window as it is now: not while it is minimized.
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let minimized = self.ctx.as_ref().is_some_and(|c| c.input(|i| i.viewport().minimized == Some(true)));
             self.window_state.keep(storage, minimized);
@@ -3530,13 +3384,11 @@ impl eframe::App for LocalPDFApp {
     /// the quit guard, shortcuts, and the background jobs' results.
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.ctx = Some(ctx.clone());
-        #[cfg(not(target_arch = "wasm32"))]
         self.window_state.repair(ctx);
         self.dialog_epoch();
         // Notices raised outside `ui` (opened files, OS events, the control channel) translate too.
         let lang = i18n::Lang::from_pref(&self.language);
         i18n::set_current(lang);
-        #[cfg(not(target_arch = "wasm32"))]
         {
             if let Some(worker) = &self.open_worker {
                 worker.set_context(ctx);
@@ -3575,12 +3427,8 @@ impl eframe::App for LocalPDFApp {
         if self.active.is_some() {
             self.combine_tab.focused = false;
         }
-        #[cfg(target_arch = "wasm32")]
-        self.process_signature_images();
         let dropped = ctx.input(|i| i.raw.dropped_files.clone());
-        #[cfg(not(target_arch = "wasm32"))]
         let dropped = self.drop_on_signature_pad(dropped);
-        #[cfg(not(target_arch = "wasm32"))]
         let dropped = self.drop_on_grid(dropped, ctx);
         for f in dropped {
             // Files dropped on the Combine files tab join its list instead of opening.
@@ -3598,10 +3446,7 @@ impl eframe::App for LocalPDFApp {
         }
         // Don't replace a pending prompt or import. A startup file may need its own password
         // prompt, so its bytes stay queued until the current interaction finishes.
-        #[cfg(not(target_arch = "wasm32"))]
         let opening = !self.pending_opens.is_empty();
-        #[cfg(target_arch = "wasm32")]
-        let opening = false;
         if !opening
             && self.password_prompt.is_none()
             && self.image_import.is_none()
@@ -3618,14 +3463,9 @@ impl eframe::App for LocalPDFApp {
                 }
             }
         }
-        let failed: Vec<(String, String)> = self.failed_inbox.lock().map(|mut q| std::mem::take(&mut *q)).unwrap_or_default();
-        for (name, e) in failed {
-            self.notify_fmt("Couldn't open {name}: {e}", &[("name", &name), ("e", &e)]);
-        }
         let os_events = self.os_events.as_mut().map(|poll| poll()).unwrap_or_default();
         for e in os_events {
             match e {
-                #[cfg(not(target_arch = "wasm32"))]
                 OsEvent::Open(paths) => {
                     paths.iter().for_each(|p| {
                         self.open_path(p);
@@ -3635,8 +3475,6 @@ impl eframe::App for LocalPDFApp {
                     ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(false));
                     ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
                 }
-                #[cfg(target_arch = "wasm32")]
-                OsEvent::Open(_) => {}
                 // Like closing the window: `guard_quit` asks about unsaved changes.
                 OsEvent::Quit => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
             }
@@ -3655,14 +3493,7 @@ impl eframe::App for LocalPDFApp {
         craft_quit::on_close_request(ctx);
         self.autosave_tick(ctx, web_time::Instant::now());
         // Reload documents whose files a build rewrote (#431).
-        #[cfg(not(target_arch = "wasm32"))]
         self.watch_files();
-        if self.host_dirty.is_some() {
-            let dirty = self.first_dirty().is_some();
-            if let Some(report) = self.host_dirty.as_mut() {
-                report(dirty);
-            }
-        }
         self.poll_updates();
         self.poll_print();
         // Shortcuts deferred last frame: the text field has taken that frame's typing since.
@@ -3699,7 +3530,6 @@ impl eframe::App for LocalPDFApp {
         self.poll_optimize();
         self.poll_action();
         self.process_file_requests();
-        #[cfg(not(target_arch = "wasm32"))]
         self.process_picked();
         // Last, after everything that can open or answer the "save changes?" question.
         self.attend_save_prompt(ctx);

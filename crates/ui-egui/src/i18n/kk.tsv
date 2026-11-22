@@ -25,7 +25,6 @@
 	Show less	Азырақ көрсету
 	Show {n} more	Тағы {n} көрсету
 	The newest {n} of {total} PDFs	Ең жаңа {n} PDF (барлығы {total})
-	Pinned folders need the desktop app	Бекітілген қалталар үшін жұмыс үстелі қосымшасы қажет
 	Choose a folder on this computer to pin	Бекіту үшін осы компьютердегі бір қалтаны таңдаңыз
 	{folder} is already pinned to Home	{folder} қалтасы Басты бетке бұрыннан бекітілген
 	You can pin up to {n} folders. Unpin one first.	Ең көбі {n} қалта бекітуге болады. Алдымен біреуінің бекітпесін алып тастаңыз.
@@ -1540,13 +1539,8 @@
 	Language	Тіл
 	Saved {place}: {before} → {after} ({pct}% smaller){detail}	Сақталды {place}: {before} → {after} ({pct}%-ға кіші){detail}
 	Couldn't save the image: {e}	Суретті сақтау мүмкін болмады: {e}
-	Adding images arrives on the web with file pickers for images	Суреттерді қосу веб-нұсқада сурет файлдарын таңдау мүмкіндігімен келеді
-	Replacing images on page {p} arrives on the web with image pickers ({i})	{p} беттегі суреттерді ауыстыру веб-нұсқада сурет таңдау мүмкіндігімен келеді ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: суреттерді таңдау веб-нұсқада сурет файлдарын таңдау мүмкіндігімен келеді
-	Replacing images arrives on the web with image file pickers	Суреттерді ауыстыру веб-нұсқада сурет файлдарын таңдау мүмкіндігімен келеді
 	Couldn't create a PDF: {e}	PDF жасау мүмкін болмады: {e}
 	The clipboard has no image or text	Алмасу буферінде сурет те, мәтін де жоқ
-	On the web, open or drop an image to convert it	Веб-нұсқада түрлендіру үшін суретті ашыңыз немесе сүйреп әкеліп тастаңыз
 	Couldn't optimize the file: {e}	Файлды оңтайландыру мүмкін болмады: {e}
 	Couldn't write {path}: {e}	{path} жолына жазу мүмкін болмады: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Форма {u} адресіне жіберілуді сұрайды; Local PDF форма деректерін жібермейді. Енгізген деректеріңізді сақтап қалу үшін құжатты сақтаңыз.
@@ -1598,7 +1592,6 @@
 	The document now conforms to {level}; save it to keep the changes	Құжат енді {level} стандартына сай келеді; өзгерістерді сақтап қалу үшін оны сақтаңыз
 	Fixed what could be fixed; 1 problem remains	Түзетуге болатынының бәрі түзетілді; 1 мәселе қалды
 	Fixed what could be fixed; {n} problems remain	Түзетуге болатынының бәрі түзетілді; {n} мәселе қалды
-	Custom stamps arrive on the web with file pickers for images	Пайдаланушы мөрлері веб-нұсқада сурет файлдарын таңдау мүмкіндігімен келеді
 	{file} is too large for a stamp (at most {n} MB)	{file} файлы мөр үшін тым үлкен (көп дегенде {n} МБ)
 	Sent to {printer}	{printer} принтеріне жіберілді
 	Sent to {printer}: {msg}	{printer} принтеріне жіберілді: {msg}
@@ -1688,9 +1681,7 @@
 	Couldn't split: {e}	Бөлу мүмкін болмады: {e}
 	Couldn't summarize comments: {e}	Түсініктемелер жиынтығын жасау мүмкін болмады: {e}
 	Couldn't open the result: {e}	Нәтижені ашу мүмкін болмады: {e}
-	Importing data arrives on the web with file pickers for data files	Деректерді импорттау веб-нұсқада деректер файлдарын таңдау мүмкіндігімен келеді
 	Exported to {path}	Экспортталды: {path}
-	Merging data files needs the desktop app	Деректер файлдарын біріктіруге жұмыс үстелі қолданбасы қажет
 	Merged 1 file into {path}	1 файл {path} ішіне біріктірілді
 	Merged {n} files into {path}	{n} файл {path} ішіне біріктірілді
 	Combined {n} files	{n} файл біріктірілді
@@ -1700,7 +1691,6 @@
 	Couldn't open {name}: {e}	{name} файлын ашу мүмкін болмады: {e}
 	Couldn't read {name}: {e}	«{name}» оқылмады: {e}
 	Couldn't save: {e}	Сақтау мүмкін болмады: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Тіркемелерді веб-нұсқада жүктеп алу M3.10-мен келеді ({n} байт дайын)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	{m} кезеңінде шығады
 	needs an AI provider (off by default)	ЖИ провайдерін қажет етеді (әдепкіде өшірулі)
@@ -2141,7 +2131,6 @@ calendar date	December	Желтоқсан
 	A script	Сценарий
 	{who} in this document tried to open an address Local PDF won't open: {e}.	Осы құжаттағы {who} Local PDF ашпайтын адресті ашпақ болды: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Осы құжаттағы {who} Local PDF ашпайтын адресті ашпақ болды: {e}. Құжаттардан тек веб (http, https) және email (mailto) сілтемелері ашылады.
-	Another file dialog is still open. Finish with it first.	Басқа файл сұхбат терезесі әлі ашық тұр. Алдымен оны аяқтаңыз.
 	Couldn't show the file picker. Please try again.	Файл таңдау терезесін көрсету мүмкін болмады. Қайталап көріңіз.
 	The document changed while you were choosing a file, so nothing was changed.	Сіз файл таңдап жатқанда құжат өзгергендіктен, ешнәрсе өзгертілген жоқ.
 	The document was closed before it could be saved.	Құжат сақталмай тұрып жабылды.
@@ -2358,12 +2347,9 @@ animation effects	Off	Өшірулі
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Бұл принтердің драйвері басқа бағдарламалардан екі жақты басып шығару баптауларын қабылдамайды, сондықтан өз баптауы қолданылады. Оны мына жерден өзгертіңіз: Сипаттар…
 	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Бұл өрістің қаріпі «{c}» ({code}) таңбасын сала алмайды, сондықтан Local PDF оның орнына ? көрсетеді. Мән сақталады, ал басқа PDF қарау құралдары өрісті соған қарап қайта салады.
 	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Local PDF жазатын қаріптер «{c}» ({code}) таңбасын сала алмайды, сондықтан ол барлық PDF қарау құралдарында ? болып көрінеді. Мәтін сақталады.
-	Browser's print dialog	Браузердің басып шығару терезесі
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Көшірмелер саны, екі жақты басып шығару және түс браузердің басып шығару терезесінде таңдалады.
 	Preparing {n} sheets for printing…	Басып шығаруға парақтар дайындалуда: {n}…
 	Preparing sheet {done} of {total} for printing…	Басып шығаруға {total} парақтың {done}-сі дайындалуда…
 	Opening the browser's print dialog…	Браузердің басып шығару терезесі ашылуда…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Браузерден басып шығару мүмкін болмады ({e}); оның орнына басып шығару үшін {name} жүктелді
 	Tools panel side	Құралдар панелінің жағы
 	Add comment	Түсініктеме қосу
 	Change tag properties	Тег қасиеттерін өзгерту
@@ -2506,7 +2492,6 @@ animation effects	Off	Өшірулі
 	Collapse all tools	Барлық құралдарды жию
 	Attach a file…	Файл тіркеу…
 	Delete attachment	Тіркемені жою
-	Attaching files is not available on the web yet	Вебте файл тіркеу әзірге қолжетімсіз
 	Attach {name}	{name} тіркеу
 	Delete attachment {key}	{key} тіркемесін жою
 	Font	Қаріп

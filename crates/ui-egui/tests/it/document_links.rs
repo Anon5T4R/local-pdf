@@ -163,7 +163,6 @@ fn a_link_asks_first_and_opens_when_allowed() {
     assert_eq!(h.state().pending_link, None);
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_local_gotor_link_opens_in_a_tab_and_applies_its_destination() {
     let _gpu = gpu();
@@ -179,7 +178,6 @@ fn a_local_gotor_link_opens_in_a_tab_and_applies_its_destination() {
     assert_eq!(h.state().last_opened_url, None, "no URL or external launcher is involved");
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_remote_destination_survives_password_retries_and_cancel_opens_no_tab() {
     let _gpu = gpu();
@@ -211,7 +209,6 @@ fn a_remote_destination_survives_password_retries_and_cancel_opens_no_tab() {
     assert_eq!(cancelled.state().views.len(), 1, "cancelling does not leave a half-open target tab");
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_gotor_link_to_a_directory_or_device_is_refused_without_reading_it() {
     let _gpu = gpu();
@@ -238,7 +235,6 @@ fn a_gotor_link_to_a_directory_or_device_is_refused_without_reading_it() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn an_in_memory_source_does_not_resolve_a_relative_gotor_against_cwd() {
     let _gpu = gpu();
@@ -398,7 +394,6 @@ fn a_numeric_host_is_shown_as_the_address_it_goes_to() {
     assert!(h.query_by_label_contains("alphabet").is_none());
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn an_absolute_gotor_waits_for_consent_and_keeps_its_destination_across_tabs() {
     let _gpu = gpu();
@@ -440,7 +435,6 @@ fn an_absolute_gotor_waits_for_consent_and_keeps_its_destination_across_tabs() {
     std::fs::remove_dir_all(dir).unwrap();
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn cancelling_an_absolute_gotor_by_button_escape_or_dismissal_changes_nothing() {
     let _gpu = gpu();
@@ -471,7 +465,6 @@ fn cancelling_an_absolute_gotor_by_button_escape_or_dismissal_changes_nothing() 
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn consenting_to_absolute_gotor_still_validates_the_target() {
     let _gpu = gpu();
@@ -522,7 +515,6 @@ fn consenting_to_absolute_gotor_still_validates_the_target() {
     std::fs::remove_dir_all(dir).unwrap();
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn an_approved_absolute_gotor_preserves_password_retries_and_cancellation() {
     let _gpu = gpu();
@@ -560,7 +552,6 @@ fn an_approved_absolute_gotor_preserves_password_retries_and_cancellation() {
     std::fs::remove_dir_all(dir).unwrap();
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn closing_the_source_invalidates_pending_absolute_gotor_consent() {
     let _gpu = gpu();

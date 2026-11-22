@@ -30,7 +30,6 @@ pub struct RunProgress {
 
 /// Keep each desktop result, including when input basenames repeat or an earlier run already
 /// used the name. The search is bounded and never falls back to an occupied destination.
-#[cfg(not(target_arch = "wasm32"))]
 fn write_result(dir: &std::path::Path, name: &str, bytes: &[u8]) -> std::io::Result<std::path::PathBuf> {
     use std::io::{Error, ErrorKind};
     let source = std::path::Path::new(name);
@@ -73,7 +72,6 @@ impl LocalPDFApp {
             self.notify_tr("An action is already running");
             return;
         }
-        #[cfg(not(target_arch = "wasm32"))]
         match self.export_dir_override.clone() {
             Some(d) => self.run_action_into(action, files, d.into()),
             None => {
@@ -81,12 +79,10 @@ impl LocalPDFApp {
                 self.ask_one(crate::pickers::Ask::Folder(dialog), None, move |app, dir| app.run_action_into(action, files, dir));
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        self.run_action_into(action, files);
     }
 
     /// [`Self::run_action_on`] once the folder for the results is known.
-    fn run_action_into(&mut self, action: Action, files: Vec<(String, Vec<u8>)>, #[cfg(not(target_arch = "wasm32"))] dir: std::path::PathBuf) {
+    fn run_action_into(&mut self, action: Action, files: Vec<(String, Vec<u8>)>, dir: std::path::PathBuf) {
         // Another run may have started while the folder picker was open.
         if self.action_run.is_some() {
             self.notify_tr("An action is already running");
@@ -104,10 +100,7 @@ impl LocalPDFApp {
                     s.done = i;
                 }
                 let r = localpdf_engine::actions::run_on(&action, &name, Arc::new(bytes), |_, _| {}).and_then(|r| {
-                    #[cfg(not(target_arch = "wasm32"))]
                     write_result(&dir, &name, &r.bytes).map_err(|e| e.to_string())?;
-                    #[cfg(target_arch = "wasm32")]
-                    crate::editing::download(&name, &r.bytes)?;
                     Ok(())
                 });
                 match r {
@@ -126,14 +119,11 @@ impl LocalPDFApp {
                 s.message = Some(msg);
             }
         };
-        #[cfg(not(target_arch = "wasm32"))]
         if self.run_inline {
             work();
         } else {
             std::thread::Builder::new().name("localpdf-action".into()).spawn(work).ok();
         }
-        #[cfg(target_arch = "wasm32")]
-        work();
         self.action_run = Some(progress);
         self.poll_action();
     }
@@ -166,7 +156,6 @@ impl LocalPDFApp {
     /// Start: ask for the files, then run the selected action on them.
     fn start_selected_action(&mut self) {
         let Some(action) = self.wizard.selected.as_ref().and_then(|n| self.all_actions().into_iter().find(|a| &a.name == n)) else { return };
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let title = crate::i18n::fmt(tl!("Files for {name}"), &[("name", &action.name)]);
             let run = move |app: &mut Self, paths: Vec<std::path::PathBuf>| {
@@ -189,14 +178,6 @@ impl LocalPDFApp {
                     let dialog = rfd::AsyncFileDialog::new().set_title(title).add_filter("PDF", &["pdf"]);
                     self.ask(crate::pickers::Ask::Files(dialog), None, run);
                 }
-            }
-        }
-        #[cfg(target_arch = "wasm32")]
-        {
-            // The open document stands in for a file picker.
-            if let Some(doc) = self.active_ids().and_then(|(_, id)| self.session.get(id)) {
-                let files = vec![(doc.name.clone(), doc.bytes.to_vec())];
-                self.run_action_on(action, files);
             }
         }
     }

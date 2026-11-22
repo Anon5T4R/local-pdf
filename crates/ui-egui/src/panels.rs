@@ -558,10 +558,7 @@ fn format_section(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens) {
                 changed = true;
             }
             Some(FontChoice::Load) => app.pick_files(crate::files::FilePurpose::TextFont { page: ed.page }, false),
-            #[cfg(not(target_arch = "wasm32"))]
             Some(FontChoice::Installed(path)) => app.use_paths(crate::files::FilePurpose::TextFont { page: ed.page }, &[path]),
-            #[cfg(target_arch = "wasm32")]
-            Some(FontChoice::Installed(_)) => {}
             None => {}
         }
         if changed {

@@ -45,7 +45,6 @@
 	Show less	Mostra meno
 	Show {n} more	Mostra altri {n}
 	The newest {n} of {total} PDFs	I {n} più recenti di {total} PDF
-	Pinned folders need the desktop app	Le cartelle fissate necessitano dell'app desktop
 	Choose a folder on this computer to pin	Scegli una cartella di questo computer da fissare
 	{folder} is already pinned to Home	{folder} è già fissata sulla Home
 	You can pin up to {n} folders. Unpin one first.	Puoi fissare fino a {n} cartelle. Rimuovine prima una.
@@ -1597,13 +1596,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Questo file è già il più piccolo possibile ({size}). Nessuna copia salvata.
 	Saved {place}: {before} → {after} (not smaller){detail}	Salvato {place}: {before} → {after} (non più piccolo){detail}
 	Couldn't save the image: {e}	Impossibile salvare l'immagine: {e}
-	Adding images arrives on the web with file pickers for images	Sul web, l'aggiunta di immagini arriverà con i selettori di file per immagini
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Sul web, la sostituzione di immagini a pagina {p} arriverà con i selettori di immagini ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: sul web, la scelta di immagini arriverà con i selettori di file per immagini
-	Replacing images arrives on the web with image file pickers	Sul web, la sostituzione di immagini arriverà con i selettori di file immagine
 	Couldn't create a PDF: {e}	Impossibile creare un PDF: {e}
 	The clipboard has no image or text	Gli appunti non contengono immagini né testo
-	On the web, open or drop an image to convert it	Sul web, apri o trascina un'immagine per convertirla
 	Couldn't optimize the file: {e}	Impossibile ottimizzare il file: {e}
 	Couldn't write {path}: {e}	Impossibile scrivere {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Il modulo chiede di essere inviato a {u}; Local PDF non invia dati dei moduli. Salva il documento per conservare i dati inseriti.
@@ -1664,7 +1658,6 @@
 	The document now conforms to {level}; save it to keep the changes	Il documento ora è conforme a {level}; salvalo per mantenere le modifiche
 	Fixed what could be fixed; 1 problem remains	Problemi risolvibili corretti; rimane 1 problema
 	Fixed what could be fixed; {n} problems remain	Problemi risolvibili corretti; rimangono {n} problemi
-	Custom stamps arrive on the web with file pickers for images	Sul web, i timbri personalizzati arriveranno con i selettori di file per immagini
 	{file} is too large for a stamp (at most {n} MB)	{file} è troppo grande per un timbro (massimo {n} MB)
 	Sent to {printer}	Inviato a {printer}
 	Sent to {printer}: {msg}	Inviato a {printer}: {msg}
@@ -1764,9 +1757,7 @@
 	Couldn't split: {e}	Impossibile dividere: {e}
 	Couldn't summarize comments: {e}	Impossibile riepilogare i commenti: {e}
 	Couldn't open the result: {e}	Impossibile aprire il risultato: {e}
-	Importing data arrives on the web with file pickers for data files	Sul web, l'importazione dei dati arriverà con i selettori di file per i file di dati
 	Exported to {path}	Esportato in {path}
-	Merging data files needs the desktop app	L'unione dei file di dati richiede l'app desktop
 	Merged 1 file into {path}	Unito 1 file in {path}
 	Merged {n} files into {path}	Uniti {n} file in {path}
 	Combined {n} files	Combinati {n} file
@@ -1777,7 +1768,6 @@
 	Couldn't read {name}: {e}	Impossibile leggere {name}: {e}
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	La modalità portatile è disattivata: impossibile scrivere in {folder} ({error}). Le impostazioni vengono invece conservate nella tua cartella utente.
 	Couldn't save: {e}	Impossibile salvare: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Sul web, il download degli allegati arriverà con M3.10 ({n} byte pronti)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	arriva nel traguardo {m}
 	needs an AI provider (off by default)	richiede un fornitore IA (disattivato per impostazione predefinita)
@@ -2185,7 +2175,6 @@
 	About	Informazioni
 	Add {what}	Aggiungi {what}
 	Align fields	Allinea campi
-	Another file dialog is still open. Finish with it first.	Un'altra finestra di selezione file è ancora aperta. Completala prima.
 	Basic constraints	Vincoli di base
 	Butt	Piatta
 	Change document properties	Modifica le proprietà del documento
@@ -2380,12 +2369,9 @@ animation effects	Off	Disattivati
 	Change the colour of line art as well as text	Modifica il colore anche dei tratti, oltre al testo
 	Colours are remapped while rendering; the document itself never changes.	I colori vengono riassociati durante il rendering; il documento in sé non cambia mai.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Il driver di questa stampante non accetta le impostazioni fronte-retro da altri programmi, quindi vale la sua impostazione. Modificala in Proprietà…
-	Browser's print dialog	Finestra di stampa del browser
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Copie, stampa fronte/retro e colore si scelgono nella finestra di stampa del browser.
 	Preparing {n} sheets for printing…	Preparazione di {n} fogli per la stampa…
 	Preparing sheet {done} of {total} for printing…	Preparazione del foglio {done} di {total} per la stampa…
 	Opening the browser's print dialog…	Apertura della finestra di stampa del browser…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Impossibile stampare dal browser ({e}); è stato scaricato {name} da stampare
 	Tools panel side	Lato del pannello Strumenti
 	Add comment	Aggiungi commento
 	Change tag properties	Modifica proprietà del tag
@@ -2720,7 +2706,6 @@ certificate	SHA-256 digest	Impronta SHA-256
 	Collapse all tools	Comprimi tutti gli strumenti
 	Attach a file…	Allega un file…
 	Delete attachment	Elimina allegato
-	Attaching files is not available on the web yet	Allegare file non è ancora disponibile sul web
 	Attach {name}	Allega {name}
 	Delete attachment {key}	Elimina allegato {key}
 	Font	Carattere

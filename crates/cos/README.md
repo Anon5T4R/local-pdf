@@ -6,8 +6,7 @@ through a copy-on-write overlay, and written back incrementally or as a full rew
 - **Layer:** L1, standalone. The layering table lets it use only `localpdf-filters`,
   `localpdf-crypt` and `localpdf-geom` (`xtask/src/layers.rs::STANDALONE_DEPS`); it currently uses
   the first two. That keeps the parser and the crypto independently auditable and reusable.
-- `#![forbid(unsafe_code)]`, and the crate denies `unwrap`/`expect`/`panic!`/`todo!`. Builds for
-  `wasm32-unknown-unknown`.
+- `#![forbid(unsafe_code)]`, and the crate denies `unwrap`/`expect`/`panic!`/`todo!`.
 
 **The object graph is the document model.** Nothing is lifted into a tidier representation and
 written back out, because that is how data gets silently dropped. Typed views live above, in

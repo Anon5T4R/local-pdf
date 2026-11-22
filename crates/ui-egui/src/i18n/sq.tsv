@@ -160,7 +160,6 @@
 	Added more than once	Shtuar më shumë se një herë
 	Added the first {n} PDFs in {folder}	U shtuan {n} PDF-të e para në {folder}
 	Added {n} comments	U shtuan {n} komente
-	Adding images arrives on the web with file pickers for images	Shtimi i imazheve vjen në ueb me zgjedhës skedarësh për imazhe
 	Adds invisible text over each word; the page image is not changed	Shton tekst të padukshëm mbi çdo fjalë; imazhi i faqes nuk ndryshon
 	Advanced	Të avancuara
 	Advanced Options {chevron}	Opsione të avancuara {chevron}
@@ -206,7 +205,6 @@
 	Angle	Këndi
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Animacioni që xixëllon mund të shkaktojë kriza. Kontrolloni skriptet dhe median për dridhje.
 	Annotations, form fill-in, and digital signatures	Shënime, plotësim formularësh dhe nënshkrime dixhitale
-	Another file dialog is still open. Finish with it first.	Një dialog tjetër skedari është ende i hapur. Përfundoni fillimisht me të.
 	Any	Çfarëdo
 	Any except extracting pages	Çfarëdo përveç nxjerrjes së faqeve
 	Anyone opening the document will need this password. It's applied when you save.	Kushdo që hap dokumentin do të ketë nevojë për këtë fjalëkalim. Zbatohet kur ruani.
@@ -515,7 +513,6 @@
 	Current page — type a page number or label (such as iv) and press Enter	Faqja aktuale — shkruaj një numër ose etiketë faqeje (p.sh. iv) dhe shtyp Enter
 	Custom	E personalizuar
 	Custom scale:	Shkallë e personalizuar:
-	Custom stamps arrive on the web with file pickers for images	Vulat e personalizuara vijnë në uebin me zgjedhës skedarësh për imazhe
 	Custom text:	Tekst i personalizuar:
 	Custom:	E personalizuar:
 	Cut	Preji
@@ -624,7 +621,6 @@
 	Double-click	Klikim i dyfishtë
 	Download	Shkarko
 	Downloaded {name}	U shkarkua {name}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Shkarkimi i bashkëngjitjeve në ueb vjen me M3.10 ({n} bajte gati)
 	Downsample to	Zvogëlo rezolucionin në
 	Also recognize pages that already have text	Njih edhe faqet që kanë tashmë tekst
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Edhe figurat në ato faqe njihen; fjalët që ekzistojnë tashmë në tekstin e faqes nuk shtohen përsëri
@@ -929,7 +925,6 @@
 	Import data	Importo të dhëna
 	Import form data…	Importo të dhënat e formularit…
 	Import {name}	Importo {name}
-	Importing data arrives on the web with file pickers for data files	Importimi i të dhënave në ueb vjen me zgjedhës skedarësh për skedarët e të dhënave
 	In multiple files	Në disa skedarë
 	In this file	Në këtë skedar
 	Includes unsaved changes	Përfshin ndryshime të paruajtura
@@ -1083,7 +1078,6 @@
 	Merged 1 file into {path}	U bashkua 1 skedar në {path}
 	Merged PRs	PR-të e bashkuara
 	Merged {n} files into {path}	U bashkuan {n} skedarë në {path}
-	Merging data files needs the desktop app	Bashkimi i skedarëve të të dhënave kërkon aplikacionin për desktop
 	Metadata	Metadatat
 	Microsoft Word (.docx)	Microsoft Word (.docx)
 	Midpoint	Pika e mesit
@@ -1199,7 +1193,6 @@
 	Old file:	Skedari i vjetër:
 	On Blur	Kur humbet fokusin
 	On Focus	Kur merr fokusin
-	On the web, open or drop an image to convert it	Në ueb, hap ose lësho një imazh për ta konvertuar
 	One {f} file per page, named after the document.	Një skedar {f} për faqe, me emrin e dokumentit.
 	Only continue if you trust this document. An address can carry information from the document, such as what you typed into its form.	Vazhdo vetëm nëse i beson këtij dokumenti. Një adresë mund të mbartë informacion nga dokumenti, si ajo që shkruatë në formularin e tij.
 	Only the document's owner can change its security (open it with the permissions password)	Vetëm zotëruesi i dokumentit mund të ndryshojë sigurinë e tij (hape me fjalëkalimin e lejeve)
@@ -1329,7 +1322,6 @@
 	Pin a folder…	Fikso një dosje…
 	Pin folder to Home…	Fikso dosjen te Kreu…
 	Pink	Rozë
-	Pinned folders need the desktop app	Dosjet e fiksuara kërkojnë aplikacionin për desktop
 	Pinned {folder} to Home	U fiksua {folder} te Kreu
 	Place saved {what}	Vendos {what} të ruajtur
 	Plain text in reading order; pages are separated by form feeds.	Tekst i thjeshtë sipas radhës së leximit; faqet ndahen me ndërprerje formulari.
@@ -1479,8 +1471,6 @@
 	Replacement text	Teksti zëvendësues
 	Replacement: pages of {name}	Zëvendësimi: faqet e {name}
 	Replaces the existing one on those pages.	Zëvendëson atë ekzistues në ato faqe.
-	Replacing images arrives on the web with image file pickers	Zëvendësimi i imazheve vjen në ueb me zgjedhësit e skedarëve të imazhit
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Zëvendësimi i imazheve në faqen {p} vjen në ueb me zgjedhësit e imazhit ({i})
 	Reply	Përgjigju
 	Report	Raporti
 	Report Options	Opsionet e raportit
@@ -2077,7 +2067,6 @@
 	{name} is read-only	{name} është vetëm për lexim
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} dërgon formularin te {url}; Local PDF nuk dërgon të dhëna formulari. Ruajeni dokumentin për të mbajtur të dhënat tuaja.
 	{name} — unsaved changes	{name} — ndryshime të paruajtura
-	{name}: choosing images arrives on the web with file pickers for images	{name}: zgjedhja e imazheve vjen në ueb me zgjedhës skedarësh për imazhe
 	{name}: the {other} action isn't supported yet	{name}: veprimi {other} nuk mbështetet ende
 	{n} contributors · {c} commits	{n} kontribues · {c} commit
 	{n} days ago	{n} ditë më parë
@@ -2311,12 +2300,9 @@ animation effects	Off	Joaktiv
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Drajveri i këtij printeri nuk i merr cilësimet dyanshe nga programet e tjera, ndaj zbatohet cilësimi i tij. Ndryshojeni te Vetitë…
 	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Fonti i kësaj fushe nuk mund të vizatojë “{c}” ({code}), ndaj Local PDF shfaq ? në vend të tij. Vlera ruhet dhe shfaqësit e tjerë PDF e vizatojnë fushën nga ajo.
 	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Fontet me të cilat shkruan Local PDF nuk mund të vizatojnë “{c}” ({code}), ndaj shfaqet si ? në çdo shfaqës PDF. Teksti ruhet.
-	Browser's print dialog	Dialogu i printimit të shfletuesit
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Kopjet, printimi dyanësh dhe ngjyra zgjidhen në dialogun e printimit të shfletuesit.
 	Preparing {n} sheets for printing…	Po përgatiten {n} fletë për printim…
 	Preparing sheet {done} of {total} for printing…	Po përgatitet fleta {done} nga {total} për printim…
 	Opening the browser's print dialog…	Po hapet dialogu i printimit të shfletuesit…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Nuk u printua nga shfletuesi ({e}); u shkarkua {name} për ta printuar
 	Tools panel side	Ana e panelit të veglave
 	Add comment	Shto koment
 	Change tag properties	Ndrysho vetitë e etiketës
@@ -2532,7 +2518,6 @@ animation effects	Off	Joaktiv
 	Restore the last view (page, zoom and page display) when a document is opened again	Rikthe pamjen e fundit (faqen, zmadhimin dhe shfaqjen e faqeve) kur një dokument hapet përsëri
 	Attach a file…	Bashkëngjit një skedar…
 	Attach {name}	Bashkëngjit {name}
-	Attaching files is not available on the web yet	Bashkëngjitja e skedarëve nuk është ende e disponueshme në ueb
 	Delete attachment	Fshi bashkëngjitjen
 	Delete attachment {key}	Fshi bashkëngjitjen {key}
 @plural	{n} reply|{n} replies	{n} përgjigje|{n} përgjigje

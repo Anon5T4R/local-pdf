@@ -262,7 +262,6 @@ pub const SYSTEM_HANGUL_FALLBACK: &str = "system-hangul-fallback";
 /// cannot serve Traditional Chinese: a Traditional interface keeps an installed `Hant` face
 /// before the Japanese faces even when a Simplified-only face is embedded, or Traditional-only
 /// characters would fall through to a Japanese face first.
-#[cfg(not(target_arch = "wasm32"))]
 fn installed_fallback_need(cjk: CjkPreference, has_embedded_hans: bool) -> crate::system_fonts::Need {
     use crate::system_fonts::Need;
     match cjk {
@@ -293,9 +292,7 @@ fn installed_fallback_need(cjk: CjkPreference, has_embedded_hans: bool) -> crate
 ///
 /// `PDFCRAFT_SYSTEM_FONTS=0` leaves them out.
 pub fn installed_font_definitions(cjk: CjkPreference) -> FontDefinitions {
-    #[cfg_attr(target_arch = "wasm32", expect(unused_mut))]
     let mut fonts = font_definitions_for(cjk == CjkPreference::SimplifiedChinese);
-    #[cfg(not(target_arch = "wasm32"))]
     {
         use crate::system_fonts::{Need, fallback};
         // Before the general installed face, which stays the last fallback outside Chinese.
@@ -731,8 +728,7 @@ mod tests {
     }
 
     /// The policy only exists on native platforms (`installed_font_definitions` has no installed
-    /// faces on wasm), so the test must not use it in a wasm test build.
-    #[cfg(not(target_arch = "wasm32"))]
+    /// faces elsewhere).
     #[test]
     fn traditional_chinese_keeps_an_installed_face_when_hans_is_embedded() {
         use crate::system_fonts::Need;

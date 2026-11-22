@@ -1572,13 +1572,8 @@ action wizard	Start	ప్రారంభించు
 	This file is already as small as it can be made ({size}). No copy was saved.	ఈ ఫైల్ ఇప్పటికే సాధ్యమైనంత చిన్నదిగా ఉంది ({size}). కాపీ ఏదీ సేవ్ చేయబడలేదు.
 	Saved {place}: {before} → {after} (not smaller){detail}	{place} సేవ్ చేయబడింది: {before} → {after} (తగ్గలేదు){detail}
 	Couldn't save the image: {e}	చిత్రాన్ని సేవ్ చేయడం సాధ్యం కాలేదు: {e}
-	Adding images arrives on the web with file pickers for images	చిత్రాలను జోడించడం, చిత్రాల కోసం ఫైల్ పికర్‌లతో పాటు వెబ్‌లో వస్తుంది
-	Replacing images on page {p} arrives on the web with image pickers ({i})	{p}వ పేజీలోని చిత్రాలను భర్తీ చేయడం, చిత్రాల పికర్‌లతో పాటు వెబ్‌లో వస్తుంది ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: చిత్రాలను ఎంచుకోవడం, చిత్రాల కోసం ఫైల్ పికర్‌లతో పాటు వెబ్‌లో వస్తుంది
-	Replacing images arrives on the web with image file pickers	చిత్రాలను భర్తీ చేయడం, చిత్ర ఫైల్ పికర్‌లతో పాటు వెబ్‌లో వస్తుంది
 	Couldn't create a PDF: {e}	PDFను సృష్టించడం సాధ్యం కాలేదు: {e}
 	The clipboard has no image or text	క్లిప్‌బోర్డ్‌లో చిత్రం గానీ టెక్స్ట్ గానీ లేదు
-	On the web, open or drop an image to convert it	వెబ్‌లో అయితే, చిత్రాన్ని మార్చడానికి దాన్ని తెరవండి లేదా ఇక్కడ డ్రాప్ చేయండి
 	Couldn't optimize the file: {e}	ఫైల్‌ను ఆప్టిమైజ్ చేయడం సాధ్యం కాలేదు: {e}
 	Couldn't write {path}: {e}	{path}ను రాయడం సాధ్యం కాలేదు: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	ఈ ఫారం {u}కు సమర్పించమని అడుగుతోంది; Local PDF ఫారం డేటాను పంపదు. మీరు నింపిన వివరాలను ఉంచుకోవడానికి పత్రాన్ని సేవ్ చేయండి.
@@ -1639,7 +1634,6 @@ action wizard	Start	ప్రారంభించు
 	The document now conforms to {level}; save it to keep the changes	పత్రం ఇప్పుడు {level}కు అనుగుణంగా ఉంది; మార్పులను ఉంచుకోవడానికి దాన్ని సేవ్ చేయండి
 	Fixed what could be fixed; 1 problem remains	సరిచేయగలిగినవన్నీ సరిచేయబడ్డాయి; 1 సమస్య మిగిలి ఉంది
 	Fixed what could be fixed; {n} problems remain	సరిచేయగలిగినవన్నీ సరిచేయబడ్డాయి; {n} సమస్యలు మిగిలి ఉన్నాయి
-	Custom stamps arrive on the web with file pickers for images	అనుకూల స్టాంప్‌లు, చిత్రాల కోసం ఫైల్ పికర్‌లతో పాటు వెబ్‌లో వస్తాయి
 	{file} is too large for a stamp (at most {n} MB)	స్టాంప్‌కు {file} చాలా పెద్దది (గరిష్ఠంగా {n} MB)
 	Sent to {printer}	{printer}కు పంపబడింది
 	Sent to {printer}: {msg}	{printer}కు పంపబడింది: {msg}
@@ -1678,9 +1672,7 @@ action wizard	Start	ప్రారంభించు
 	Couldn't split: {e}	విభజించడం సాధ్యం కాలేదు: {e}
 	Couldn't summarize comments: {e}	వ్యాఖ్యల సారాంశాన్ని రూపొందించడం సాధ్యం కాలేదు: {e}
 	Couldn't open the result: {e}	ఫలితాన్ని తెరవడం సాధ్యం కాలేదు: {e}
-	Importing data arrives on the web with file pickers for data files	డేటాను దిగుమతి చేయడం, డేటా ఫైల్‌ల కోసం ఫైల్ పికర్‌లతో పాటు వెబ్‌లో వస్తుంది
 	Exported to {path}	{path}కు ఎగుమతి చేయబడింది
-	Merging data files needs the desktop app	డేటా ఫైల్‌లను విలీనం చేయడానికి డెస్క్‌టాప్ యాప్ అవసరం
 	Merged 1 file into {path}	1 ఫైల్ {path}లో విలీనం చేయబడింది
 	Merged {n} files into {path}	{n} ఫైల్‌లు {path}లో విలీనం చేయబడ్డాయి
 	Combined {n} files	{n} ఫైల్‌లు కలపబడ్డాయి
@@ -1690,7 +1682,6 @@ action wizard	Start	ప్రారంభించు
 	Couldn't open {name}: {e}	{name}ను తెరవడం సాధ్యం కాలేదు: {e}
 	Couldn't read {name}: {e}	{name}ను చదవడం సాధ్యం కాలేదు: {e}
 	Couldn't save: {e}	సేవ్ చేయడం సాధ్యం కాలేదు: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	వెబ్‌లో జోడింపులను డౌన్‌లోడ్ చేయడం M3.10లో వస్తుంది ({n} బైట్‌లు సిద్ధంగా ఉన్నాయి)
 	`{command}` {when}	`{command}` కమాండ్ {when}
 	ships in milestone {m}	మైల్‌స్టోన్ {m}లో వస్తుంది
 	needs an AI provider (off by default)	పని చేయడానికి AI ప్రొవైడర్ అవసరం (డిఫాల్ట్‌గా ఆఫ్‌లో ఉంటుంది)
@@ -2272,12 +2263,9 @@ animation effects	Off	ఆఫ్
 	Original	అసలు
 	Greyscale	గ్రేస్కేల్
 	Black and white	నలుపు తెలుపు
-	Browser's print dialog	బ్రౌజర్ ముద్రణ డైలాగ్
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	కాపీలు, రెండు వైపుల ముద్రణ మరియు రంగును బ్రౌజర్ ముద్రణ డైలాగ్‌లో ఎంచుకుంటారు.
 	Preparing {n} sheets for printing…	ముద్రణ కోసం {n} షీట్‌లను సిద్ధం చేస్తోంది…
 	Preparing sheet {done} of {total} for printing…	ముద్రణ కోసం {total}లో షీట్ {done}ను సిద్ధం చేస్తోంది…
 	Opening the browser's print dialog…	బ్రౌజర్ ముద్రణ డైలాగ్‌ను తెరుస్తోంది…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	బ్రౌజర్ నుండి ముద్రించలేకపోయింది ({e}); బదులుగా ముద్రించడానికి {name}ను డౌన్‌లోడ్ చేసింది
 	Tools panel side	టూల్స్ ప్యానెల్ వైపు
 	Add comment	వ్యాఖ్యను జోడించు
 	Change tag properties	ట్యాగ్ లక్షణాలను మార్చు
@@ -2417,7 +2405,6 @@ animation effects	Off	ఆఫ్
 	Collapse all tools	అన్ని సాధనాలను కుదించు
 	Attach a file…	ఫైల్‌ను జోడించు…
 	Delete attachment	జోడింపును తొలగించు
-	Attaching files is not available on the web yet	వెబ్‌లో ఫైల్‌లను జోడించడం ఇంకా అందుబాటులో లేదు
 	Attach {name}	{name}ను జోడించు
 	Delete attachment {key}	జోడింపు {key}ను తొలగించు
 	Font	ఫాంట్

@@ -288,19 +288,10 @@ pub(crate) const PREFERENCES_BUTTON_ROW: f32 = 52.0;
 /// leaves 173 pt): a taller floor would push OK off the screen again.
 pub(crate) const PREFERENCES_MIN_SCROLL: f32 = 60.0;
 
-/// Whether the interface can draw a language picker's native name. On the web the browser's glyph
-/// rasterizer draws scripts no embedded face has, so the native names stay; on native, ask the
+/// Whether the interface can draw a language picker's native name: ask the
 /// fonts this build installed (including an installed fallback face, unless system fonts are off).
 fn picker_text_is_drawable(ui: &egui::Ui, text: &str) -> bool {
-    #[cfg(target_arch = "wasm32")]
-    {
-        let _ = (ui, text);
-        true
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        ui.fonts_mut(|fonts| fonts.has_glyphs(&egui::FontId::proportional(13.0), text))
-    }
+    ui.fonts_mut(|fonts| fonts.has_glyphs(&egui::FontId::proportional(13.0), text))
 }
 
 /// The date picker's displayed name. Its languages are the interface languages, so it uses the
@@ -449,14 +440,9 @@ pub(crate) fn preferences_body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tok
         }
     });
     ui.label(egui::RichText::new(tl!("For page sizes and margins.")).small().color(t.text_muted));
-    // The web build has no file paths to reopen.
-    #[cfg(not(target_arch = "wasm32"))]
     ui.add(widgets::checkbox(&mut app.reopen_last_session, tl!("Reopen the files that were open when Local PDF last closed")));
     // Acrobat's "Restore last view settings when reopening documents" (#1767).
-    #[cfg(not(target_arch = "wasm32"))]
     ui.add(widgets::checkbox(&mut app.restore_last_view, tl!("Restore the last view (page, zoom and page display) when a document is opened again")));
-    // The web build has no files on disk to watch.
-    #[cfg(not(target_arch = "wasm32"))]
     ui.add(widgets::checkbox(&mut app.reload_changed_files, tl!("Reload documents when their files change on disk")));
     // The notice's "Don't show again" turns this off (#4035); the restrictions stay either way.
     ui.add(widgets::checkbox(&mut app.show_secured_notice, tl!("Show a notice when a document is secured")));

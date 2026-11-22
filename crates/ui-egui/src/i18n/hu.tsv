@@ -1571,13 +1571,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Ez a fájl már a lehető legkisebb ({size}). Nem készült másolat.
 	Saved {place}: {before} → {after} (not smaller){detail}	Mentve ide: {place}: {before} → {after} (nem kisebb){detail}
 	Couldn't save the image: {e}	A képet nem sikerült menteni: {e}
-	Adding images arrives on the web with file pickers for images	A képek hozzáadása a webes változatban a képválasztóval együtt érkezik
-	Replacing images on page {p} arrives on the web with image pickers ({i})	A {p}. oldal képeinek cseréje a webes változatban a képválasztóval együtt érkezik ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: a képek kiválasztása a webes változatban a képválasztóval együtt érkezik
-	Replacing images arrives on the web with image file pickers	A képek cseréje a webes változatban a képfájl-választóval együtt érkezik
 	Couldn't create a PDF: {e}	A PDF létrehozása nem sikerült: {e}
 	The clipboard has no image or text	A vágólapon nincs kép vagy szöveg
-	On the web, open or drop an image to convert it	A weben nyiss meg vagy húzz ide egy képet a konvertáláshoz
 	Couldn't optimize the file: {e}	A fájlt nem sikerült optimalizálni: {e}
 	Couldn't write {path}: {e}	Nem sikerült írni ide: {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Az űrlap ide kéri a beküldést: {u}; a Local PDF nem küld űrlapadatot. Mentsd a dokumentumot, hogy megmaradjanak a beírásaid.
@@ -1638,7 +1633,6 @@
 	The document now conforms to {level}; save it to keep the changes	A dokumentum most megfelel ennek: {level}; mentsd, hogy megmaradjanak a módosítások
 	Fixed what could be fixed; 1 problem remains	Minden javíthatót javítottunk; 1 probléma maradt
 	Fixed what could be fixed; {n} problems remain	Minden javíthatót javítottunk; {n} probléma maradt
-	Custom stamps arrive on the web with file pickers for images	Az egyéni bélyegzők a webes változatban a képválasztóval együtt érkeznek
 	{file} is too large for a stamp (at most {n} MB)	{file} túl nagy bélyegzőnek (legfeljebb {n} MB)
 	Sent to {printer}	Elküldve ide: {printer}
 	Sent to {printer}: {msg}	Elküldve ide: {printer}: {msg}
@@ -1677,9 +1671,7 @@
 	Couldn't split: {e}	A felosztás nem sikerült: {e}
 	Couldn't summarize comments: {e}	A megjegyzéseket nem sikerült összefoglalni: {e}
 	Couldn't open the result: {e}	Az eredményt nem sikerült megnyitni: {e}
-	Importing data arrives on the web with file pickers for data files	Az adatok importálása a webes változatban az adatfájl-választóval együtt érkezik
 	Exported to {path}	Exportálva ide: {path}
-	Merging data files needs the desktop app	Az adatfájlok egyesítéséhez az asztali alkalmazás kell
 	Merged 1 file into {path}	1 fájl egyesítve ide: {path}
 	Merged {n} files into {path}	{n} fájl egyesítve ide: {path}
 	Combined {n} files	{n} fájl egyesítve
@@ -1691,7 +1683,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	A hordozható mód ki van kapcsolva: {folder} nem írható ({error}). A beállítások helyette a felhasználói mappádban maradnak.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	A Local PDF grafikus processzor nélkül rajzol, ezért lassú lehet. A grafikus illesztőprogram frissítése segíthet.
 	Couldn't save: {e}	A mentés nem sikerült: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	A mellékletek letöltése a weben az M3.10-zel érkezik ({n} bájt kész)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	{m} mérföldkőben érkezik
 	needs an AI provider (off by default)	MI-szolgáltató kell hozzá (alapból ki van kapcsolva)
@@ -2163,7 +2154,6 @@
 	Show less	Kevesebb megjelenítése
 	Show {n} more	További {n} megjelenítése
 	The newest {n} of {total} PDFs	A legújabb {n} / {total} PDF
-	Pinned folders need the desktop app	A kitűzött mappákhoz az asztali alkalmazás kell
 	Choose a folder on this computer to pin	Válassz egy mappát ezen a számítógépen a kitűzéshez
 	{folder} is already pinned to Home	{folder} már ki van tűzve a kezdőlapra
 	You can pin up to {n} folders. Unpin one first.	Legfeljebb {n} mappát tűzhetsz ki. Előbb szüntesd meg az egyik kitűzését.
@@ -2199,7 +2189,6 @@ action wizard	Start	Indítás
 	A script	Egy szkript
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} ebben a dokumentumban olyan címet próbált megnyitni, amelyet a Local PDF nem nyit meg: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} ebben a dokumentumban olyan címet próbált megnyitni, amelyet a Local PDF nem nyit meg: {e}. Dokumentumokból csak webes (http, https) és e-mail (mailto) hivatkozások nyílnak meg.
-	Another file dialog is still open. Finish with it first.	Egy másik fájlpárbeszédablak még nyitva van. Előbb fejezd be azt.
 	Couldn't show the file picker. Please try again.	Nem sikerült megjeleníteni a fájlválasztót. Próbáld újra.
 	The document changed while you were choosing a file, so nothing was changed.	A dokumentum megváltozott, amíg fájlt választottál, ezért semmi sem módosult.
 	The document was closed before it could be saved.	A dokumentum bezárult, mielőtt menteni lehetett volna.
@@ -2370,12 +2359,9 @@ animation effects	Off	Ki
 	Change the colour of line art as well as text	A vonalak színének módosítása a szöveg mellett
 	Colours are remapped while rendering; the document itself never changes.	A színek a kirajcoláskor módosulnak; maga a dokumentum sosem változik.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	A nyomtató illesztőprogramja nem fogadja el más programoktól a kétoldalas nyomtatás beállítását, ezért a saját beállítása érvényes. Módosítás: Tulajdonságok…
-	Browser's print dialog	A böngésző nyomtatási párbeszédablaka
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	A példányszámot, a kétoldalas nyomtatást és a színt a böngésző nyomtatási párbeszédablakában lehet megadni.
 	Preparing {n} sheets for printing…	{n} lap előkészítése nyomtatásra…
 	Preparing sheet {done} of {total} for printing…	{done}/{total}. lap előkészítése nyomtatásra…
 	Opening the browser's print dialog…	A böngésző nyomtatási párbeszédablakának megnyitása…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Nem sikerült nyomtatni a böngészőből ({e}); helyette a(z) {name} letöltődött nyomtatáshoz
 	Tools panel side	Az Eszközök panel oldala
 	Add comment	Megjegyzés hozzáadása
 	Change tag properties	Címke tulajdonságainak módosítása
@@ -2507,7 +2493,6 @@ animation effects	Off	Ki
 	Collapse all tools	Az összes eszköz összecsukása
 	Attach a file…	Fájl csatolása…
 	Delete attachment	Melléklet törlése
-	Attaching files is not available on the web yet	Fájlok csatolása a weben még nem érhető el
 	Attach {name}	{name} csatolása
 	Delete attachment {key}	{key} melléklet törlése
 	Font	Betűtípus

@@ -91,7 +91,6 @@ impl Draft {
             let _ = sender.send(result);
             ctx.request_repaint();
         };
-        #[cfg(not(target_arch = "wasm32"))]
         if !inline {
             if let Err(error) = std::thread::Builder::new().name("word-count".into()).spawn(work) {
                 self.job = None;

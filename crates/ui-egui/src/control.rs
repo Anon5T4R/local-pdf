@@ -660,11 +660,6 @@ impl Control {
             ctx.request_repaint();
             // A hidden or occluded window runs `logic` without a UI pass. Ask for one so queued
             // input and screenshots can be applied; the screenshot command itself also paints.
-            //
-            // The shared fork's web host does not implement `RequestPaintWhileHidden` yet: a
-            // hidden browser tab still times out rather than falsely succeeding. Recorded as a
-            // pending fork prerequisite, not qualified here.
-            #[cfg(not(target_arch = "wasm32"))]
             if ctx.input(|i| i.viewport().visible()) != Some(true) {
                 ctx.send_viewport_cmd(egui::ViewportCommand::RequestPaintWhileHidden);
             }
@@ -751,11 +746,8 @@ impl Control {
             kept.push(entry);
         }
         self.pending = kept;
-        if !self.pending.is_empty() {
-            #[cfg(not(target_arch = "wasm32"))]
-            if ctx.input(|i| i.viewport().visible()) != Some(true) {
-                ctx.send_viewport_cmd(egui::ViewportCommand::RequestPaintWhileHidden);
-            }
+        if !self.pending.is_empty() && ctx.input(|i| i.viewport().visible()) != Some(true) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::RequestPaintWhileHidden);
         }
     }
 
@@ -945,18 +937,12 @@ impl Control {
                         .ok_or_else(|| format!("ui.resize: {key} must be between 320 and 8192 logical points"))
                 };
                 let size = egui::vec2(dimension("width")?, dimension("height")?);
-                if cfg!(target_arch = "wasm32") {
-                    return Err("ui.resize needs a native window".into());
-                }
                 ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(size));
                 ctx.request_repaint();
                 Ok(Handled::AfterFrames(2, json!({ "requested": [size.x, size.y] })))
             }
             "ui.quit" => {
                 only_params(p, method, &[])?;
-                if cfg!(target_arch = "wasm32") {
-                    return Err("ui.quit needs a native window".into());
-                }
                 let quitting = host.quit(ctx);
                 Ok(Handled::Now(Ok(json!({ "quitting": quitting, "needs_confirmation": !quitting }))))
             }
@@ -1409,11 +1395,8 @@ impl Host for crate::LocalPDFApp {
                 Some(json!({ "tab": i, "doc": v.id.0, "name": d.name, "path": d.path, "pages": d.info.pages.len(), "dirty": d.dirty, "active": self.active == Some(i) }))
             })
             .collect();
-        #[cfg(not(target_arch = "wasm32"))]
         let pending_opens: Vec<Value> =
             self.pending_opens.iter().map(|pending| json!({ "token": pending.token, "name": pending.name, "path": pending.path })).collect();
-        #[cfg(target_arch = "wasm32")]
-        let pending_opens: Vec<Value> = Vec::new();
         json!({
             "side_panels": crate::side_panels::state(self),
             "documents": docs,
@@ -1514,7 +1497,6 @@ impl Host for crate::LocalPDFApp {
         self.set_option(key, value).map(|()| json!({ "set": key, "value": value }))
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn open(&mut self, path: &str) -> Reply {
         match self.open_path(path) {
             crate::OpenOutcome::Opened => Ok(json!({ "opened": path, "password_prompt": self.password_prompt.is_some() })),
@@ -1523,17 +1505,11 @@ impl Host for crate::LocalPDFApp {
             crate::OpenOutcome::Failed => Err(self.toast.as_ref().map(|t| t.0.clone()).unwrap_or_else(|| format!("couldn't open {path}"))),
         }
     }
-
-    #[cfg(target_arch = "wasm32")]
-    fn open(&mut self, _path: &str) -> Reply {
-        Err("ui.open needs a file system; on the web, drop the file on the page".into())
-    }
 }
 
 // ---- transport (native only) -----------------------------------------------------------------
 
 /// Where a running app's control channel can be reached (written to the `--control` file).
-#[cfg(not(target_arch = "wasm32"))]
 pub struct Endpoint {
     pub port: u16,
     pub token: String,
@@ -1541,7 +1517,6 @@ pub struct Endpoint {
 
 /// What a connection may do before it authenticates, so an unauthenticated local client cannot
 /// hold a thread for ever or exhaust them (#1806).
-#[cfg(not(target_arch = "wasm32"))]
 #[derive(Clone, Copy)]
 struct Limits {
     /// How long a connection has to authenticate, counted from its acceptance: an absolute
@@ -1560,7 +1535,6 @@ struct Limits {
     max_lingering: usize,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 const LIMITS: Limits = Limits {
     auth_deadline: std::time::Duration::from_secs(10),
     max_unauthenticated: 8,
@@ -1572,10 +1546,8 @@ const LIMITS: Limits = Limits {
 /// One of a limited number of places, given back when dropped: a place among
 /// [`Limits::max_unauthenticated`] (given back when the connection authenticates or is refused,
 /// and on every way its thread can end), or among [`Limits::max_lingering`].
-#[cfg(not(target_arch = "wasm32"))]
 struct Slot(std::sync::Arc<std::sync::atomic::AtomicUsize>);
 
-#[cfg(not(target_arch = "wasm32"))]
 impl Slot {
     fn take(waiting: &std::sync::Arc<std::sync::atomic::AtomicUsize>, max: usize) -> Option<Self> {
         use std::sync::atomic::Ordering;
@@ -1592,7 +1564,6 @@ impl Slot {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl Drop for Slot {
     fn drop(&mut self) {
         self.0.fetch_sub(1, std::sync::atomic::Ordering::AcqRel);
@@ -1601,13 +1572,11 @@ impl Drop for Slot {
 
 /// The reading half of a connection, with the authentication deadline: every read before it
 /// gets the time left as its timeout, and none at all once it has passed.
-#[cfg(not(target_arch = "wasm32"))]
 struct Reading {
     stream: std::net::TcpStream,
     until: Option<std::time::Instant>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl std::io::Read for Reading {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         if let Some(until) = self.until {
@@ -1632,7 +1601,6 @@ impl std::io::Read for Reading {
 /// taken by [`refuse`] before the reply was written, and held for the drain only. Without one
 /// the connection is closed at once after the FIN, accepting the risk of a reset rather than
 /// holding another thread.
-#[cfg(not(target_arch = "wasm32"))]
 fn close_after_reply(reading: &mut Reading, place: Option<Slot>, linger: std::time::Duration) {
     use std::io::Read;
     let _ = reading.stream.shutdown(std::net::Shutdown::Write);
@@ -1647,7 +1615,6 @@ fn close_after_reply(reading: &mut Reading, place: Option<Slot>, linger: std::ti
 /// authenticate, so it does not keep a real client out while it lingers, and take a place to
 /// linger in if one is free. Done before the reply is written, so a client that has read the
 /// reply sees the places as they will be.
-#[cfg(not(target_arch = "wasm32"))]
 fn refuse(slot: &mut Option<Slot>, lingering: &std::sync::Arc<std::sync::atomic::AtomicUsize>, limits: Limits) -> Option<Slot> {
     drop(slot.take());
     Slot::take(lingering, limits.max_lingering)
@@ -1658,7 +1625,6 @@ fn refuse(slot: &mut Option<Slot>, lingering: &std::sync::Arc<std::sync::atomic:
 /// Protocol: newline-delimited JSON-RPC 2.0. The first request on a connection must be
 /// `{"method": "auth", "params": {"token": …}}`; anything else closes the connection, and so does
 /// a line longer than [`MAX_AUTH_LINE`] before that, or [`LIMITS`] passing without it.
-#[cfg(not(target_arch = "wasm32"))]
 pub fn serve(client: ControlClient) -> std::io::Result<Endpoint> {
     serve_with(client, LIMITS)
 }
@@ -1666,16 +1632,13 @@ pub fn serve(client: ControlClient) -> std::io::Result<Endpoint> {
 /// How long the accepting thread waits after a failed accept. Accepting can keep failing, for
 /// example while the process has no file descriptors left, and retrying at once would keep a
 /// core busy until it recovers. The single-instance listener waits the same way.
-#[cfg(not(target_arch = "wasm32"))]
 const ACCEPT_RETRY: std::time::Duration = std::time::Duration::from_millis(100);
 
 /// The connections `incoming` accepts, calling `wait` after each failed accept.
-#[cfg(not(target_arch = "wasm32"))]
 fn accepted<T>(incoming: impl Iterator<Item = std::io::Result<T>>, mut wait: impl FnMut()) -> impl Iterator<Item = T> {
     incoming.filter_map(move |stream| stream.map_err(|_| wait()).ok())
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn serve_with(client: ControlClient, limits: Limits) -> std::io::Result<Endpoint> {
     use std::io::{BufReader, Write};
     let listener = std::net::TcpListener::bind(("127.0.0.1", 0))?;
@@ -1786,11 +1749,9 @@ fn serve_with(client: ControlClient, limits: Limits) -> std::io::Result<Endpoint
 
 /// Longest line read before a connection has authenticated. The only acceptable request then is
 /// `auth`, about a hundred bytes; a longer line is refused without buffering the rest of it.
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_AUTH_LINE: usize = 4 * 1024;
 
 /// What [`read_line_limited`] found.
-#[cfg(not(target_arch = "wasm32"))]
 #[derive(Debug, PartialEq, Eq)]
 enum LineRead {
     /// A line, now in the buffer (newline and a trailing `\r` stripped).
@@ -1802,7 +1763,6 @@ enum LineRead {
 }
 
 /// Read one `\n`-terminated line of at most `max` bytes into `buf`.
-#[cfg(not(target_arch = "wasm32"))]
 fn read_line_limited(reader: &mut impl std::io::BufRead, buf: &mut Vec<u8>, max: usize) -> std::io::Result<LineRead> {
     use std::io::{BufRead, Read};
     buf.clear();
@@ -1822,18 +1782,15 @@ fn read_line_limited(reader: &mut impl std::io::BufRead, buf: &mut Vec<u8>, max:
     Ok(if buf.len() > max { LineRead::TooLong } else { LineRead::Line })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn rpc_error(id: Value, code: i64, message: &str) -> Value {
     json!({ "jsonrpc": "2.0", "id": id, "error": { "code": code, "message": message } })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn constant_time_eq(a: &str, b: &str) -> bool {
     a.len() == b.len() && a.bytes().zip(b.bytes()).fold(0u8, |acc, (x, y)| acc | (x ^ y)) == 0
 }
 
 /// 128 random bits from the OS, hex-encoded.
-#[cfg(not(target_arch = "wasm32"))]
 fn random_token() -> std::io::Result<String> {
     let mut bytes = [0u8; 16];
     getrandom::fill(&mut bytes).map_err(|e| std::io::Error::other(e.to_string()))?;
@@ -1844,7 +1801,6 @@ fn random_token() -> std::io::Result<String> {
 mod transport_tests {
     /// A failed accept is followed by a wait before the next one, so a listener that keeps
     /// failing does not spin, and the connections around the failures still come through.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_failed_accept_waits_before_the_next() {
         let failed = || Err(std::io::Error::other("no file descriptors left"));
@@ -1857,7 +1813,6 @@ mod transport_tests {
 
     /// Before authenticating, a line that isn't JSON gets a parse error and closes the
     /// connection, as [`super::serve`] documents for any first request other than `auth`.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn malformed_input_before_auth_closes_the_connection() {
         use std::io::{BufRead, BufReader, ErrorKind, Write};
@@ -1880,7 +1835,6 @@ mod transport_tests {
         assert!(closed, "the connection stayed open: {next:?}");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn lines_are_read_up_to_the_limit() {
         use super::{LineRead, read_line_limited};
@@ -1901,7 +1855,6 @@ mod transport_tests {
 
     /// Before authenticating, a line longer than [`super::MAX_AUTH_LINE`] is refused as soon as
     /// the limit is passed (no newline needed) and the connection is closed.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn an_overlong_line_before_auth_is_refused() {
         use std::io::{BufRead, BufReader, ErrorKind, Write};
@@ -1926,7 +1879,6 @@ mod transport_tests {
     }
 
     /// Small limits for the tests below: a 300 ms deadline, two places to wait in.
-    #[cfg(not(target_arch = "wasm32"))]
     const TEST_LIMITS: super::Limits = super::Limits {
         auth_deadline: std::time::Duration::from_millis(300),
         max_unauthenticated: 2,
@@ -1936,7 +1888,6 @@ mod transport_tests {
     };
 
     /// The next line the server sends, as JSON, or `None` when it closed the connection instead.
-    #[cfg(not(target_arch = "wasm32"))]
     fn next_line(r: &mut std::io::BufReader<std::net::TcpStream>) -> Option<serde_json::Value> {
         use std::io::BufRead;
         let mut line = String::new();
@@ -1946,7 +1897,6 @@ mod transport_tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn connect(port: u16) -> std::net::TcpStream {
         let s = std::net::TcpStream::connect(("127.0.0.1", port)).unwrap();
         s.set_read_timeout(Some(std::time::Duration::from_secs(5))).unwrap();
@@ -1955,7 +1905,6 @@ mod transport_tests {
 
     /// #1806: a connection that never authenticates is closed at the deadline, counted from its
     /// acceptance, and a client feeding a byte at a time cannot push that deadline back.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn an_unauthenticated_connection_is_closed_at_the_deadline() {
         use std::io::{BufReader, Write};
@@ -1994,7 +1943,6 @@ mod transport_tests {
     /// reset: closing on top of unread input sends a reset, which can discard the reply before
     /// the client reads it (Linux does). Here a line far over the limit leaves most of itself
     /// unread when the server refuses it.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_client_refused_with_input_unread_gets_the_reason() {
         use std::io::{BufReader, Write};
@@ -2012,7 +1960,6 @@ mod transport_tests {
 
     /// A refused connection gives back its place among those waiting to authenticate before it
     /// lingers, so lingering does not keep real clients out.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_lingering_connection_holds_no_place_to_authenticate() {
         use std::io::{BufReader, Write};
@@ -2041,7 +1988,6 @@ mod transport_tests {
 
     /// Only [`super::Limits::max_lingering`] refused connections linger at once: one more still
     /// gets its reply, and is then closed at once instead of lingering.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn only_so_many_refused_connections_linger() {
         use std::io::{BufReader, Write};
@@ -2079,7 +2025,6 @@ mod transport_tests {
 
     /// #1806: only so many connections may wait to authenticate at once. One more is refused
     /// on the spot; once a waiting one authenticates or times out, its place is free again.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn only_so_many_connections_may_wait_to_authenticate() {
         use std::io::{BufReader, Write};
@@ -2119,7 +2064,6 @@ mod transport_tests {
 
     /// After `auth` the limit no longer applies: a long line is read as before (here it isn't
     /// JSON, so it gets a parse error and the connection stays open).
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn long_lines_after_auth_are_still_read() {
         use std::io::{BufRead, BufReader, Write};
@@ -2484,10 +2428,6 @@ mod lifecycle_tests {
     fn a_startup_wait_counts_against_one_admission_deadline_in_every_phase() {
         let params = [("ui.type", json!({ "text": "x" })), ("ui.resize", json!({ "width": 800, "height": 600 })), ("ui.screenshot", json!({}))];
         for (method, params) in params {
-            // `ui.resize` needs a native window; the other phases are checked on every target.
-            if method == "ui.resize" && cfg!(target_arch = "wasm32") {
-                continue;
-            }
             let ctx = egui::Context::default();
             // A real window size, so an admitted screenshot has capturable geometry.
             ctx.run_ui(

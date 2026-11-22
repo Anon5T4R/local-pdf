@@ -225,7 +225,6 @@ key	Space	Mezerník
 	Show less	Zobrazit méně
 	Show {n} more	Zobrazit další ({n})
 	The newest {n} of {total} PDFs	Nejnovější soubory PDF: {n} z {total}
-	Pinned folders need the desktop app	Připnuté složky vyžadují desktopovou aplikaci
 	Choose a folder on this computer to pin	Vyberte složku v tomto počítači, kterou chcete připnout
 	{folder} is already pinned to Home	Složka {folder} už je připnutá na úvodní obrazovce
 	You can pin up to {n} folders. Unpin one first.	Připnout lze nejvýše {n} složek. Nejdříve některou odepněte.
@@ -1671,13 +1670,8 @@ key	Space	Mezerník
 	Language	Jazyk
 	Saved {place}: {before} → {after} ({pct}% smaller){detail}	Uloženo {place}: {before} → {after} (o {pct} % menší){detail}
 	Couldn't save the image: {e}	Obrázek nelze uložit: {e}
-	Adding images arrives on the web with file pickers for images	Přidávání obrázků přijde na web s výběrem obrázkových souborů
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Nahrazování obrázků na stránce {p} přijde na web s výběrem obrázků ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: výběr obrázků přijde na web s výběrem obrázkových souborů
-	Replacing images arrives on the web with image file pickers	Nahrazování obrázků přijde na web s výběrem obrázkových souborů
 	Couldn't create a PDF: {e}	PDF nelze vytvořit: {e}
 	The clipboard has no image or text	Ve schránce není obrázek ani text
-	On the web, open or drop an image to convert it	Na webu obrázek k převodu otevřete nebo přetáhněte
 	Couldn't optimize the file: {e}	Soubor nelze optimalizovat: {e}
 	Couldn't write {path}: {e}	Nelze zapsat {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Formulář žádá o odeslání na {u}; Local PDF data formulářů neodesílá. Své údaje zachováte uložením dokumentu.
@@ -1729,7 +1723,6 @@ key	Space	Mezerník
 	The document now conforms to {level}; save it to keep the changes	Dokument nyní vyhovuje standardu {level}; změny zachováte uložením
 	Fixed what could be fixed; 1 problem remains	Opraveno, co šlo; zbývá 1 problém
 	Fixed what could be fixed; {n} problems remain	Opraveno, co šlo; zbývající problémy: {n}
-	Custom stamps arrive on the web with file pickers for images	Vlastní razítka přijdou na web s výběrem obrázkových souborů
 	{file} is too large for a stamp (at most {n} MB)	{file} je pro razítko příliš velký (nejvýše {n} MB)
 	Sent to {printer}	Odesláno na {printer}
 	Sent to {printer}: {msg}	Odesláno na {printer}: {msg}
@@ -1813,9 +1806,7 @@ key	Space	Mezerník
 	Couldn't split: {e}	Nelze rozdělit: {e}
 	Couldn't summarize comments: {e}	Komentáře nelze shrnout: {e}
 	Couldn't open the result: {e}	Výsledek nelze otevřít: {e}
-	Importing data arrives on the web with file pickers for data files	Import dat přijde na web s výběrem datových souborů
 	Exported to {path}	Exportováno do {path}
-	Merging data files needs the desktop app	Sloučení datových souborů vyžaduje desktopovou aplikaci
 	Merged 1 file into {path}	1 soubor sloučen do {path}
 	Merged {n} files into {path}	Do {path} sloučeno souborů: {n}
 	Combined {n} files	Sloučeno souborů: {n}
@@ -1825,7 +1816,6 @@ key	Space	Mezerník
 	Couldn't open {name}: {e}	{name} nelze otevřít: {e}
 	Couldn't read {name}: {e}	{name} nelze přečíst: {e}
 	Couldn't save: {e}	Nelze uložit: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Stahování příloh na webu přijde s M3.10 (připraveno {n} bajtů)
 	`{command}` {when}	Příkaz `{command}` {when}
 	ships in milestone {m}	přijde v milníku {m}
 	needs an AI provider (off by default)	vyžaduje poskytovatele AI (ve výchozím stavu vypnuto)
@@ -2252,7 +2242,6 @@ calendar date	December	prosince
 	A script	Skript
 	{who} in this document tried to open an address Local PDF won't open: {e}.	Pokus o otevření adresy, kterou Local PDF neotevře ({who} v tomto dokumentu): {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Pokus o otevření adresy, kterou Local PDF neotevře ({who} v tomto dokumentu): {e}. Z dokumentů se otevírají jen webové (http, https) a e-mailové (mailto) odkazy.
-	Another file dialog is still open. Finish with it first.	Je stále otevřené jiné dialogové okno se soubory. Nejdřív ho dokončete.
 	Couldn't show the file picker. Please try again.	Výběr souborů nelze zobrazit. Zkuste to prosím znovu.
 	The document changed while you were choosing a file, so nothing was changed.	Dokument se změnil, zatímco jste vybírali soubor, proto se nic nezměnilo.
 	The document was closed before it could be saved.	Dokument byl zavřen dříve, než mohl být uložen.
@@ -2445,12 +2434,9 @@ animation effects	Off	Vypnuto
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Ovladač této tiskárny nepřijímá nastavení oboustranného tisku z jiných programů, proto platí jeho vlastní nastavení. Změňte ho ve Vlastnosti…
 	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Písmo tohoto pole neumí zobrazit „{c}“ ({code}), proto Local PDF místo něj ukazuje ?. Hodnota se uloží a jiné prohlížeče PDF pole podle ní překreslí.
 	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Písma, kterými Local PDF píše, neumí zobrazit „{c}“ ({code}), proto se ve všech prohlížečích PDF zobrazí jako ?. Text se uloží.
-	Browser's print dialog	Dialog tisku prohlížeče
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Počet kopií, oboustranný tisk a barva se volí v dialogu tisku prohlížeče.
 	Preparing {n} sheets for printing…	Příprava {n} listů k tisku…
 	Preparing sheet {done} of {total} for printing…	Příprava listu {done} z {total} k tisku…
 	Opening the browser's print dialog…	Otevírá se dialog tisku prohlížeče…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Z prohlížeče nelze tisknout ({e}); místo toho byl k tisku stažen soubor {name}
 	Tools panel side	Strana panelu nástrojů
 	Add comment	Přidat komentář
 	Change tag properties	Změnit vlastnosti tagu
@@ -2582,7 +2568,6 @@ animation effects	Off	Vypnuto
 	Collapse all tools	Sbalit všechny nástroje
 	Attach a file…	Připojit soubor…
 	Delete attachment	Odstranit přílohu
-	Attaching files is not available on the web yet	Připojování souborů zatím na webu není k dispozici
 	Attach {name}	Připojit {name}
 	Delete attachment {key}	Odstranit přílohu {key}
 	Font	Písmo

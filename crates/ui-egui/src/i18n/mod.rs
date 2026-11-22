@@ -466,7 +466,6 @@ pub fn system_lang() -> Lang {
     *SYSTEM.get_or_init(detect_system_lang)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn detect_system_lang() -> Lang {
     for var in ["LC_ALL", "LC_MESSAGES", "LANG"] {
         if let Some(l) = std::env::var(var).ok().and_then(|v| language_override(&v)) {
@@ -491,7 +490,6 @@ fn detect_system_lang() -> Lang {
 
 /// A named locale can override the display language. On Windows, the neutral
 /// C/POSIX locale inherited from a launcher says nothing about the user's UI language.
-#[cfg(not(target_arch = "wasm32"))]
 fn language_override(tag: &str) -> Option<Lang> {
     let tag = tag.trim();
     if cfg!(target_os = "windows") && matches!(candidates(tag).first().map(String::as_str), Some("c" | "posix")) {
@@ -513,25 +511,6 @@ fn windows_ui_language() -> Option<String> {
 #[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
 fn first_supported(list: &str) -> Option<Lang> {
     list.split(['(', ')', ',', '"', '\n']).map(str::trim).filter(|s| !s.is_empty()).find_map(lang_from_tag)
-}
-
-/// The first supported language among BCP 47 tags in preference order, as the browser lists them
-/// in `navigator.languages` (#2954). Only the first few tags are looked at: the list is short in
-/// practice, and a page can't make Auto walk an unbounded one.
-#[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
-fn first_supported_tag<S: AsRef<str>>(tags: impl IntoIterator<Item = S>) -> Option<Lang> {
-    tags.into_iter().take(32).find_map(|tag| lang_from_tag(tag.as_ref().trim()))
-}
-
-/// The browser's preferred languages, as the desktop builds use the system's: `navigator.languages`
-/// in order, then `navigator.language` (kept within the 32 tags `first_supported_tag` reads).
-/// English when the browser offers none we have a catalog for.
-#[cfg(target_arch = "wasm32")]
-fn detect_system_lang() -> Lang {
-    let Some(navigator) = web_sys::window().map(|w| w.navigator()) else { return Lang::EN };
-    let mut tags: Vec<String> = navigator.languages().iter().take(31).filter_map(|v| v.as_string()).collect();
-    tags.extend(navigator.language());
-    first_supported_tag(&tags).unwrap_or(Lang::EN)
 }
 
 thread_local! {
@@ -831,21 +810,6 @@ mod tests {
         assert_eq!(first_supported("("), None);
     }
 
-    /// #2954: the web build's Auto language follows the browser's preferred languages in order,
-    /// skipping ones without a catalog, and is English only when none is supported.
-    #[test]
-    fn browser_language_list_is_followed_in_order() {
-        assert_eq!(first_supported_tag(["it-IT", "en-US"]), Lang::from_code("it"));
-        assert_eq!(first_supported_tag(["xx-YY", "ja", "fr-FR"]), Some(JA()));
-        assert_eq!(first_supported_tag(["zh-TW"]), Lang::from_code("zh-hant"));
-        assert_eq!(first_supported_tag(["en-GB", "fr-FR"]), Some(Lang::EN));
-        assert_eq!(first_supported_tag([" pt-PT "]), Lang::from_code("pt-br"));
-        assert_eq!(first_supported_tag(["", "xx"]), None);
-        assert_eq!(first_supported_tag(Vec::<String>::new()), None);
-        let long = std::iter::repeat_n("xx", 10_000).chain(["fr"]);
-        assert_eq!(first_supported_tag(long), None, "only the first tags are read");
-    }
-
     #[test]
     fn windows_display_language_resolves_chinese_scripts() {
         for tag in ["zh-CN", "zh-SG", "zh-Hans", "zh-Hans-CN"] {
@@ -1082,28 +1046,20 @@ mod tests {
         }
     }
 
-    /// With craft-fonts, every Japanese translation has glyphs: with all interface faces (desktop)
-    /// and with BIZ UDPGothic Regular alone (the web build's only Japanese face).
+    /// With craft-fonts, every Japanese translation has glyphs in the interface faces.
     #[test]
     fn japanese_labels_have_glyphs() {
         let craft = localpdf_fonts::ui_japanese_fonts();
-        let Some(web) = craft.iter().find(|f| f.family == "BIZ UDPGothic" && f.style == "Regular") else {
+        if craft.is_empty() {
             eprintln!("skipping Japanese glyph checks: build with CRAFT_FONTS_DIR to run them");
             return;
-        };
+        }
         let (entries, _) = parse_entries(JA().0.source, 1);
         let labels: String = entries.iter().flat_map(|e| e.translation.chars()).chain(JA().name().chars()).filter(|c| !c.is_control()).collect();
-        let web_name = web.name();
-        let mut web_only = crate::theme::font_definitions();
-        for family in web_only.families.values_mut() {
-            family.retain(|name| !localpdf_fonts::CRAFT_FONTS.iter().any(|face| face.name() == *name) || *name == web_name);
-        }
         use egui::epaint::text::{Fonts, TextOptions};
-        for (build, defs) in [("desktop", crate::theme::font_definitions()), ("web", web_only)] {
-            let mut fonts = Fonts::new(TextOptions::default(), defs);
-            for id in [egui::FontId::proportional(13.0), egui::FontId::monospace(13.0), crate::theme::medium(13.0), crate::theme::semibold(17.0)] {
-                assert!(fonts.has_glyphs(&id, &labels), "{build}: {id:?} lacks a Japanese label glyph");
-            }
+        let mut fonts = Fonts::new(TextOptions::default(), crate::theme::font_definitions());
+        for id in [egui::FontId::proportional(13.0), egui::FontId::monospace(13.0), crate::theme::medium(13.0), crate::theme::semibold(17.0)] {
+            assert!(fonts.has_glyphs(&id, &labels), "{id:?} lacks a Japanese label glyph");
         }
     }
 
@@ -1264,8 +1220,8 @@ mod tests {
     }
 
     /// With a craft-fonts Telugu face, every Telugu translation has glyphs: with all interface
-    /// faces (desktop) and with the Telugu face as the only craft-fonts face (the web build keeps
-    /// it; Telugu labels must not need a Japanese or Arabic face).
+    /// faces and with the Telugu face as the only craft-fonts face (Telugu labels must not need a
+    /// Japanese or Arabic face).
     #[test]
     fn telugu_labels_have_glyphs() {
         let telugu: Vec<String> = localpdf_fonts::ui_telugu_fonts().iter().map(|f| f.name()).collect();
@@ -1837,8 +1793,8 @@ mod tests {
     }
 
     /// With a craft-fonts Arabic face, every Arabic translation has glyphs: with all interface
-    /// faces (desktop) and with the Arabic face as the only craft-fonts face (the web build keeps
-    /// it; Arabic labels must not need a Japanese face).
+    /// faces and with the Arabic face as the only craft-fonts face (Arabic labels must not need a
+    /// Japanese face).
     #[test]
     fn arabic_labels_have_glyphs() {
         let faces: Vec<String> = localpdf_fonts::ui_arabic_fonts().iter().map(|f| f.name()).collect();

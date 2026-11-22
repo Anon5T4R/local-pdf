@@ -5,8 +5,8 @@
 //! (`MouseWheelUnit::Point`) and the lift as an axis stop, which winit passes on as
 //! `TouchPhase::End`; GTK and Firefox glide on from there, and so does the page view.
 //!
-//! macOS sends its own momentum as a second `Start`…`End`, so gliding there would glide twice,
-//! and the web has no touch phases: [`Fling::enabled`] is off on both. Windows and X11 report no
+//! macOS sends its own momentum as a second `Start`…`End`, so gliding there would glide twice:
+//! [`Fling::enabled`] is off there. Windows and X11 report no
 //! touch phases through winit either, so no `End` ever starts a glide there.
 
 use egui::{Event, MouseWheelUnit, TouchPhase, Vec2};
@@ -41,7 +41,7 @@ pub(crate) struct Fling {
 
 impl Default for Fling {
     fn default() -> Self {
-        Self::new(!cfg!(any(target_os = "macos", target_arch = "wasm32")))
+        Self::new(!cfg!(target_os = "macos"))
     }
 }
 
@@ -245,7 +245,7 @@ mod tests {
     fn no_glide_where_it_is_off_or_not_wanted() {
         let mut off = Fling::new(false);
         swipe(&mut off, -25.0, 6);
-        assert!(!off.gliding(), "macOS and the web glide by themselves or not at all");
+        assert!(!off.gliding(), "macOS glides by itself or not at all");
 
         let mut fling = Fling::new(true);
         let dt = 1.0 / 60.0;

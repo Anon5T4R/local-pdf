@@ -28,7 +28,7 @@ character no available face has is refused with an error that names it, and a CJ
 without a craft-fonts build says so. Replacement text takes the craft-fonts Japanese faces when
 they can draw all of it, and the bundled Inter face (`assets/fonts`) for the Latin, Greek and
 Cyrillic letters they lack (Uzbek `қизил`, Kazakh `әже`): that face needs no build input, so
-these work in every build, the web one included. Choosing another face
+these work without it. Choosing another face
 is explicit. Fonts with restricted embedding, unsupported collections, excluded families or
 no open-licence declaration are refused. Interface fallback fonts are never exported.
 

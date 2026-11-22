@@ -8,7 +8,7 @@ this page is the local copy of the decision.
 ## Decision
 
 - Two files, both **compiled into the binary** by the UI crate's `build.rs` (nothing is read from
-  disk or the network at run time; the web build has them too):
+  disk or the network at run time):
   - [`contributors/contributors.json`](../contributors/contributors.json): commit stats per GitHub
     username. **Generated** by `craftrules/scripts/contributors.py`; never hand-edit.
   - [`contributors/people.toml`](../contributors/people.toml): the names people chose for

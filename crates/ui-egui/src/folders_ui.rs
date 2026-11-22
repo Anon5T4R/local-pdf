@@ -183,15 +183,12 @@ fn cloud_drive(folder: &str) -> String {
 impl LocalPDFApp {
     /// File ▸ Pin folder to Home…: choose a folder whose newest PDFs Home lists.
     pub fn pin_folder_dialog(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let dialog = rfd::AsyncFileDialog::new().set_title(tl!("Pin a folder to Home").to_string());
             self.ask_one(crate::pickers::Ask::Folder(dialog), None, |app, dir| {
                 app.pin_folder(&dir.to_string_lossy());
             });
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("Pinned folders need the desktop app");
     }
 
     /// Pin `folder` (an absolute path) to Home. Returns false, after telling the user, when it
@@ -281,8 +278,7 @@ impl LocalPDFApp {
     }
 }
 
-/// The Home view's Folders section (desktop only: the web build has no folders to read).
-#[cfg(not(target_arch = "wasm32"))]
+/// The Home view's Folders section.
 pub(crate) fn section(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
     use egui::{Align2, CornerRadius, Rect, Sense, vec2};
 

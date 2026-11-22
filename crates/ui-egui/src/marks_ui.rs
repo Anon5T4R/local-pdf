@@ -568,7 +568,6 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
         }
     });
     // Browse…: the picker answers on a later frame, into the draft.
-    #[cfg(not(target_arch = "wasm32"))]
     if browse {
         let dialog = rfd::AsyncFileDialog::new()
             .add_filter(tl!("PDF or image"), &["pdf", "png", "jpg", "jpeg", "tif", "tiff", "gif", "bmp", "jp2", "j2k", "jpx"]);
@@ -582,8 +581,6 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
                 std::fs::read(&p).ok().map(|b| (p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default(), std::sync::Arc::new(b)));
         });
     }
-    #[cfg(target_arch = "wasm32")]
-    let _ = browse;
     (apply, cancel)
 }
 
@@ -606,10 +603,8 @@ fn mark_file(d: &MarksDraft) -> Option<localpdf_engine::MarkFile> {
 /// when Browse… was clicked (the caller shows the picker once it no longer borrows the draft).
 fn file_source(ui: &mut egui::Ui, d: &mut MarksDraft, kind: MarkKind) -> bool {
     // Browse… is desktop-only.
-    #[cfg_attr(target_arch = "wasm32", allow(unused_mut))]
     let mut browse = false;
     ui.horizontal(|ui| {
-        #[cfg(not(target_arch = "wasm32"))]
         if ui.button(tl!("Browse…")).clicked() {
             browse = true;
         }

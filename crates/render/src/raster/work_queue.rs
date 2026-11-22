@@ -4,7 +4,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
-#[cfg(any(test, not(target_arch = "wasm32")))]
 use std::time::Duration;
 
 use super::{RenderRequest, RenderedPage, RequestKind, Tile, lock};
@@ -44,7 +43,6 @@ fn valid(tokens: &[Arc<AtomicBool>]) -> bool {
     tokens.iter().all(|token| token.load(Ordering::Acquire))
 }
 
-#[cfg(any(test, not(target_arch = "wasm32")))]
 fn result_bytes(page: &RenderedPage) -> usize {
     let mut bytes = std::mem::size_of::<RenderedPage>().saturating_add(page.rgba.byte_capacity());
     if let Some(error) = &page.error {
@@ -162,7 +160,6 @@ impl WorkQueue {
 
     /// Skip an obsolete request before entering the next expensive stage. Work already
     /// executing cannot be interrupted, but cancelled parsing need not start a raster.
-    #[cfg(any(test, not(target_arch = "wasm32")))]
     pub(super) fn cancel_obsolete(&self, req: RenderRequest) -> bool {
         let mut state = lock(&self.state);
         let key = Key::from(req);
@@ -186,12 +183,10 @@ impl WorkQueue {
 
     /// A failed shared parser invalidates its token. Such results are retried by a worker
     /// using the pool's fallback parser, including when failure occurs after enqueueing.
-    #[cfg(any(test, not(target_arch = "wasm32")))]
     pub(super) fn send_valid(&self, page: RenderedPage, token: Option<Arc<AtomicBool>>) -> Result<(), ()> {
         self.send_valid_with_tokens(page, token.into_iter().collect())
     }
 
-    #[cfg(any(test, not(target_arch = "wasm32")))]
     pub(super) fn send_valid_with_tokens(&self, page: RenderedPage, tokens: Vec<Arc<AtomicBool>>) -> Result<(), ()> {
         let key = Key::from(page.request);
         let bytes = result_bytes(&page);
@@ -226,7 +221,6 @@ impl WorkQueue {
 
     /// A shared-parser timeout may belong to another page holding a cold-load gate.
     /// Retry still-current demand after the pool switches permanently to private parsers.
-    #[cfg(any(test, not(target_arch = "wasm32")))]
     pub(super) fn retry(&self, request: RenderRequest) {
         lock(&self.state).retry(request);
         self.changed.notify_all();
@@ -234,7 +228,6 @@ impl WorkQueue {
 
     /// Watchdog errors contain no page payload. They must never block the UI thread behind
     /// a full result buffer; evict/retry one completed request if necessary.
-    #[cfg(any(test, not(target_arch = "wasm32")))]
     pub(super) fn abandon(&self, page: RenderedPage) {
         let mut state = lock(&self.state);
         let req = page.request;

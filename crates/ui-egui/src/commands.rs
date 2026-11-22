@@ -30,8 +30,8 @@ pub(crate) const SELECT_ALL: Shortcut = Shortcut::cmd("A");
 pub(crate) const PAGE_PREV: Shortcut = Shortcut::cmd("←");
 pub(crate) const PAGE_NEXT: Shortcut = Shortcut::cmd("→");
 
-/// Whether shortcuts are written the macOS way (`⇧⌘S`) rather than `Ctrl+Shift+S`. egui knows the
-/// platform from the build target, and on the web from the browser's user agent.
+/// Whether shortcuts are written the macOS way (`⇧⌘S`) rather than `Ctrl+Shift+S`. The platform
+/// comes from the context, not the build target.
 pub(crate) fn mac_shortcuts(ctx: &egui::Context) -> bool {
     ctx.os() == egui::os::OperatingSystem::Mac
 }
@@ -764,7 +764,7 @@ impl LocalPDFApp {
             // so ⌘S saves what's on screen (#166). Runs next frame, for this document only.
             self.deferred_commands.push((id, active.map(|(_, id)| id)));
             ctx.request_repaint();
-        } else if id == "file.close" && active.is_none() && crate::commands::mac_shortcuts(ctx) && !cfg!(target_arch = "wasm32") {
+        } else if id == "file.close" && active.is_none() && crate::commands::mac_shortcuts(ctx) {
             // macOS ⌘W closes the last window when no document tabs remain (#869). Route through
             // the normal viewport-close path (and its quit guard), not the disabled document-only
             // `file.close` command.

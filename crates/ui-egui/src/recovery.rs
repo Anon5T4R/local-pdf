@@ -345,7 +345,6 @@ impl LocalPDFApp {
         let Some(store) = self.recovery.clone() else { return };
         for key in keys {
             let Some(meta) = self.recoverable.iter().find(|m| &m.key == key).cloned() else { continue };
-            #[cfg(not(target_arch = "wasm32"))]
             if self.ctx.is_some() && !self.run_inline {
                 self.startup_superseded = true;
                 let result = self.schedule_open(crate::OpenRequest {

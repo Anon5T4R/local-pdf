@@ -982,10 +982,7 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
                 return;
             }
             Dialog::OverwriteChanged => {
-                #[cfg(not(target_arch = "wasm32"))]
                 let name = app.pending_overwrite.as_ref().and_then(|p| app.session.get(p.id)).map(|d| d.name.clone()).unwrap_or_default();
-                #[cfg(target_arch = "wasm32")]
-                let name = String::new();
                 ui.label(egui::RichText::new(tl!("Save over the changed file?")).font(theme::semibold(18.0)));
                 ui.add_space(8.0);
                 ui.label(crate::i18n::fmt(
@@ -1443,7 +1440,6 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
     if revert_now {
         app.revert_active();
     }
-    #[cfg(not(target_arch = "wasm32"))]
     {
         if overwrite_now {
             app.overwrite_changed_file();
@@ -1452,10 +1448,7 @@ fn dialogs(app: &mut LocalPDFApp, ctx: &egui::Context) {
             app.save_changed_file_elsewhere();
         }
     }
-    #[cfg(target_arch = "wasm32")]
-    let _ = (overwrite_now, overwrite_elsewhere);
     // Cancelled or dismissed: the save is dropped.
-    #[cfg(not(target_arch = "wasm32"))]
     if dialog == Dialog::OverwriteChanged && (modal.should_close() || close) {
         app.pending_overwrite = None;
     }
@@ -1746,7 +1739,7 @@ fn save_prompt(app: &mut LocalPDFApp, ctx: &egui::Context) {
         return;
     };
     let t = Tokens::get(ctx);
-    // Wrapping alone (#161) still let a long enough name (a web `?file=` URL has no limit) grow
+    // Wrapping alone (#161) still let a long enough name (a document name can be long) grow
     // the prompt taller than the window (#236); 80 characters wrap to a few lines.
     let shown = shorten_middle(&name, 80);
     let mut choice: Option<Option<bool>> = None;

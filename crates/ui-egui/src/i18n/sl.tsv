@@ -166,7 +166,6 @@
 	Added more than once	Večkrat dodano
 	Added the first {n} PDFs in {folder}	Dodanih je prvih {n} datotek PDF v mapi {folder}
 	Added {n} comments	Dodanih komentarjev: {n}
-	Adding images arrives on the web with file pickers for images	Dodajanje slik bo v spletni različici na voljo z izbirniki slikovnih datotek
 	Adds invisible text over each word; the page image is not changed	Doda nevidno besedilo čez vsako besedo; slika strani se ne spremeni
 	Advanced	Napredno
 	Advanced Options {chevron}	Napredne možnosti {chevron}
@@ -212,7 +211,6 @@
 	Angle	Kot
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Animacije, ki utripajo, lahko sprožijo napade. Preverite skripte in predstavnostne vsebine glede utripanja.
 	Annotations, form fill-in, and digital signatures	Opombe, izpolnjevanje obrazcev in digitalni podpisi
-	Another file dialog is still open. Finish with it first.	Odprto je že eno pogovorno okno. Najprej ga zaprite.
 	Any	Poljubno
 	Any except extracting pages	Vse razen izvlečenja strani
 	Anyone opening the document will need this password. It's applied when you save.	Vsak, ki odpre dokument, bo potreboval to geslo. Vključi se ob shranjevanju.
@@ -524,7 +522,6 @@
 	Zoom — type a percentage and press Enter	Povečava – vnesite odstotek in pritisnite Enter
 	Custom	Po meri
 	Custom scale:	Merilo po meri:
-	Custom stamps arrive on the web with file pickers for images	Lastni žigi bodo v spletni različici na voljo z izbirniki slikovnih datotek
 	Custom text:	Besedilo po meri:
 	Custom:	Po meri:
 	Cut	Izreži
@@ -633,7 +630,6 @@
 	Double-click	Dvoklik
 	Download	Prenesi
 	Downloaded {name}	Preneseno: {name}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Prenos priponk v spletni različici pride z M3.10 (pripravljenih bajtov: {n})
 	Downsample to	Zmanjšaj vzorčenje na
 	Also recognize pages that already have text	Prepoznaj tudi strani, ki že vsebujejo besedilo
 	Pictures on those pages are recognized too; words already in the page's text are not added again	Prepoznane bodo tudi slike na teh straneh; besede, ki so že v besedilu strani, ne bodo dodane znova
@@ -942,7 +938,6 @@
 	Import data	Uvozi podatke
 	Import form data…	Uvozi podatke obrazca…
 	Import {name}	Uvozi: {name}
-	Importing data arrives on the web with file pickers for data files	Uvoz podatkov bo v spletni različici na voljo z izbirniki podatkovnih datotek
 	In multiple files	V več datotekah
 	In this file	V tej datoteki
 	Includes unsaved changes	Vključuje neshranjene spremembe
@@ -1127,7 +1122,6 @@
 	Merged 1 file into {path}	Združena je 1 datoteka v {path}
 	Merged PRs	Združeni PR-ji
 	Merged {n} files into {path}	Združenih datotek: {n}, v {path}
-	Merging data files needs the desktop app	Združevanje podatkovnih datotek zahteva namizno aplikacijo
 	Metadata	Metapodatki
 	Microsoft Word (.docx)	Microsoft Word (.docx)
 	Midpoint	Središčna točka
@@ -1244,7 +1238,6 @@
 	Old file:	Stara datoteka:
 	On Blur	Ob izgubi fokusa
 	On Focus	Ob fokusu
-	On the web, open or drop an image to convert it	V spletni različici odprite ali spustite sliko za pretvorbo
 	One {f} file per page, named after the document.	Ena datoteka {f} na stran, poimenovana po dokumentu.
 	Only continue if you trust this document. An address can carry information from the document, such as what you typed into its form.	Nadaljujte samo, če temu dokumentu zaupate. Naslov lahko prenaša podatke iz dokumenta, na primer to, kar ste vnesli v njegov obrazec.
 	Only the document's owner can change its security (open it with the permissions password)	Varnostne nastavitve lahko spremeni samo lastnik dokumenta (odprite ga z geslom za dovoljenja)
@@ -1374,7 +1367,6 @@
 	Pin a folder…	Pripni mapo…
 	Pin folder to Home…	Pripni mapo na domačo stran…
 	Pink	Roza
-	Pinned folders need the desktop app	Pripete mape zahtevajo namizno aplikacijo
 	Pinned {folder} to Home	Mapa {folder} je pripeta na domačo stran
 	Place saved {what}	Postavi shranjeno: {what}
 	Plain text in reading order; pages are separated by form feeds.	Navadno besedilo v vrstnem redu branja; strani so ločene z znaki za prelom strani.
@@ -1527,8 +1519,6 @@
 	Replacement text	Nadomestno besedilo
 	Replacement: pages of {name}	Zamenjava: strani datoteke {name}
 	Replaces the existing one on those pages.	Nadomesti obstoječe na teh straneh.
-	Replacing images arrives on the web with image file pickers	Zamenjava slik bo v spletni različici na voljo z izbirniki slikovnih datotek
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Zamenjava slik na strani {p} bo v spletni različici na voljo z izbirniki slik ({i})
 	Reply	Odgovori
 	Report	Poročilo
 	Report Options	Možnosti poročila
@@ -2132,7 +2122,6 @@
 	{name} is read-only	{name} je samo za branje
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} odda obrazec na {url}; Local PDF ne pošilja podatkov obrazcev. Shranite dokument, da obdržite svoje vnose.
 	{name} — unsaved changes	{name} — neshranjene spremembe
-	{name}: choosing images arrives on the web with file pickers for images	{name}: izbiranje slik bo v spletni različici na voljo z izbirniki slikovnih datotek
 	{name}: the {other} action isn't supported yet	{name}: dejanje {other} še ni podprto
 	{n} contributors · {c} commits	Sodelujočih: {n} · commitov: {c}
 	{n} days ago	pred {n} dnevi
@@ -2375,12 +2364,9 @@ animation effects	Off	Izklopljeni
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Gonilnik tega tiskalnika ne sprejema nastavitev obojestranskega tiskanja iz drugih programov, zato velja njegova lastna nastavitev. Spremenite jo v Lastnosti…
 	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Pisava tega polja ne more prikazati »{c}« ({code}), zato Local PDF namesto njega prikaže ?. Vrednost se shrani, drugi pregledovalniki PDF pa polje znova narišejo iz nje.
 	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Pisave, s katerimi piše Local PDF, ne morejo prikazati »{c}« ({code}), zato se v vseh pregledovalnikih PDF prikaže kot ?. Besedilo se shrani.
-	Browser's print dialog	Pogovorno okno za tiskanje v brskalniku
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Število kopij, obojestransko tiskanje in barvo izberete v pogovornem oknu za tiskanje v brskalniku.
 	Preparing {n} sheets for printing…	Priprava listov za tiskanje: {n}…
 	Preparing sheet {done} of {total} for printing…	Priprava lista {done} od {total} za tiskanje…
 	Opening the browser's print dialog…	Odpiranje pogovornega okna za tiskanje v brskalniku…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Tiskanje iz brskalnika ni mogoče ({e}); namesto tega je bila za tiskanje prenesena datoteka {name}
 	Tools panel side	Stran podokna z orodji
 	Add comment	Dodaj komentar
 	Change tag properties	Spremeni lastnosti oznake
@@ -2513,7 +2499,6 @@ animation effects	Off	Izklopljeni
 	Collapse all tools	Strni vsa orodja
 	Attach a file…	Priloži datoteko…
 	Delete attachment	Izbriši prilogo
-	Attaching files is not available on the web yet	Prilaganje datotek na spletu še ni na voljo
 	Attach {name}	Priloži {name}
 	Delete attachment {key}	Izbriši prilogo {key}
 	Font	Pisava

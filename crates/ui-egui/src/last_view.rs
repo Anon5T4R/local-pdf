@@ -27,15 +27,9 @@ pub struct LastView {
     pub cover: bool,
 }
 
-/// As `last_session` keys files (and the web has no paths to remember).
-#[cfg(not(target_arch = "wasm32"))]
+/// As `last_session` keys files.
 fn absolute(path: &str) -> String {
     std::path::absolute(path).map_or_else(|_| path.to_string(), |p| p.to_string_lossy().into_owned())
-}
-
-#[cfg(target_arch = "wasm32")]
-fn absolute(path: &str) -> String {
-    path.to_string()
 }
 
 impl LocalPDFApp {

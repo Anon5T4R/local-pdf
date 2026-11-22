@@ -70,28 +70,19 @@ impl LocalPDFApp {
                 refused.push(format!("{name} ({})", tl!("no unused output name")));
                 continue;
             };
-            #[cfg(not(target_arch = "wasm32"))]
             let result = match target {
                 Some(path) => crate::editing::write_atomically(&path.to_string_lossy(), &pdf).map_err(|e| e.to_string()),
                 None => Err(tl!("no output folder was chosen").to_string()),
-            };
-            #[cfg(target_arch = "wasm32")]
-            let result = {
-                let _ = target;
-                crate::editing::download(&filename, &pdf)
             };
             match result {
                 Ok(()) => made += 1,
                 Err(error) => refused.push(format!("{filename} ({error})")),
             }
         }
-        if made > 0 {
-            #[cfg(not(target_arch = "wasm32"))]
-            if let Some(dir) = &dir {
-                self.notify_fmt("Wrote {n} files to {dir}", &[("n", &made.to_string()), ("dir", &dir.display().to_string())]);
-            }
-            #[cfg(target_arch = "wasm32")]
-            self.notify(crate::i18n::trn(crate::i18n::current(), made as u64, "Downloaded {n} PDF", "Downloaded {n} PDFs"));
+        if made > 0
+            && let Some(dir) = &dir
+        {
+            self.notify_fmt("Wrote {n} files to {dir}", &[("n", &made.to_string()), ("dir", &dir.display().to_string())]);
         }
         if !refused.is_empty() {
             self.notify(crate::i18n::fmt(tl!("Left out: {names}"), &[("names", &refused.join(", "))]));

@@ -41,7 +41,6 @@
 	Show less	Свернуть
 	Show {n} more	Показать ещё {n}
 	The newest {n} of {total} PDFs	Последние {n} PDF из {total}
-	Pinned folders need the desktop app	Для закреплённых папок нужно настольное приложение
 	Choose a folder on this computer to pin	Выберите папку на этом компьютере, чтобы закрепить её
 	{folder} is already pinned to Home	{folder} уже закреплена на главной
 	You can pin up to {n} folders. Unpin one first.	Можно закрепить не более {n} папок. Сначала открепите одну из них.
@@ -1602,13 +1601,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Этот файл уже минимального размера ({size}). Копия не сохранена.
 	Saved {place}: {before} → {after} (not smaller){detail}	Сохранено {place}: {before} → {after} (не меньше){detail}
 	Couldn't save the image: {e}	Не удалось сохранить изображение: {e}
-	Adding images arrives on the web with file pickers for images	Добавление изображений появится в веб-версии с выбором файлов изображений
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Замена изображений на стр. {p} появится в веб-версии с выбором изображений ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: выбор изображений появится в веб-версии с выбором файлов изображений
-	Replacing images arrives on the web with image file pickers	Замена изображений появится в веб-версии с выбором файлов изображений
 	Couldn't create a PDF: {e}	Не удалось создать PDF: {e}
 	The clipboard has no image or text	В буфере обмена нет изображения или текста
-	On the web, open or drop an image to convert it	В веб-версии откройте или перетащите изображение для конвертации
 	Couldn't optimize the file: {e}	Не удалось оптимизировать файл: {e}
 	Couldn't write {path}: {e}	Не удалось записать {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Форма просит отправить данные на {u}; Local PDF не отправляет данные форм. Сохраните документ, чтобы сохранить введённые данные.
@@ -1660,7 +1654,6 @@
 	The document now conforms to {level}; save it to keep the changes	Теперь документ соответствует {level}; сохраните, чтобы сохранить изменения
 	Fixed what could be fixed; 1 problem remains	Исправлено всё, что можно; осталась 1 проблема
 	Fixed what could be fixed; {n} problems remain	Исправлено всё, что можно; осталось {n} проблем
-	Custom stamps arrive on the web with file pickers for images	Свои штампы появятся в веб-версии с выбором файлов изображений
 	{file} is too large for a stamp (at most {n} MB)	{file} слишком велик для штампа (не более {n} МБ)
 	Sent to {printer}	Отправлено на {printer}
 	Sent to {printer}: {msg}	Отправлено на {printer}: {msg}
@@ -1759,9 +1752,7 @@
 	Couldn't split: {e}	Не удалось разделить: {e}
 	Couldn't summarize comments: {e}	Не удалось суммировать комментарии: {e}
 	Couldn't open the result: {e}	Не удалось открыть результат: {e}
-	Importing data arrives on the web with file pickers for data files	Импорт данных появится в веб-версии с выбором файлов данных
 	Exported to {path}	Экспортировано в {path}
-	Merging data files needs the desktop app	Объединение файлов данных требует настольное приложение
 	Merged 1 file into {path}	Объединён 1 файл в {path}
 	Merged {n} files into {path}	Объединено {n} файлов в {path}
 	Combined {n} files	Объединено {n} файлов
@@ -1771,7 +1762,6 @@
 	Couldn't open {name}: {e}	Не удалось открыть {name}: {e}
 	Couldn't read {name}: {e}	Не удалось прочитать {name}: {e}
 	Couldn't save: {e}	Не удалось сохранить: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Скачивание вложений в веб-версии появится с M3.10 ({n} байт .ready)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	появится на этапе {m}
 	needs an AI provider (off by default)	нужен AI-провайдер (по умолчанию выключено)
@@ -2284,12 +2274,9 @@ animation effects	Off	Выкл
 	Change the colour of line art as well as text	Менять цвет и линий, а не только текста
 	Colours are remapped while rendering; the document itself never changes.	Цвета меняются при отрисовке; сам документ никогда не изменяется.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Драйвер этого принтера не принимает настройки двусторонней печати от других программ, поэтому действует его собственная настройка. Измените её в окне Свойства…
-	Browser's print dialog	Диалог печати браузера
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Число копий, двустороннюю печать и цвет выбирают в диалоге печати браузера.
 	Preparing {n} sheets for printing…	Подготовка листов к печати: {n}…
 	Preparing sheet {done} of {total} for printing…	Подготовка к печати листа {done} из {total}…
 	Opening the browser's print dialog…	Открывается диалог печати браузера…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Не удалось напечатать из браузера ({e}); вместо этого для печати скачан файл {name}
 	Tools panel side	Сторона панели инструментов
 	Add comment	Добавить комментарий
 	Change tag properties	Изменить свойства тега
@@ -2421,7 +2408,6 @@ animation effects	Off	Выкл
 	Collapse all tools	Свернуть все инструменты
 	Attach a file…	Прикрепить файл…
 	Delete attachment	Удалить вложение
-	Attaching files is not available on the web yet	Прикрепление файлов в веб-версии пока недоступно
 	Attach {name}	Прикрепить {name}
 	Delete attachment {key}	Удалить вложение {key}
 	Font	Шрифт

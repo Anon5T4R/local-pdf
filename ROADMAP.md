@@ -31,7 +31,7 @@ Na ordem em que dói no uso diário (levantado em 2026-10, e desde então corrig
 2. **XFA**: cobertura dos formulários reais ainda incompleta (`crates/xfa`).
 3. **JavaScript de documento**: o subconjunto de `crates/js` não cobre todas as APIs do Acrobat.
 4. **Interface espelhada (RTL)** e os catálogos de tradução ainda incompletos em alguns idiomas.
-5. **Plataformas**: este fork publica Windows e Linux; macOS, BSD, Flatpak e web não são publicados.
+5. **Plataformas**: este fork publica Windows e Linux; macOS, BSD e Flatpak não são publicados.
 
 Itens de release, CI e gate local: `AGENTS.md` (§ Regras, § Build) e `docs/git-protocol.md` do
 dev-notes. Decisões do sync com o upstream: `docs/UPSTREAM-SYNC.md`.

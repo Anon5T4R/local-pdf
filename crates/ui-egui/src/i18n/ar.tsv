@@ -50,7 +50,6 @@
 	Show less	عرض أقل
 	Show {n} more	عرض {n} أخرى
 	The newest {n} of {total} PDFs	أحدث {n} من أصل {total} ملف PDF
-	Pinned folders need the desktop app	المجلدات المثبتة تتطلب تطبيق سطح المكتب
 	Choose a folder on this computer to pin	اختر مجلدًا على هذا الحاسوب لتثبيته
 	{folder} is already pinned to Home	{folder} مثبت بالفعل في الصفحة الرئيسية
 	You can pin up to {n} folders. Unpin one first.	يمكنك تثبيت {n} مجلدات كحد أقصى. ألغِ تثبيت أحدها أولًا.
@@ -1601,13 +1600,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	هذا الملف صغير بالفعل قدر الإمكان ({size}). لم تُحفظ أي نسخة.
 	Saved {place}: {before} → {after} (not smaller){detail}	تم الحفظ {place}: {before} → {after} (ليس أصغر){detail}
 	Couldn't save the image: {e}	تعذّر حفظ الصورة: {e}
-	Adding images arrives on the web with file pickers for images	إضافة الصور ستتوفر على الويب مع منتقيات ملفات الصور
-	Replacing images on page {p} arrives on the web with image pickers ({i})	استبدال الصور في الصفحة {p} سيتوفر على الويب مع منتقيات الصور ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: اختيار الصور سيتوفر على الويب مع منتقيات ملفات الصور
-	Replacing images arrives on the web with image file pickers	استبدال الصور سيتوفر على الويب مع منتقيات ملفات الصور
 	Couldn't create a PDF: {e}	تعذّر إنشاء ملف PDF: {e}
 	The clipboard has no image or text	الحافظة لا تحتوي على صورة أو نص
-	On the web, open or drop an image to convert it	على الويب، افتح صورة أو أفلتها لتحويلها
 	Couldn't optimize the file: {e}	تعذّر تحسين الملف: {e}
 	Couldn't write {path}: {e}	تعذّرت الكتابة في {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	النموذج يطلب إرساله إلى {u}؛ Local PDF لا يرسل بيانات النماذج. احفظ المستند للاحتفاظ بما أدخلته.
@@ -1659,7 +1653,6 @@
 	The document now conforms to {level}; save it to keep the changes	المستند مطابق الآن لـ {level}؛ احفظه للاحتفاظ بالتغييرات
 	Fixed what could be fixed; 1 problem remains	أُصلح ما أمكن إصلاحه؛ بقيت مشكلة واحدة
 	Fixed what could be fixed; {n} problems remain	أُصلح ما أمكن إصلاحه؛ بقيت {n} مشكلات
-	Custom stamps arrive on the web with file pickers for images	الأختام المخصصة ستتوفر على الويب مع منتقيات ملفات الصور
 	{file} is too large for a stamp (at most {n} MB)	{file} أكبر من أن يكون ختمًا ({n} ميغابايت على الأكثر)
 	Sent to {printer}	أُرسل إلى {printer}
 	Sent to {printer}: {msg}	أُرسل إلى {printer}: {msg}
@@ -1758,9 +1751,7 @@
 	Couldn't split: {e}	تعذّر التقسيم: {e}
 	Couldn't summarize comments: {e}	تعذّر تلخيص التعليقات: {e}
 	Couldn't open the result: {e}	تعذّر فتح النتيجة: {e}
-	Importing data arrives on the web with file pickers for data files	استيراد البيانات سيتوفر على الويب مع منتقيات ملفات البيانات
 	Exported to {path}	تم التصدير إلى {path}
-	Merging data files needs the desktop app	دمج ملفات البيانات يتطلب تطبيق سطح المكتب
 	Merged 1 file into {path}	دُمج ملف واحد في {path}
 	Merged {n} files into {path}	دُمج {n} ملفات في {path}
 	Combined {n} files	دُمج {n} ملفات
@@ -1770,7 +1761,6 @@
 	Couldn't open {name}: {e}	تعذّر فتح {name}: {e}
 	Couldn't read {name}: {e}	تعذّرت قراءة {name}: {e}
 	Couldn't save: {e}	تعذّر الحفظ: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	تنزيل المرفقات على الويب سيتوفر مع M3.10 ({n} بايت جاهزة)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	يصدر في المرحلة {m}
 	needs an AI provider (off by default)	يتطلب مزوّد ذكاء اصطناعي (متوقف افتراضيًا)
@@ -2221,7 +2211,6 @@ calendar date	December	ديسمبر
 	A script	سكربت
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} في هذا المستند حاول فتح عنوان لن يفتحه Local PDF: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} في هذا المستند حاول فتح عنوان لن يفتحه Local PDF: {e}. روابط الويب (http, https) والبريد (mailto) وحدها تُفتح من المستندات.
-	Another file dialog is still open. Finish with it first.	يوجد حوار ملفات آخر ما زال مفتوحًا. أنهِ العمل فيه أولًا.
 	Couldn't show the file picker. Please try again.	تعذّر إظهار منتقي الملفات. حاول مجددًا.
 	The document changed while you were choosing a file, so nothing was changed.	تغيّر المستند أثناء اختيارك ملفًا، فلم يُغيَّر شيء.
 	The document was closed before it could be saved.	أُغلق المستند قبل أن يمكن حفظه.
@@ -2392,12 +2381,9 @@ animation effects	Off	معطّلة
 	Change the colour of line art as well as text	تغيير لون الخطوط أيضًا، وليس النص فقط
 	Colours are remapped while rendering; the document itself never changes.	تُستبدل الألوان عند الرسم؛ المستند نفسه لا يتغير أبدًا.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	لا يقبل برنامج تشغيل هذه الطابعة إعدادات الطباعة على الوجهين من البرامج الأخرى، لذا يُطبَّق إعداده الخاص. غيّره من خصائص…
-	Browser's print dialog	مربع حوار الطباعة في المتصفح
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	يُختار عدد النسخ والطباعة على الوجهين والألوان في مربع حوار الطباعة في المتصفح.
 	Preparing {n} sheets for printing…	جارٍ تجهيز {n} من الأوراق للطباعة…
 	Preparing sheet {done} of {total} for printing…	جارٍ تجهيز الورقة {done} من {total} للطباعة…
 	Opening the browser's print dialog…	جارٍ فتح مربع حوار الطباعة في المتصفح…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	تعذّرت الطباعة من المتصفح ({e})؛ نُزّل {name} لطباعته بدلًا من ذلك
 	Tools panel side	جانب لوحة الأدوات
 	Add comment	إضافة تعليق
 	Change tag properties	تغيير خصائص الوسم
@@ -2785,7 +2771,6 @@ certificate	Version	الإصدار
 	Collapse all tools	طي كل الأدوات
 	Attach a file…	إرفاق ملف…
 	Delete attachment	حذف المرفق
-	Attaching files is not available on the web yet	إرفاق الملفات غير متاح على الويب بعد
 	Attach {name}	إرفاق {name}
 	Delete attachment {key}	حذف المرفق {key}
 	Bulleted list	قائمة نقطية

@@ -52,7 +52,6 @@
 	Show less	نمایش کمتر
 	Show {n} more	نمایش {n} مورد بیشتر
 	The newest {n} of {total} PDFs	{n} PDF جدید‌تر از {total} PDF
-	Pinned folders need the desktop app	پوشه‌های سنجاق‌شده به برنامه دسکتاپ نیاز دارند
 	Choose a folder on this computer to pin	یک پوشه روی این رایانه برای سنجاق کردن انتخاب کنید
 	{folder} is already pinned to Home	{folder} از قبل به خانه سنجاق شده است
 	You can pin up to {n} folders. Unpin one first.	می‌توانید تا {n} پوشه را سنجاق کنید. ابتدا یکی را بردارید.
@@ -1597,13 +1596,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	این فایل از قبل تا حد امکان کوچک است ({size}). هیچ نسخ‌های ذخیره نشد.
 	Saved {place}: {before} → {after} (not smaller){detail}	ذخیره‌شده {place}: {before} → {after} (کوچک‌تر نشد){detail}
 	Couldn't save the image: {e}	ذخیره تصویر ممکن نشد: {e}
-	Adding images arrives on the web with file pickers for images	افزودن تصویر‌ها در نسخه وب با انتخابگر فایل برای تصویر‌ها ارائه می‌شود
-	Replacing images on page {p} arrives on the web with image pickers ({i})	جای‌گزینی تصویر‌ها در صفحه {p} در نسخه وب با انتخابگر تصویر ارائه می‌شود ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: انتخاب تصویر‌ها در نسخه وب با انتخابگر فایل برای تصویر‌ها ارائه می‌شود
-	Replacing images arrives on the web with image file pickers	جای‌گزینی تصویر‌ها در نسخه وب با انتخابگر فایل تصویر ارائه می‌شود
 	Couldn't create a PDF: {e}	ایجاد PDF ممکن نشد: {e}
 	The clipboard has no image or text	بریدهدان هیچ تصویر یا متنی ندارد
-	On the web, open or drop an image to convert it	در نسخه وب، تصویری را باز کنید یا رها کنید تا تبدیل شود
 	Couldn't optimize the file: {e}	بهینه‌سازی فایل ممکن نشد: {e}
 	Couldn't write {path}: {e}	نوشتن {path} ممکن نشد: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	فرم درخواست ارسال به {u} را دارد؛ Local PDF داده‌های فرم را ارسال نمی‌کند. سند را ذخیره کنید تا ورودی‌هایتان حفظ شوند.
@@ -1664,7 +1658,6 @@
 	The document now conforms to {level}; save it to keep the changes	سند اکنون با {level} منطبق است؛ برای حفظ تغییرات آن را ذخیره کنید
 	Fixed what could be fixed; 1 problem remains	آنچه قابل رفع بود رفع شد؛ ۱ مشکل باقی مانده است
 	Fixed what could be fixed; {n} problems remain	آنچه قابل رفع بود رفع شد؛ {n} مشکل باقی مانده است
-	Custom stamps arrive on the web with file pickers for images	مهر‌های سفارشی در نسخه وب با انتخابگر فایل برای تصویر‌ها ارائه می‌شوند
 	{file} is too large for a stamp (at most {n} MB)	{file} برای یک مهر بیش از حد بزرگ است (حداکثر {n} MB)
 	Sent to {printer}	به {printer} فرستاده شد
 	Sent to {printer}: {msg}	به {printer} فرستاده شد: {msg}
@@ -1770,9 +1763,7 @@ action wizard	Start	شروع
 	Couldn't split: {e}	تقسیم ممکن نشد: {e}
 	Couldn't summarize comments: {e}	خلاصه‌کردن یادداشت‌ها ممکن نشد: {e}
 	Couldn't open the result: {e}	باز کردن نتیجه ممکن نشد: {e}
-	Importing data arrives on the web with file pickers for data files	ورود داده در نسخه وب با انتخابگر فایل برای فایل‌های داده ارائه می‌شود
 	Exported to {path}	به {path} خروجی گرفته شد
-	Merging data files needs the desktop app	ادغام فایل‌های داده نیاز‌مند برنامه رومیزی است
 	Merged 1 file into {path}	۱ فایل در {path} ادغام شد
 	Merged {n} files into {path}	{n} فایل در {path} ادغام شد
 	Combined {n} files	{n} فایل ترکیب شد
@@ -1784,7 +1775,6 @@ action wizard	Start	شروع
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	حالت قابل حمل خاموش است: نوشتن در {folder} ممکن نیست ({error}). در عوض تنظیمات در پوشه کاربر شما نگهداری می‌شود.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF بدون پردازنده گرافیکی رسم می‌کند، بنابراین ممکن است کند باشد. به‌روز‌رسانی درایور گرافیکی می‌تواند کمک کند.
 	Couldn't save: {e}	ذخیره ممکن نشد: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	دانلود پیوست‌ها در نسخه وب با M3.10 ارائه می‌شود ({n} بایت آماده)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	در نقطهعطف {m} ارائه می‌شود
 	needs an AI provider (off by default)	نیاز‌مند یک ارائهدهنده هوش مصنوعی است (به‌طور پیش‌فرض خاموش)
@@ -2185,7 +2175,6 @@ action wizard	Start	شروع
 	A script	یک اسکریپت
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} در این سند تلاش کرد نشانیای را باز کند که Local PDF باز نمی‌کند: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} در این سند تلاش کرد نشانیای را باز کند که Local PDF باز نمی‌کند: {e}. از میان سند‌ها فقط پیوند‌های وب (http، https) و ایمیل (mailto) باز می‌شوند.
-	Another file dialog is still open. Finish with it first.	یک پنجرهٔ گفتوگوی فایل دیگر هنوز باز است. ابتدا آن را تمام کنید.
 	Couldn't show the file picker. Please try again.	انتخابگر فایل نمایش داده نشد. لطفاً دوباره تلاش کنید.
 	The document changed while you were choosing a file, so nothing was changed.	سند در حین انتخاب فایل تغییر کرد، بنابراین چیزی تغییر نکرد.
 	The document was closed before it could be saved.	سند پیش از آنکه ذخیره شود بسته شد.
@@ -2481,12 +2470,9 @@ animation effects	Off	خاموش
 	Greyscale	خاکستری
 	Black and white	سیاه و سفید
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	درایور این چاپگر تنظیمات دوطرفه را از برنامه‌های دیگر نمی‌پذیرد، بنابراین تنظیم خودش اعمال می‌شود. آن را در «ویژگی‌ها…» تغییر دهید…
-	Browser's print dialog	پنجره چاپ مرورگر
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	تعداد نسخه‌ها، چاپ دوطرفه و رنگ در پنجره چاپ مرورگر انتخاب می‌شوند.
 	Preparing {n} sheets for printing…	آماده‌سازی {n} برگ برای چاپ…
 	Preparing sheet {done} of {total} for printing…	آماده‌سازی برگ {done} از {total} برای چاپ…
 	Opening the browser's print dialog…	باز کردن پنجره چاپ مرورگر…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	چاپ از مرورگر ممکن نشد ({e})؛ در عوض {name} برای چاپ بار‌گیری شد
 	Tools panel side	سمت پنل ابزار‌ها
 	Add comment	افزودن یادداشت
 	Change tag properties	تغییر ویژگی‌های برچسب
@@ -2632,7 +2618,6 @@ animation effects	Off	خاموش
 	You are viewing revision {rev} of “{from}”. It is a snapshot: changes here won't affect the original.	شما در حال مشاهده باز‌نگری {rev} از «{from}» هستید. این یک تصویر لحظ‌های است: تغییرات اینجا بر نسخه اصلی اثر نمی‌گذارد.
 	Attach a file…	پیوست یک فایل…
 	Delete attachment	حذف پیوست
-	Attaching files is not available on the web yet	پیوست‌کردن فایل‌ها هنوز در وب در دسترس نیست
 	Attach {name}	پیوست {name}
 	Delete attachment {key}	حذف پیوست {key}
 	Thumbnail size	اندازه بندانگشتی‌ها

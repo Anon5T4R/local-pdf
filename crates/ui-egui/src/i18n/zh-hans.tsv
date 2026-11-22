@@ -82,7 +82,6 @@
 	Show less	收起
 	Show {n} more	再显示 {n} 个
 	The newest {n} of {total} PDFs	共 {total} 个 PDF 中最新的 {n} 个
-	Pinned folders need the desktop app	固定文件夹需要桌面版应用
 	Choose a folder on this computer to pin	请选择此电脑上要固定的文件夹
 	{folder} is already pinned to Home	{folder} 已固定到主页
 	You can pin up to {n} folders. Unpin one first.	最多可固定 {n} 个文件夹。请先取消固定一个。
@@ -1551,13 +1550,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	此文件已经是最小的了（{size}）。未保存副本。
 	Saved {place}: {before} → {after} (not smaller){detail}	已保存{place}：{before} → {after}（未缩小）{detail}
 	Couldn't save the image: {e}	无法保存图像：{e}
-	Adding images arrives on the web with file pickers for images	Web 端添加图像将使用图像文件选择器
-	Replacing images on page {p} arrives on the web with image pickers ({i})	在 Web 端替换第{p}页的图像将使用图像选择器（{i}）
-	{name}: choosing images arrives on the web with file pickers for images	{name}：在 Web 端选择图像将使用图像文件选择器
-	Replacing images arrives on the web with image file pickers	Web 端替换图像将使用图像文件选择器
 	Couldn't create a PDF: {e}	无法创建 PDF：{e}
 	The clipboard has no image or text	剪贴板没有图像或文本
-	On the web, open or drop an image to convert it	在 Web 端，打开或拖入图像进行转换
 	Couldn't optimize the file: {e}	无法优化文件：{e}
 	Couldn't write {path}: {e}	无法写入{path}：{e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	该表单请求提交到{u}；Local PDF 不发送表单数据。请保存文档以保留填写内容。
@@ -1618,7 +1612,6 @@
 	The document now conforms to {level}; save it to keep the changes	文档现已符合{level}；保存以保留更改
 	Fixed what could be fixed; 1 problem remains	已修复能修复的问题；还剩 1 个问题
 	Fixed what could be fixed; {n} problems remain	已修复能修复的问题；还剩{n}个问题
-	Custom stamps arrive on the web with file pickers for images	Web 端自定义图章将使用图像文件选择器
 	{file} is too large for a stamp (at most {n} MB)	{file} 对于图章来说太大了（最大 {n} MB）
 	Sent to {printer}	已发送到{printer}
 	Sent to {printer}: {msg}	已发送到{printer}：{msg}
@@ -1717,9 +1710,7 @@
 	Couldn't split: {e}	无法拆分：{e}
 	Couldn't summarize comments: {e}	无法汇总注释：{e}
 	Couldn't open the result: {e}	无法打开结果：{e}
-	Importing data arrives on the web with file pickers for data files	Web 端导入数据将使用数据文件选择器
 	Exported to {path}	已导出到{path}
-	Merging data files needs the desktop app	合并数据文件需要桌面端应用
 	Merged 1 file into {path}	已将 1 个文件合并到{path}
 	Merged {n} files into {path}	已将{n}个文件合并到{path}
 	Combined {n} files	已合并{n}个文件
@@ -1731,7 +1722,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	便携模式已关闭：无法写入{folder}（{error}）。设置改为保存在你的用户文件夹中。
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF 正在不使用图形处理器的情况下绘制，因此可能较慢。更新显卡驱动程序可能会有帮助。
 	Couldn't save: {e}	无法保存：{e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Web 端附件下载将于 M3.10 到来（{n} 字节已就绪）
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	将于 {m} 里程碑推出
 	needs an AI provider (off by default)	需要 AI 服务商（默认关闭）
@@ -2335,12 +2325,9 @@ animation effects	Off	关
 	Change the colour of line art as well as text	除文本外也更改线条的颜色
 	Colours are remapped while rendering; the document itself never changes.	颜色仅在渲染时替换；文档本身不会改变。
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	此打印机的驱动程序不接受其他程序的双面打印设置，因此使用其自身设置。更改位置：属性…
-	Browser's print dialog	浏览器的打印对话框
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	份数、双面打印和颜色在浏览器的打印对话框中选择。
 	Preparing {n} sheets for printing…	正在准备 {n} 张纸用于打印…
 	Preparing sheet {done} of {total} for printing…	正在准备打印第 {done} 张，共 {total} 张…
 	Opening the browser's print dialog…	正在打开浏览器的打印对话框…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	无法从浏览器打印（{e}）；已改为下载 {name} 以便打印
 	Tools panel side	工具面板位置
 	Add comment	添加注释
 	Change tag properties	更改标签属性
@@ -2472,7 +2459,6 @@ animation effects	Off	关
 	Collapse all tools	折叠所有工具
 	Attach a file…	附加文件…
 	Delete attachment	删除附件
-	Attaching files is not available on the web yet	网页版尚不支持附加文件
 	Attach {name}	附加 {name}
 	Delete attachment {key}	删除附件 {key}
 	Font	字体

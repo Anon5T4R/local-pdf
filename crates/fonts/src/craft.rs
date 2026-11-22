@@ -78,7 +78,7 @@ pub fn document_thai_font() -> Option<&'static CraftFont> {
 /// The `Deva` craft-fonts faces for Devanagari interface text (the Hindi catalog, file names,
 /// document titles), in manifest order. Empty when built without craft-fonts or when its revision
 /// has no Devanagari face; a desktop build then falls back to one font already installed on the
-/// machine (`SYSTEM_DEVANAGARI_FALLBACK`), and the web build shows replacement boxes.
+/// machine (`SYSTEM_DEVANAGARI_FALLBACK`).
 pub fn ui_devanagari_fonts() -> Vec<&'static CraftFont> {
     CRAFT_FONTS.iter().filter(|f| f.covers("Deva")).collect()
 }
@@ -145,7 +145,7 @@ pub fn document_japanese_font() -> Option<&'static CraftFont> {
 /// A real Japanese document face matching serif/sans and weight where available.
 /// Sans text prefers BIZ UDPGothic Bold or Regular. Missing weights fall back to Regular;
 /// serif text keeps the document Mincho preference. No synthetic weight or slant is applied.
-/// `None` without craft-fonts. The small web input currently has only Gothic Regular.
+/// `None` without craft-fonts.
 pub fn document_japanese_font_for_style(serif: bool, bold: bool) -> Option<&'static CraftFont> {
     document_face(CRAFT_FONTS, serif, bold)
 }
@@ -336,7 +336,6 @@ mod tests {
         for face in &other {
             let len = face.bytes.len();
             let native_ui = NATIVE_UI_CJK_FAMILIES.contains(&face.family);
-            assert!(!cfg!(target_arch = "wasm32") || !native_ui, "native UI face in web payload");
             let cap = if native_ui { MAX_NATIVE_UI_CJK_BYTES } else { MAX_OTHER_CJK_BYTES };
             assert!(u64::try_from(len).is_ok_and(|n| n <= cap), "{} is embedded at {len} bytes", face.name());
         }
