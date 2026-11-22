@@ -87,58 +87,63 @@ pub(crate) fn options_body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens)
         });
         ui.add_space(8.0);
     };
-    group(ui, "Report Options", &mut |ui| {
-        ui.add(widgets::checkbox(&mut o.create_report, tl!("Create accessibility report")));
-    });
-    group(ui, "Page Range", &mut |ui| {
-        ui.horizontal(|ui| {
-            widgets::radio_value(ui, &mut o.all_pages, true, tl!("All pages in document"));
-            let from_label = widgets::radio_value(ui, &mut o.all_pages, false, tl!("Pages from"));
-            ui.add_enabled(!o.all_pages, egui::DragValue::new(&mut o.from).range(1..=pages)).labelled_by(from_label.id);
-            let to_label = ui.label(tl!("to"));
-            ui.add_enabled(!o.all_pages, egui::DragValue::new(&mut o.to).range(1..=pages)).labelled_by(to_label.id);
+    // The rules of a category outgrow a short window: the settings scroll, with the title above and
+    // the buttons below always in view (`padrao-craft.md`, "Guardas").
+    let mut start = false;
+    let mut cancel = false;
+    widgets::scrolling_body(ui, "a11y-options-body", OUTSIDE, BODY_MAX, |ui| {
+        group(ui, "Report Options", &mut |ui| {
+            ui.add(widgets::checkbox(&mut o.create_report, tl!("Create accessibility report")));
         });
-    });
-    let on = o.rules.len();
-    group(ui, &crate::i18n::fmt(tl!("Checking Options ({on} of 32 in all categories)"), &[("on", &on.to_string())]), &mut |ui| {
-        ui.horizontal(|ui| {
-            let label = ui.label(tl!("Category:"));
-            egui::ComboBox::from_id_salt("a11y-category")
-                .selected_text(tl!(o.category.label()))
-                .width(260.0)
-                .show_ui(ui, |ui| {
-                    for c in Category::ALL {
-                        ui.selectable_value(&mut o.category, c, tl!(c.label()));
+        group(ui, "Page Range", &mut |ui| {
+            ui.horizontal(|ui| {
+                widgets::radio_value(ui, &mut o.all_pages, true, tl!("All pages in document"));
+                let from_label = widgets::radio_value(ui, &mut o.all_pages, false, tl!("Pages from"));
+                ui.add_enabled(!o.all_pages, egui::DragValue::new(&mut o.from).range(1..=pages)).labelled_by(from_label.id);
+                let to_label = ui.label(tl!("to"));
+                ui.add_enabled(!o.all_pages, egui::DragValue::new(&mut o.to).range(1..=pages)).labelled_by(to_label.id);
+            });
+        });
+        let on = o.rules.len();
+        group(ui, &crate::i18n::fmt(tl!("Checking Options ({on} of 32 in all categories)"), &[("on", &on.to_string())]), &mut |ui| {
+            ui.horizontal(|ui| {
+                let label = ui.label(tl!("Category:"));
+                egui::ComboBox::from_id_salt("a11y-category")
+                    .selected_text(tl!(o.category.label()))
+                    .width(260.0)
+                    .show_ui(ui, |ui| {
+                        for c in Category::ALL {
+                            ui.selectable_value(&mut o.category, c, tl!(c.label()));
+                        }
+                    })
+                    .response
+                    .labelled_by(label.id);
+            });
+            ui.add_space(4.0);
+            for r in Rule::ALL.into_iter().filter(|r| r.category() == o.category) {
+                let mut checked = o.rules.contains(&r);
+                if ui.add(widgets::checkbox(&mut checked, tl!(r.description()))).changed() {
+                    if checked {
+                        o.rules.insert(r);
+                    } else {
+                        o.rules.remove(&r);
                     }
-                })
-                .response
-                .labelled_by(label.id);
-        });
-        ui.add_space(4.0);
-        for r in Rule::ALL.into_iter().filter(|r| r.category() == o.category) {
-            let mut checked = o.rules.contains(&r);
-            if ui.add(widgets::checkbox(&mut checked, tl!(r.description()))).changed() {
-                if checked {
-                    o.rules.insert(r);
-                } else {
-                    o.rules.remove(&r);
                 }
             }
-        }
-        ui.add_space(4.0);
-        ui.horizontal(|ui| {
-            if ui.button(tl!("Select All")).clicked() {
-                o.rules.extend(Rule::ALL.into_iter().filter(|r| r.category() == o.category));
-            }
-            if ui.button(tl!("Clear All")).clicked() {
-                let c = o.category;
-                o.rules.retain(|r| r.category() != c);
-            }
+            ui.add_space(4.0);
+            ui.horizontal(|ui| {
+                if ui.button(tl!("Select All")).clicked() {
+                    o.rules.extend(Rule::ALL.into_iter().filter(|r| r.category() == o.category));
+                }
+                if ui.button(tl!("Clear All")).clicked() {
+                    let c = o.category;
+                    o.rules.retain(|r| r.category() != c);
+                }
+            });
         });
+        ui.add(widgets::checkbox(&mut o.show_dialog, tl!("Show this dialog when the Checker starts")));
+        ui.add_space(10.0);
     });
-    ui.add(widgets::checkbox(&mut o.show_dialog, tl!("Show this dialog when the Checker starts")));
-    ui.add_space(10.0);
-    let (mut start, mut cancel) = (false, false);
     ui.horizontal(|ui| {
         ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
             if widgets::pill_button(ui, tl!("Start Checking"), true).clicked() {
@@ -154,6 +159,12 @@ pub(crate) fn options_body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens)
 
 /// The red of failed checks (as for invalid signatures).
 const FAILED: egui::Color32 = egui::Color32::from_rgb(0xD7, 0x37, 0x3F);
+
+/// What the dialog draws outside its scrolling body: the frame's padding, the title and the row of
+/// Start Checking and Cancel.
+const OUTSIDE: f32 = 114.0;
+/// How tall the settings may stand on a tall window: the height they take when the window has room.
+const BODY_MAX: f32 = 660.0;
 
 fn status_icon(t: &Tokens, s: Status) -> (&'static str, egui::Color32) {
     match s {

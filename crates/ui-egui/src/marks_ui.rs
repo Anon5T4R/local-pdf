@@ -12,6 +12,13 @@ use crate::{LocalPDFApp, icons, widgets};
 /// How far a watermark may be moved from the page centre, in points.
 const MAX_OFFSET: f64 = 20_000.0;
 
+/// What the dialog draws outside its scrolling body: the frame's padding, the title, the 10-point
+/// gap, the button row and the undrawable-text notice above it.
+const OUTSIDE: f32 = 146.0;
+/// How tall the form may stand on a tall window: as tall as it needs, so the dialog keeps the size
+/// it had before the window gets short.
+const BODY_MAX: f32 = 720.0;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Subset {
     All,
@@ -229,285 +236,305 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens, kind: M
     };
     ui.label(egui::RichText::new(title).font(theme::semibold(18.0)));
     ui.add_space(8.0);
-    match kind {
-        MarkKind::HeaderFooter => {
-            ui.horizontal(|ui| {
-                // The standard faces a header can be drawn in (#3754).
-                let font_label = ui.label(tl!("Font:"));
-                egui::ComboBox::from_id_salt("hf-font")
-                    .selected_text(d.hf.font.label())
-                    .width(100.0)
-                    .show_ui(ui, |ui| {
-                        for f in [FontFamily::Helvetica, FontFamily::Times, FontFamily::Courier] {
-                            ui.selectable_value(&mut d.hf.font, f, f.label());
-                        }
-                    })
-                    .response
-                    .labelled_by(font_label.id);
-                let size_label = ui.label(tl!("Size"));
-                ui.add(egui::DragValue::new(&mut d.hf.font_size).range(4.0..=72.0).speed(0.5)).labelled_by(size_label.id);
-                ui.add(widgets::checkbox(&mut d.hf.underline, tl!("Underline")));
-                color_button(ui, &mut d.hf.color);
-            });
-            ui.horizontal(|ui| {
-                // The margins on a row of their own: with the font controls they were wider than the
-                // suite's narrowest window (#guardas).
-                ui.label(format!("{} ({})", tl!("Margins"), units.label()));
-                let per = units.per_point();
-                for (label, k) in [(tl!("Top"), 0), (tl!("Bottom"), 1), (tl!("Left"), 2), (tl!("Right"), 3)] {
-                    let l = ui.label(label);
-                    let mut v = d.hf.margins[k] * per;
-                    // Up to 10 inches, whatever the unit.
-                    let max = 720.0 * per;
-                    let r =
-                        ui.add(egui::DragValue::new(&mut v).range(0.0..=max).speed(units.speed()).max_decimals(units.decimals())).labelled_by(l.id);
-                    if r.changed() {
-                        d.hf.margins[k] = v / per;
-                    }
-                }
-            });
-            ui.add_space(8.0);
-            egui::Grid::new("hf-boxes").num_columns(3).spacing([10.0, 4.0]).show(ui, |ui| {
-                for row in 0..2 {
-                    let labels: Vec<egui::Response> =
-                        (0..3).map(|col| ui.label(egui::RichText::new(tl!(BOX_NAMES[row * 3 + col])).small())).collect();
-                    ui.end_row();
-                    for (col, label) in labels.into_iter().enumerate() {
-                        let k = row * 3 + col;
-                        let r = ui
-                            .add_sized([200.0, 40.0], crate::widgets::block(&mut d.hf.text[k]).desired_rows(2).id_salt(("hf-box", k)))
-                            .labelled_by(label.id);
-                        if r.gained_focus() || r.has_focus() {
-                            d.focused_box = k;
-                        }
-                    }
-                    ui.end_row();
-                }
-            });
-            // Two rows: the page number and the date controls together were wider than the suite's
-            // narrowest window (#guardas).
-            ui.horizontal(|ui| {
-                let page_label = ui.label(tl!("Page number"));
-                egui::ComboBox::from_id_salt("hf-page-format")
-                    .selected_text(PAGE_FORMATS[d.page_format].trim_matches(['<', '>']))
-                    .show_ui(ui, |ui| {
-                        for (k, f) in PAGE_FORMATS.iter().enumerate() {
-                            ui.selectable_value(&mut d.page_format, k, f.trim_matches(['<', '>']));
-                        }
-                    })
-                    .response
-                    .labelled_by(page_label.id);
-                if ui.button(tl!("Insert Page Number")).clicked() {
-                    d.hf.text[d.focused_box].push_str(PAGE_FORMATS[d.page_format]);
-                }
-                ui.add_space(12.0);
-                let start_label = ui.label(tl!("Start page number"));
-                ui.add(egui::DragValue::new(&mut d.hf.start_number).range(1..=999_999)).labelled_by(start_label.id);
-            });
-            ui.horizontal(|ui| {
-                let date_label = ui.label(tl!("Date format"));
-                egui::ComboBox::from_id_salt("hf-date-format")
-                    .selected_text(DATE_FORMATS[d.date_format].trim_matches(['<', '>']))
-                    .show_ui(ui, |ui| {
-                        for (k, f) in DATE_FORMATS.iter().enumerate() {
-                            ui.selectable_value(&mut d.date_format, k, f.trim_matches(['<', '>']));
-                        }
-                    })
-                    .response
-                    .labelled_by(date_label.id);
-                if ui.button(tl!("Insert Date")).clicked() {
-                    d.hf.text[d.focused_box].push_str(DATE_FORMATS[d.date_format]);
-                }
-            });
-            ui.add(widgets::checkbox(&mut d.hf.shrink, tl!("Shrink the page content to make room for the header and footer")));
-        }
-        MarkKind::Watermark => {
-            ui.horizontal(|ui| {
-                ui.label(tl!("Source"));
-                widgets::radio_value(ui, &mut d.use_file, false, tl!("Text"));
-                widgets::radio_value(ui, &mut d.use_file, true, tl!("File"));
-            });
-            if d.use_file {
-                browse |= file_source(ui, d, MarkKind::Watermark);
-            }
-            ui.horizontal_top(|ui| {
-                ui.vertical(|ui| {
-                    ui.add_enabled_ui(!d.use_file, |ui| {
-                        ui.label(tl!("Text"));
-                        ui.add(
-                            crate::widgets::block(&mut d.wm.text).desired_rows(2).desired_width(320.0).hint_text("CONFIDENTIAL").id_salt("wm-text"),
-                        );
-                    });
-                    ui.horizontal(|ui| {
-                        ui.add_enabled_ui(!d.use_file, |ui| ui.add(widgets::checkbox(&mut d.fit, tl!("Fit to page"))));
-                        ui.add_enabled_ui(!d.fit, |ui| {
-                            let label = ui.label(tl!("Size"));
-                            if d.wm.font_size == 0.0 {
-                                d.wm.font_size = 72.0;
-                            }
-                            ui.add(egui::DragValue::new(&mut d.wm.font_size).range(6.0..=300.0)).labelled_by(label.id);
-                        });
-                        color_button(ui, &mut d.wm.color);
-                    });
-                    ui.horizontal(|ui| {
-                        let label = ui.label(tl!("Rotation"));
-                        for r in [-45.0, 0.0, 45.0] {
-                            widgets::radio_value(ui, &mut d.wm.rotation, r, if r == 0.0 { tl!("None").to_string() } else { format!("{r}°") });
-                        }
-                        ui.add(egui::DragValue::new(&mut d.wm.rotation).range(-180.0..=180.0).suffix("°")).labelled_by(label.id);
-                    });
-                    ui.horizontal(|ui| {
-                        let label = ui.label(tl!("Opacity"));
-                        let mut pct = d.wm.opacity * 100.0;
-                        if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).labelled_by(label.id).changed() {
-                            d.wm.opacity = pct / 100.0;
-                        }
-                    });
-                    ui.horizontal(|ui| {
-                        ui.label(tl!("Location"));
-                        widgets::radio_value(ui, &mut d.wm.behind, true, tl!("Appear behind page"));
-                        widgets::radio_value(ui, &mut d.wm.behind, false, tl!("Appear on top of page"));
-                    });
-                    ui.horizontal(|ui| {
-                        ui.label(tl!("Offset from centre"));
-                        let horizontal = ui.label(tl!("Horizontal"));
-                        ui.add(egui::DragValue::new(&mut d.wm.offset[0]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt")).labelled_by(horizontal.id);
-                        let vertical = ui.label(tl!("Vertical"));
-                        ui.add(egui::DragValue::new(&mut d.wm.offset[1]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt")).labelled_by(vertical.id);
-                    });
-                });
-            });
-        }
-        MarkKind::Background => {
-            ui.horizontal(|ui| {
-                widgets::radio_value(ui, &mut d.use_file, false, tl!("From colour"));
-                ui.add_enabled_ui(!d.use_file, |ui| color_button(ui, &mut d.bg.color));
-                ui.add_space(12.0);
-                widgets::radio_value(ui, &mut d.use_file, true, tl!("File"));
-            });
-            if d.use_file {
-                browse |= file_source(ui, d, MarkKind::Background);
-            }
-            ui.horizontal(|ui| {
-                let label = ui.label(tl!("Opacity"));
-                let mut pct = d.bg.opacity * 100.0;
-                if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).labelled_by(label.id).changed() {
-                    d.bg.opacity = pct / 100.0;
-                }
-            });
-        }
-    }
-    ui.add_space(8.0);
-    ui.label(egui::RichText::new(tl!("Page Range Options")).font(theme::semibold(12.5)));
-    d.range.ui(ui, count);
-    ui.add_space(8.0);
-    // The preview: the current page (or the page stepped to), or the first one the range selects
-    // if it leaves that out, drawn from its thumbnail at its displayed size (after /Rotate), the
-    // frame the engine lays the marks out in.
-    let target = shown_preview(&d.range, &mut d.preview, current, count);
-    let page = doc.info.pages.get(target).map(|p| (p.width as f64, p.height as f64)).unwrap_or((612.0, 792.0));
-    let picture = app.views.get_mut(i).and_then(|view| {
-        view.need_thumbnail(target, true);
-        view.thumb_id(target)
-    });
-    let tint = if kind == MarkKind::Background && !d.use_file { behind(d.bg.color, d.bg.opacity) } else { Color32::WHITE };
-    let hf = d.hf.clone();
-    let size_h = page.1.max(1.0);
-    let (wm, fit) = (d.wm.clone(), d.fit);
-    let file_name = d.use_file.then(|| d.file.as_ref().map(|f| f.0.clone())).flatten();
-    ui.horizontal(|ui| {
-        preview(ui, t, page, picture, tint, |p, r, s| match kind {
+    // The controls and the preview outgrow a short window: they scroll, and the title above and the
+    // buttons below stay in view (`padrao-craft.md`, "Guardas").
+    widgets::scrolling_body(ui, "marks-body", OUTSIDE, BODY_MAX, |ui| {
+        match kind {
             MarkKind::HeaderFooter => {
-                if hf.shrink {
-                    // The band the page content shrinks into, centred across.
-                    let (top, bottom) = hf.bands();
-                    let k = ((size_h - top - bottom) / size_h).clamp(0.0, 1.0) as f32;
-                    let band = Rect::from_min_max(pos2(r.left(), r.top() + top as f32 * s), pos2(r.right(), r.bottom() - bottom as f32 * s));
-                    let content = Rect::from_center_size(band.center(), vec2(r.width() * k, band.height().max(0.0)));
-                    p.rect_filled(content, CornerRadius::ZERO, Color32::from_gray(232));
-                }
-                for (k, text) in hf.text.iter().enumerate() {
-                    if text.trim().is_empty() {
-                        continue;
+                ui.horizontal(|ui| {
+                    // The standard faces a header can be drawn in (#3754).
+                    let font_label = ui.label(tl!("Font:"));
+                    egui::ComboBox::from_id_salt("hf-font")
+                        .selected_text(d.hf.font.label())
+                        .width(100.0)
+                        .show_ui(ui, |ui| {
+                            for f in [FontFamily::Helvetica, FontFamily::Times, FontFamily::Courier] {
+                                ui.selectable_value(&mut d.hf.font, f, f.label());
+                            }
+                        })
+                        .response
+                        .labelled_by(font_label.id);
+                    let size_label = ui.label(tl!("Size"));
+                    ui.add(egui::DragValue::new(&mut d.hf.font_size).range(4.0..=72.0).speed(0.5)).labelled_by(size_label.id);
+                    ui.add(widgets::checkbox(&mut d.hf.underline, tl!("Underline")));
+                    color_button(ui, &mut d.hf.color);
+                });
+                ui.horizontal(|ui| {
+                    // The margins on a row of their own: with the font controls they were wider than the
+                    // suite's narrowest window (#guardas).
+                    ui.label(format!("{} ({})", tl!("Margins"), units.label()));
+                    let per = units.per_point();
+                    for (label, k) in [(tl!("Top"), 0), (tl!("Bottom"), 1), (tl!("Left"), 2), (tl!("Right"), 3)] {
+                        let l = ui.label(label);
+                        let mut v = d.hf.margins[k] * per;
+                        // Up to 10 inches, whatever the unit.
+                        let max = 720.0 * per;
+                        let r = ui
+                            .add(egui::DragValue::new(&mut v).range(0.0..=max).speed(units.speed()).max_decimals(units.decimals()))
+                            .labelled_by(l.id);
+                        if r.changed() {
+                            d.hf.margins[k] = v / per;
+                        }
                     }
-                    let shown = text.replace("<<", "").replace(">>", "");
-                    let y = if k < 3 { r.top() + hf.margins[0] as f32 * s } else { r.bottom() - hf.margins[1] as f32 * s };
-                    let (x, align) = match k % 3 {
-                        0 => (r.left() + hf.margins[2] as f32 * s, egui::Align2::LEFT_CENTER),
-                        1 => (r.center().x, egui::Align2::CENTER_CENTER),
-                        _ => (r.right() - hf.margins[3] as f32 * s, egui::Align2::RIGHT_CENTER),
-                    };
-                    // Courier previews in the monospaced UI face, the others proportional.
-                    let size = (hf.font_size as f32 * s).max(5.0);
-                    let font = if hf.font == FontFamily::Courier { egui::FontId::monospace(size) } else { egui::FontId::proportional(size) };
-                    p.text(pos2(x, y), align, shown, font, rgb32(hf.color));
-                }
-            }
-            MarkKind::Watermark if file_name.is_some() => {
-                let side = r.width().min(r.height()) * wm.scale as f32;
-                let centre = r.center() + vec2(wm.offset[0] as f32 * s, -wm.offset[1] as f32 * s);
-                p.rect_stroke(
-                    Rect::from_center_size(centre, vec2(side, side)),
-                    CornerRadius::ZERO,
-                    egui::Stroke::new(1.0, Color32::GRAY),
-                    egui::StrokeKind::Inside,
-                );
-                p.text(centre, egui::Align2::CENTER_CENTER, file_name.clone().unwrap_or_default(), egui::FontId::proportional(10.0), Color32::GRAY);
+                });
+                ui.add_space(8.0);
+                egui::Grid::new("hf-boxes").num_columns(3).spacing([10.0, 4.0]).show(ui, |ui| {
+                    for row in 0..2 {
+                        let labels: Vec<egui::Response> =
+                            (0..3).map(|col| ui.label(egui::RichText::new(tl!(BOX_NAMES[row * 3 + col])).small())).collect();
+                        ui.end_row();
+                        for (col, label) in labels.into_iter().enumerate() {
+                            let k = row * 3 + col;
+                            let r = ui
+                                .add_sized([200.0, 40.0], crate::widgets::block(&mut d.hf.text[k]).desired_rows(2).id_salt(("hf-box", k)))
+                                .labelled_by(label.id);
+                            if r.gained_focus() || r.has_focus() {
+                                d.focused_box = k;
+                            }
+                        }
+                        ui.end_row();
+                    }
+                });
+                // Two rows: the page number and the date controls together were wider than the suite's
+                // narrowest window (#guardas).
+                ui.horizontal(|ui| {
+                    let page_label = ui.label(tl!("Page number"));
+                    egui::ComboBox::from_id_salt("hf-page-format")
+                        .selected_text(PAGE_FORMATS[d.page_format].trim_matches(['<', '>']))
+                        .show_ui(ui, |ui| {
+                            for (k, f) in PAGE_FORMATS.iter().enumerate() {
+                                ui.selectable_value(&mut d.page_format, k, f.trim_matches(['<', '>']));
+                            }
+                        })
+                        .response
+                        .labelled_by(page_label.id);
+                    if ui.button(tl!("Insert Page Number")).clicked() {
+                        d.hf.text[d.focused_box].push_str(PAGE_FORMATS[d.page_format]);
+                    }
+                    ui.add_space(12.0);
+                    let start_label = ui.label(tl!("Start page number"));
+                    ui.add(egui::DragValue::new(&mut d.hf.start_number).range(1..=999_999)).labelled_by(start_label.id);
+                });
+                ui.horizontal(|ui| {
+                    let date_label = ui.label(tl!("Date format"));
+                    egui::ComboBox::from_id_salt("hf-date-format")
+                        .selected_text(DATE_FORMATS[d.date_format].trim_matches(['<', '>']))
+                        .show_ui(ui, |ui| {
+                            for (k, f) in DATE_FORMATS.iter().enumerate() {
+                                ui.selectable_value(&mut d.date_format, k, f.trim_matches(['<', '>']));
+                            }
+                        })
+                        .response
+                        .labelled_by(date_label.id);
+                    if ui.button(tl!("Insert Date")).clicked() {
+                        d.hf.text[d.focused_box].push_str(DATE_FORMATS[d.date_format]);
+                    }
+                });
+                ui.add(widgets::checkbox(&mut d.hf.shrink, tl!("Shrink the page content to make room for the header and footer")));
             }
             MarkKind::Watermark => {
-                let text = if wm.text.trim().is_empty() { "CONFIDENTIAL" } else { wm.text.trim() };
-                let size = if fit {
-                    (r.width().hypot(r.height()) * 0.5 / (text.len().max(1) as f32 * 0.55)).clamp(6.0, 80.0)
-                } else {
-                    (wm.font_size as f32 * s).max(5.0)
-                };
-                let galley = p.layout_no_wrap(text.to_string(), egui::FontId::proportional(size), rgb32(wm.color).gamma_multiply(wm.opacity as f32));
-                let angle = -(wm.rotation as f32).to_radians();
-                let half = galley.size() / 2.0;
-                let (sn, cs) = angle.sin_cos();
-                let offset = vec2(half.x * cs - half.y * sn, half.x * sn + half.y * cs);
-                let centre = r.center() + vec2(wm.offset[0] as f32 * s, -wm.offset[1] as f32 * s);
-                p.add(egui::epaint::TextShape::new(centre - offset, galley, Color32::BLACK).with_angle(angle));
-            }
-            MarkKind::Background if file_name.is_some() => {
-                p.rect_stroke(r.shrink(6.0), CornerRadius::ZERO, egui::Stroke::new(1.0, Color32::GRAY), egui::StrokeKind::Inside);
-                p.text(
-                    r.center(),
-                    egui::Align2::CENTER_CENTER,
-                    file_name.clone().unwrap_or_default(),
-                    egui::FontId::proportional(10.0),
-                    Color32::GRAY,
-                );
-            }
-            // A colour is the page's tint.
-            MarkKind::Background => {}
-        });
-        ui.vertical(|ui| {
-            ui.horizontal(|ui| {
-                // Steps through the pages the range selects.
-                let (back, next) = (step_preview(&d.range, target, count, false), step_preview(&d.range, target, count, true));
-                if ui.add_enabled_ui(back.is_some(), |ui| icons::button(ui, "chevron-left", 22.0, false, tl!("Previous page"))).inner.clicked() {
-                    d.preview = back.or(d.preview);
+                ui.horizontal(|ui| {
+                    ui.label(tl!("Source"));
+                    widgets::radio_value(ui, &mut d.use_file, false, tl!("Text"));
+                    widgets::radio_value(ui, &mut d.use_file, true, tl!("File"));
+                });
+                if d.use_file {
+                    browse |= file_source(ui, d, MarkKind::Watermark);
                 }
-                ui.label(
-                    egui::RichText::new(crate::i18n::fmt(
-                        tl!("Preview: page {p} of {n}"),
-                        &[("p", &(target + 1).to_string()), ("n", &count.to_string())],
-                    ))
-                    .small()
-                    .color(t.text_faint),
-                );
-                if ui.add_enabled_ui(next.is_some(), |ui| icons::button(ui, "chevron-right", 22.0, false, tl!("Next page"))).inner.clicked() {
-                    d.preview = next.or(d.preview);
+                ui.horizontal_top(|ui| {
+                    ui.vertical(|ui| {
+                        ui.add_enabled_ui(!d.use_file, |ui| {
+                            ui.label(tl!("Text"));
+                            ui.add(
+                                crate::widgets::block(&mut d.wm.text)
+                                    .desired_rows(2)
+                                    .desired_width(320.0)
+                                    .hint_text("CONFIDENTIAL")
+                                    .id_salt("wm-text"),
+                            );
+                        });
+                        ui.horizontal(|ui| {
+                            ui.add_enabled_ui(!d.use_file, |ui| ui.add(widgets::checkbox(&mut d.fit, tl!("Fit to page"))));
+                            ui.add_enabled_ui(!d.fit, |ui| {
+                                let label = ui.label(tl!("Size"));
+                                if d.wm.font_size == 0.0 {
+                                    d.wm.font_size = 72.0;
+                                }
+                                ui.add(egui::DragValue::new(&mut d.wm.font_size).range(6.0..=300.0)).labelled_by(label.id);
+                            });
+                            color_button(ui, &mut d.wm.color);
+                        });
+                        ui.horizontal(|ui| {
+                            let label = ui.label(tl!("Rotation"));
+                            for r in [-45.0, 0.0, 45.0] {
+                                widgets::radio_value(ui, &mut d.wm.rotation, r, if r == 0.0 { tl!("None").to_string() } else { format!("{r}°") });
+                            }
+                            ui.add(egui::DragValue::new(&mut d.wm.rotation).range(-180.0..=180.0).suffix("°")).labelled_by(label.id);
+                        });
+                        ui.horizontal(|ui| {
+                            let label = ui.label(tl!("Opacity"));
+                            let mut pct = d.wm.opacity * 100.0;
+                            if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).labelled_by(label.id).changed() {
+                                d.wm.opacity = pct / 100.0;
+                            }
+                        });
+                        ui.horizontal(|ui| {
+                            ui.label(tl!("Location"));
+                            widgets::radio_value(ui, &mut d.wm.behind, true, tl!("Appear behind page"));
+                            widgets::radio_value(ui, &mut d.wm.behind, false, tl!("Appear on top of page"));
+                        });
+                        ui.horizontal(|ui| {
+                            ui.label(tl!("Offset from centre"));
+                            let horizontal = ui.label(tl!("Horizontal"));
+                            ui.add(egui::DragValue::new(&mut d.wm.offset[0]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt"))
+                                .labelled_by(horizontal.id);
+                            let vertical = ui.label(tl!("Vertical"));
+                            ui.add(egui::DragValue::new(&mut d.wm.offset[1]).range(-MAX_OFFSET..=MAX_OFFSET).suffix(" pt")).labelled_by(vertical.id);
+                        });
+                    });
+                });
+            }
+            MarkKind::Background => {
+                ui.horizontal(|ui| {
+                    widgets::radio_value(ui, &mut d.use_file, false, tl!("From colour"));
+                    ui.add_enabled_ui(!d.use_file, |ui| color_button(ui, &mut d.bg.color));
+                    ui.add_space(12.0);
+                    widgets::radio_value(ui, &mut d.use_file, true, tl!("File"));
+                });
+                if d.use_file {
+                    browse |= file_source(ui, d, MarkKind::Background);
+                }
+                ui.horizontal(|ui| {
+                    let label = ui.label(tl!("Opacity"));
+                    let mut pct = d.bg.opacity * 100.0;
+                    if ui.add(egui::Slider::new(&mut pct, 0.0..=100.0).suffix("%")).labelled_by(label.id).changed() {
+                        d.bg.opacity = pct / 100.0;
+                    }
+                });
+            }
+        }
+        ui.add_space(8.0);
+        ui.label(egui::RichText::new(tl!("Page Range Options")).font(theme::semibold(12.5)));
+        d.range.ui(ui, count);
+        ui.add_space(8.0);
+        // The preview: the current page (or the page stepped to), or the first one the range selects
+        // if it leaves that out, drawn from its thumbnail at its displayed size (after /Rotate), the
+        // frame the engine lays the marks out in.
+        let target = shown_preview(&d.range, &mut d.preview, current, count);
+        let page = doc.info.pages.get(target).map(|p| (p.width as f64, p.height as f64)).unwrap_or((612.0, 792.0));
+        let picture = app.views.get_mut(i).and_then(|view| {
+            view.need_thumbnail(target, true);
+            view.thumb_id(target)
+        });
+        let tint = if kind == MarkKind::Background && !d.use_file { behind(d.bg.color, d.bg.opacity) } else { Color32::WHITE };
+        let hf = d.hf.clone();
+        let size_h = page.1.max(1.0);
+        let (wm, fit) = (d.wm.clone(), d.fit);
+        let file_name = d.use_file.then(|| d.file.as_ref().map(|f| f.0.clone())).flatten();
+        ui.horizontal(|ui| {
+            preview(ui, t, page, picture, tint, |p, r, s| match kind {
+                MarkKind::HeaderFooter => {
+                    if hf.shrink {
+                        // The band the page content shrinks into, centred across.
+                        let (top, bottom) = hf.bands();
+                        let k = ((size_h - top - bottom) / size_h).clamp(0.0, 1.0) as f32;
+                        let band = Rect::from_min_max(pos2(r.left(), r.top() + top as f32 * s), pos2(r.right(), r.bottom() - bottom as f32 * s));
+                        let content = Rect::from_center_size(band.center(), vec2(r.width() * k, band.height().max(0.0)));
+                        p.rect_filled(content, CornerRadius::ZERO, Color32::from_gray(232));
+                    }
+                    for (k, text) in hf.text.iter().enumerate() {
+                        if text.trim().is_empty() {
+                            continue;
+                        }
+                        let shown = text.replace("<<", "").replace(">>", "");
+                        let y = if k < 3 { r.top() + hf.margins[0] as f32 * s } else { r.bottom() - hf.margins[1] as f32 * s };
+                        let (x, align) = match k % 3 {
+                            0 => (r.left() + hf.margins[2] as f32 * s, egui::Align2::LEFT_CENTER),
+                            1 => (r.center().x, egui::Align2::CENTER_CENTER),
+                            _ => (r.right() - hf.margins[3] as f32 * s, egui::Align2::RIGHT_CENTER),
+                        };
+                        // Courier previews in the monospaced UI face, the others proportional.
+                        let size = (hf.font_size as f32 * s).max(5.0);
+                        let font = if hf.font == FontFamily::Courier { egui::FontId::monospace(size) } else { egui::FontId::proportional(size) };
+                        p.text(pos2(x, y), align, shown, font, rgb32(hf.color));
+                    }
+                }
+                MarkKind::Watermark if file_name.is_some() => {
+                    let side = r.width().min(r.height()) * wm.scale as f32;
+                    let centre = r.center() + vec2(wm.offset[0] as f32 * s, -wm.offset[1] as f32 * s);
+                    p.rect_stroke(
+                        Rect::from_center_size(centre, vec2(side, side)),
+                        CornerRadius::ZERO,
+                        egui::Stroke::new(1.0, Color32::GRAY),
+                        egui::StrokeKind::Inside,
+                    );
+                    p.text(
+                        centre,
+                        egui::Align2::CENTER_CENTER,
+                        file_name.clone().unwrap_or_default(),
+                        egui::FontId::proportional(10.0),
+                        Color32::GRAY,
+                    );
+                }
+                MarkKind::Watermark => {
+                    let text = if wm.text.trim().is_empty() { "CONFIDENTIAL" } else { wm.text.trim() };
+                    let size = if fit {
+                        (r.width().hypot(r.height()) * 0.5 / (text.len().max(1) as f32 * 0.55)).clamp(6.0, 80.0)
+                    } else {
+                        (wm.font_size as f32 * s).max(5.0)
+                    };
+                    let galley =
+                        p.layout_no_wrap(text.to_string(), egui::FontId::proportional(size), rgb32(wm.color).gamma_multiply(wm.opacity as f32));
+                    let angle = -(wm.rotation as f32).to_radians();
+                    let half = galley.size() / 2.0;
+                    let (sn, cs) = angle.sin_cos();
+                    let offset = vec2(half.x * cs - half.y * sn, half.x * sn + half.y * cs);
+                    let centre = r.center() + vec2(wm.offset[0] as f32 * s, -wm.offset[1] as f32 * s);
+                    p.add(egui::epaint::TextShape::new(centre - offset, galley, Color32::BLACK).with_angle(angle));
+                }
+                MarkKind::Background if file_name.is_some() => {
+                    p.rect_stroke(r.shrink(6.0), CornerRadius::ZERO, egui::Stroke::new(1.0, Color32::GRAY), egui::StrokeKind::Inside);
+                    p.text(
+                        r.center(),
+                        egui::Align2::CENTER_CENTER,
+                        file_name.clone().unwrap_or_default(),
+                        egui::FontId::proportional(10.0),
+                        Color32::GRAY,
+                    );
+                }
+                // A colour is the page's tint.
+                MarkKind::Background => {}
+            });
+            ui.vertical(|ui| {
+                ui.horizontal(|ui| {
+                    // Steps through the pages the range selects.
+                    let (back, next) = (step_preview(&d.range, target, count, false), step_preview(&d.range, target, count, true));
+                    if ui.add_enabled_ui(back.is_some(), |ui| icons::button(ui, "chevron-left", 22.0, false, tl!("Previous page"))).inner.clicked() {
+                        d.preview = back.or(d.preview);
+                    }
+                    ui.label(
+                        egui::RichText::new(crate::i18n::fmt(
+                            tl!("Preview: page {p} of {n}"),
+                            &[("p", &(target + 1).to_string()), ("n", &count.to_string())],
+                        ))
+                        .small()
+                        .color(t.text_faint),
+                    );
+                    if ui.add_enabled_ui(next.is_some(), |ui| icons::button(ui, "chevron-right", 22.0, false, tl!("Next page"))).inner.clicked() {
+                        d.preview = next.or(d.preview);
+                    }
+                });
+                let n = d.range.pages(count).len();
+                let applies = if n == 1 {
+                    tl!("Applies to 1 page").to_string()
+                } else {
+                    crate::i18n::fmt(tl!("Applies to {n} pages"), &[("n", &n.to_string())])
+                };
+                ui.label(egui::RichText::new(applies).small().color(t.text_faint));
+                if d.replace {
+                    ui.label(egui::RichText::new(tl!("Replaces the existing one on those pages.")).small().color(t.text_faint));
                 }
             });
-            let n = d.range.pages(count).len();
-            let applies =
-                if n == 1 { tl!("Applies to 1 page").to_string() } else { crate::i18n::fmt(tl!("Applies to {n} pages"), &[("n", &n.to_string())]) };
-            ui.label(egui::RichText::new(applies).small().color(t.text_faint));
-            if d.replace {
-                ui.label(egui::RichText::new(tl!("Replaces the existing one on those pages.")).small().color(t.text_faint));
-            }
         });
     });
     // Text the standard fonts can't draw is refused on apply (#125), so it's refused here, with the

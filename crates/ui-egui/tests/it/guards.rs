@@ -50,12 +50,33 @@ fn harness(app: LocalPDFApp, width: f32) -> Harness<'static, LocalPDFApp> {
     Harness::builder().with_size(egui::vec2(width, NARROW_HEIGHT)).build_eframe(|_cc| app)
 }
 
-/// Todo controle anunciado (a bounding box do accesskit) fica dentro da janela. A página é conteúdo
-/// rolável, mais larga que a janela no zoom de 100%, e a vista a recorta: ela fica de fora.
+/// Todo controle anunciado (a bounding box do accesskit) fica dentro da janela mínima, nos dois
+/// eixos. A página é conteúdo rolável, mais larga que a janela no zoom de 100%, e a vista a recorta:
+/// ela fica de fora.
+///
+/// O corpo de um diálogo mais alto que a janela rola, com o título e o rodapé de botões fora do
+/// `ScrollArea`. O accesskit anuncia o conteúdo rolado com o rect sem recorte, então o que passa da
+/// janela por baixo só é aceito quando é conteúdo de uma área que rola: o nó tem de vir ANTES de
+/// uma barra de rolagem vertical que fique dentro da janela e cuja coluna o contém (a barra é
+/// desenhada depois do conteúdo, e o rodapé depois dela). O resto é casca: essa cabe inteira. Nada
+/// pode ficar acima da janela nem passar das laterais.
 fn assert_inside(harness: &Harness<'_, LocalPDFApp>, what: &str, width: f32) {
-    let width = f64::from(width);
+    const TOL: f64 = 0.5;
+    let (w, h) = (f64::from(width), f64::from(NARROW_HEIGHT));
     let mut outside = Vec::new();
-    for node in harness.root().children_recursive() {
+    let nodes: Vec<_> = harness.root().children_recursive().collect();
+    // Every vertical scroll bar in the window, by the index it was drawn at.
+    let bars: Vec<(usize, egui::accesskit::Rect)> = nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(i, node)| {
+            let rect = node.accesskit_node().bounding_box()?;
+            let vertical = rect.y1 - rect.y0 > rect.x1 - rect.x0;
+            let inside = rect.x0 >= -TOL && rect.x1 <= w + TOL && rect.y0 >= -TOL && rect.y1 <= h + TOL;
+            (node.accesskit_node().role() == egui::accesskit::Role::ScrollBar && vertical && inside).then_some((i, rect))
+        })
+        .collect();
+    for (i, node) in nodes.iter().enumerate() {
         let role = node.accesskit_node().role();
         if matches!(role, egui::accesskit::Role::Document | egui::accesskit::Role::Image) {
             continue;
@@ -64,11 +85,28 @@ fn assert_inside(harness: &Harness<'_, LocalPDFApp>, what: &str, width: f32) {
         if rect.width() <= 0.0 {
             continue;
         }
-        if rect.x0 < 0.0 || rect.x1 > width {
-            outside.push(format!("{role:?} {:?} {rect:?}", node.accesskit_node().label().unwrap_or_default()));
+        let label = node.accesskit_node().label().unwrap_or_default();
+        if rect.x0 < -TOL || rect.x1 > w + TOL {
+            outside.push(format!("{role:?} {label:?} fora das laterais: {rect:?}"));
+            continue;
+        }
+        if rect.y0 < -TOL {
+            outside.push(format!("{role:?} {label:?} acima da janela: {rect:?}"));
+            continue;
+        }
+        if rect.y1 <= h + TOL {
+            continue;
+        }
+        if role == egui::accesskit::Role::ScrollBar {
+            outside.push(format!("{role:?} {label:?} abaixo da janela de {h}: {rect:?}"));
+            continue;
+        }
+        let scrolled = bars.iter().any(|&(bar_at, bar)| bar_at > i && rect.x1 <= bar.x1 + TOL && bar.y0 <= rect.y0 + TOL);
+        if !scrolled {
+            outside.push(format!("{role:?} {label:?} abaixo da janela de {h}, fora de um corpo que rola: {rect:?}"));
         }
     }
-    assert!(outside.is_empty(), "{what}: fora da janela de {width} px: {outside:#?}");
+    assert!(outside.is_empty(), "{what}: fora da janela de {w}×{h}: {outside:#?}");
 }
 
 /// Os diálogos do app, pelos nomes que o `set_option("dialog", …)` aceita.
@@ -103,7 +141,8 @@ const DIALOGS: &[&str] = &[
     "number-pages",
 ];
 
-/// Cada diálogo cabe na largura mínima: com um documento aberto, nenhum controle passa da borda.
+/// Cada diálogo cabe na janela mínima, nos dois eixos: com um documento aberto, nenhum controle
+/// passa da borda e o título e os botões ficam sempre na tela (o corpo rola quando não cabe).
 #[test]
 fn every_dialog_fits_the_narrow_window() {
     let mut problems: Vec<String> = Vec::new();
@@ -123,7 +162,7 @@ fn every_dialog_fits_the_narrow_window() {
     assert!(problems.is_empty(), "{} diálogo(s) fora do padrão:\n{}", problems.len(), problems.join("\n"));
 }
 
-/// A casca (barra de cima, abas de modo, paleta e barra de status) cabe na largura mínima.
+/// A casca (barra de cima, abas de modo, paleta e barra de status) cabe na janela mínima.
 #[test]
 fn the_shell_fits_the_narrow_window() {
     let mut h = harness(app(None), NARROW);
@@ -159,7 +198,7 @@ fn the_search_box_never_covers_the_mode_tabs() {
     }
 }
 
-/// O cartão de atualização (`updater.offer`) cabe na largura mínima.
+/// O cartão de atualização (`updater.offer`) cabe na janela mínima, nos dois eixos.
 #[test]
 fn the_update_card_fits_the_narrow_window() {
     let release = craft_update::Release { version: craft_update::version::parse("0.99.0"), tag: "v0.99.0".into(), ..Default::default() };
@@ -173,7 +212,10 @@ fn the_update_card_fits_the_narrow_window() {
         if rect.width() <= 0.0 {
             continue;
         }
-        assert!(rect.x0 >= 0.0 && rect.x1 <= f64::from(NARROW), "cartão fora da janela: {rect:?}");
+        assert!(
+            rect.x0 >= 0.0 && rect.x1 <= f64::from(NARROW) && rect.y0 >= 0.0 && rect.y1 <= f64::from(NARROW_HEIGHT),
+            "cartão fora da janela de {NARROW}×{NARROW_HEIGHT}: {rect:?}"
+        );
     }
 }
 
