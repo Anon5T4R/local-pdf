@@ -1,4 +1,4 @@
-//! Quality gates: layering, wasm, the CI bundle, corpora and the robustness sweep.
+//! Quality gates: layering, the CI bundle, corpora and the robustness sweep.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -71,25 +71,6 @@ pub fn layers(_: &[String]) -> anyhow::Result<()> {
     bail!("{} layering violation(s)", violations.len())
 }
 
-pub fn wasm(_: &[String]) -> anyhow::Result<()> {
-    let crates = layers::from_metadata(&metadata()?).map_err(|e| anyhow!(e))?;
-    let set: Vec<String> = crates
-        .into_iter()
-        .filter(|c| matches!(layers::classify(&c.name), Some(layers::Class::Layer(_) | layers::Class::Standalone(_))))
-        .map(|c| c.name)
-        .collect();
-    // One call over every crate: they share one dependency build, and `--keep-going` reports
-    // each failing crate instead of stopping at the first.
-    let mut c = cargo();
-    c.args(["check", "--target", "wasm32-unknown-unknown", "--keep-going"]);
-    for pkg in &set {
-        c.args(["-p", pkg]);
-    }
-    run(c, &format!("cargo check --target wasm32-unknown-unknown --keep-going ({} crates)", set.len()))?;
-    println!("wasm32: {} crates ok", set.len());
-    Ok(())
-}
-
 /// The workspace tests. Unit and integration tests run under cargo-nextest when it is installed
 /// (one process per test, so the run is not held up by its slowest binary), else under
 /// `cargo test`; doctests run separately because nextest does not run them. Examples are left
@@ -115,7 +96,6 @@ pub fn ci(_: &[String]) -> anyhow::Result<()> {
         ("test", Box::new(|| test(&[]))),
         ("i18n-report", Box::new(|| i18n_report(&["--workspace".to_string()]))),
         ("layers", Box::new(|| layers(&[]))),
-        ("wasm", Box::new(|| wasm(&[]))),
         ("assets", Box::new(|| crate::assets::run(&[]))),
         ("deny", Box::new(|| deny(&[]))),
         ("mirror", Box::new(|| mirror(&[]))),

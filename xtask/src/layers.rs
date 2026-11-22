@@ -87,7 +87,6 @@ pub const TABLE: &[(&str, Class)] = &[
     // L8 apps + tooling
     ("localpdf", Class::Exempt),
     ("cli", Class::Exempt),
-    ("web", Class::Exempt),
     ("xtask", Class::Exempt),
 ];
 
@@ -354,7 +353,7 @@ mod tests {
 
     #[test]
     fn apps_exempt() {
-        for app in ["localpdf", "localpdf-cli", "localpdf-web", "xtask"] {
+        for app in ["localpdf", "localpdf-cli", "xtask"] {
             assert!(check(&[c(app, &[("egui", Normal, false), ("localpdf-ui-egui", Normal, true)])]).is_empty());
         }
     }
