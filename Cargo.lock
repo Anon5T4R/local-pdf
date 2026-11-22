@@ -4268,18 +4268,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "localpdf-web"
-version = "0.14.32"
-dependencies = [
- "eframe",
- "egui",
- "js-sys",
- "localpdf-ui-egui",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
 name = "localpdf-xfa"
 version = "0.14.32"
 dependencies = [
