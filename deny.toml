@@ -60,8 +60,8 @@ ignore = [
     { id = "RUSTSEC-2026-0370", reason = "zvariant unmaintained; Linux a11y stack via accesskit_unix" },
     { id = "RUSTSEC-2026-0371", reason = "zbus_names unmaintained; Linux a11y stack via accesskit_unix" },
     { id = "RUSTSEC-2026-0372", reason = "zvariant_derive unmaintained; Linux a11y stack via accesskit_unix" },
-    # chrono é do craft-update e paste é macro de compilação: sem vulnerabilidade, só abandono.
-    { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained (craft-update); troca por jiff/std no backlog" },
+    # chrono é do código do app e paste é macro de compilação: sem vulnerabilidade, só abandono.
+    { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained; sem vulnerabilidade, vem do código do app, não do craft-update (jiff)" },
     { id = "RUSTSEC-2024-0436", reason = "paste unmaintained; proc macro só em tempo de compilação" },
 ]
 
