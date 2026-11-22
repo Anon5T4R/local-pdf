@@ -107,6 +107,11 @@ skrifa = "0.44"
 serde_json = { workspace = true }
 toml = "1"
 
+[target.'cfg(windows)'.dev-dependencies]
+# The CPU time counters the frame-budget guard samples (`GetSystemTimes`) in tests/perf.rs; the same winsafe the
+# crate already uses on Windows, here with the kernel module.
+winsafe = { version = "0.0.29", default-features = false, features = ["kernel"] }
+
 [target.'cfg(target_os = "macos")'.dev-dependencies]
 # Only synthetic attribute fixtures use xattr; product reads/writes use rustix.
 xattr = "1.6"
