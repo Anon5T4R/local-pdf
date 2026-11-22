@@ -1,7 +1,6 @@
 //! Help ▸ Check for updates and the check at start, through `craft_update`: the flow itself is its
 //! `Updater`; this module supplies the suite, the quit path and the status dialog.
 
-#[cfg(not(target_arch = "wasm32"))]
 use craft_update::updater::{Action, CheckSource, Status, Updater};
 use egui::{Align, Layout};
 
@@ -11,30 +10,23 @@ use crate::{LocalPDFApp, theme, widgets};
 pub const RELEASES_PAGE: &str = "https://github.com/Anon5T4R/local-pdf/releases";
 
 /// Stands in for the network in tests.
-#[cfg(not(target_arch = "wasm32"))]
 pub type UpdateSource = CheckSource;
 
 pub(crate) struct Updates {
-    #[cfg(not(target_arch = "wasm32"))]
     updater: Updater,
     /// The Updates dialog is showing.
     pub(crate) open: bool,
     /// Ask for a newer release at start; the desktop app turns it on, so tests never reach the network.
-    #[cfg(not(target_arch = "wasm32"))]
     startup_check: bool,
-    #[cfg(not(target_arch = "wasm32"))]
     check_requested: bool,
 }
 
 impl Default for Updates {
     fn default() -> Self {
         Self {
-            #[cfg(not(target_arch = "wasm32"))]
             updater: Updater::new(&craft_update::suite::LOCALPDF, env!("CARGO_PKG_VERSION")),
             open: false,
-            #[cfg(not(target_arch = "wasm32"))]
             startup_check: false,
-            #[cfg(not(target_arch = "wasm32"))]
             check_requested: false,
         }
     }
@@ -42,33 +34,25 @@ impl Default for Updates {
 
 impl LocalPDFApp {
     /// Whether the app asks for a newer release on its first frame (off until the desktop app turns it on).
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn set_startup_update_check(&mut self, on: bool) {
         self.updates.startup_check = on;
     }
 
     /// Replaces the network with `source` (tests).
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn set_update_source(&mut self, source: UpdateSource) {
         self.updates.updater = Updater::new(&craft_update::suite::LOCALPDF, env!("CARGO_PKG_VERSION")).with_source(source);
     }
 
     /// Help ▸ Check for updates: ask for the latest release and show the outcome.
     pub fn check_for_updates(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             self.updates.open = true;
             self.updates.check_requested = true;
-        }
-        #[cfg(target_arch = "wasm32")]
-        {
-            self.open_url(RELEASES_PAGE);
         }
     }
 
     /// Starts the checks and picks up their answers (each frame).
     pub(crate) fn poll_updates(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let Some(ctx) = self.ctx.clone() else { return };
             let updates = &mut self.updates;
@@ -84,7 +68,6 @@ impl LocalPDFApp {
 
 /// The startup prompt, and the Updates dialog that answers Help ▸ Check for updates.
 pub(crate) fn dialog(app: &mut LocalPDFApp, ctx: &egui::Context) {
-    #[cfg(not(target_arch = "wasm32"))]
     {
         // The restart helper is scheduled before the app closes, so no update starts over unsaved work.
         let clean = app.first_dirty().is_none();
@@ -113,7 +96,6 @@ pub(crate) fn dialog(app: &mut LocalPDFApp, ctx: &egui::Context) {
             ui.label(egui::RichText::new(tl!("Check for updates")).font(theme::semibold(16.0)));
         });
         ui.add_space(8.0);
-        #[cfg(not(target_arch = "wasm32"))]
         match app.updates.updater.status() {
             Status::Idle => {
                 ui.horizontal(|ui| {
@@ -141,8 +123,6 @@ pub(crate) fn dialog(app: &mut LocalPDFApp, ctx: &egui::Context) {
                 );
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = (&t, current);
         ui.add_space(10.0);
         ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
             if widgets::pill_button(ui, tl!("Close"), true).clicked() {
@@ -155,7 +135,6 @@ pub(crate) fn dialog(app: &mut LocalPDFApp, ctx: &egui::Context) {
     }
     if close {
         app.updates.open = false;
-        #[cfg(not(target_arch = "wasm32"))]
         app.updates.updater.dismiss_status();
     }
 }

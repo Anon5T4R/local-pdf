@@ -57,7 +57,6 @@ pub enum Clip {
 }
 
 /// An image on the system clipboard, or else its text.
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn read_clipboard() -> Option<Clip> {
     let mut cb = arboard::Clipboard::new().ok()?;
     if let Ok(img) = cb.get_image() {
@@ -115,10 +114,7 @@ impl LocalPDFApp {
     /// Create ▸ Clipboard: a new document from the image (one page, its size) or the text on
     /// the clipboard, as Acrobat does.
     pub(crate) fn create_from_clipboard(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         let clip = read_clipboard();
-        #[cfg(target_arch = "wasm32")]
-        let clip: Option<Clip> = None;
         match clip {
             Some(c) => {
                 if let Err(e) = self.create_from_clip(c) {
@@ -151,7 +147,6 @@ impl LocalPDFApp {
 
     /// Create ▸ Images: several images, one page each, in one new document.
     pub(crate) fn create_from_images_dialog(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let dialog = rfd::AsyncFileDialog::new()
                 .add_filter(tl!("Images"), &["png", "jpg", "jpeg", "tif", "tiff", "gif", "bmp", "jp2", "j2k", "jpx"])
@@ -170,8 +165,6 @@ impl LocalPDFApp {
                 app.begin_image_import(images);
             });
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("On the web, open or drop an image to convert it");
     }
 
     /// One new document from images (tests and automation call this directly).
@@ -180,7 +173,6 @@ impl LocalPDFApp {
     }
 
     /// Stage selected images for the DPI chooser; no document is created until confirmed.
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn begin_image_import_paths(&mut self, paths: &[String]) -> Result<(), String> {
         let images = paths
             .iter()
@@ -243,7 +235,6 @@ impl LocalPDFApp {
     ) {
         let Some(doc) = self.session.get(id) else { return };
         let (before, name) = (doc.bytes.len(), format!("{} ({}).pdf", stem(&doc.name), kind.suffix()));
-        #[cfg(not(target_arch = "wasm32"))]
         let folder = doc.path.clone();
         let (bytes, detail) = match result {
             Ok(r) => r,
@@ -276,7 +267,6 @@ impl LocalPDFApp {
                 );
             }
         };
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let write = move |app: &mut Self, path: String| match crate::editing::write_atomically(&path, &bytes) {
                 Ok(()) => saved(app, path),
@@ -290,11 +280,6 @@ impl LocalPDFApp {
                     self.ask_one(crate::pickers::Ask::Save(dialog), None, move |app, p| write(app, p.to_string_lossy().into_owned()));
                 }
             }
-        }
-        #[cfg(target_arch = "wasm32")]
-        match crate::editing::download(&name, &bytes) {
-            Ok(()) => saved(self, name),
-            Err(e) => self.notify_fmt("Couldn't download {name}: {e}", &[("name", &name), ("e", &e.to_string())]),
         }
     }
 }

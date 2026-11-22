@@ -58,10 +58,6 @@ The desktop UI discovers printers and submits jobs on workers, so neither operat
 the dialog; the Windows backend starts without a console window. Physical printer output
 still needs hardware validation.
 
-In a browser there is no spooler: the app (`localpdf-ui-egui`'s `web_print`) draws the print-ready
-PDF's sheets with Local PDF's renderer and prints them through the browser's print dialog, which
-sets copies, two-sided printing and colour. This crate stays free of web APIs.
-
 Not yet: print as image, poster labels, PostScript output, colour conversion for
 grayscale.
 

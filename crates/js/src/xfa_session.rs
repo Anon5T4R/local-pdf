@@ -9,7 +9,7 @@
 //!
 //! A script that runs past its time limit is abandoned on the thread and the session is dead
 //! from then on. A script that fails from a fault in the engine (a panic) loses only itself:
-//! the thread is replaced for the next script. On wasm there are no threads: scripts run here.
+//! the thread is replaced for the next script.
 
 use crate::Limits;
 use crate::xfa::{XfaDoc, XfaEvent, XfaNode, XfaOutcome};
@@ -25,7 +25,7 @@ std::thread_local! {
 /// How many script engine threads the sessions made on this thread have started, for
 /// diagnostics and tests: an event's scripts share one, so opening a form with hundreds of
 /// calculations starts one. Per thread, so a caller counting its own events is not disturbed
-/// by forms on other threads. Always 0 on wasm, where the scripts run on the caller's thread.
+/// by forms on other threads.
 pub fn engines_started() -> u64 {
     ENGINES_STARTED.with(std::cell::Cell::get)
 }
@@ -67,7 +67,6 @@ fn run_script(s: Script, doc: &XfaDoc, started: &dyn Fn()) -> XfaOutcome {
     crate::xfa::run_here(&s.source, &s.event, doc, s.root, s.limits, started)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 mod native {
     use std::sync::mpsc::{Receiver, RecvTimeoutError, Sender, channel};
     use std::time::{Duration, Instant};
@@ -204,36 +203,6 @@ mod native {
                     }
                 }
             }
-        }
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-mod native {
-    use super::{Script, run_script};
-    use crate::xfa::{XfaDoc, XfaOutcome};
-
-    /// The scripts of one event, run here (no threads on wasm: a script's own limits bound it).
-    pub struct XfaSession {
-        doc: XfaDoc,
-    }
-
-    impl XfaSession {
-        pub fn new(doc: XfaDoc) -> XfaSession {
-            XfaSession { doc }
-        }
-
-        /// No engine to start on wasm: nothing to scale.
-        pub fn with_time_scale(self, _factor: u32) -> XfaSession {
-            self
-        }
-
-        pub fn dead(&self) -> Option<&str> {
-            None
-        }
-
-        pub fn run(&mut self, script: Script) -> XfaOutcome {
-            run_script(script, &self.doc, &|| {})
         }
     }
 }

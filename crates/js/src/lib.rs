@@ -1512,7 +1512,6 @@ const MAX_PREFIX_RUN: usize = 64;
 /// Most `?` (conditional expressions nest without brackets).
 const MAX_CONDITIONALS: usize = 4096;
 /// The script thread's stack.
-#[cfg(not(target_arch = "wasm32"))]
 const SCRIPT_STACK: usize = 1 << 30;
 
 /// Why `source` is refused, if it is: too long, or nested deeper than any form needs. Strings
@@ -1613,21 +1612,16 @@ pub fn run_shared(script: &str, event: &Event, doc: &DocInfo, fields: Arc<Vec<Fi
         })
         .collect();
     let (kept, skipped) = (&kept, &skipped);
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        std::thread::scope(|scope| {
-            let spawned = std::thread::Builder::new()
-                .name("localpdf-js".into())
-                .stack_size(SCRIPT_STACK)
-                .spawn_scoped(scope, || run_here(script, event, doc, fields, kept, skipped, limits));
-            match spawned {
-                Ok(thread) => thread.join().unwrap_or_else(|_| failed("the script stopped with an internal error".into())),
-                Err(e) => failed(format!("the script engine could not start: {e}")),
-            }
-        })
-    }
-    #[cfg(target_arch = "wasm32")]
-    run_here(script, event, doc, fields, kept, skipped, limits)
+    std::thread::scope(|scope| {
+        let spawned = std::thread::Builder::new()
+            .name("localpdf-js".into())
+            .stack_size(SCRIPT_STACK)
+            .spawn_scoped(scope, || run_here(script, event, doc, fields, kept, skipped, limits));
+        match spawned {
+            Ok(thread) => thread.join().unwrap_or_else(|_| failed("the script stopped with an internal error".into())),
+            Err(e) => failed(format!("the script engine could not start: {e}")),
+        }
+    })
 }
 
 /// Host hooks that refuse to compile code from strings (`eval`, `Function` and its generator

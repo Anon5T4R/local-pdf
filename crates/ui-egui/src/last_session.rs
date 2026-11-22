@@ -51,24 +51,18 @@ impl LastSession {
 
 /// `path` made absolute against the current directory, without resolving links (and without
 /// Windows' `\\?\` prefix, which `canonicalize` adds).
-#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn absolute(path: &str) -> String {
     std::path::absolute(path).map_or_else(|_| path.to_string(), |p| p.to_string_lossy().into_owned())
 }
 
 impl LocalPDFApp {
     /// The files open now. Documents that were never saved to a file are left out (crash
-    /// recovery keeps their unsaved work), and so is everything on the web, which has no paths.
+    /// recovery keeps their unsaved work).
     pub(crate) fn open_session(&self) -> LastSession {
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            let path = |v: &crate::DocView| self.session.get(v.id).and_then(|d| d.path.as_deref()).map(absolute);
-            let files = self.views.iter().filter_map(|v| Some(SessionFile { path: path(v)?, page: v.current })).take(MAX_FILES).collect();
-            let active = self.active.and_then(|i| self.views.get(i)).and_then(path);
-            LastSession { files, active }
-        }
-        #[cfg(target_arch = "wasm32")]
-        LastSession::default()
+        let path = |v: &crate::DocView| self.session.get(v.id).and_then(|d| d.path.as_deref()).map(absolute);
+        let files = self.views.iter().filter_map(|v| Some(SessionFile { path: path(v)?, page: v.current })).take(MAX_FILES).collect();
+        let active = self.active.and_then(|i| self.views.get(i)).and_then(path);
+        LastSession { files, active }
     }
 
     /// What to save as the last session: the files open when the quit began, once the app is
@@ -101,7 +95,6 @@ impl LocalPDFApp {
     /// password and later ones stay closed (they are in the recent-files list).
     pub fn reopen_last_files(&mut self, skip: &[String]) {
         let last = std::mem::take(&mut self.last_session);
-        #[cfg(not(target_arch = "wasm32"))]
         if self.reopen_last_session {
             let skip: Vec<String> =
                 skip.iter().map(|p| absolute(p)).chain(self.recoverable.iter().filter_map(|m| m.path.as_deref().map(absolute))).collect();
@@ -133,8 +126,6 @@ impl LocalPDFApp {
                 self.active = active;
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = (last, skip);
     }
 }
 

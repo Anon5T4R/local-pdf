@@ -698,7 +698,6 @@ dependencies = [
  "fast-float2",
  "futures-concurrency",
  "futures-lite",
- "getrandom 0.4.3",
  "hashbrown 0.17.1",
  "icu_normalizer",
  "indexmap",
@@ -724,7 +723,6 @@ dependencies = [
  "thin-vec",
  "thiserror 2.0.21",
  "time",
- "web-time",
 ]
 
 [[package]]
@@ -4159,7 +4157,6 @@ version = "0.14.32"
 dependencies = [
  "bytemuck",
  "flate2",
- "getrandom 0.4.3",
  "hayro",
  "hayro-syntax",
  "kurbo 0.13.1",
@@ -4234,7 +4231,6 @@ dependencies = [
  "fontconfig-parser",
  "getrandom 0.4.3",
  "image",
- "js-sys",
  "localpdf-ai",
  "localpdf-cos",
  "localpdf-engine",
@@ -4259,9 +4255,6 @@ dependencies = [
  "sys-locale",
  "toml",
  "unicode-bidi",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
  "web-time",
  "winsafe",
  "xattr",
@@ -7537,7 +7530,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134"
 dependencies = [
  "deranged",
- "js-sys",
  "libc",
  "num-conv",
  "num_threads",

@@ -392,7 +392,6 @@ impl LocalPDFApp {
                 s.result = Some(result);
             }
         };
-        #[cfg(not(target_arch = "wasm32"))]
         if self.run_inline {
             work();
         } else if let Err(e) = std::thread::Builder::new().name("localpdf-optimize".into()).spawn(work) {
@@ -401,8 +400,6 @@ impl LocalPDFApp {
                 s.result = Some(Err(EditError::Optimize(e.to_string())));
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        work();
         self.optimize_run = Some(OptimizeRun { doc: id, kind, progress });
         self.poll_optimize();
     }

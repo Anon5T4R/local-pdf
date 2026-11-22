@@ -48,7 +48,6 @@
 	Show less	Показати менше
 	Show {n} more	Показати ще {n}
 	The newest {n} of {total} PDFs	Найновіші {n} PDF із {total}
-	Pinned folders need the desktop app	Для закріплених тек потрібен настільний застосунок
 	Choose a folder on this computer to pin	Виберіть теку на цьому комп’ютері, щоб закріпити її
 	{folder} is already pinned to Home	{folder} уже закріплено на головній
 	You can pin up to {n} folders. Unpin one first.	Можна закріпити не більше {n} тек. Спочатку відкріпіть одну з них.
@@ -1599,13 +1598,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Цей файл уже мінімального розміру ({size}). Копію не збережено.
 	Saved {place}: {before} → {after} (not smaller){detail}	Збережено {place}: {before} → {after} (не менше){detail}
 	Couldn't save the image: {e}	Не вдалося зберегти зображення: {e}
-	Adding images arrives on the web with file pickers for images	Додавання зображень з’явиться у вебверсії разом із вибором файлів зображень
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Заміна зображень на сторінці {p} з’явиться у вебверсії разом із вибором зображень ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: вибір зображень з’явиться у вебверсії разом із вибором файлів зображень
-	Replacing images arrives on the web with image file pickers	Заміна зображень з’явиться у вебверсії разом із вибором файлів зображень
 	Couldn't create a PDF: {e}	Не вдалося створити PDF: {e}
 	The clipboard has no image or text	У буфері обміну немає зображення чи тексту
-	On the web, open or drop an image to convert it	У вебверсії відкрийте або перетягніть зображення, щоб перетворити його
 	Couldn't optimize the file: {e}	Не вдалося оптимізувати файл: {e}
 	Couldn't write {path}: {e}	Не вдалося записати {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Форма запитує надсилання до {u}; Local PDF не надсилає дані форми. Збережіть документ, щоб зберегти введені дані.
@@ -1657,7 +1651,6 @@
 	The document now conforms to {level}; save it to keep the changes	Документ тепер відповідає {level}; збережіть його, щоб зберегти зміни
 	Fixed what could be fixed; 1 problem remains	Усе можливе виправлено; залишилася 1 проблема
 	Fixed what could be fixed; {n} problems remain	Усе можливе виправлено; залишилося проблем: {n}
-	Custom stamps arrive on the web with file pickers for images	Власні штампи з’являться у вебверсії разом із вибором файлів зображень
 	{file} is too large for a stamp (at most {n} MB)	{file} завеликий для штампа (не більше {n} МБ)
 	Sent to {printer}	Надіслано на {printer}
 	Sent to {printer}: {msg}	Надіслано на {printer}: {msg}
@@ -1756,9 +1749,7 @@
 	Couldn't split: {e}	Не вдалося розділити: {e}
 	Couldn't summarize comments: {e}	Не вдалося створити зведення коментарів: {e}
 	Couldn't open the result: {e}	Не вдалося відкрити результат: {e}
-	Importing data arrives on the web with file pickers for data files	Імпорт даних з’явиться у вебверсії разом із вибором файлів даних
 	Exported to {path}	Експортовано до {path}
-	Merging data files needs the desktop app	Для об’єднання файлів даних потрібен настільний застосунок
 	Merged 1 file into {path}	Об’єднано 1 файл у {path}
 	Merged {n} files into {path}	Об’єднано файлів ({n}) у {path}
 	Combined {n} files	Об’єднано файлів: {n}
@@ -1768,7 +1759,6 @@
 	Couldn't open {name}: {e}	Не вдалося відкрити {name}: {e}
 	Couldn't read {name}: {e}	Не вдалося прочитати {name}: {e}
 	Couldn't save: {e}	Не вдалося зберегти: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Завантаження вкладень у вебверсії з’явиться на етапі M3.10 (готово байтів: {n})
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	з’явиться на етапі {m}
 	needs an AI provider (off by default)	потребує постачальника ШІ (типово вимкнено)
@@ -2221,7 +2211,6 @@ calendar date	December	грудня
 	A script	Сценарій
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} у цьому документі намагається відкрити адресу, яку Local PDF не відкриває: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} у цьому документі намагається відкрити адресу, яку Local PDF не відкриває: {e}. З документів відкриваються лише вебпосилання (http, https) та посилання на електронну пошту (mailto).
-	Another file dialog is still open. Finish with it first.	Ще відкрито інше вікно вибору файлу. Спершу завершіть роботу з ним.
 	Couldn't show the file picker. Please try again.	Не вдалося показати вікно вибору файлу. Спробуйте ще раз.
 	The document changed while you were choosing a file, so nothing was changed.	Документ змінився, поки ви вибирали файл, тому нічого не змінено.
 	The document was closed before it could be saved.	Документ було закрито до того, як його вдалося зберегти.
@@ -2393,12 +2382,9 @@ animation effects	Off	Вимкнено
 	Change the colour of line art as well as text	Змінювати колір і ліній, а не лише тексту
 	Colours are remapped while rendering; the document itself never changes.	Кольори змінюються під час рендерення; сам документ ніколи не змінюється.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Драйвер цього принтера не приймає налаштування двобічного друку від інших програм, тому діє його власне налаштування. Змініть його у вікні Властивості…
-	Browser's print dialog	Діалог друку браузера
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Кількість копій, двосторонній друк і колір вибирають у діалозі друку браузера.
 	Preparing {n} sheets for printing…	Підготовка аркушів до друку: {n}…
 	Preparing sheet {done} of {total} for printing…	Підготовка до друку аркуша {done} з {total}…
 	Opening the browser's print dialog…	Відкривається діалог друку браузера…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Не вдалося надрукувати з браузера ({e}); натомість для друку завантажено файл {name}
 	Tools panel side	Бік панелі інструментів
 	Add comment	Додати коментар
 	Change tag properties	Змінити властивості тегу
@@ -2530,7 +2516,6 @@ animation effects	Off	Вимкнено
 	Collapse all tools	Згорнути всі інструменти
 	Attach a file…	Прикріпити файл…
 	Delete attachment	Видалити вкладення
-	Attaching files is not available on the web yet	Прикріплення файлів у веб-версії поки недоступне
 	Attach {name}	Прикріпити {name}
 	Delete attachment {key}	Видалити вкладення {key}
 	Font	Шрифт

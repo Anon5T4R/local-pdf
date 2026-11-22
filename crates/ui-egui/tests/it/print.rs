@@ -613,7 +613,6 @@ fn a_paper_picked_from_the_menu_while_in_label_is_kept() {
 /// while CUPS answers, and a read that dies leaves the panel with nothing rather than waiting
 /// (#1818). The click's request is made directly, so the test runs where Properties… opens the
 /// driver's own window instead (Windows).
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn printer_options_are_read_off_the_gui_thread_and_a_dead_read_offers_nothing() {
     use localpdf_engine::print::spool::PrinterOption;
@@ -671,7 +670,6 @@ fn printer_options_are_read_off_the_gui_thread_and_a_dead_read_offers_nothing() 
 
 /// A read of the printer's options that dies still asks for a frame, so an idle dialog stops
 /// saying it is reading without waiting for the mouse to move (#2108 review).
-#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn a_dead_options_read_wakes_an_idle_dialog() {
     use std::sync::atomic::{AtomicBool, Ordering};

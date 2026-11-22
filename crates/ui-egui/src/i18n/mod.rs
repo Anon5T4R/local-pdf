@@ -466,7 +466,6 @@ pub fn system_lang() -> Lang {
     *SYSTEM.get_or_init(detect_system_lang)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn detect_system_lang() -> Lang {
     for var in ["LC_ALL", "LC_MESSAGES", "LANG"] {
         if let Some(l) = std::env::var(var).ok().and_then(|v| language_override(&v)) {
@@ -491,7 +490,6 @@ fn detect_system_lang() -> Lang {
 
 /// A named locale can override the display language. On Windows, the neutral
 /// C/POSIX locale inherited from a launcher says nothing about the user's UI language.
-#[cfg(not(target_arch = "wasm32"))]
 fn language_override(tag: &str) -> Option<Lang> {
     let tag = tag.trim();
     if cfg!(target_os = "windows") && matches!(candidates(tag).first().map(String::as_str), Some("c" | "posix")) {
@@ -513,25 +511,6 @@ fn windows_ui_language() -> Option<String> {
 #[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
 fn first_supported(list: &str) -> Option<Lang> {
     list.split(['(', ')', ',', '"', '\n']).map(str::trim).filter(|s| !s.is_empty()).find_map(lang_from_tag)
-}
-
-/// The first supported language among BCP 47 tags in preference order, as the browser lists them
-/// in `navigator.languages` (#2954). Only the first few tags are looked at: the list is short in
-/// practice, and a page can't make Auto walk an unbounded one.
-#[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
-fn first_supported_tag<S: AsRef<str>>(tags: impl IntoIterator<Item = S>) -> Option<Lang> {
-    tags.into_iter().take(32).find_map(|tag| lang_from_tag(tag.as_ref().trim()))
-}
-
-/// The browser's preferred languages, as the desktop builds use the system's: `navigator.languages`
-/// in order, then `navigator.language` (kept within the 32 tags `first_supported_tag` reads).
-/// English when the browser offers none we have a catalog for.
-#[cfg(target_arch = "wasm32")]
-fn detect_system_lang() -> Lang {
-    let Some(navigator) = web_sys::window().map(|w| w.navigator()) else { return Lang::EN };
-    let mut tags: Vec<String> = navigator.languages().iter().take(31).filter_map(|v| v.as_string()).collect();
-    tags.extend(navigator.language());
-    first_supported_tag(&tags).unwrap_or(Lang::EN)
 }
 
 thread_local! {
@@ -829,21 +808,6 @@ mod tests {
         assert_eq!(first_supported("(\n    \"ja-JP\",\n    \"en-US\"\n)\n"), Some(JA()));
         assert_eq!(first_supported("(\n    \"fr-FR\",\n    \"en-US\"\n)\n"), Lang::from_code("fr"));
         assert_eq!(first_supported("("), None);
-    }
-
-    /// #2954: the web build's Auto language follows the browser's preferred languages in order,
-    /// skipping ones without a catalog, and is English only when none is supported.
-    #[test]
-    fn browser_language_list_is_followed_in_order() {
-        assert_eq!(first_supported_tag(["it-IT", "en-US"]), Lang::from_code("it"));
-        assert_eq!(first_supported_tag(["xx-YY", "ja", "fr-FR"]), Some(JA()));
-        assert_eq!(first_supported_tag(["zh-TW"]), Lang::from_code("zh-hant"));
-        assert_eq!(first_supported_tag(["en-GB", "fr-FR"]), Some(Lang::EN));
-        assert_eq!(first_supported_tag([" pt-PT "]), Lang::from_code("pt-br"));
-        assert_eq!(first_supported_tag(["", "xx"]), None);
-        assert_eq!(first_supported_tag(Vec::<String>::new()), None);
-        let long = std::iter::repeat_n("xx", 10_000).chain(["fr"]);
-        assert_eq!(first_supported_tag(long), None, "only the first tags are read");
     }
 
     #[test]

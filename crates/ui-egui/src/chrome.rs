@@ -153,7 +153,7 @@ pub fn tab_strip(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                                     response.scroll_to_me(Some(Align::Center));
                                 }
                                 let id = app.views[i].id;
-                                let reveal = cfg!(not(target_arch = "wasm32")) && doc.path.is_some();
+                                let reveal = doc.path.is_some();
                                 response.context_menu(|ui| {
                                     if ui.button(tl!("Close Tab")).clicked() {
                                         action = Some(crate::tab_context::Action::Close(id));

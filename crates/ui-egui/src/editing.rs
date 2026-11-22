@@ -20,7 +20,6 @@ pub enum CloseRequest {
 
 /// A save held back by [`Dialog::OverwriteChanged`](crate::Dialog::OverwriteChanged): the file
 /// on disk is another version than the document came from (#2166).
-#[cfg(not(target_arch = "wasm32"))]
 pub struct PendingOverwrite {
     pub id: localpdf_engine::DocId,
     pub dest: String,
@@ -672,7 +671,6 @@ impl LocalPDFApp {
         let Some(id) = self.views.get(index).map(|v| v.id) else { return false };
         let Some(doc) = self.session.get(id) else { return false };
         let (name, path) = (doc.name.clone(), doc.path.clone());
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let doc_path = path.clone();
             let destination = match (target, path, &self.save_override) {
@@ -693,51 +691,6 @@ impl LocalPDFApp {
             };
             self.save_doc_to_then(id, &destination, target, Box::new(after))
         }
-        #[cfg(target_arch = "wasm32")]
-        {
-            let _ = path;
-            if !self.flatten_fill_sign_for_save(id) {
-                return false;
-            }
-            let bytes = match self.session.save_bytes(id) {
-                Ok(b) => b,
-                Err(e) => {
-                    self.notify_fmt("Couldn't save {name}: {e}", &[("name", &name), ("e", &e.to_string())]);
-                    return false;
-                }
-            };
-            // An embedding page that asked for saves (`?host=parent`) gets the bytes; otherwise
-            // the browser downloads them.
-            let to_host = self.host_save.is_some();
-            let delivered = match &self.host_save {
-                Some(save) => save(&name, &bytes, matches!(target, SaveTarget::As)),
-                None => download(&name, &bytes),
-            };
-            match delivered {
-                Ok(()) => {
-                    let _ = self.session.mark_saved(id, bytes, None);
-                    if let Some(doc) = self.session.get(id)
-                        && let Some(view) = self.views.get_mut(index)
-                    {
-                        view.document_changed(&doc.info);
-                    }
-                    // The host reports where the file went (and any failure) itself.
-                    if !to_host {
-                        self.notify_fmt("Downloaded {name}", &[("name", &name)]);
-                    }
-                    after(self);
-                    true
-                }
-                Err(e) if to_host => {
-                    self.notify_fmt("Couldn't save {name}: {e}", &[("name", &name), ("e", &e)]);
-                    false
-                }
-                Err(e) => {
-                    self.notify_fmt("Couldn't download {name}: {e}", &[("name", &name), ("e", &e.to_string())]);
-                    false
-                }
-            }
-        }
     }
 
     /// [`Self::save_doc_to`], then `after`. When `dest` is the document's own file and it is
@@ -745,7 +698,6 @@ impl LocalPDFApp {
     /// since the open or the last save, #2166), it asks first: the save waits in
     /// `pending_overwrite` behind [`Dialog::OverwriteChanged`](crate::Dialog::OverwriteChanged).
     /// Returns `true` if written now.
-    #[cfg(not(target_arch = "wasm32"))]
     fn save_doc_to_then(&mut self, id: localpdf_engine::DocId, dest: &str, target: SaveTarget, after: Box<dyn FnOnce(&mut Self) + Send>) -> bool {
         let own = self.session.get(id).and_then(|d| d.path.as_deref()).is_some_and(|p| crate::same_file(p, dest));
         if own && self.watch.disk_differs(id, dest, self.session.get(id).map(|d| d.saved_bytes())) {
@@ -761,7 +713,6 @@ impl LocalPDFApp {
     }
 
     /// The dialog's Save anyway: write over the changed file.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn overwrite_changed_file(&mut self) {
         let Some(p) = self.pending_overwrite.take() else { return };
         if self.save_doc_to(p.id, &p.dest, p.target) {
@@ -770,7 +721,6 @@ impl LocalPDFApp {
     }
 
     /// The dialog's Save as…: leave the file on disk as it is and ask where to put this version.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn save_changed_file_elsewhere(&mut self) {
         let Some(p) = self.pending_overwrite.take() else { return };
         if let Some(index) = self.views.iter().position(|v| v.id == p.id) {
@@ -779,7 +729,6 @@ impl LocalPDFApp {
     }
 
     /// Write document `id` to `dest` and make it the document's file. Returns `true` if written.
-    #[cfg(not(target_arch = "wasm32"))]
     fn save_doc_to(&mut self, id: localpdf_engine::DocId, dest: &str, target: SaveTarget) -> bool {
         // Save As answers on a later frame: commit what was typed meanwhile, too (#166), even
         // if another tab is active by then.
@@ -1150,29 +1099,8 @@ fn write_atomically_syncing(
     localpdf_platform::staging::write_atomically_with(std::path::Path::new(path), bytes, StagingName::TagThenSuffix, suffixes, sync_all)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn short_name(path: &str) -> String {
     std::path::Path::new(path).file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_else(|| path.to_string())
-}
-
-/// Offer bytes as a browser download.
-#[cfg(target_arch = "wasm32")]
-pub(crate) fn download(name: &str, bytes: &[u8]) -> Result<(), String> {
-    use wasm_bindgen::JsCast;
-    let err = |e: wasm_bindgen::JsValue| format!("{e:?}");
-    let array = js_sys::Uint8Array::from(bytes);
-    let parts = js_sys::Array::of1(&array);
-    let opts = web_sys::BlobPropertyBag::new();
-    opts.set_type("application/pdf");
-    let blob = web_sys::Blob::new_with_u8_array_sequence_and_options(&parts, &opts).map_err(err)?;
-    let url = web_sys::Url::create_object_url_with_blob(&blob).map_err(err)?;
-    let document = web_sys::window().and_then(|w| w.document()).ok_or("no document")?;
-    let a: web_sys::HtmlAnchorElement = document.create_element("a").map_err(err)?.dyn_into().map_err(|_| "anchor")?;
-    a.set_href(&url);
-    a.set_download(name);
-    a.click();
-    let _ = web_sys::Url::revoke_object_url(&url);
-    Ok(())
 }
 
 impl LocalPDFApp {
@@ -1691,7 +1619,7 @@ mod revert_draft_tests {
     #[test]
     fn unsaved_flag_follows_dirty_state() {
         use std::sync::atomic::Ordering;
-        // `guard_quit` runs every frame, also on the web, where no close request ever arrives.
+        // `guard_quit` runs every frame.
         let ctx = egui::Context::default();
         let mut app = app();
         app.guard_quit(&ctx);

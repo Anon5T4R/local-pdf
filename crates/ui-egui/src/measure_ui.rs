@@ -584,7 +584,6 @@ fn export_csv(app: &mut LocalPDFApp) {
                     &[("n", &listing.unsupported.len().to_string())],
                 ));
             }
-            #[cfg(not(target_arch = "wasm32"))]
             {
                 let write = move |app: &mut LocalPDFApp, path: std::path::PathBuf| match crate::editing::write_atomically(
                     &path.to_string_lossy(),
@@ -600,10 +599,6 @@ fn export_csv(app: &mut LocalPDFApp) {
                         app.ask_one(crate::pickers::Ask::Save(dialog), None, write);
                     }
                 }
-            }
-            #[cfg(target_arch = "wasm32")]
-            if let Err(e) = crate::editing::download("measurements.csv", csv.as_bytes()) {
-                app.notify(&e);
             }
         }
     }

@@ -45,7 +45,6 @@
 	Show less	Näytä vähemmän
 	Show {n} more	Näytä {n} lisää
 	The newest {n} of {total} PDFs	Uusimmat {n}/{total} PDF-tiedostoa
-	Pinned folders need the desktop app	Kiinnitetyt kansiot vaativat työpöytäsovelluksen
 	Choose a folder on this computer to pin	Valitse kiinnitettävä kansio tältä tietokoneelta
 	{folder} is already pinned to Home	{folder} on jo kiinnitetty aloitussivulle
 	You can pin up to {n} folders. Unpin one first.	Voit kiinnittää enintään {n} kansiota. Irrota ensin yksi.
@@ -1545,13 +1544,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Tiedosto on jo niin pieni kuin mahdollista ({size}). Kopiota ei tallennettu.
 	Saved {place}: {before} → {after} (not smaller){detail}	Tallennettu {place}: {before} → {after} (ei pienempi){detail}
 	Couldn't save the image: {e}	Kuvaa ei voitu tallentaa: {e}
-	Adding images arrives on the web with file pickers for images	Kuvien lisääminen tulee verkkoversioon kuvatiedostojen valitsimien myötä
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Sivun {p} kuvien korvaaminen tulee verkkoversioon kuvavalitsimien myötä ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: kuvien valitseminen tulee verkkoversioon kuvatiedostojen valitsimien myötä
-	Replacing images arrives on the web with image file pickers	Kuvien korvaaminen tulee verkkoversioon kuvatiedostojen valitsimien myötä
 	Couldn't create a PDF: {e}	PDF:n luominen epäonnistui: {e}
 	The clipboard has no image or text	Leikepöydällä ei ole kuvaa tai tekstiä
-	On the web, open or drop an image to convert it	Verkkoversiossa avaa tai pudota muunnettava kuva
 	Couldn't optimize the file: {e}	Tiedoston optimointi epäonnistui: {e}
 	Couldn't write {path}: {e}	Kohteen {path} kirjoittaminen epäonnistui: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Lomake pyytää lähettämään tiedot osoitteeseen {u}; Local PDF ei lähetä lomaketietoja. Tallenna asiakirja, jotta syötetyt tiedot säilyvät.
@@ -1603,7 +1597,6 @@
 	The document now conforms to {level}; save it to keep the changes	Asiakirja on nyt {level}-yhteensopiva; tallenna se, jotta muutokset säilyvät
 	Fixed what could be fixed; 1 problem remains	Korjattiin, mikä voitiin; 1 ongelma jäljellä
 	Fixed what could be fixed; {n} problems remain	Korjattiin, mikä voitiin; {n} ongelmaa jäljellä
-	Custom stamps arrive on the web with file pickers for images	Mukautetut leimat tulevat verkkoversioon kuvatiedostojen valitsimien myötä
 	{file} is too large for a stamp (at most {n} MB)	{file} on liian suuri leimaksi (enintään {n} MB)
 	Sent to {printer}	Lähetetty tulostimeen {printer}
 	Sent to {printer}: {msg}	Lähetetty tulostimeen {printer}: {msg}
@@ -1698,9 +1691,7 @@
 	Couldn't split: {e}	Jakaminen epäonnistui: {e}
 	Couldn't summarize comments: {e}	Kommenttien yhteenvedon luominen epäonnistui: {e}
 	Couldn't open the result: {e}	Tuloksen avaaminen epäonnistui: {e}
-	Importing data arrives on the web with file pickers for data files	Tietojen tuonti tulee verkkoversioon tietotiedostojen valitsimien myötä
 	Exported to {path}	Viety kohteeseen {path}
-	Merging data files needs the desktop app	Tietotiedostojen yhdistäminen vaatii työpöytäsovelluksen
 	Merged 1 file into {path}	Yhdistettiin 1 tiedosto kohteeseen {path}
 	Merged {n} files into {path}	Yhdistettiin {n} tiedostoa kohteeseen {path}
 	Combined {n} files	Yhdistettiin {n} tiedostoa
@@ -1710,7 +1701,6 @@
 	Couldn't open {name}: {e}	Tiedoston {name} avaaminen epäonnistui: {e}
 	Couldn't read {name}: {e}	Tiedoston {name} lukeminen epäonnistui: {e}
 	Couldn't save: {e}	Tallennus epäonnistui: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Liitteiden lataus verkkoversiossa tulee versiossa M3.10 ({n} tavua valmiina)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	tulee versiossa {m}
 	needs an AI provider (off by default)	vaatii tekoälypalvelun (oletuksena pois päältä)
@@ -2158,7 +2148,6 @@ calendar date	December	joulukuuta
 	A script	Komentosarja
 	{who} in this document tried to open an address Local PDF won't open: {e}.	Tämän asiakirjan {who} yritti avata osoitteen, jota Local PDF ei avaa: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Tämän asiakirjan {who} yritti avata osoitteen, jota Local PDF ei avaa: {e}. Asiakirjoista avautuvat vain verkkolinkit (http, https) ja sähköpostilinkit (mailto).
-	Another file dialog is still open. Finish with it first.	Toinen tiedostoikkuna on vielä auki. Sulje se ensin.
 	Couldn't show the file picker. Please try again.	Tiedostovalitsinta ei voitu näyttää. Yritä uudelleen.
 	The document changed while you were choosing a file, so nothing was changed.	Asiakirja muuttui tiedoston valinnan aikana, joten mitään ei muutettu.
 	The document was closed before it could be saved.	Asiakirja suljettiin ennen kuin se ehdittiin tallentaa.
@@ -2318,12 +2307,9 @@ animation effects	Off	Ei käytössä
 	Change the colour of line art as well as text	Muuta tekstin lisäksi viivagrafiikan väriä
 	Colours are remapped while rendering; the document itself never changes.	Värit muunnetaan hahmonnuksen aikana; itse asiakirja ei muutu.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Tämän tulostimen ohjain ei hyväksy kaksipuolisuusasetuksia muilta ohjelmilta, joten sen oma asetus on voimassa. Muuta sitä kohdassa Ominaisuudet…
-	Browser's print dialog	Selaimen tulostusikkuna
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Kopiot, kaksipuolinen tulostus ja väri valitaan selaimen tulostusikkunassa.
 	Preparing {n} sheets for printing…	Valmistellaan {n} arkkia tulostusta varten…
 	Preparing sheet {done} of {total} for printing…	Valmistellaan arkkia {done}/{total} tulostusta varten…
 	Opening the browser's print dialog…	Avataan selaimen tulostusikkunaa…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Selaimesta ei voitu tulostaa ({e}); ladattiin {name} tulostettavaksi sen sijaan
 	Tools panel side	Työkalupaneelin puoli
 	Add comment	Lisää kommentti
 	Change tag properties	Muuta tagin ominaisuuksia
@@ -2815,7 +2801,6 @@ theme	Appearance	Teema
 	Restore the last view (page, zoom and page display) when a document is opened again	Palauta viimeisin näkymä (sivu, zoomaus ja sivunäyttö), kun asiakirja avataan uudelleen
 	Attach a file…	Liitä tiedosto…
 	Attach {name}	Liitä {name}
-	Attaching files is not available on the web yet	Tiedostojen liittäminen ei ole vielä käytettävissä verkossa
 	Delete attachment	Poista liite
 	Delete attachment {key}	Poista liite {key}
 @plural	{n} reply|{n} replies	{n} vastaus|{n} vastausta

@@ -303,14 +303,11 @@ impl LocalPDFApp {
                 s.result = Some(result);
             }
         };
-        #[cfg(not(target_arch = "wasm32"))]
         if self.run_inline {
             work();
         } else {
             std::thread::Builder::new().name("localpdf-ocr".into()).spawn(work).ok();
         }
-        #[cfg(target_arch = "wasm32")]
-        work();
         self.ocr_run = Some(OcrRun { doc: id, progress, automatic: auto });
         self.poll_ocr();
     }
@@ -324,7 +321,6 @@ impl LocalPDFApp {
         }
         // The settings showing now, not when the folder arrives.
         let settings = self.ocr_draft.settings();
-        #[cfg(not(target_arch = "wasm32"))]
         match self.export_dir_override.clone() {
             Some(d) => self.ocr_files_into(files, settings, d.into()),
             None => {
@@ -332,12 +328,10 @@ impl LocalPDFApp {
                 self.ask_one(crate::pickers::Ask::Folder(dialog), None, move |app, dir| app.ocr_files_into(files, settings, dir));
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        self.ocr_files_into(files, settings);
     }
 
     /// [`Self::ocr_files`] once the folder for the searchable files is known.
-    fn ocr_files_into(&mut self, files: Vec<(String, Vec<u8>)>, settings: OcrSettings, #[cfg(not(target_arch = "wasm32"))] dir: std::path::PathBuf) {
+    fn ocr_files_into(&mut self, files: Vec<(String, Vec<u8>)>, settings: OcrSettings, dir: std::path::PathBuf) {
         // Another batch may have started while the folder picker was open.
         if self.ocr_batch.is_some() {
             self.notify_tr("Text recognition is already running");
@@ -350,36 +344,25 @@ impl LocalPDFApp {
         let work = move || {
             crate::i18n::set_current(lang);
             // A panic in the recognizer still ends the batch with a summary (#3919).
-            #[cfg(not(target_arch = "wasm32"))]
             let summary = localpdf_engine::guard(|| recognize_files(files, &settings, &p, &dir));
-            #[cfg(target_arch = "wasm32")]
-            let summary = localpdf_engine::guard(|| recognize_files(files, &settings, &p));
             let summary = summary.unwrap_or_else(|panic| failed(&panic));
             if let Ok(mut s) = p.lock() {
                 s.done = s.total;
                 s.message = Some(summary);
             }
         };
-        #[cfg(not(target_arch = "wasm32"))]
         if self.run_inline {
             work();
         } else {
             std::thread::Builder::new().name("localpdf-ocr-files".into()).spawn(work).ok();
         }
-        #[cfg(target_arch = "wasm32")]
-        work();
         self.ocr_batch = Some(progress);
         self.poll_ocr();
     }
 }
 
 /// Recognize each file and write its searchable copy into `dir`; returns the summary to show.
-fn recognize_files(
-    files: Vec<(String, Vec<u8>)>,
-    settings: &OcrSettings,
-    p: &Mutex<BatchProgress>,
-    #[cfg(not(target_arch = "wasm32"))] dir: &std::path::Path,
-) -> String {
+fn recognize_files(files: Vec<(String, Vec<u8>)>, settings: &OcrSettings, p: &Mutex<BatchProgress>, dir: &std::path::Path) -> String {
     let (mut ok, mut words, mut failed) = (0, 0, Vec::new());
     match localpdf_engine::ocr::engine() {
         Err(e) => failed.push(e),
@@ -390,10 +373,7 @@ fn recognize_files(
                 }
                 let r = localpdf_engine::ocr::recognize_file(&name, Arc::new(bytes), None, settings.clone(), &ocr, |_, _| true);
                 let saved = r.and_then(|r| {
-                    #[cfg(not(target_arch = "wasm32"))]
                     crate::editing::write_atomically(&dir.join(&name).to_string_lossy(), &r.bytes).map_err(|e| e.to_string())?;
-                    #[cfg(target_arch = "wasm32")]
-                    crate::editing::download(&name, &r.bytes)?;
                     Ok(r.words())
                 });
                 match saved {

@@ -131,7 +131,6 @@ pub(crate) fn palette_section(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Toke
 impl LocalPDFApp {
     /// Create ▸ choose a PDF or an image for a new custom stamp.
     pub(crate) fn pick_stamp_file(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let read = |app: &mut Self, path: std::path::PathBuf| match std::fs::read(&path) {
                 Ok(bytes) => {
@@ -151,8 +150,6 @@ impl LocalPDFApp {
                 }
             }
         }
-        #[cfg(target_arch = "wasm32")]
-        self.notify_tr("Custom stamps arrive on the web with file pickers for images");
     }
 
     /// Open the Create Custom Stamp dialog for a file.

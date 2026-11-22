@@ -473,7 +473,7 @@ impl LocalPDFApp {
                 "file.clear_recent" => !self.recent.is_empty(),
                 DOCUMENT => index.is_some_and(|i| i < self.views.len()),
                 // macOS ⌘W closes the window when no document is open (#869).
-                "file.close" if !has_doc && crate::commands::mac_shortcuts(ctx) && !cfg!(target_arch = "wasm32") => true,
+                "file.close" if !has_doc && crate::commands::mac_shortcuts(ctx) => true,
                 "edit.copy" if organize => enabled_id("page.copy"),
                 "edit.copy" if view.is_some_and(|v| v.picked_image.is_some()) => {
                     self.active_ids().and_then(|(_, id)| self.session.get(id)).is_some_and(|d| d.allows_copying())

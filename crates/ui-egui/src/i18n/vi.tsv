@@ -319,7 +319,6 @@ theme	Appearance	Giao diện
 	Bottom	Dưới cùng
 	Bottom:	Dưới:
 	Box	Hộp
-	Browser's print dialog	Hộp thoại in của trình duyệt
 	Butt	Cụt
 	Button is checked by default	Nút được chọn theo mặc định
 	Buttons with the same name and value are selected in unison	Các nút có cùng tên và giá trị được chọn đồng thời
@@ -404,7 +403,6 @@ theme	Appearance	Giao diện
 	Confirm Password	Xác nhận mật khẩu
 	Conformance level:	Mức tuân thủ:
 	Continue	Tiếp tục
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Số bản sao, in hai mặt và màu được chọn trong hộp thoại in của trình duyệt.
 	Copies:	Số bản sao:
 	Copy selected text	Sao chép văn bản đã chọn
 	Copy text	Sao chép văn bản
@@ -1898,7 +1896,6 @@ comment menu	Edit	Sửa
 	Add watermark	Thêm hình mờ
 	Add {what}	Thêm {what}
 	Added the first {n} files in {folder}	Đã thêm {n} tệp đầu tiên trong {folder}
-	Adding images arrives on the web with file pickers for images	Việc thêm hình ảnh sẽ có trên web cùng với bộ chọn tệp hình ảnh
 	Algorithm	Thuật toán
 	Align fields	Căn chỉnh các trường
 	All annotations are tagged	Tất cả chú thích đã được gắn thẻ
@@ -1919,7 +1916,6 @@ comment menu	Edit	Sửa
 	An image asks to be interpolated	Một hình ảnh yêu cầu được nội suy
 	An image has alternates or OPI information	Một hình ảnh có bản thay thế hoặc thông tin OPI
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Hoạt ảnh nhấp nháy có thể gây co giật. Hãy kiểm tra script và phương tiện xem có nhấp nháy không.
-	Another file dialog is still open. Finish with it first.	Một hộp thoại tệp khác vẫn đang mở. Hãy hoàn tất nó trước.
 	Application	Ứng dụng
 	Applied 1 redaction mark. Save to remove the content from the file.	Đã áp dụng 1 dấu xóa. Hãy lưu để loại bỏ nội dung khỏi tệp.
 	Applied {n} redaction marks. Save to remove the content from the file.	Đã áp dụng {n} dấu xóa. Hãy lưu để loại bỏ nội dung khỏi tệp.
@@ -2001,7 +1997,6 @@ comment menu	Edit	Sửa
 	Couldn't open {name}: {e}	Không thể mở {name}: {e}
 	Couldn't optimize the file	Không thể tối ưu hóa tệp
 	Couldn't optimize the file: {e}	Không thể tối ưu hóa tệp: {e}
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Không thể in từ trình duyệt ({e}); đã tải {name} xuống để in thay thế
 	Couldn't read {name}: {e}	Không thể đọc {name}: {e}
 	Couldn't recover {name}: {e}	Không thể khôi phục {name}: {e}
 	Couldn't reload {name}: {e}	Không thể tải lại {name}: {e}
@@ -2026,7 +2021,6 @@ comment menu	Edit	Sửa
 	Credit Cards	Thẻ tín dụng
 	Crop page	Cắt xén trang
 	Custom font	Phông chữ tùy chỉnh
-	Custom stamps arrive on the web with file pickers for images	Con dấu tùy chỉnh sẽ có trên web cùng với bộ chọn tệp hình ảnh
 	Cut {what}	Đã cắt {what}
 	Dark gray theme	Chủ đề xám đậm
 	Dashed	Nét đứt
@@ -2066,7 +2060,6 @@ comment menu	Edit	Sửa
 	Documents of more than 20 pages need bookmarks for navigation. Add bookmarks for the main sections.	Tài liệu có hơn 20 trang cần dấu trang để điều hướng. Hãy thêm dấu trang cho các phần chính.
 	Double-click	Bấm đúp
 	Downloaded {name}	Đã tải xuống {name}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Việc tải tệp đính kèm trên web sẽ có cùng M3.10 (đã sẵn sàng {n} byte)
 	Drag a rectangle around the area to copy	Kéo một hình chữ nhật quanh vùng cần sao chép
 	Drag a rectangle on a page to crop it; double-click a page for Set Page Boxes	Kéo một hình chữ nhật trên trang để cắt xén; bấm đúp vào trang để mở Đặt các hộp trang
 	Drag a rectangle to create a link; double-click a link to edit it	Kéo một hình chữ nhật để tạo liên kết; bấm đúp vào liên kết để chỉnh sửa
@@ -2127,7 +2120,6 @@ comment menu	Edit	Sửa
 	Horizontally	Theo chiều ngang
 	Image-only PDF	PDF chỉ có hình ảnh
 	Import {name}	Nhập {name}
-	Importing data arrives on the web with file pickers for data files	Việc nhập dữ liệu sẽ có trên web cùng với bộ chọn tệp dữ liệu
 	Incorrect password. Try again.	Mật khẩu không đúng. Hãy thử lại.
 	Insert pages from {name}	Chèn trang từ {name}
 	Insert pages from {name} — 1 field renamed	Chèn trang từ {name} — 1 trường được đổi tên
@@ -2174,7 +2166,6 @@ comment menu	Edit	Sửa
 	Measuring tool	Công cụ đo
 	Merged 1 file into {path}	Đã gộp 1 tệp vào {path}
 	Merged {n} files into {path}	Đã gộp {n} tệp vào {path}
-	Merging data files needs the desktop app	Việc gộp tệp dữ liệu yêu cầu ứng dụng máy tính
 	Metadata	Siêu dữ liệu
 	Midpoint	Điểm giữa
 	Minimum	Tối thiểu
@@ -2205,7 +2196,6 @@ comment menu	Edit	Sửa
 	Odd pages	Các trang lẻ
 	On Blur	Khi mất tiêu điểm
 	On Focus	Khi có tiêu điểm
-	On the web, open or drop an image to convert it	Trên web, hãy mở hoặc thả một hình ảnh để chuyển đổi
 	Open a web link	Mở một liên kết web
 	Opened with	Mở bằng
 	Opening the browser's print dialog…	Đang mở hộp thoại in của trình duyệt…
@@ -2235,7 +2225,6 @@ comment menu	Edit	Sửa
 	Phone Numbers	Số điện thoại
 	Pictures need alternate text that describes them, or must be marked decorative. Add alternate text to each figure.	Hình ảnh cần văn bản thay thế mô tả chúng, hoặc phải được đánh dấu là trang trí. Hãy thêm văn bản thay thế cho mỗi hình.
 	Pink	Hồng
-	Pinned folders need the desktop app	Thư mục được ghim yêu cầu ứng dụng máy tính
 	Pinned {folder} to Home	Đã ghim {folder} vào Trang chủ
 	Place saved {what}	Đặt {what} đã lưu
 	Planned for milestone {m} — open to see what it will include	Dự kiến ở cột mốc {m} — mở để xem nó sẽ bao gồm những gì
@@ -2278,8 +2267,6 @@ comment menu	Edit	Sửa
 	Replace page	Thay thế trang
 	Replace pages	Thay thế trang
 	Replaced	Đã thay thế
-	Replacing images arrives on the web with image file pickers	Việc thay thế hình ảnh sẽ có trên web cùng với bộ chọn tệp hình ảnh
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Việc thay thế hình ảnh trên trang {p} sẽ có trên web cùng với bộ chọn hình ảnh ({i})
 	Report Options	Tùy chọn báo cáo
 	Reset a form	Đặt lại một biểu mẫu
 	Resize comment	Đổi kích thước bình luận
@@ -2474,7 +2461,6 @@ comment menu	Edit	Sửa
 	{name} has no action	{name} không có hành động
 	{name} is too large for a word list (at most 1 MB).	{name} quá lớn để làm danh sách từ (tối đa 1 MB).
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} gửi biểu mẫu đến {url}; Local PDF không gửi dữ liệu biểu mẫu. Hãy lưu tài liệu để giữ các mục bạn đã nhập.
-	{name}: choosing images arrives on the web with file pickers for images	{name}: việc chọn hình ảnh sẽ có trên web cùng với bộ chọn tệp hình ảnh
 	{name}: the {other} action isn't supported yet	{name}: hành động {other} chưa được hỗ trợ
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} trong tài liệu này đã cố mở một địa chỉ mà Local PDF sẽ không mở: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} trong tài liệu này đã cố mở một địa chỉ mà Local PDF sẽ không mở: {e}. Chỉ các liên kết web (http, https) và email (mailto) mới được mở từ tài liệu.
@@ -2774,7 +2760,6 @@ key	Space	Space
 	You are viewing revision {rev} of “{from}”. It is a snapshot: changes here won't affect the original.	Bạn đang xem bản sửa đổi {rev} của “{from}”. Đây là ảnh nhanh: các thay đổi ở đây không được áp dụng đến bản gốc.
 	Attach a file…	Đính kèm tệp…
 	Delete attachment	Xóa tệp đính kèm
-	Attaching files is not available on the web yet	Chưa thể đính kèm tệp trên web
 	Attach {name}	Đính kèm {name}
 	Delete attachment {key}	Xóa tệp đính kèm {key}
 	Thumbnail size	Kích thước hình thu nhỏ

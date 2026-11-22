@@ -9,11 +9,9 @@
 //! rebuild loop, and a timed-out shared initialization is never started again in that pool.
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
-#[cfg(not(target_arch = "wasm32"))]
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::SyncSender;
-#[cfg(not(target_arch = "wasm32"))]
 use std::sync::mpsc::{Receiver, sync_channel};
 
 #[cfg(test)]
@@ -33,22 +31,16 @@ use hayro::{RenderCache, RenderSettings, render_into, render_size};
 
 use crate::{Pixels, ReadingColors};
 
-/// Monotonic-ish timer that is safe on wasm32 (where `std::time::Instant` panics).
+/// Monotonic timer of one render.
 #[derive(Clone, Copy)]
-struct Stopwatch(#[cfg(not(target_arch = "wasm32"))] std::time::Instant);
+struct Stopwatch(std::time::Instant);
 
 impl Stopwatch {
     fn start() -> Self {
-        #[cfg(not(target_arch = "wasm32"))]
-        return Self(std::time::Instant::now());
-        #[cfg(target_arch = "wasm32")]
-        return Self();
+        Self(std::time::Instant::now())
     }
     fn millis(self) -> u32 {
-        #[cfg(not(target_arch = "wasm32"))]
-        return self.0.elapsed().as_millis() as u32;
-        #[cfg(target_arch = "wasm32")]
-        return 0;
+        self.0.elapsed().as_millis() as u32
     }
 }
 
@@ -500,7 +492,6 @@ pub(crate) fn panic_message(p: &Box<dyn std::any::Any + Send>) -> String {
 /// How long one page may render before the pool gives up on it (the watchdog).
 pub const STUCK_AFTER: std::time::Duration = std::time::Duration::from_secs(20);
 
-#[cfg(not(target_arch = "wasm32"))]
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum BusyStage {
     /// Parsing the document, shared or private. Not timed: a huge or damaged file is slow to
@@ -511,7 +502,6 @@ enum BusyStage {
     Private,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[derive(Clone)]
 struct Busy {
     request: RenderRequest,
@@ -521,7 +511,7 @@ struct Busy {
     valid: Arc<AtomicBool>,
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 #[derive(Clone)]
 struct BusyPublishGate {
     request: RenderRequest,
@@ -529,7 +519,7 @@ struct BusyPublishGate {
     release: Arc<Mutex<Receiver<()>>>,
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 #[derive(Clone)]
 struct RenderGate {
     page: usize,
@@ -540,7 +530,7 @@ struct RenderGate {
     finished: Arc<std::sync::Barrier>,
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 #[derive(Clone)]
 struct ParseGate {
     entered: Arc<std::sync::Barrier>,
@@ -553,7 +543,6 @@ struct Shared {
     /// Desired requests, active jobs and bounded completed results share one deduplication key.
     queue: Arc<WorkQueue>,
     /// Per worker id: the request it is rendering and since when.
-    #[cfg(not(target_arch = "wasm32"))]
     busy: Mutex<Vec<Option<Busy>>>,
     /// Exact requests the watchdog gave up on: answered with an error at once, so a pathological
     /// request cannot trap every worker in turn while other scales, tiles, or generations remain usable.
@@ -564,31 +553,30 @@ struct Shared {
     /// Lock `busy` first when holding both.
     stop: Mutex<Vec<Arc<std::sync::atomic::AtomicBool>>>,
     /// Test hook: hold one worker at the render boundary until the test releases it.
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     render_gates: Mutex<Vec<RenderGate>>,
     /// Test hook: hold parser initialization until the test releases it.
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     parse_gate: Mutex<Option<ParseGate>>,
     /// Test hook: make rendering this page take this long (cancellable).
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     slow_page: Mutex<Option<(usize, std::time::Duration)>>,
     /// Test hook: make parser initialization take this long.
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     slow_parse: Mutex<Option<std::time::Duration>>,
     /// Test hook: count parser initializations, including failed parses.
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     parses: std::sync::atomic::AtomicUsize,
-    #[cfg(not(target_arch = "wasm32"))]
     parser: PoolParser,
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     panic_page: Mutex<Option<usize>>,
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     render_started: std::sync::atomic::AtomicUsize,
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     busy_publish_gate: Mutex<Option<BusyPublishGate>>,
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     parser_stage_entries: Mutex<Vec<RenderRequest>>,
-    #[cfg(all(test, not(target_arch = "wasm32")))]
+    #[cfg(test)]
     shared_render_delay: Mutex<Option<std::time::Duration>>,
 }
 
@@ -596,14 +584,12 @@ fn lock<T>(m: &Mutex<T>) -> std::sync::MutexGuard<'_, T> {
     m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn same_request(a: RenderRequest, b: RenderRequest) -> bool {
     // `preview` is excluded on purpose: it names the same work for cancellation, only the
     // detail level of the result differs.
     a.page == b.page && a.kind == b.kind && a.tile == b.tile && a.scale.to_bits() == b.scale.to_bits() && a.tag == b.tag
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl Shared {
     fn cancel_in_flight(&self, obsolete: &[RenderRequest]) {
         let busy = lock(&self.busy);
@@ -616,7 +602,6 @@ impl Shared {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn set_busy_stage(shared: &Shared, id: usize, stage: BusyStage) -> bool {
     let mut slots = lock(&shared.busy);
     let Some(Some(busy)) = slots.get_mut(id) else { return false };
@@ -627,7 +612,6 @@ fn set_busy_stage(shared: &Shared, id: usize, stage: BusyStage) -> bool {
     true
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[derive(Default)]
 enum ParserState {
     #[default]
@@ -641,21 +625,18 @@ enum ParserState {
     Failed,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 struct PoolParser {
     state: Mutex<ParserState>,
     ready: std::sync::Condvar,
     valid: Arc<AtomicBool>,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl Default for PoolParser {
     fn default() -> Self {
         Self { state: Mutex::default(), ready: std::sync::Condvar::new(), valid: Arc::new(AtomicBool::new(true)) }
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 impl PoolParser {
     /// `None` means use a private parser. `Some(None)` is a terminal parse failure.
     fn acquire(&self, load: impl FnOnce() -> Option<Pdf>, cancelled: impl Fn() -> bool) -> Option<Option<Arc<Pdf>>> {
@@ -738,7 +719,7 @@ pub struct RenderPool {
     stuck_after: std::time::Duration,
     replacements_left: Mutex<usize>,
     retired_workers: Mutex<usize>,
-    /// Used when threads are unavailable (wasm32 without atomics, or spawn failure): requests are
+    /// Used when worker threads cannot start: requests are
     /// rendered on the calling thread inside `try_recv`, one per call.
     inline: Option<std::cell::RefCell<PageRenderer>>,
 }
@@ -749,7 +730,7 @@ impl RenderPool {
     }
 
     fn with_mode(bytes: Arc<Vec<u8>>, threads: usize, config: RenderConfig, inline: bool) -> Self {
-        let threads = if inline || cfg!(target_arch = "wasm32") { 0 } else { threads.max(1) };
+        let threads = if inline { 0 } else { threads.max(1) };
         let shared = Arc::new(Shared::default());
         let results_tx = shared.queue.clone();
         let results = ResultReceiver(shared.queue.clone());
@@ -777,34 +758,29 @@ impl RenderPool {
 
     /// Start one worker thread; returns whether it started.
     fn spawn_worker(&self) -> bool {
-        #[cfg(target_arch = "wasm32")]
-        return false;
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            let (id, stop) = {
-                let mut busy = lock(&self.shared.busy);
-                busy.push(None);
-                let stop = Arc::new(std::sync::atomic::AtomicBool::new(false));
-                lock(&self.shared.stop).push(stop.clone());
-                (busy.len() - 1, stop)
-            };
-            let (wtx, wrx) = sync_channel::<()>(1);
-            let (shared, out, bytes, config) = (self.shared.clone(), self.results_tx.clone(), self.bytes.clone(), self.config.clone());
-            match std::thread::Builder::new().name(format!("localpdf-render-{id}")).spawn(move || worker(id, bytes, config, shared, wrx, out, stop)) {
-                Ok(h) => {
-                    lock(&self.wake).push(wtx);
-                    lock(&self._workers).push(h);
-                    true
-                }
-                Err(e) => {
-                    log::error!("could not spawn render worker {id}: {e}");
-                    false
-                }
+        let (id, stop) = {
+            let mut busy = lock(&self.shared.busy);
+            busy.push(None);
+            let stop = Arc::new(std::sync::atomic::AtomicBool::new(false));
+            lock(&self.shared.stop).push(stop.clone());
+            (busy.len() - 1, stop)
+        };
+        let (wtx, wrx) = sync_channel::<()>(1);
+        let (shared, out, bytes, config) = (self.shared.clone(), self.results_tx.clone(), self.bytes.clone(), self.config.clone());
+        match std::thread::Builder::new().name(format!("localpdf-render-{id}")).spawn(move || worker(id, bytes, config, shared, wrx, out, stop)) {
+            Ok(h) => {
+                lock(&self.wake).push(wtx);
+                lock(&self._workers).push(h);
+                true
+            }
+            Err(e) => {
+                log::error!("could not spawn render worker {id}: {e}");
+                false
             }
         }
     }
 
-    /// A pool without worker threads: renders inside `try_recv` (the web path; also used in tests).
+    /// A pool without worker threads: renders inside `try_recv` (used in tests).
     pub fn new_inline(bytes: Arc<Vec<u8>>, config: RenderConfig) -> Self {
         Self::with_mode(bytes, 0, config, true)
     }
@@ -832,11 +808,7 @@ impl RenderPool {
     /// A caller still waiting for a page (or text, or a thumbnail) must keep listing it in
     /// every call, or the finished result is dropped to save memory.
     pub fn set_queue(&self, requests: Vec<RenderRequest>) {
-        #[cfg(not(target_arch = "wasm32"))]
         let obsolete = self.shared.queue.replace(requests);
-        #[cfg(target_arch = "wasm32")]
-        let _ = self.shared.queue.replace(requests);
-        #[cfg(not(target_arch = "wasm32"))]
         self.shared.cancel_in_flight(&obsolete);
         self.wake_workers();
     }
@@ -884,7 +856,6 @@ impl RenderPool {
 
     /// Give up on renders that exceeded `stuck_after` (see the type docs).
     fn watchdog(&self) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let mut gave_up = Vec::new();
             {
@@ -991,7 +962,6 @@ impl RenderPool {
 
 impl Drop for RenderPool {
     fn drop(&mut self) {
-        #[cfg(not(target_arch = "wasm32"))]
         for busy in lock(&self.shared.busy).iter().flatten() {
             busy.cancelled.store(true, Ordering::Release);
             busy.valid.store(false, Ordering::Release);
@@ -1003,12 +973,10 @@ impl Drop for RenderPool {
 }
 
 /// A worker's interpreter settings: the document's, stopping once the request is cancelled.
-#[cfg(not(target_arch = "wasm32"))]
 fn worker_settings(config: &RenderConfig, stop: &Arc<std::sync::atomic::AtomicBool>) -> InterpreterSettings {
     InterpreterSettings { cancelled: Some(stop.clone()), ..config.settings() }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn worker(
     id: usize,
     bytes: Arc<Vec<u8>>,
@@ -1038,7 +1006,7 @@ fn worker(
                 if shared.queue.cancel_obsolete(req) {
                     continue;
                 }
-                #[cfg(all(test, not(target_arch = "wasm32")))]
+                #[cfg(test)]
                 if let Some(gate) = lock(&shared.busy_publish_gate).clone().filter(|gate| same_request(gate.request, req)) {
                     let _ = gate.entered.send(());
                     let _ = lock(&gate.release).recv();
@@ -1085,7 +1053,7 @@ fn worker(
                     }
                     continue;
                 }
-                #[cfg(all(test, not(target_arch = "wasm32")))]
+                #[cfg(test)]
                 lock(&shared.parser_stage_entries).push(req);
                 // A request cancelled while it waited for the parser must not leave its abort
                 // behind as this worker's parse: every later request would then fail as unparsable.
@@ -1187,7 +1155,7 @@ fn worker(
                         }
                     }
                 }
-                #[cfg(all(test, not(target_arch = "wasm32")))]
+                #[cfg(test)]
                 let render_gate = lock(&shared.render_gates)
                     .iter()
                     .find(|gate| {
@@ -1196,7 +1164,7 @@ fn worker(
                             && gate.claimed.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_ok()
                     })
                     .cloned();
-                #[cfg(all(test, not(target_arch = "wasm32")))]
+                #[cfg(test)]
                 if let Some(gate) = &render_gate {
                     gate.entered.wait();
                     gate.release.wait();
@@ -1219,7 +1187,7 @@ fn worker(
                 // and started a replacement: drop the late result and retire.
                 let abandoned = lock(&shared.busy).get_mut(id).is_none_or(|slot| slot.take().is_none());
                 if abandoned {
-                    #[cfg(all(test, not(target_arch = "wasm32")))]
+                    #[cfg(test)]
                     if let Some(gate) = render_gate {
                         gate.finished.wait();
                     }
@@ -1253,7 +1221,6 @@ fn worker(
 
 #[cfg(test)]
 mod tests {
-    #[cfg(not(target_arch = "wasm32"))]
     fn render_gate(page: usize, shared_generation: bool) -> super::RenderGate {
         let barrier = || std::sync::Arc::new(std::sync::Barrier::new(2));
         super::RenderGate {
@@ -1266,13 +1233,11 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn parse_gate() -> super::ParseGate {
         let barrier = || std::sync::Arc::new(std::sync::Barrier::new(2));
         super::ParseGate { entered: barrier(), release: barrier() }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn receive_before_deadline(pool: &RenderPool) -> RenderedPage {
         // Generous: a loaded CI machine runs many render tests at once.
         let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
@@ -1285,7 +1250,6 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn shared_parser_is_lazy_and_initializes_once_under_contention() {
         use std::sync::{Barrier, atomic::AtomicUsize};
@@ -1316,7 +1280,6 @@ mod tests {
         assert!(pdfs.iter().all(|pdf| Arc::ptr_eq(pdf, &pdfs[0])));
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn initializer_panic_publishes_one_failure_and_wakes_waiters() {
         use std::sync::{Barrier, atomic::AtomicUsize};
@@ -1354,7 +1317,6 @@ mod tests {
     /// held until the end of the test, so a waiter that can't cancel waits forever and fails the
     /// guard however long it is, and a correct one returns as soon as its thread runs. Two
     /// seconds was too short for a busy FreeBSD VM in CI to start the threads (#1970).
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn waiting_worker_can_cancel_before_initializer_returns() {
         use std::{
@@ -1409,7 +1371,6 @@ mod tests {
         assert!(initializer.join().unwrap().unwrap().is_some());
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_retired_pool_counts_its_threads_until_they_exit() {
         // Idle: its thread leaves as soon as the pool is gone.
@@ -1434,7 +1395,6 @@ mod tests {
         assert_eq!(busy.running(), 0, "and the thread exits when it returns");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_pool_without_replacements_never_runs_a_second_thread() {
         // The watchdog gives up on a render stuck in one long step; with no replacement, the
@@ -1461,7 +1421,6 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn page_panic_retires_shared_generation_and_healthy_pages_use_private_parsers() {
         let pool = RenderPool::new(Arc::new(ONE_PAGE_TWICE.to_vec()), 3, RenderConfig::default());
@@ -1494,7 +1453,6 @@ mod tests {
         assert_eq!(pool.shared.parses.load(Ordering::Relaxed), before, "a failed page does not trigger repeated parsing");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn results_queued_before_invalidation_are_retried_privately() {
         let pool = RenderPool::new(Arc::new(ONE_PAGE.to_vec()), 1, RenderConfig::default());
@@ -1509,7 +1467,6 @@ mod tests {
         assert_eq!(pool.shared.parses.load(Ordering::Relaxed), 2);
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_slow_parse_is_not_a_timeout_and_its_pages_render() {
         use std::time::Duration;
@@ -1553,7 +1510,6 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn shared_timeouts_retry_healthy_pages_privately_before_blacklisting() {
         use std::time::Duration;
@@ -1601,7 +1557,6 @@ mod tests {
         assert!(lock(&pool._workers).len() <= 4, "the existing replacement cap is unchanged");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn exhausted_private_retry_budget_reports_pending_and_future_requests() {
         use std::time::Duration;
@@ -1643,7 +1598,6 @@ mod tests {
         assert!(pool.try_recv().is_none());
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_failed_page_stays_refused_at_every_scale_and_generation_but_other_pages_render() {
         let pool = RenderPool::new(Arc::new(ONE_PAGE_TWICE.to_vec()), 1, RenderConfig::default());
@@ -1663,7 +1617,6 @@ mod tests {
         assert!(rendered.error.is_none(), "another page still renders: {:?}", rendered.error);
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn replacing_a_request_during_initialization_skips_its_obsolete_render() {
         use std::time::Duration;
@@ -1685,7 +1638,6 @@ mod tests {
         assert_eq!(pool.shared.render_started.load(Ordering::Relaxed), 1, "obsolete page was skipped before rendering");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn idle_and_skipped_workers_release_source_without_parsing() {
         for skipped in [false, true] {
@@ -1713,7 +1665,6 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn worker_reuses_parser_and_releases_source_after_rendering() {
         let bytes = Arc::new(ONE_PAGE.to_vec());
@@ -2127,7 +2078,6 @@ mod tests {
         assert_eq!(pool.shared.render_started.load(Ordering::Relaxed), 2, "each page rendered once");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn replacing_an_in_flight_request_does_not_delay_the_replacement() {
         use super::*;
@@ -2162,7 +2112,6 @@ mod tests {
 
     /// A request cancelled while its worker waited for the shared parse must not leave that
     /// worker unable to render: the abort is not a parse result.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn a_request_cancelled_while_waiting_for_the_parse_leaves_its_worker_usable() {
         use super::*;
@@ -2191,7 +2140,6 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn check_cancelled_parse_request_requeue(renew_before_abort: bool) {
         use super::*;
         use std::{sync::mpsc, time::Duration};
@@ -2235,19 +2183,16 @@ mod tests {
         assert!(page.text.is_some(), "the exact cancelled text request completed");
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn cancelled_parse_request_can_be_requested_again() {
         check_cancelled_parse_request_requeue(false);
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn cancelled_parse_request_renewed_before_abort_is_requeued() {
         check_cancelled_parse_request_requeue(true);
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn request_removed_before_busy_publication_skips_parser_acquisition() {
         use std::{sync::mpsc, time::Duration};
@@ -2708,7 +2653,6 @@ trailer << /Root 1 0 R >>
         assert_eq!(px(80, 5), &[255, 255, 255, 255]);
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn page_pixels_are_invariant_to_render_worker_count() {
         let blue = "0 0 1 rg 10 10 30 20 re f";
@@ -4694,7 +4638,6 @@ trailer << /Root 1 0 R >>
     /// format (`{:?}`) the deepest nesting it admits, of arrays, dictionaries, both and
     /// dictionaries without keys, on a 512 KiB thread in a debug build. Measured when this was
     /// written (macOS arm64, dev profile): at most about 100 KiB, for `{:?}` of 128 dictionaries.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn nesting_at_the_cap_fits_a_512_kib_stack() {
         use hayro_syntax::object::{FromBytes, Object};
@@ -7178,7 +7121,6 @@ trailer << /Root 1 0 R >>
     /// the document's config carries reading colours: a preview's job is fidelity to the
     /// printout, which is imposed from the uncoloured document. Covers both render paths —
     /// the inline `PageRenderer` and a pool worker.
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn print_preview_requests_render_with_reading_colors_off() {
         let content = "0 0 0 rg 10 10 30 20 re f";

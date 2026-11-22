@@ -41,7 +41,6 @@
 	Show less	Mostra'n menys
 	Show {n} more	Mostra'n {n} més
 	The newest {n} of {total} PDFs	Els {n} més recents de {total} PDF
-	Pinned folders need the desktop app	Les carpetes fixades requereixen l'aplicació d'escriptori
 	Choose a folder on this computer to pin	Tria una carpeta d'aquest ordinador per fixar-la
 	{folder} is already pinned to Home	{folder} ja està fixada a l'inici
 	You can pin up to {n} folders. Unpin one first.	Es poden fixar fins a {n} carpetes. Primer deixa'n de fixar una.
@@ -1547,13 +1546,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Aquest fitxer ja és tan petit com es pot fer ({size}). No s'ha desat cap còpia.
 	Saved {place}: {before} → {after} (not smaller){detail}	S'ha desat {place}: {before} → {after} (no és més petit){detail}
 	Couldn't save the image: {e}	No s'ha pogut desar la imatge: {e}
-	Adding images arrives on the web with file pickers for images	L'addició d'imatges arribarà al web amb selectors de fitxers d'imatge
-	Replacing images on page {p} arrives on the web with image pickers ({i})	La substitució d'imatges a la pàgina {p} arribarà al web amb selectors d'imatges ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: la selecció d'imatges arribarà al web amb selectors de fitxers d'imatge
-	Replacing images arrives on the web with image file pickers	La substitució d'imatges arribarà al web amb selectors de fitxers d'imatge
 	Couldn't create a PDF: {e}	No s'ha pogut crear un PDF: {e}
 	The clipboard has no image or text	El porta-retalls no té cap imatge ni text
-	On the web, open or drop an image to convert it	Al web, obre o deixa anar una imatge per convertir-la
 	Couldn't optimize the file: {e}	No s'ha pogut optimitzar el fitxer: {e}
 	Couldn't write {path}: {e}	No s'ha pogut escriure {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	El formulari demana que s'enviï a {u}; Local PDF no envia dades de formularis. Desa el document per conservar les dades introduïdes.
@@ -1614,7 +1608,6 @@
 	The document now conforms to {level}; save it to keep the changes	El document ara compleix {level}; desa'l per conservar els canvis
 	Fixed what could be fixed; 1 problem remains	S'ha corregit el que s'ha pogut; queda 1 problema
 	Fixed what could be fixed; {n} problems remain	S'ha corregit el que s'ha pogut; queden {n} problemes
-	Custom stamps arrive on the web with file pickers for images	Els segells personalitzats arriben a la web amb selectors de fitxers per a les imatges
 	{file} is too large for a stamp (at most {n} MB)	{file} és massa gran per a un segell (com a màxim {n} MB)
 	Sent to {printer}	Enviat a {printer}
 	Sent to {printer}: {msg}	Enviat a {printer}: {msg}
@@ -1715,9 +1708,7 @@ action wizard	Start	Inicia
 	Couldn't split: {e}	No s'ha pogut dividir: {e}
 	Couldn't summarize comments: {e}	No s'han pogut resumir els comentaris: {e}
 	Couldn't open the result: {e}	No s'ha pogut obrir el resultat: {e}
-	Importing data arrives on the web with file pickers for data files	La importació de dades arriba a la web amb selectors de fitxers per als fitxers de dades
 	Exported to {path}	Exportat a {path}
-	Merging data files needs the desktop app	Combinar fitxers de dades requereix l'aplicació d'escriptori
 	Merged 1 file into {path}	S'ha combinat 1 fitxer a {path}
 	Merged {n} files into {path}	S'han combinat {n} fitxers a {path}
 	Combined {n} files	S'han combinat {n} fitxers
@@ -1729,7 +1720,6 @@ action wizard	Start	Inicia
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	El mode portàtil està desactivat: no es pot escriure a {folder} ({error}). La configuració es conserva a la carpeta d'usuari.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF dibuixa sense processador gràfic, de manera que pot anar lent. Pot ajudar actualitzar el controlador gràfic.
 	Couldn't save: {e}	No s'ha pogut desar: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	La baixada d'adjunts a la web arriba amb M3.10 ({n} bytes preparats)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	arriba a la fita {m}
 	needs an AI provider (off by default)	requereix un proveïdor d'IA (desactivat per defecte)
@@ -2127,7 +2117,6 @@ action wizard	Start	Inicia
 	A script	Un script
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} d'aquest document ha intentat obrir una adreça que Local PDF no obre: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} d'aquest document ha intentat obrir una adreça que Local PDF no obre: {e}. Als documents només s'hi poden obrir enllaços web (http, https) i de correu electrònic (mailto).
-	Another file dialog is still open. Finish with it first.	Hi ha un altre diàleg de fitxers obert. Acaba'l primer.
 	Couldn't show the file picker. Please try again.	No s'ha pogut mostrar el selector de fitxers. Torna-ho a provar.
 	The document changed while you were choosing a file, so nothing was changed.	El document ha canviat mentre triaves un fitxer, de manera que no s'ha modificat res.
 	The document was closed before it could be saved.	El document s'ha tancat abans de poder-se desar.
@@ -2408,12 +2397,9 @@ animation effects	Off	Desactivats
 	Greyscale	Escala de grisos
 	Black and white	Blanc i negre
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	El controlador d'aquesta impressora no accepta la configuració de doble cara d'altres programes, de manera que s'aplica la seva pròpia configuració. Canvia-la a Propietats…
-	Browser's print dialog	Diàleg d'impressió del navegador
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Les còpies, la impressió a doble cara i el color es trien al diàleg d'impressió del navegador.
 	Preparing {n} sheets for printing…	Preparant {n} fulls per imprimir…
 	Preparing sheet {done} of {total} for printing…	Preparant el full {done} de {total} per imprimir…
 	Opening the browser's print dialog…	Obrint el diàleg d'impressió del navegador…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	No s'ha pogut imprimir des del navegador ({e}); s'ha baixat {name} per imprimir-lo en lloc d'això
 	Tools panel side	Costat del tauler d'eines
 	Add comment	Afegeix un comentari
 	Change tag properties	Canvia les propietats de l'etiqueta
@@ -2806,7 +2792,6 @@ theme	Appearance	Aspecte
 	Restore the last view (page, zoom and page display) when a document is opened again	Restaura l'última vista (pàgina, zoom i visualització de pàgina) quan es torna a obrir un document
 	Attach a file…	Adjunta un fitxer…
 	Attach {name}	Adjunta {name}
-	Attaching files is not available on the web yet	Encara no es poden adjuntar fitxers al web
 	Delete attachment	Elimina l'adjunt
 	Delete attachment {key}	Elimina l'adjunt {key}
 @plural	{n} reply|{n} replies	{n} resposta|{n} respostes

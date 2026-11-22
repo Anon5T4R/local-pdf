@@ -318,7 +318,6 @@
 	Bottom	Bunn
 	Bottom:	Bunn:
 	Box	Boks
-	Browser's print dialog	Nettleserens utskriftsdialog
 	Butt	Flat
 	Button is checked by default	Knappen er avkrysset som standard
 	Buttons with the same name and value are selected in unison	Knapper med samme navn og verdi velges samtidig
@@ -402,7 +401,6 @@
 	Confirm Password	Bekreft passord
 	Conformance level:	Samsvarsnivå:
 	Continue	Fortsett
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Antall kopier, tosidig utskrift og farge velges i nettleserens utskriftsdialog.
 	Copies:	Antall kopier:
 	Copy selected text	Kopier merket tekst
 	Copy text	Kopier tekst
@@ -1847,7 +1845,6 @@
 	Add watermark	Legg til vannmerke
 	Add {what}	Legg til {what}
 	Added the first {n} files in {folder}	La til de første {n} filene i {folder}
-	Adding images arrives on the web with file pickers for images	Å legge til bilder kommer på nettet med filvelgere for bilder
 	Algorithm	Algoritme
 	Align fields	Juster felt
 	All annotations are tagged	Alle merknader er tagget
@@ -1868,7 +1865,6 @@
 	An image asks to be interpolated	Et bilde ber om å bli interpolert
 	An image has alternates or OPI information	Et bilde har alternativer eller OPI-informasjon
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Animasjon som blinker, kan utløse anfall. Sjekk skript og medier for flimring.
-	Another file dialog is still open. Finish with it first.	En annen fildialog er fortsatt åpen. Fullfør den først.
 	Application	Program
 	Applied 1 redaction mark. Save to remove the content from the file.	Brukte 1 sladdemerke. Lagre for å fjerne innholdet fra filen.
 	Applied {n} redaction marks. Save to remove the content from the file.	Brukte {n} sladdemerker. Lagre for å fjerne innholdet fra filen.
@@ -1950,7 +1946,6 @@
 	Couldn't open {name}: {e}	Kunne ikke åpne {name}: {e}
 	Couldn't optimize the file	Kunne ikke optimalisere filen
 	Couldn't optimize the file: {e}	Kunne ikke optimalisere filen: {e}
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Kunne ikke skrive ut fra nettleseren ({e}); lastet ned {name} for utskrift i stedet
 	Couldn't read {name}: {e}	Kunne ikke lese {name}: {e}
 	Couldn't recover {name}: {e}	Kunne ikke gjenopprette {name}: {e}
 	Couldn't reload {name}: {e}	Kunne ikke laste {name} på nytt: {e}
@@ -1975,7 +1970,6 @@
 	Credit Cards	Kredittkort
 	Crop page	Beskjær side
 	Custom font	Egendefinert skrift
-	Custom stamps arrive on the web with file pickers for images	Egendefinerte stempler kommer på nettet med filvelgere for bilder
 	Cut {what}	Klipp ut {what}
 	Dark gray theme	Mørkegrått tema
 	Dashed	Stiplet
@@ -2015,7 +2009,6 @@
 	Documents of more than 20 pages need bookmarks for navigation. Add bookmarks for the main sections.	Dokumenter på mer enn 20 sider trenger bokmerker for navigering. Legg til bokmerker for hovedavsnittene.
 	Double-click	Dobbeltklikk
 	Downloaded {name}	Lastet ned {name}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Nedlasting av vedlegg på nettet kommer med M3.10 ({n} byte klare)
 	Drag a rectangle around the area to copy	Dra et rektangel rundt området som skal kopieres
 	Drag a rectangle on a page to crop it; double-click a page for Set Page Boxes	Dra et rektangel på en side for å beskjære den; dobbeltklikk en side for Angi sidebokser
 	Drag a rectangle to create a link; double-click a link to edit it	Dra et rektangel for å opprette en lenke; dobbeltklikk en lenke for å redigere den
@@ -2076,7 +2069,6 @@
 	Horizontally	Vannrett
 	Image-only PDF	PDF med bare bilder
 	Import {name}	Importer {name}
-	Importing data arrives on the web with file pickers for data files	Import av data kommer på nettet med filvelgere for datafiler
 	Incorrect password. Try again.	Feil passord. Prøv igjen.
 	Insert pages from {name}	Sett inn sider fra {name}
 	Insert pages from {name} — 1 field renamed	Sett inn sider fra {name} — 1 felt fikk nytt navn
@@ -2123,7 +2115,6 @@
 	Measuring tool	Måleverktøy
 	Merged 1 file into {path}	Slo sammen 1 fil til {path}
 	Merged {n} files into {path}	Slo sammen {n} filer til {path}
-	Merging data files needs the desktop app	Sammenslåing av datafiler krever skrivebordsappen
 	Metadata	Metadata
 	Midpoint	Midtpunkt
 	Minimum	Minimum
@@ -2154,7 +2145,6 @@
 	Odd pages	Oddetallssider
 	On Blur	Ved fokustap
 	On Focus	Ved fokus
-	On the web, open or drop an image to convert it	På nettet: åpne eller slipp et bilde for å konvertere det
 	Open a web link	Åpne en nettlenke
 	Opened with	Åpnet med
 	Opening the browser's print dialog…	Åpner nettleserens utskriftsdialog…
@@ -2184,7 +2174,6 @@
 	Phone Numbers	Telefonnumre
 	Pictures need alternate text that describes them, or must be marked decorative. Add alternate text to each figure.	Bilder trenger alternativ tekst som beskriver dem, eller må merkes som dekorative. Legg til alternativ tekst for hver figur.
 	Pink	Rosa
-	Pinned folders need the desktop app	Festede mapper krever skrivebordsappen
 	Pinned {folder} to Home	Festet {folder} til Hjem
 	Place saved {what}	Plasser lagret {what}
 	Planned for milestone {m} — open to see what it will include	Planlagt for milepæl {m} – åpne for å se hva den vil inneholde
@@ -2227,8 +2216,6 @@
 	Replace page	Erstatt side
 	Replace pages	Erstatt sider
 	Replaced	Erstattet
-	Replacing images arrives on the web with image file pickers	Erstatting av bilder kommer på nettet sammen med bildefilvelgere
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Erstatting av bilder på side {p} kommer på nettet sammen med bildevelgere ({i})
 	Report Options	Rapportalternativer
 	Reset a form	Tilbakestill et skjema
 	Resize comment	Endre størrelse på kommentar
@@ -2422,7 +2409,6 @@
 	{name} has no action	{name} har ingen handling
 	{name} is too large for a word list (at most 1 MB).	{name} er for stor for en ordliste (høyst 1 MB).
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} sender skjemaet til {url}; Local PDF sender ikke skjemadata. Lagre dokumentet for å beholde det du har fylt inn.
-	{name}: choosing images arrives on the web with file pickers for images	{name}: bildevalg kommer på nett med filvelgere for bilder
 	{name}: the {other} action isn't supported yet	{name}: handlingen {other} støttes ikke ennå
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} i dette dokumentet prøvde å åpne en adresse Local PDF ikke åpner: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} i dette dokumentet prøvde å åpne en adresse Local PDF ikke åpner: {e}. Bare nettlenker (http, https) og e-postlenker (mailto) åpnes fra dokumenter.

@@ -1055,7 +1055,6 @@ fn flattening_while_typing_flattens_the_typed_text() {
     assert!(text.contains("Flat Ada"), "into the page: {text:?}");
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 mod revert_tests {
     use super::*;
     use egui_kittest::kittest::Queryable;

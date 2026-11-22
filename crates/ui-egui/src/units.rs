@@ -77,7 +77,6 @@ pub(crate) fn unit_for_tag(tag: &str) -> Option<Unit> {
     })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn detect() -> Option<Unit> {
     // The system's own measurement setting first: a terminal's LANG is often en_US whatever the region.
     #[cfg(target_os = "macos")]
@@ -128,11 +127,6 @@ fn windows_measure() -> Option<String> {
         RegistryValue::Sz(v) => Some(v),
         _ => None,
     }
-}
-
-#[cfg(target_arch = "wasm32")]
-fn detect() -> Option<Unit> {
-    None
 }
 
 #[cfg(test)]

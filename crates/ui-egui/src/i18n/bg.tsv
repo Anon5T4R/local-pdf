@@ -76,7 +76,6 @@
 	Show less	Покажи по-малко
 	Show {n} more	Покажи още {n}
 	The newest {n} of {total} PDFs	Най-новите {n} от {total} PDF файла
-	Pinned folders need the desktop app	Закачените папки изискват настолното приложение
 	Choose a folder on this computer to pin	Изберете папка на този компютър, която да закачите
 	{folder} is already pinned to Home	{folder} вече е закачена в Начало
 	You can pin up to {n} folders. Unpin one first.	Можете да закачите до {n} папки. Първо откачете една.
@@ -1544,13 +1543,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Файлът вече е възможно най-малък ({size}). Не е записано копие.
 	Saved {place}: {before} → {after} (not smaller){detail}	Записано {place}: {before} → {after} (не е по-малко){detail}
 	Couldn't save the image: {e}	Изображението не можа да бъде записано: {e}
-	Adding images arrives on the web with file pickers for images	Добавянето на изображения в уеб версията ще стане достъпно с инструментите за избор на файлове с изображения
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Замяната на изображения на страница {p} в уеб версията ще стане достъпна с инструментите за избор на изображения ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: изборът на изображения в уеб версията ще стане достъпен с инструментите за избор на файлове с изображения
-	Replacing images arrives on the web with image file pickers	Замяната на изображения в уеб версията ще стане достъпна с инструментите за избор на файлове с изображения
 	Couldn't create a PDF: {e}	Не можа да се създаде PDF файл: {e}
 	The clipboard has no image or text	В клипборда няма изображение или текст
-	On the web, open or drop an image to convert it	В уеб версията отворете или пуснете изображение, за да го конвертирате
 	Couldn't optimize the file: {e}	Файлът не можа да бъде оптимизиран: {e}
 	Couldn't write {path}: {e}	Не можа да се запише {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Формулярът изисква да бъде изпратен до {u}; Local PDF не изпраща данни от формуляри. Запишете документа, за да запазите въведеното.
@@ -1611,7 +1605,6 @@
 	The document now conforms to {level}; save it to keep the changes	Документът вече отговаря на {level}; запишете го, за да запазите промените
 	Fixed what could be fixed; 1 problem remains	Поправено е всичко възможно; остава 1 проблем
 	Fixed what could be fixed; {n} problems remain	Поправено е всичко възможно; остават {n} проблема
-	Custom stamps arrive on the web with file pickers for images	Потребителските печати в уеб версията ще станат достъпни с инструментите за избор на файлове с изображения
 	{file} is too large for a stamp (at most {n} MB)	{file} е твърде голям за печат (най-много {n} MB)
 	Sent to {printer}	Изпратено до {printer}
 	Sent to {printer}: {msg}	Изпратено до {printer}: {msg}
@@ -1710,9 +1703,7 @@
 	Couldn't split: {e}	Разделянето не бе успешно: {e}
 	Couldn't summarize comments: {e}	Коментарите не можаха да бъдат обобщени: {e}
 	Couldn't open the result: {e}	Резултатът не можа да бъде отворен: {e}
-	Importing data arrives on the web with file pickers for data files	Импортирането на данни в уеб версията ще стане достъпно с инструментите за избор на файлове с данни
 	Exported to {path}	Експортирано в {path}
-	Merging data files needs the desktop app	Сливането на файлове с данни изисква настолното приложение
 	Merged 1 file into {path}	Слят е 1 файл в {path}
 	Merged {n} files into {path}	Слети са {n} файла в {path}
 	Combined {n} files	Обединени са {n} файла
@@ -1724,7 +1715,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Преносимият режим е изключен: в {folder} не може да се записва ({error}). Вместо това настройките се пазят в потребителската ви папка.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF рисува без графичен процесор, затова може да е бавен. Обновяването на графичния драйвер може да помогне.
 	Couldn't save: {e}	Записването не бе успешно: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Изтеглянето на прикачени файлове в уеб версията ще стане достъпно с M3.10 ({n} байта готови)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	ще бъде включено в етап {m}
 	needs an AI provider (off by default)	изисква доставчик на ИИ (изключено по подразбиране)
@@ -2334,12 +2324,9 @@ animation effects	Off	Изключени
 	Change the colour of line art as well as text	Да се променя цветът и на линиите, не само на текста
 	Colours are remapped while rendering; the document itself never changes.	Цветовете се променят при изчертаването; самият документ никога не се променя.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Драйверът на този принтер не приема настройки за двустранен печат от други програми и прилага собствената си настройка. Променете я от Свойства…
-	Browser's print dialog	Диалог за печат на браузъра
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Броят копия, двустранният печат и цветът се избират в диалога за печат на браузъра.
 	Preparing {n} sheets for printing…	Подготовка на листове за печат: {n}…
 	Preparing sheet {done} of {total} for printing…	Подготовка за печат на лист {done} от {total}…
 	Opening the browser's print dialog…	Отваряне на диалога за печат на браузъра…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Не може да се печата от браузъра ({e}); вместо това за печат е изтеглен {name}
 	Tools panel side	Страна на панела с инструменти
 	Add comment	Добавяне на коментар
 	Change tag properties	Промяна на свойствата на етикета
@@ -2471,7 +2458,6 @@ animation effects	Off	Изключени
 	Collapse all tools	Свиване на всички инструменти
 	Attach a file…	Прикачване на файл…
 	Delete attachment	Изтриване на прикачения файл
-	Attaching files is not available on the web yet	Прикачването на файлове още не е налично в уеб версията
 	Attach {name}	Прикачване на {name}
 	Delete attachment {key}	Изтриване на прикачения файл {key}
 	Font	Шрифт

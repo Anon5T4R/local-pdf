@@ -39,7 +39,6 @@
 	Show less	แสดงน้อยลง
 	Show {n} more	แสดงอีก {n} รายการ
 	The newest {n} of {total} PDFs	PDF ล่าสุด {n} จาก {total} ไฟล์
-	Pinned folders need the desktop app	โฟลเดอร์ที่ปักหมุดต้องใช้แอปเดสก์ท็อป
 	Choose a folder on this computer to pin	เลือกโฟลเดอร์บนคอมพิวเตอร์เครื่องนี้เพื่อปักหมุด
 	{folder} is already pinned to Home	{folder} ถูกปักหมุดไว้ที่หน้าแรกอยู่แล้ว
 	You can pin up to {n} folders. Unpin one first.	ปักหมุดได้ไม่เกิน {n} โฟลเดอร์ โปรดเลิกปักหมุดหนึ่งรายการก่อน
@@ -1539,13 +1538,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	ไฟล์นี้เล็กที่สุดเท่าที่ทำได้แล้ว ({size}) ไม่ได้บันทึกสำเนา
 	Saved {place}: {before} → {after} (not smaller){detail}	บันทึก{place}แล้ว: {before} → {after} (ไม่เล็กลง){detail}
 	Couldn't save the image: {e}	บันทึกรูปภาพไม่ได้: {e}
-	Adding images arrives on the web with file pickers for images	การเพิ่มรูปภาพบนเว็บจะมาพร้อมกับตัวเลือกไฟล์สำหรับรูปภาพ
-	Replacing images on page {p} arrives on the web with image pickers ({i})	การแทนที่รูปภาพในหน้า {p} บนเว็บจะมาพร้อมกับตัวเลือกรูปภาพ ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: การเลือกรูปภาพบนเว็บจะมาพร้อมกับตัวเลือกไฟล์สำหรับรูปภาพ
-	Replacing images arrives on the web with image file pickers	การแทนที่รูปภาพบนเว็บจะมาพร้อมกับตัวเลือกไฟล์รูปภาพ
 	Couldn't create a PDF: {e}	สร้าง PDF ไม่ได้: {e}
 	The clipboard has no image or text	คลิปบอร์ดไม่มีรูปภาพหรือข้อความ
-	On the web, open or drop an image to convert it	บนเว็บ ให้เปิดหรือวางรูปภาพเพื่อแปลง
 	Couldn't optimize the file: {e}	ปรับไฟล์ให้เหมาะสมไม่ได้: {e}
 	Couldn't write {path}: {e}	เขียน {path} ไม่ได้: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	แบบฟอร์มขอให้ส่งไปที่ {u} แต่ Local PDF ไม่ส่งข้อมูลแบบฟอร์ม บันทึกเอกสารเพื่อเก็บสิ่งที่คุณกรอก
@@ -1606,7 +1600,6 @@
 	The document now conforms to {level}; save it to keep the changes	ตอนนี้เอกสารสอดคล้องกับ {level} แล้ว บันทึกเพื่อเก็บการเปลี่ยนแปลง
 	Fixed what could be fixed; 1 problem remains	แก้ไขสิ่งที่แก้ได้แล้ว เหลือ 1 ปัญหา
 	Fixed what could be fixed; {n} problems remain	แก้ไขสิ่งที่แก้ได้แล้ว เหลือ {n} ปัญหา
-	Custom stamps arrive on the web with file pickers for images	ตราประทับกำหนดเองบนเว็บจะมาพร้อมกับตัวเลือกไฟล์สำหรับรูปภาพ
 	{file} is too large for a stamp (at most {n} MB)	{file} ใหญ่เกินไปสำหรับตราประทับ (ไม่เกิน {n} MB)
 	Sent to {printer}	ส่งไปที่ {printer} แล้ว
 	Sent to {printer}: {msg}	ส่งไปที่ {printer} แล้ว: {msg}
@@ -1701,9 +1694,7 @@
 	Couldn't split: {e}	แบ่งไม่ได้: {e}
 	Couldn't summarize comments: {e}	สรุปความคิดเห็นไม่ได้: {e}
 	Couldn't open the result: {e}	เปิดผลลัพธ์ไม่ได้: {e}
-	Importing data arrives on the web with file pickers for data files	การนำเข้าข้อมูลบนเว็บจะมาพร้อมกับตัวเลือกไฟล์สำหรับไฟล์ข้อมูล
 	Exported to {path}	ส่งออกไปที่ {path} แล้ว
-	Merging data files needs the desktop app	การผสานไฟล์ข้อมูลต้องใช้แอปเดสก์ท็อป
 	Merged 1 file into {path}	ผสาน 1 ไฟล์ลงใน {path} แล้ว
 	Merged {n} files into {path}	ผสาน {n} ไฟล์ลงใน {path} แล้ว
 	Combined {n} files	รวมแล้ว {n} ไฟล์
@@ -1715,7 +1706,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	โหมดพกพาปิดอยู่: เขียนลงใน {folder} ไม่ได้ ({error}) การตั้งค่าจะถูกเก็บในโฟลเดอร์ผู้ใช้ของคุณแทน
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF กำลังวาดโดยไม่ใช้หน่วยประมวลผลกราฟิก จึงอาจทำงานช้า การอัปเดตไดรเวอร์กราฟิกอาจช่วยได้
 	Couldn't save: {e}	บันทึกไม่ได้: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	การดาวน์โหลดไฟล์แนบบนเว็บจะมาใน M3.10 (พร้อมแล้ว {n} ไบต์)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	จะมาในไมล์สโตน {m}
 	needs an AI provider (off by default)	ต้องใช้ผู้ให้บริการ AI (ปิดเป็นค่าเริ่มต้น)
@@ -2086,7 +2076,6 @@
 	About	เกี่ยวกับ
 	Add {what}	เพิ่ม{what}
 	Align fields	จัดแนวช่อง
-	Another file dialog is still open. Finish with it first.	กล่องโต้ตอบไฟล์อีกอันยังเปิดอยู่ โปรดทำให้เสร็จก่อน
 	Basic constraints	ข้อจำกัดพื้นฐาน
 	Binary assets added	ไฟล์ไบนารีที่เพิ่ม
 	Binary assets removed	ไฟล์ไบนารีที่เอาออก
@@ -2276,12 +2265,9 @@ animation effects	Off	ปิด
 	Change the colour of line art as well as text	เปลี่ยนสีของลายเส้นด้วย ไม่เฉพาะข้อความ
 	Colours are remapped while rendering; the document itself never changes.	สีจะถูกปรับระหว่างการแสดงผลเท่านั้น ตัวเอกสารไม่ถูกเปลี่ยน
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	ไดรเวอร์ของเครื่องพิมพ์นี้ไม่รับการตั้งค่าพิมพ์สองด้านจากโปรแกรมอื่น จึงใช้การตั้งค่าของไดรเวอร์เอง เปลี่ยนได้ในคุณสมบัติ…
-	Browser's print dialog	กล่องโต้ตอบการพิมพ์ของเบราว์เซอร์
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	จำนวนสำเนา การพิมพ์สองด้าน และสี เลือกได้ในกล่องโต้ตอบการพิมพ์ของเบราว์เซอร์
 	Preparing {n} sheets for printing…	กำลังเตรียม {n} แผ่นสำหรับการพิมพ์…
 	Preparing sheet {done} of {total} for printing…	กำลังเตรียมแผ่นที่ {done} จาก {total} สำหรับการพิมพ์…
 	Opening the browser's print dialog…	กำลังเปิดกล่องโต้ตอบการพิมพ์ของเบราว์เซอร์…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	พิมพ์จากเบราว์เซอร์ไม่ได้ ({e}) จึงดาวน์โหลด {name} ให้พิมพ์แทน
 	Tools panel side	ด้านของแผงเครื่องมือ
 	Add comment	เพิ่มความคิดเห็น
 	Change tag properties	เปลี่ยนคุณสมบัติแท็ก

@@ -8,8 +8,8 @@ pub const WHOLE_CJK_FAMILIES: [&str; 3] = ["Shippori Mincho", "BIZ UDPGothic", "
 /// Any other CJK face over this size is left out.
 pub const MAX_OTHER_CJK_BYTES: u64 = 4 << 20;
 
-/// Reviewed native-only UI fallback from the separate Chinese manifest.
-/// It is never included in the browser payload. Other CJK families keep the 4 MiB cap.
+/// Reviewed UI fallback from the separate Chinese manifest. Other CJK families keep the
+/// 4 MiB cap.
 pub const NATIVE_UI_CJK_FAMILIES: [&str; 1] = ["LXGW WenKai Lite"];
 pub const MAX_NATIVE_UI_CJK_BYTES: u64 = 16 << 20;
 
@@ -42,20 +42,20 @@ pub enum CjkSizeDecision {
 }
 
 /// The size cap that applies to `family` in this build.
-pub fn cjk_cap_bytes(family: &str, wasm: bool) -> u64 {
-    if !wasm && NATIVE_UI_CJK_FAMILIES.contains(&family) { MAX_NATIVE_UI_CJK_BYTES } else { MAX_OTHER_CJK_BYTES }
+pub fn cjk_cap_bytes(family: &str) -> u64 {
+    if NATIVE_UI_CJK_FAMILIES.contains(&family) { MAX_NATIVE_UI_CJK_BYTES } else { MAX_OTHER_CJK_BYTES }
 }
 
 /// Decide whether a CJK face is embedded, skipped, or rejected.
 ///
 /// The Japanese document/UI families are embedded whole. Every other CJK family uses its cap;
-/// `required` marks the native Simplified Chinese manifest of a `CRAFT_FONTS_REQUIRED` build,
+/// `required` marks the Simplified Chinese manifest of a `CRAFT_FONTS_REQUIRED` build,
 /// where an over-cap face must fail instead of quietly disappearing.
-pub fn cjk_size_decision(family: &str, bytes: u64, wasm: bool, required: bool) -> CjkSizeDecision {
+pub fn cjk_size_decision(family: &str, bytes: u64, required: bool) -> CjkSizeDecision {
     if WHOLE_CJK_FAMILIES.contains(&family) {
         return CjkSizeDecision::Embed;
     }
-    if bytes <= cjk_cap_bytes(family, wasm) {
+    if bytes <= cjk_cap_bytes(family) {
         CjkSizeDecision::Embed
     } else if required {
         CjkSizeDecision::Reject
@@ -79,19 +79,18 @@ mod tests {
         assert!(!has_script_tag("Hani,Jpan,Kore", "Hans"));
     }
 
-    /// Check that a native Chinese face over its cap is rejected when required, skipped when optional, and
-    /// uses the web cap on the web.
+    /// Check that a Chinese face over its cap is rejected when required and skipped when optional.
     #[test]
     fn a_required_native_chinese_face_over_its_cap_is_rejected_not_skipped() {
         let at_cap = MAX_NATIVE_UI_CJK_BYTES;
-        assert_eq!(cjk_size_decision("LXGW WenKai Lite", at_cap, false, true), CjkSizeDecision::Embed);
-        assert_eq!(cjk_size_decision("LXGW WenKai Lite", at_cap + 1, false, true), CjkSizeDecision::Reject);
-        assert_eq!(cjk_size_decision("LXGW WenKai Lite", at_cap + 1, false, false), CjkSizeDecision::Skip);
-        // The web build keeps the smaller general cap even for the native Chinese family.
-        assert_eq!(cjk_size_decision("LXGW WenKai Lite", MAX_OTHER_CJK_BYTES + 1, true, true), CjkSizeDecision::Reject);
+        assert_eq!(cjk_size_decision("LXGW WenKai Lite", at_cap, true), CjkSizeDecision::Embed);
+        assert_eq!(cjk_size_decision("LXGW WenKai Lite", at_cap + 1, true), CjkSizeDecision::Reject);
+        assert_eq!(cjk_size_decision("LXGW WenKai Lite", at_cap + 1, false), CjkSizeDecision::Skip);
+        // Any other CJK family keeps the smaller general cap.
+        assert_eq!(cjk_size_decision("Noto Sans CJK SC", MAX_OTHER_CJK_BYTES + 1, true), CjkSizeDecision::Reject);
         // Japanese document/UI families are embedded whole.
-        assert_eq!(cjk_size_decision("BIZ UDPGothic", u64::MAX, false, true), CjkSizeDecision::Embed);
-        assert_eq!(cjk_cap_bytes("LXGW WenKai Lite", false), MAX_NATIVE_UI_CJK_BYTES);
-        assert_eq!(cjk_cap_bytes("LXGW WenKai Lite", true), MAX_OTHER_CJK_BYTES);
+        assert_eq!(cjk_size_decision("BIZ UDPGothic", u64::MAX, true), CjkSizeDecision::Embed);
+        assert_eq!(cjk_cap_bytes("LXGW WenKai Lite"), MAX_NATIVE_UI_CJK_BYTES);
+        assert_eq!(cjk_cap_bytes("Noto Sans CJK SC"), MAX_OTHER_CJK_BYTES);
     }
 }

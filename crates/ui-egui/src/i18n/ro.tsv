@@ -319,7 +319,6 @@
 	Bottom	Jos
 	Bottom:	Jos:
 	Box	Casetă
-	Browser's print dialog	Dialogul de imprimare al browserului
 	Butt	Plat
 	Button is checked by default	Butonul este bifat implicit
 	Buttons with the same name and value are selected in unison	Butoanele cu același nume și valoare se selectează împreună
@@ -403,7 +402,6 @@
 	Confirm Password	Confirmare parolă
 	Conformance level:	Nivel de conformitate:
 	Continue	Continuare
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Copiile, imprimarea față-verso și culoarea se aleg în dialogul de imprimare al browserului.
 	Copies:	Copii:
 	Copy selected text	Copiere text selectat
 	Copy text	Copiere text
@@ -1854,7 +1852,6 @@ comment menu	Edit	Editare
 	Add watermark	Adăugare filigran
 	Add {what}	Adăugare {what}
 	Added the first {n} files in {folder}	Au fost adăugate primele {n} fișiere din {folder}
-	Adding images arrives on the web with file pickers for images	Adăugarea de imagini vine pe web odată cu selectoarele de fișiere pentru imagini
 	Algorithm	Algoritm
 	Align fields	Aliniere câmpuri
 	All annotations are tagged	Toate adnotările sunt etichetate
@@ -1875,7 +1872,6 @@ comment menu	Edit	Editare
 	An image asks to be interpolated	O imagine cere interpolare
 	An image has alternates or OPI information	O imagine are alternative sau informații OPI
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Animațiile care clipesc pot provoca crize. Verificați scripturile și conținutul media pentru pâlpâiri.
-	Another file dialog is still open. Finish with it first.	Un alt dialog de fișiere este încă deschis. Terminați întâi cu el.
 	Application	Aplicație
 	Applied 1 redaction mark. Save to remove the content from the file.	A fost aplicat 1 marcaj de anonimizare. Salvați pentru a elimina conținutul din fișier.
 	Applied {n} redaction marks. Save to remove the content from the file.	Au fost aplicate {n} marcaje de anonimizare. Salvați pentru a elimina conținutul din fișier.
@@ -1957,7 +1953,6 @@ comment menu	Edit	Editare
 	Couldn't open {name}: {e}	Nu s-a putut deschide {name}: {e}
 	Couldn't optimize the file	Nu s-a putut optimiza fișierul
 	Couldn't optimize the file: {e}	Nu s-a putut optimiza fișierul: {e}
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Nu s-a putut imprima din browser ({e}); s-a descărcat {name} pentru imprimare
 	Couldn't read {name}: {e}	Nu s-a putut citi {name}: {e}
 	Couldn't recover {name}: {e}	Nu s-a putut recupera {name}: {e}
 	Couldn't reload {name}: {e}	Nu s-a putut reîncărca {name}: {e}
@@ -1981,7 +1976,6 @@ comment menu	Edit	Editare
 	Credit Cards	Carduri bancare
 	Crop page	Decupare pagină
 	Custom font	Font personalizat
-	Custom stamps arrive on the web with file pickers for images	Ștampilele personalizate vin pe web odată cu selectoarele de fișiere pentru imagini
 	Cut {what}	Decupat: {what}
 	Dark gray theme	Temă gri închis
 	Dashed	Întreruptă
@@ -2021,7 +2015,6 @@ comment menu	Edit	Editare
 	Documents of more than 20 pages need bookmarks for navigation. Add bookmarks for the main sections.	Documentele de peste 20 de pagini au nevoie de semne de carte pentru navigare. Adăugați semne de carte pentru secțiunile principale.
 	Double-click	Dublu clic
 	Downloaded {name}	S-a descărcat {name}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Descărcarea atașamentelor pe web vine cu M3.10 ({n} octeți pregătiți)
 	Drag a rectangle around the area to copy	Trageți un dreptunghi în jurul zonei de copiat
 	Drag a rectangle on a page to crop it; double-click a page for Set Page Boxes	Trageți un dreptunghi pe o pagină pentru a o decupa; dublu clic pe o pagină pentru Setare casete pagină
 	Drag a rectangle to create a link; double-click a link to edit it	Trageți un dreptunghi pentru a crea un link; dublu clic pe un link pentru a-l edita
@@ -2082,7 +2075,6 @@ comment menu	Edit	Editare
 	Horizontally	Pe orizontală
 	Image-only PDF	PDF doar din imagini
 	Import {name}	Importare {name}
-	Importing data arrives on the web with file pickers for data files	Importarea datelor vine pe web odată cu selectoarele de fișiere pentru fișiere de date
 	Incorrect password. Try again.	Parolă incorectă. Încercați din nou.
 	Insert pages from {name}	Inserare pagini din {name}
 	Insert pages from {name} — 1 field renamed	Inserare pagini din {name}: 1 câmp redenumit
@@ -2129,7 +2121,6 @@ comment menu	Edit	Editare
 	Measuring tool	Instrument de măsurare
 	Merged 1 file into {path}	1 fișier unificat în {path}
 	Merged {n} files into {path}	{n} fișiere unificate în {path}
-	Merging data files needs the desktop app	Unificarea fișierelor de date necesită aplicația desktop
 	Metadata	Metadate
 	Midpoint	Mijloc
 	Minimum	Minim
@@ -2160,7 +2151,6 @@ comment menu	Edit	Editare
 	Odd pages	Pagini impare
 	On Blur	La pierderea focalizării
 	On Focus	La focalizare
-	On the web, open or drop an image to convert it	Pe web, deschideți sau plasați o imagine pentru a o converti
 	Open a web link	Deschidere link web
 	Opened with	Deschis cu
 	Opening the browser's print dialog…	Se deschide dialogul de imprimare al browserului…
@@ -2190,7 +2180,6 @@ comment menu	Edit	Editare
 	Phone Numbers	Numere de telefon
 	Pictures need alternate text that describes them, or must be marked decorative. Add alternate text to each figure.	Imaginile au nevoie de un text alternativ care să le descrie sau trebuie marcate ca decorative. Adăugați text alternativ fiecărei figuri.
 	Pink	Roz
-	Pinned folders need the desktop app	Folderele fixate necesită aplicația desktop
 	Pinned {folder} to Home	{folder} a fost fixat în Acasă
 	Place saved {what}	Plasare {what} salvat
 	Planned for milestone {m} — open to see what it will include	Planificat pentru etapa {m}: deschideți pentru a vedea ce va include
@@ -2233,8 +2222,6 @@ comment menu	Edit	Editare
 	Replace page	Înlocuire pagină
 	Replace pages	Înlocuire pagini
 	Replaced	Înlocuit
-	Replacing images arrives on the web with image file pickers	Înlocuirea imaginilor vine pe web odată cu selectoarele de fișiere imagine
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Înlocuirea imaginilor de pe pagina {p} vine pe web odată cu selectoarele de imagini ({i})
 	Report Options	Opțiuni raport
 	Reset a form	Resetare formular
 	Resize comment	Redimensionare comentariu
@@ -2428,7 +2415,6 @@ comment menu	Edit	Editare
 	{name} has no action	{name} nu are nicio acțiune
 	{name} is too large for a word list (at most 1 MB).	{name} este prea mare pentru o listă de cuvinte (cel mult 1 MB).
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} trimite formularul la {url}; Local PDF nu trimite date de formular. Salvați documentul pentru a păstra ce ați completat.
-	{name}: choosing images arrives on the web with file pickers for images	{name}: alegerea imaginilor vine pe web odată cu selectoarele de fișiere pentru imagini
 	{name}: the {other} action isn't supported yet	{name}: acțiunea {other} nu este acceptată încă
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} din acest document a încercat să deschidă o adresă pe care Local PDF nu o deschide: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} din acest document a încercat să deschidă o adresă pe care Local PDF nu o deschide: {e}. Din documente se deschid doar linkuri web (http, https) și de e-mail (mailto).
@@ -2806,7 +2792,6 @@ theme	Appearance	Aspect
 	Restore the last view (page, zoom and page display) when a document is opened again	Restabilește ultima vizualizare (pagina, zoomul și afișarea paginilor) când un document este redeschis
 	Attach a file…	Atașare fișier…
 	Attach {name}	Atașare {name}
-	Attaching files is not available on the web yet	Atașarea fișierelor nu este încă disponibilă pe web
 	Delete attachment	Ștergere atașament
 	Delete attachment {key}	Ștergere atașament {key}
 @plural	{n} reply|{n} replies	{n} răspuns|{n} răspunsuri|{n} de răspunsuri

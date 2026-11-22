@@ -321,7 +321,6 @@
 	Bottom	Apačia
 	Bottom:	Apačia:
 	Box	Stačiakampis
-	Browser's print dialog	Naršyklės spausdinimo dialogas
 	Butt	Plokščias galas
 	Button is checked by default	Mygtukas pažymėtas pagal numatytuosius parametrus
 	Buttons with the same name and value are selected in unison	Mygtukai su tuo pačiu pavadinimu ir reikšme pasirenkami kartu
@@ -407,7 +406,6 @@
 	Confirm Password	Patvirtinti slaptažodį
 	Conformance level:	Atitikties lygis:
 	Continue	Tęsti
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Kopijų skaičius, dvipusis spausdinimas ir spalvos pasirenkami naršyklės spausdinimo dialoge.
 	Copies:	Kopijų skaičius:
 	Copy selected text	Kopijuoti pažymėtą tekstą
 	Copy text	Kopijuoti tekstą
@@ -1910,7 +1908,6 @@ comment menu	Edit	Redaguoti
 	Add watermark	Pridėti vandenženklį
 	Add {what}	Pridėti {what}
 	Added the first {n} files in {folder}	Pridėti pirmieji {n} failai iš aplanko {folder}
-	Adding images arrives on the web with file pickers for images	Žiniatinklio versijoje paveikslėlius bus galima pridėti įdiegus jų failų pasirinkimą
 	Algorithm	Algoritmas
 	Align fields	Lygiuoti laukus
 	All annotations are tagged	Visos anotacijos turi struktūros žymas
@@ -1931,7 +1928,6 @@ comment menu	Edit	Redaguoti
 	An image asks to be interpolated	Paveikslėliui nurodyta taikyti interpoliaciją
 	An image has alternates or OPI information	Paveikslėlis turi alternatyvių versijų arba OPI informacijos
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Mirganti animacija gali sukelti priepuolius. Patikrinkite, ar scenarijai ir medija nesukelia mirgėjimo.
-	Another file dialog is still open. Finish with it first.	Kitas failų dialogas dar atvertas. Pirmiausia užbaikite veiksmus jame.
 	Application	Programa
 	Applied 1 redaction mark. Save to remove the content from the file.	Pritaikyta 1 konfidencialios informacijos šalinimo žyma. Įrašykite, kad turinys būtų pašalintas iš failo.
 	Applied {n} redaction marks. Save to remove the content from the file.	Pritaikyta konfidencialios informacijos šalinimo žymų: {n}. Įrašykite, kad turinys būtų pašalintas iš failo.
@@ -2013,7 +2009,6 @@ comment menu	Edit	Redaguoti
 	Couldn't open {name}: {e}	Nepavyko atverti {name}: {e}
 	Couldn't optimize the file	Nepavyko optimizuoti failo
 	Couldn't optimize the file: {e}	Nepavyko optimizuoti failo: {e}
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Nepavyko spausdinti iš naršyklės ({e}); vietoj to atsisiųstas spausdintinas failas {name}
 	Couldn't read {name}: {e}	Nepavyko perskaityti {name}: {e}
 	Couldn't recover {name}: {e}	Nepavyko atkurti {name}: {e}
 	Couldn't reload {name}: {e}	Nepavyko iš naujo įkelti {name}: {e}
@@ -2038,7 +2033,6 @@ comment menu	Edit	Redaguoti
 	Credit Cards	Mokėjimo kortelių numeriai
 	Crop page	Apkirpti puslapį
 	Custom font	Pasirinktinis šriftas
-	Custom stamps arrive on the web with file pickers for images	Žiniatinklio versijoje pasirinktiniai antspaudai bus prieinami įdiegus paveikslėlių failų pasirinkimą
 	Cut {what}	Iškirpta: {what}
 	Dark gray theme	Tamsiai pilka tema
 	Dashed	Brūkšninis
@@ -2078,7 +2072,6 @@ comment menu	Edit	Redaguoti
 	Documents of more than 20 pages need bookmarks for navigation. Add bookmarks for the main sections.	Daugiau nei 20 puslapių dokumentams reikia naršymo žymelių. Pridėkite pagrindinių skyrių žymeles.
 	Double-click	Dukart spustelėti
 	Downloaded {name}	Atsisiųsta: {name}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Žiniatinklio versijoje priedus bus galima atsisiųsti M3.10 etape (paruošta baitų: {n})
 	Drag a rectangle around the area to copy	Apibrėžkite kopijuojamą sritį vilkdami stačiakampį
 	Drag a rectangle on a page to crop it; double-click a page for Set Page Boxes	Vilkite stačiakampį puslapyje, kad jį apkirptumėte; dukart spustelėkite puslapį, kad nustatytumėte puslapio ribas
 	Drag a rectangle to create a link; double-click a link to edit it	Vilkite stačiakampį, kad sukurtumėte saitą; dukart spustelėkite saitą, kad jį redaguotumėte
@@ -2139,7 +2132,6 @@ comment menu	Edit	Redaguoti
 	Horizontally	Horizontaliai
 	Image-only PDF	PDF vien iš paveikslėlių
 	Import {name}	Importuoti {name}
-	Importing data arrives on the web with file pickers for data files	Žiniatinklio versijoje duomenis bus galima importuoti įdiegus duomenų failų pasirinkimą
 	Incorrect password. Try again.	Netinkamas slaptažodis. Bandykite dar kartą.
 	Insert pages from {name}	Įterpti puslapius iš {name}
 	Insert pages from {name} — 1 field renamed	Įterpti puslapius iš {name} — pervadintas 1 laukas
@@ -2186,7 +2178,6 @@ comment menu	Edit	Redaguoti
 	Measuring tool	Matavimo įrankis
 	Merged 1 file into {path}	1 failas sujungtas į {path}
 	Merged {n} files into {path}	Į {path} sujungta failų: {n}
-	Merging data files needs the desktop app	Duomenų failams sujungti reikalinga darbalaukio programa
 	Metadata	Metaduomenys
 	Midpoint	Vidurio taškas
 	Minimum	Mažiausia reikšmė
@@ -2217,7 +2208,6 @@ comment menu	Edit	Redaguoti
 	Odd pages	Nelyginiai puslapiai
 	On Blur	Praradus įvesties židinį
 	On Focus	Gavus įvesties židinį
-	On the web, open or drop an image to convert it	Žiniatinklio versijoje atverkite arba nuvilkite paveikslėlį, kad jį konvertuotumėte
 	Open a web link	Atverti žiniatinklio saitą
 	Opened with	Atverta naudojant
 	Opening the browser's print dialog…	Atveriamas naršyklės spausdinimo dialogas…
@@ -2247,7 +2237,6 @@ comment menu	Edit	Redaguoti
 	Phone Numbers	Telefono numeriai
 	Pictures need alternate text that describes them, or must be marked decorative. Add alternate text to each figure.	Paveikslėliams reikia juos apibūdinančio alternatyviojo teksto arba jie turi būti pažymėti kaip dekoratyviniai. Pridėkite kiekvieno paveikslo alternatyvųjį tekstą.
 	Pink	Rožinė
-	Pinned folders need the desktop app	Aplankams prisegti reikalinga darbalaukio programa
 	Pinned {folder} to Home	Aplankas {folder} prisegtas prie pradžios rodinio
 	Place saved {what}	Įdėti įrašytą {what}
 	Planned for milestone {m} — open to see what it will include	Planuojama {m} etape — atverkite ir sužinokite, kas bus įtraukta
@@ -2290,8 +2279,6 @@ comment menu	Edit	Redaguoti
 	Replace page	Pakeisti puslapį
 	Replace pages	Pakeisti puslapius
 	Replaced	Pakeista
-	Replacing images arrives on the web with image file pickers	Žiniatinklio versijoje paveikslėlius bus galima pakeisti įdiegus jų failų pasirinkimą
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Žiniatinklio versijoje paveikslėlius puslapyje {p} bus galima pakeisti įdiegus jų pasirinkimą ({i})
 	Report Options	Ataskaitos parinktys
 	Reset a form	Išvalyti formą
 	Resize comment	Keisti komentaro dydį
@@ -2486,7 +2473,6 @@ comment menu	Edit	Redaguoti
 	{name} has no action	{name} neturi veiksmo
 	{name} is too large for a word list (at most 1 MB).	{name} per didelis žodžių sąrašui (leidžiama iki 1 MB).
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} pateikia formą į {url}; „Local PDF“ formos duomenų nesiunčia. Įrašykite dokumentą, kad išsaugotumėte įvestas reikšmes.
-	{name}: choosing images arrives on the web with file pickers for images	{name}: žiniatinklio versijoje paveikslėlius bus galima pasirinkti įdiegus jų failų pasirinkimą
 	{name}: the {other} action isn't supported yet	{name}: veiksmas {other} dar nepalaikomas
 	{who} in this document tried to open an address Local PDF won't open: {e}.	Šiame dokumente {who} bandė atverti adresą, kurio „Local PDF“ neatveria: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Šiame dokumente {who} bandė atverti adresą, kurio „Local PDF“ neatveria: {e}. Iš dokumentų atveriami tik žiniatinklio (http, https) ir el. pašto (mailto) saitai.
@@ -2766,7 +2752,6 @@ key	Space	Tarpas
 theme	Appearance	Išvaizda
 	Attach a file…	Pridėti failą…
 	Delete attachment	Ištrinti priedą
-	Attaching files is not available on the web yet	Failų pridėjimas žiniatinklyje dar negalimas
 	Attach {name}	Pridėti {name}
 	Delete attachment {key}	Ištrinti priedą {key}
 	Bulleted list	Sąrašas su ženkleliais

@@ -33,7 +33,6 @@
 	Show less	Εμφάνιση λιγότερων
 	Show {n} more	Εμφάνιση {n} ακόμη
 	The newest {n} of {total} PDFs	Τα {n} νεότερα από {total} PDF
-	Pinned folders need the desktop app	Οι καρφιτσωμένοι φάκελοι απαιτούν την εφαρμογή υπολογιστή
 	Choose a folder on this computer to pin	Επιλέξτε έναν φάκελο από αυτόν τον υπολογιστή για καρφίτσωμα
 	{folder} is already pinned to Home	Ο φάκελος {folder} είναι ήδη καρφιτσωμένος στην αρχική
 	You can pin up to {n} folders. Unpin one first.	Μπορείτε να καρφιτσώσετε έως {n} φακέλους. Ξεκαρφιτσώστε πρώτα έναν.
@@ -1075,13 +1074,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Το αρχείο έχει ήδη το μικρότερο δυνατό μέγεθος ({size}). Δεν αποθηκεύτηκε αντίγραφο.
 	Saved {place}: {before} → {after} (not smaller){detail}	Αποθηκεύτηκε στο {place}: {before} → {after} (χωρίς μείωση μεγέθους){detail}
 	Couldn't save the image: {e}	Δεν ήταν δυνατή η αποθήκευση της εικόνας: {e}
-	Adding images arrives on the web with file pickers for images	Η προσθήκη εικόνων θα διατεθεί στη διαδικτυακή έκδοση με επιλογή αρχείων εικόνας
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Η αντικατάσταση εικόνων στη σελίδα {p} θα διατεθεί στη διαδικτυακή έκδοση με επιλογή εικόνων ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: η επιλογή εικόνων θα διατεθεί στη διαδικτυακή έκδοση με επιλογή αρχείων εικόνας
-	Replacing images arrives on the web with image file pickers	Η αντικατάσταση εικόνων θα διατεθεί στη διαδικτυακή έκδοση με επιλογή αρχείων εικόνας
 	Couldn't create a PDF: {e}	Δεν ήταν δυνατή η δημιουργία PDF: {e}
 	The clipboard has no image or text	Το πρόχειρο δεν περιέχει εικόνα ή κείμενο
-	On the web, open or drop an image to convert it	Στη διαδικτυακή έκδοση, ανοίξτε ή σύρετε μια εικόνα για μετατροπή
 	Couldn't optimize the file: {e}	Δεν ήταν δυνατή η βελτιστοποίηση του αρχείου: {e}
 	Couldn't write {path}: {e}	Δεν ήταν δυνατή η εγγραφή στο {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Η φόρμα ζητά υποβολή στο {u}, αλλά το Local PDF δεν αποστέλλει δεδομένα φόρμας. Αποθηκεύστε το έγγραφο για να διατηρήσετε τις καταχωρίσεις σας.
@@ -1142,7 +1136,6 @@
 	The document now conforms to {level}; save it to keep the changes	Το έγγραφο συμμορφώνεται πλέον με το {level}· αποθηκεύστε το για να διατηρήσετε τις αλλαγές
 	Fixed what could be fixed; 1 problem remains	Διορθώθηκαν όσα προβλήματα ήταν δυνατό· απομένει 1 πρόβλημα
 	Fixed what could be fixed; {n} problems remain	Διορθώθηκαν όσα προβλήματα ήταν δυνατό· απομένουν {n} προβλήματα
-	Custom stamps arrive on the web with file pickers for images	Οι προσαρμοσμένες σφραγίδες θα διατεθούν στη διαδικτυακή έκδοση με επιλογή αρχείων εικόνας
 	{file} is too large for a stamp (at most {n} MB)	Το {file} είναι πολύ μεγάλο για σφραγίδα (μέγιστο μέγεθος {n} MB)
 	Sent to {printer}	Στάλθηκε στον εκτυπωτή {printer}
 	Sent to {printer}: {msg}	Στάλθηκε στον εκτυπωτή {printer}: {msg}
@@ -1229,9 +1222,7 @@
 	Couldn't split: {e}	Δεν ήταν δυνατός ο διαχωρισμός: {e}
 	Couldn't summarize comments: {e}	Δεν ήταν δυνατή η σύνοψη σχολίων: {e}
 	Couldn't open the result: {e}	Δεν ήταν δυνατό το άνοιγμα του αποτελέσματος: {e}
-	Importing data arrives on the web with file pickers for data files	Η εισαγωγή δεδομένων θα διατεθεί στη διαδικτυακή έκδοση με επιλογή αρχείων δεδομένων
 	Exported to {path}	Εξήχθη στο {path}
-	Merging data files needs the desktop app	Η συγχώνευση αρχείων δεδομένων απαιτεί την εφαρμογή υπολογιστή
 	Merged 1 file into {path}	Συγχωνεύτηκε 1 αρχείο στο {path}
 	Merged {n} files into {path}	Συγχωνεύτηκαν {n} αρχεία στο {path}
 	Combined {n} files	Συνδυάστηκαν {n} αρχεία
@@ -1503,7 +1494,6 @@
 	A script	Μια δέσμη ενεργειών
 	Add {what}	Προσθήκη {what}
 	Align fields	Στοίχιση πεδίων
-	Another file dialog is still open. Finish with it first.	Ένα άλλο παράθυρο επιλογής αρχείου παραμένει ανοιχτό. Ολοκληρώστε πρώτα τη διαδικασία εκεί.
 	Basic constraints	Βασικοί περιορισμοί
 	Binary assets added	Δυαδικά στοιχεία που προστέθηκαν
 	Binary assets removed	Δυαδικά στοιχεία που αφαιρέθηκαν
@@ -2093,7 +2083,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Η φορητή λειτουργία απενεργοποιήθηκε: δεν είναι δυνατή η εγγραφή στο {folder} ({error}). Οι ρυθμίσεις αποθηκεύονται στον φάκελο χρήστη.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Το Local PDF αποδίδει τα γραφικά χωρίς επιτάχυνση από επεξεργαστή γραφικών και ενδέχεται να είναι αργό. Μια ενημέρωση του προγράμματος οδήγησης γραφικών ίσως βοηθήσει.
 	Couldn't save: {e}	Δεν ήταν δυνατή η αποθήκευση: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Η λήψη συνημμένων στη διαδικτυακή έκδοση θα διατεθεί με το M3.10 ({n} byte έτοιμα)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	θα διατεθεί στο ορόσημο {m}
 	needs an AI provider (off by default)	απαιτεί πάροχο ΤΝ (απενεργοποιημένο από προεπιλογή)
@@ -2368,12 +2357,9 @@ animation effects	Off	Ανενεργά
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Το πρόγραμμα οδήγησης αυτού του εκτυπωτή δεν δέχεται ρυθμίσεις εκτύπωσης διπλής όψης από άλλα προγράμματα, οπότε ισχύει η δική του ρύθμιση. Αλλάξτε τη στις Ιδιότητες…
 	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Η γραμματοσειρά αυτού του πεδίου δεν μπορεί να σχεδιάσει το «{c}» ({code}), γι' αυτό το Local PDF δείχνει ? στη θέση του. Η τιμή αποθηκεύεται και άλλα προγράμματα προβολής PDF επανασχεδιάζουν το πεδίο από αυτήν.
 	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Οι γραμματοσειρές με τις οποίες γράφει το Local PDF δεν μπορούν να σχεδιάσουν το «{c}» ({code}), γι' αυτό εμφανίζεται ως ? σε κάθε πρόγραμμα προβολής PDF. Το κείμενο αποθηκεύεται.
-	Browser's print dialog	Παράθυρο εκτύπωσης του προγράμματος περιήγησης
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Τα αντίγραφα, η εκτύπωση διπλής όψης και το χρώμα επιλέγονται στο παράθυρο εκτύπωσης του προγράμματος περιήγησης.
 	Preparing {n} sheets for printing…	Προετοιμασία {n} φύλλων για εκτύπωση…
 	Preparing sheet {done} of {total} for printing…	Προετοιμασία φύλλου {done} από {total} για εκτύπωση…
 	Opening the browser's print dialog…	Άνοιγμα του παραθύρου εκτύπωσης του προγράμματος περιήγησης…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Δεν ήταν δυνατή η εκτύπωση από το πρόγραμμα περιήγησης ({e}); έγινε λήψη του {name} για εκτύπωση
 	Tools panel side	Πλευρά πλαισίου εργαλείων
 	Add comment	Προσθήκη σχολίου
 	Change tag properties	Αλλαγή ιδιοτήτων ετικέτας
@@ -2514,7 +2500,6 @@ animation effects	Off	Ανενεργά
 	Collapse all tools	Σύμπτυξη όλων των εργαλείων
 	Attach a file…	Επισύναψη αρχείου…
 	Delete attachment	Διαγραφή συνημμένου
-	Attaching files is not available on the web yet	Η επισύναψη αρχείων δεν είναι ακόμη διαθέσιμη στον ιστό
 	Attach {name}	Επισύναψη {name}
 	Delete attachment {key}	Διαγραφή συνημμένου {key}
 	Font	Γραμματοσειρά

@@ -45,7 +45,6 @@
 	Show less	Pokaż mniej
 	Show {n} more	Pokaż jeszcze {n}
 	The newest {n} of {total} PDFs	Najnowsze {n} z {total} plików PDF
-	Pinned folders need the desktop app	Przypinanie folderów wymaga aplikacji komputerowej
 	Choose a folder on this computer to pin	Wybierz folder na tym komputerze do przypięcia
 	{folder} is already pinned to Home	Folder {folder} jest już przypięty do strony głównej
 	You can pin up to {n} folders. Unpin one first.	Możesz przypiąć maksymalnie {n} folderów. Najpierw odepnij jeden.
@@ -1585,13 +1584,8 @@
 	Language	Język
 	Saved {place}: {before} → {after} ({pct}% smaller){detail}	Zapisano {place}: {before} → {after} (o {pct}% mniej){detail}
 	Couldn't save the image: {e}	Nie można zapisać obrazu: {e}
-	Adding images arrives on the web with file pickers for images	Dodawanie obrazów w wersji internetowej będzie dostępne wraz z wyborem plików obrazów
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Zastępowanie obrazów na stronie {p} w wersji internetowej będzie dostępne wraz z wyborem obrazów ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: wybór obrazów w wersji internetowej będzie dostępny wraz z wyborem plików obrazów
-	Replacing images arrives on the web with image file pickers	Zastępowanie obrazów w wersji internetowej będzie dostępne wraz z wyborem plików obrazów
 	Couldn't create a PDF: {e}	Nie można utworzyć PDF: {e}
 	The clipboard has no image or text	Schowek nie zawiera obrazu ani tekstu
-	On the web, open or drop an image to convert it	W wersji internetowej otwórz lub upuść obraz, aby go przekonwertować
 	Couldn't optimize the file: {e}	Nie można zoptymalizować pliku: {e}
 	Couldn't write {path}: {e}	Nie można zapisać {path}: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Formularz wymaga wysłania do {u}; Local PDF nie wysyła danych formularza. Zapisz dokument, aby zachować wpisane dane.
@@ -1652,7 +1646,6 @@
 	The document now conforms to {level}; save it to keep the changes	Dokument jest teraz zgodny z {level}; zapisz go, aby zachować zmiany
 	Fixed what could be fixed; 1 problem remains	Naprawiono wszystko, co możliwe; pozostał 1 problem
 	Fixed what could be fixed; {n} problems remain	Naprawiono wszystko, co możliwe; liczba pozostałych problemów: {n}
-	Custom stamps arrive on the web with file pickers for images	Własne stemple w wersji internetowej będą dostępne wraz z wyborem plików obrazów
 	{file} is too large for a stamp (at most {n} MB)	Plik {file} jest zbyt duży na stempel (maksymalnie {n} MB)
 	Sent to {printer}	Wysłano do {printer}
 	Sent to {printer}: {msg}	Wysłano do {printer}: {msg}
@@ -1751,9 +1744,7 @@
 	Couldn't split: {e}	Nie można podzielić: {e}
 	Couldn't summarize comments: {e}	Nie można podsumować komentarzy: {e}
 	Couldn't open the result: {e}	Nie można otworzyć wyniku: {e}
-	Importing data arrives on the web with file pickers for data files	Import danych w wersji internetowej będzie dostępny wraz z wyborem plików danych
 	Exported to {path}	Wyeksportowano do {path}
-	Merging data files needs the desktop app	Scalanie plików danych wymaga aplikacji komputerowej
 	Merged 1 file into {path}	Scalono 1 plik do {path}
 	Merged {n} files into {path}	Liczba plików scalonych do {path}: {n}
 	Combined {n} files	Liczba połączonych plików: {n}
@@ -1765,7 +1756,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Tryb przenośny jest wyłączony: nie można zapisywać w {folder} ({error}). Ustawienia są przechowywane w folderze użytkownika.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF renderuje bez procesora graficznego, więc może działać wolno. Aktualizacja sterownika graficznego może pomóc.
 	Couldn't save: {e}	Nie można zapisać: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Pobieranie załączników w wersji internetowej będzie dostępne w M3.10 (gotowe bajty: {n})
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	będzie dostępne w etapie {m}
 	needs an AI provider (off by default)	wymaga dostawcy AI (domyślnie wyłączone)
@@ -2136,7 +2126,6 @@
 	About	Informacje
 	Add {what}	Dodaj {what}
 	Align fields	Wyrównaj pola
-	Another file dialog is still open. Finish with it first.	Inne okno wyboru pliku jest nadal otwarte. Najpierw je zamknij.
 	Basic constraints	Podstawowe ograniczenia
 	Binary assets added	Dodane zasoby binarne
 	Binary assets removed	Usunięte zasoby binarne
@@ -2339,12 +2328,9 @@ animation effects	Off	Wyłączone
 	Greyscale	Skala szarości
 	Black and white	Czarno-biały
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Sterownik tej drukarki nie przyjmuje ustawień druku dwustronnego z innych programów, więc obowiązuje jego własne ustawienie. Zmień je w oknie Właściwości…
-	Browser's print dialog	Okno drukowania przeglądarki
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Liczbę kopii, druk dwustronny i kolor wybiera się w oknie drukowania przeglądarki.
 	Preparing {n} sheets for printing…	Przygotowywanie arkuszy do druku: {n}…
 	Preparing sheet {done} of {total} for printing…	Przygotowywanie arkusza {done} z {total} do druku…
 	Opening the browser's print dialog…	Otwieranie okna drukowania przeglądarki…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Nie można drukować z przeglądarki ({e}); zamiast tego pobrano plik {name} do wydruku
 	Tools panel side	Strona panelu narzędzi
 	Add comment	Dodaj komentarz
 	Change tag properties	Zmień właściwości znacznika
@@ -2484,7 +2470,6 @@ animation effects	Off	Wyłączone
 	Collapse all tools	Zwiń wszystkie narzędzia
 	Attach a file…	Dołącz plik…
 	Delete attachment	Usuń załącznik
-	Attaching files is not available on the web yet	Dołączanie plików nie jest jeszcze dostępne w wersji webowej
 	Attach {name}	Dołącz {name}
 	Delete attachment {key}	Usuń załącznik {key}
 	Font	Czcionka

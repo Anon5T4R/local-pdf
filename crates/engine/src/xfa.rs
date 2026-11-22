@@ -59,34 +59,21 @@ fn click_only(e: &XfaEffect) -> Option<&'static str> {
     }
 }
 
-/// A wall clock where there is one (not in the browser build, where the script and relayout
-/// caps alone bound an event).
+/// Wall clock of an event: the script and relayout caps bound an event on their own, and this
+/// stops one that would otherwise keep the app busy.
 #[derive(Clone, Copy)]
 struct Clock {
-    #[cfg(not(target_arch = "wasm32"))]
     started: std::time::Instant,
     budget_ms: u64,
 }
 
 impl Clock {
     fn start(budget_ms: u64) -> Self {
-        Clock {
-            #[cfg(not(target_arch = "wasm32"))]
-            started: std::time::Instant::now(),
-            budget_ms,
-        }
+        Clock { started: std::time::Instant::now(), budget_ms }
     }
 
     fn spent(&self) -> bool {
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            self.started.elapsed() >= std::time::Duration::from_millis(self.budget_ms)
-        }
-        #[cfg(target_arch = "wasm32")]
-        {
-            let _ = self.budget_ms;
-            false
-        }
+        self.started.elapsed() >= std::time::Duration::from_millis(self.budget_ms)
     }
 }
 

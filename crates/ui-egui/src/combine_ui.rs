@@ -23,10 +23,8 @@ pub(crate) const WARNING: Color32 = Color32::from_rgb(0xE6, 0x86, 0x19);
 const HISTORY: usize = 100;
 
 /// Files found in a folder are added up to this many at a time.
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_FOLDER_FILES: usize = 1000;
 /// How deep "Add folder and subfolders" looks.
-#[cfg(not(target_arch = "wasm32"))]
 const MAX_FOLDER_DEPTH: usize = 16;
 
 /// A column of the list: what it shows and what it sorts by.
@@ -1218,18 +1216,17 @@ fn empty_state(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens, files_hover
         ui.add_space(4.0);
         ui.label(egui::RichText::new(tl!("Drop PDFs, images, text files or folders here, or choose them.")).color(t.text_faint));
         ui.add_space(12.0);
-        let folders = cfg!(not(target_arch = "wasm32"));
         // Centre the buttons: measure them first.
         let font = theme::medium(12.5);
         let width = |s: &str| ui.fonts_mut(|f| f.layout_no_wrap(s.to_owned(), font.clone(), t.text).size().x);
-        let total = width(tl!("Add files…")) + 26.0 + if folders { width(tl!("Add folder…")) + 46.0 + 8.0 } else { 0.0 };
+        let total = width(tl!("Add files…")) + 26.0 + width(tl!("Add folder…")) + 46.0 + 8.0;
         ui.horizontal(|ui| {
             ui.add_space(((ui.available_width() - total) / 2.0).max(0.0));
             ui.spacing_mut().item_spacing.x = 8.0;
             if widgets::pill_button(ui, tl!("Add files…"), true).clicked() {
                 app.combine_dialog();
             }
-            if folders && widgets::icon_pill(ui, "folder", tl!("Add folder…"), false).clicked() {
+            if widgets::icon_pill(ui, "folder", tl!("Add folder…"), false).clicked() {
                 app.combine_add_folder(false);
             }
         });
@@ -1238,12 +1235,6 @@ fn empty_state(app: &mut LocalPDFApp, ui: &mut egui::Ui, t: &Tokens, files_hover
 
 /// "Add files…" with a menu of the other ways to add: folders (desktop).
 fn add_menu(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
-    if !cfg!(not(target_arch = "wasm32")) {
-        if widgets::icon_pill(ui, "plus", tl!("Add files…"), false).clicked() {
-            app.combine_dialog();
-        }
-        return;
-    }
     let (main, more) = widgets::split_pill(ui, "plus", tl!("Add files…"), tl!("More ways to add files"));
     if main.clicked() {
         app.combine_dialog();
@@ -1601,7 +1592,6 @@ fn table_body(
 
 /// The PDFs, images and text files in `dir` (and, if `recursive`, the folders inside it, not
 /// following links), in natural order, at most [`MAX_FOLDER_FILES`]; and whether there were more.
-#[cfg(not(target_arch = "wasm32"))]
 fn combinable_in(dir: &std::path::Path, recursive: bool) -> (Vec<std::path::PathBuf>, bool) {
     let mut found = Vec::new();
     let mut more = false;
@@ -2537,18 +2527,14 @@ impl LocalPDFApp {
     /// Add every PDF, image and text file in a folder the user picks (and its subfolders, if
     /// `recursive`).
     pub fn combine_add_folder(&mut self, recursive: bool) {
-        #[cfg(not(target_arch = "wasm32"))]
         {
             let title = if recursive { tl!("Add folder and subfolders") } else { tl!("Add folder") };
             let dialog = rfd::AsyncFileDialog::new().set_title(title);
             self.ask_one(crate::pickers::Ask::Folder(dialog), None, move |app, dir| app.add_folder_to_combine(&dir, recursive));
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = recursive;
     }
 
     /// Add the PDFs, images and text files in `dir` to the Combine files list, as one undo step.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn add_folder_to_combine(&mut self, dir: &std::path::Path, recursive: bool) {
         let (paths, more) = combinable_in(dir, recursive);
         let folder = dir.file_name().map_or_else(|| dir.to_string_lossy().into_owned(), |n| n.to_string_lossy().into_owned());
@@ -2572,10 +2558,7 @@ impl LocalPDFApp {
             if self.combine_draft.iter().any(|f| f.open_doc == Some(doc.id)) {
                 continue;
             }
-            #[cfg(not(target_arch = "wasm32"))]
             let modified = if doc.dirty { None } else { doc.path.as_ref().and_then(|p| std::fs::metadata(p).and_then(|m| m.modified()).ok()) };
-            #[cfg(target_arch = "wasm32")]
-            let modified = None;
             let note = doc.dirty.then(|| tl!("Includes unsaved changes").to_string());
             let name = if doc.name.to_ascii_lowercase().ends_with(".pdf") { doc.name.clone() } else { format!("{}.pdf", doc.name) };
             incoming.push(Incoming { name, bytes: doc.bytes.clone(), modified, note, open_doc: Some(doc.id) });

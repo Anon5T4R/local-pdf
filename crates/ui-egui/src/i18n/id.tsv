@@ -311,7 +311,6 @@
 	Bottom	Bawah
 	Bottom:	Bawah:
 	Box	Kotak
-	Browser's print dialog	Dialog cetak browser
 	Butt	Rata
 	Button is checked by default	Tombol tercentang secara bawaan
 	Buttons with the same name and value are selected in unison	Tombol dengan nama dan nilai yang sama dipilih bersama-sama
@@ -394,7 +393,6 @@
 	Confirm Password	Konfirmasi Kata Sandi
 	Conformance level:	Tingkat kesesuaian:
 	Continue	Lanjutkan
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Jumlah salinan, cetak dua sisi, dan warna dipilih dalam dialog cetak browser.
 	Copies:	Salinan:
 	Copy selected text	Salin teks yang dipilih
 	Copy text	Salin teks
@@ -1843,7 +1841,6 @@ comment menu	Edit	Edit
 	Add watermark	Tambahkan tanda air
 	Add {what}	Tambahkan {what}
 	Added the first {n} files in {folder}	Menambahkan {n} file pertama di {folder}
-	Adding images arrives on the web with file pickers for images	Menambahkan gambar hadir di web bersama pemilih file untuk gambar
 	Algorithm	Algoritma
 	Align fields	Sejajarkan kolom
 	All annotations are tagged	Semua anotasi diberi tag
@@ -1864,7 +1861,6 @@ comment menu	Edit	Edit
 	An image asks to be interpolated	Sebuah gambar meminta untuk diinterpolasi
 	An image has alternates or OPI information	Sebuah gambar memiliki gambar alternatif atau informasi OPI
 	Animation that flashes can cause seizures. Check scripts and media for flicker.	Animasi yang berkedip dapat menyebabkan kejang. Periksa skrip dan media untuk kedipan.
-	Another file dialog is still open. Finish with it first.	Dialog file lain masih terbuka. Selesaikan terlebih dahulu.
 	Application	Aplikasi
 	Applied 1 redaction mark. Save to remove the content from the file.	1 tanda sensor diterapkan. Simpan untuk menghapus konten dari file.
 	Applied {n} redaction marks. Save to remove the content from the file.	{n} tanda sensor diterapkan. Simpan untuk menghapus konten dari file.
@@ -1946,7 +1942,6 @@ comment menu	Edit	Edit
 	Couldn't open {name}: {e}	Tidak dapat membuka {name}: {e}
 	Couldn't optimize the file	Tidak dapat mengoptimalkan file
 	Couldn't optimize the file: {e}	Tidak dapat mengoptimalkan file: {e}
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Tidak dapat mencetak dari peramban ({e}); mengunduh {name} sebagai gantinya
 	Couldn't read {name}: {e}	Tidak dapat membaca {name}: {e}
 	Couldn't recover {name}: {e}	Tidak dapat memulihkan {name}: {e}
 	Couldn't reload {name}: {e}	Tidak dapat memuat ulang {name}: {e}
@@ -1970,7 +1965,6 @@ comment menu	Edit	Edit
 	Credit Cards	Kartu Kredit
 	Crop page	Potong halaman
 	Custom font	Font kustom
-	Custom stamps arrive on the web with file pickers for images	Stempel kustom hadir di versi web dengan pemilih file untuk gambar
 	Cut {what}	Potong {what}
 	Dark gray theme	Tema abu-abu gelap
 	Dashed	Putus-putus
@@ -2010,7 +2004,6 @@ comment menu	Edit	Edit
 	Documents of more than 20 pages need bookmarks for navigation. Add bookmarks for the main sections.	Dokumen dengan lebih dari 20 halaman memerlukan bookmark untuk navigasi. Tambahkan bookmark untuk bagian utama.
 	Double-click	Klik dua kali
 	Downloaded {name}	{name} diunduh
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Mengunduh lampiran di versi web hadir dengan M3.10 ({n} byte siap)
 	Drag a rectangle around the area to copy	Seret sebuah persegi panjang di sekitar area yang akan disalin
 	Drag a rectangle on a page to crop it; double-click a page for Set Page Boxes	Seret persegi panjang pada halaman untuk memotongnya; klik dua kali halaman untuk Kotak Halaman
 	Drag a rectangle to create a link; double-click a link to edit it	Seret persegi panjang untuk membuat tautan; klik dua kali tautan untuk mengeditnya
@@ -2071,7 +2064,6 @@ comment menu	Edit	Edit
 	Horizontally	Horizontal
 	Image-only PDF	PDF gambar saja
 	Import {name}	Impor {name}
-	Importing data arrives on the web with file pickers for data files	Mengimpor data hadir di versi web dengan pemilih file untuk file data
 	Incorrect password. Try again.	Kata sandi salah. Coba lagi.
 	Insert pages from {name}	Sisipkan halaman dari {name}
 	Insert pages from {name} — 1 field renamed	Sisipkan halaman dari {name} — 1 kolom diganti namanya
@@ -2118,7 +2110,6 @@ comment menu	Edit	Edit
 	Measuring tool	Alat pengukur
 	Merged 1 file into {path}	1 file digabungkan ke {path}
 	Merged {n} files into {path}	{n} file digabungkan ke {path}
-	Merging data files needs the desktop app	Menggabungkan file data memerlukan aplikasi desktop
 	Metadata	Metadata
 	Midpoint	Titik tengah
 	Minimum	Minimum
@@ -2149,7 +2140,6 @@ comment menu	Edit	Edit
 	Odd pages	Halaman ganjil
 	On Blur	Saat Kehilangan Fokus
 	On Focus	Saat Fokus
-	On the web, open or drop an image to convert it	Di versi web, buka atau seret gambar untuk mengonversinya
 	Open a web link	Buka tautan web
 	Opened with	Dibuka dengan
 	Opening the browser's print dialog…	Membuka dialog cetak browser…
@@ -2179,7 +2169,6 @@ comment menu	Edit	Edit
 	Phone Numbers	Nomor Telepon
 	Pictures need alternate text that describes them, or must be marked decorative. Add alternate text to each figure.	Gambar memerlukan teks alternatif yang menjelaskannya, atau harus ditandai sebagai dekoratif. Tambahkan teks alternatif ke setiap gambar.
 	Pink	Merah muda
-	Pinned folders need the desktop app	Folder yang disematkan memerlukan aplikasi desktop
 	Pinned {folder} to Home	{folder} disematkan ke Beranda
 	Place saved {what}	Tempatkan {what} yang tersimpan
 	Planned for milestone {m} — open to see what it will include	Direncanakan untuk milestone {m} — buka untuk melihat apa yang akan disertakan
@@ -2222,8 +2211,6 @@ comment menu	Edit	Edit
 	Replace page	Ganti halaman
 	Replace pages	Ganti halaman
 	Replaced	Diganti
-	Replacing images arrives on the web with image file pickers	Mengganti gambar hadir di versi web dengan pemilih file gambar
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Mengganti gambar di halaman {p} hadir di versi web dengan pemilih gambar ({i})
 	Report Options	Opsi Laporan
 	Reset a form	Atur ulang formulir
 	Resize comment	Ubah ukuran komentar
@@ -2417,7 +2404,6 @@ comment menu	Edit	Edit
 	{name} has no action	{name} tidak memiliki tindakan
 	{name} is too large for a word list (at most 1 MB).	{name} terlalu besar untuk daftar kata (maksimal 1 MB).
 	{name} submits the form to {url}; Local PDF doesn't send form data. Save the document to keep your entries.	{name} mengirim formulir ke {url}; Local PDF tidak mengirim data formulir. Simpan dokumen untuk mempertahankan isi Anda.
-	{name}: choosing images arrives on the web with file pickers for images	{name}: memilih gambar Herrera ke situs web dengan pemilih file untuk gambar
 	{name}: the {other} action isn't supported yet	{name}: tindakan {other} belum didukung
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} dalam dokumen ini mencoba membuka alamat yang tidak akan dibuka Local PDF: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} dalam dokumen ini mencoba membuka alamat yang tidak akan dibuka Local PDF: {e}. Hanya tautan web (http, https) dan email (mailto) yang terbuka dari dokumen.
@@ -2783,7 +2769,6 @@ theme	Appearance	Tampilan
 	Restore the last view (page, zoom and page display) when a document is opened again	Pulihkan tampilan terakhir (halaman, zoom, dan tampilan halaman) saat dokumen dibuka lagi
 	Attach a file…	Lampirkan file…
 	Attach {name}	Lampirkan {name}
-	Attaching files is not available on the web yet	Melampirkan file belum tersedia di web
 	Delete attachment	Hapus lampiran
 	Delete attachment {key}	Hapus lampiran {key}
 @plural	{n} reply|{n} replies	{n} balasan

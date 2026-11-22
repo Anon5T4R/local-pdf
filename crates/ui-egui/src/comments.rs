@@ -366,7 +366,6 @@ pub fn tool_for(a: &Annotation) -> Option<CommentTool> {
 
 /// The user's login name, which Acrobat uses as the default comment author.
 fn login_name() -> String {
-    #[cfg(not(target_arch = "wasm32"))]
     for var in ["USER", "USERNAME", "LOGNAME"] {
         if let Ok(v) = std::env::var(var)
             && !v.trim().is_empty()

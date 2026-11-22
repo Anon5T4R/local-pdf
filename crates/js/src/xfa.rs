@@ -1494,28 +1494,22 @@ pub fn run_xfa(script: &str, event: &XfaEvent, doc: &XfaDoc, root: &XfaNode, lim
     if let Some(why) = refuse(script) {
         return failed(why);
     }
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        std::thread::scope(|scope| {
-            let spawned = std::thread::Builder::new()
-                .name("localpdf-xfa-js".into())
-                .stack_size(crate::SCRIPT_STACK)
-                .spawn_scoped(scope, || run_here(script, event, doc, root.clone(), limits, &|| {}));
-            match spawned {
-                Ok(thread) => thread.join().unwrap_or_else(|_| failed("the script stopped with an internal error".into())),
-                Err(e) => failed(format!("the script engine could not start: {e}")),
-            }
-        })
-    }
-    #[cfg(target_arch = "wasm32")]
-    run_here(script, event, doc, root.clone(), limits, &|| {})
+    std::thread::scope(|scope| {
+        let spawned = std::thread::Builder::new()
+            .name("localpdf-xfa-js".into())
+            .stack_size(crate::SCRIPT_STACK)
+            .spawn_scoped(scope, || run_here(script, event, doc, root.clone(), limits, &|| {}));
+        match spawned {
+            Ok(thread) => thread.join().unwrap_or_else(|_| failed("the script stopped with an internal error".into())),
+            Err(e) => failed(format!("the script engine could not start: {e}")),
+        }
+    })
 }
 
 /// [`run_xfa`] with a time limit: a script still running `timeout` after the engine is ready
 /// (loops inside nested function calls can run for hours within the engine's per-frame loop
 /// limit) is left on its thread, which ends when the engine's own limits stop it, and an
-/// outcome with `abandoned` set comes back at once. In the browser build there are no
-/// threads: the script runs to its limits.
+/// outcome with `abandoned` set comes back at once.
 pub fn run_xfa_within(script: &str, event: &XfaEvent, doc: &XfaDoc, root: XfaNode, limits: Limits, timeout: std::time::Duration) -> XfaOutcome {
     if let Some(why) = refuse(script) {
         return XfaOutcome { error: Some(why), ..Default::default() };
@@ -1532,8 +1526,7 @@ pub(crate) const ENGINE_START_LIMIT: std::time::Duration = std::time::Duration::
 
 /// Run `script` on its own thread (with the script stack) and wait at most `timeout` for its
 /// outcome, counted from when it calls `started` (once the engine is ready); past that the
-/// thread is abandoned and the outcome says so. On wasm there are no threads: the script runs
-/// here.
+/// thread is abandoned and the outcome says so.
 pub(crate) fn run_within(name: &str, timeout: std::time::Duration, script: impl FnOnce(&dyn Fn()) -> XfaOutcome + Send + 'static) -> XfaOutcome {
     run_within_limits(name, ENGINE_START_LIMIT, timeout, script)
 }
@@ -1545,7 +1538,6 @@ pub(crate) fn run_within_limits(
     timeout: std::time::Duration,
     script: impl FnOnce(&dyn Fn()) -> XfaOutcome + Send + 'static,
 ) -> XfaOutcome {
-    #[cfg(not(target_arch = "wasm32"))]
     {
         use std::sync::mpsc::RecvTimeoutError;
         use std::time::Instant;
@@ -1590,11 +1582,6 @@ pub(crate) fn run_within_limits(
                 Err(RecvTimeoutError::Disconnected) => return failed("the script stopped with an internal error".into()),
             }
         }
-    }
-    #[cfg(target_arch = "wasm32")]
-    {
-        let _ = (name, start_limit, timeout);
-        script(&|| {})
     }
 }
 

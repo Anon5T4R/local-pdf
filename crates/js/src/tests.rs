@@ -1260,7 +1260,7 @@ $host.gotoURL("https://example.org")"#,
         // A thrown value is the error message: cut like one.
         let e = run("throw Space(100000)").error.unwrap();
         assert!(e.chars().count() <= 4_097, "{}", e.len());
-        // Copying and comparing long strings costs steps, so it ends without a clock (wasm).
+        // Copying and comparing long strings costs steps, so the loop budget ends it.
         let e = run("var s = Space(1000000)\nfor i = 1 upto 3000 do s endfor").error;
         assert!(e.is_some_and(|e| e.contains("too long")));
         let e = run("var s = Space(1000000)\nfor i = 1 upto 3000 do s == \"x\" endfor").error;
@@ -1364,7 +1364,7 @@ $host.gotoURL("https://example.org")"#,
         let o = run("for i = 1 upto 500 do $host.messageBox(i) endfor");
         assert_eq!(o.effects.iter().filter(|e| matches!(e, XfaEffect::MessageBox(_))).count(), 100);
         assert!(!o.notes.is_empty());
-        // On a small stack (the wasm build's), the limits stop the script before the stack does.
+        // On a small stack, the limits stop the script before the stack does.
         let small = std::thread::Builder::new()
             .stack_size(1 << 20)
             .spawn(move || {

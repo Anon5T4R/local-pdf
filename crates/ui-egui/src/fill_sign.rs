@@ -252,11 +252,8 @@ impl ScanDraft {
     /// Like [`Self::rescan`], but on a worker thread on desktop, so the frame that asked doesn't
     /// wait (a scan of a large frame takes a noticeable fraction of a second). The draft isn't
     /// ready until the answer for the current frame and sensitivity arrives; [`Self::poll`]
-    /// picks it up. Where threads are unavailable (the web) it scans at once.
+    /// picks it up.
     pub fn rescan_in_background(&mut self, image: &mut Option<SignatureImage>, full: bool, ctx: Option<&egui::Context>) {
-        if cfg!(target_arch = "wasm32") {
-            return self.rescan(image, full);
-        }
         let req = self.request(full);
         self.full = false;
         if self.worker.running.is_some() {
@@ -1102,22 +1099,6 @@ fn pad_buttons(ui: &mut egui::Ui, d: &mut SigDraft) -> (bool, bool) {
     (apply, cancel)
 }
 
-#[cfg(target_arch = "wasm32")]
-#[derive(Clone, Default)]
-pub(crate) struct ImageInbox {
-    busy: std::sync::Arc<std::sync::atomic::AtomicBool>,
-    picked: std::sync::Arc<std::sync::Mutex<Option<PickedImage>>>,
-}
-
-#[cfg(target_arch = "wasm32")]
-struct PickedImage {
-    epoch: u64,
-    initials: bool,
-    /// A photo for the Scan tab (otherwise an image for the Image tab).
-    scan: bool,
-    bytes: Option<Result<Vec<u8>, String>>,
-}
-
 impl crate::LocalPDFApp {
     /// Browse asynchronously, answering only into the dialog (and tab) that asked for the image
     /// or, on the Scan tab, the photo.
@@ -1126,7 +1107,6 @@ impl crate::LocalPDFApp {
         let initials = self.signature_draft.initials;
         let scan = self.signature_draft.scan_mode;
         let dialog = rfd::AsyncFileDialog::new().add_filter(tl!(if scan { "Photo" } else { "Image" }), &["png", "jpg", "jpeg"]);
-        #[cfg(not(target_arch = "wasm32"))]
         self.ask_one(crate::pickers::Ask::File(dialog), None, move |app, path| {
             if app.dialog_epoch() != epoch
                 || app.dialog != Some(crate::Dialog::Signature)
@@ -1144,69 +1124,6 @@ impl crate::LocalPDFApp {
                 std::fs::File::open(path).map_err(localpdf_engine::signature_image::SignatureImageError::from).and_then(SignatureImage::read);
             app.use_signature_image(result.map_err(|e| e.to_string()));
         });
-        #[cfg(target_arch = "wasm32")]
-        {
-            use std::sync::atomic::Ordering;
-            if self.signature_images.busy.swap(true, Ordering::SeqCst) {
-                self.notify_tr("Another file dialog is still open. Finish with it first.");
-                return;
-            }
-            let inbox = self.signature_images.clone();
-            let ctx = self.ctx.clone();
-            let (limit, too_large) = if scan {
-                (localpdf_engine::signature_scan::MAX_PHOTO_BYTES, ScanError::Size.to_string())
-            } else {
-                (localpdf_engine::signature_image::MAX_SIGNATURE_IMAGE_BYTES, localpdf_engine::signature_image::SignatureImageError::Size.to_string())
-            };
-            wasm_bindgen_futures::spawn_local(async move {
-                let bytes = if let Some(file) = dialog.pick_file().await {
-                    if file.inner().size() > limit as f64 {
-                        Some(Err(too_large))
-                    } else {
-                        // `pick_file` returns a readable handle. Read its Blob directly so a
-                        // rejected browser read is an error (rfd's read helper unwraps it).
-                        Some(match wasm_bindgen_futures::JsFuture::from(file.inner().array_buffer()).await {
-                            Ok(buffer) => {
-                                let bytes = js_sys::Uint8Array::new(&buffer);
-                                if bytes.length() as usize > limit { Err(too_large) } else { Ok(bytes.to_vec()) }
-                            }
-                            Err(error) => Err(format!("{error:?}")),
-                        })
-                    }
-                } else {
-                    None
-                };
-                *inbox.picked.lock().unwrap_or_else(std::sync::PoisonError::into_inner) = Some(PickedImage { epoch, initials, scan, bytes });
-                if let Some(ctx) = ctx {
-                    ctx.request_repaint();
-                }
-            });
-        }
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    pub(crate) fn process_signature_images(&mut self) {
-        let picked = self.signature_images.picked.lock().unwrap_or_else(std::sync::PoisonError::into_inner).take();
-        let Some(picked) = picked else { return };
-        self.signature_images.busy.store(false, std::sync::atomic::Ordering::SeqCst);
-        if self.dialog_epoch() != picked.epoch
-            || self.dialog != Some(crate::Dialog::Signature)
-            || self.signature_draft.initials != picked.initials
-            || self.signature_draft.scan_mode != picked.scan
-        {
-            return;
-        }
-        let Some(bytes) = picked.bytes else { return };
-        if picked.scan {
-            let result = bytes.and_then(|bytes| {
-                localpdf_engine::guard(|| SignaturePhoto::from_bytes(&bytes)).map_err(|e| e.to_string())?.map_err(|e| e.to_string())
-            });
-            self.use_signature_photo(result);
-            return;
-        }
-        let result = bytes
-            .and_then(|bytes| localpdf_engine::guard(|| SignatureImage::from_bytes(&bytes)).map_err(|e| e.to_string())?.map_err(|e| e.to_string()));
-        self.use_signature_image(result);
     }
 
     fn use_signature_image(&mut self, result: Result<SignatureImage, String>) {
@@ -1222,7 +1139,6 @@ impl crate::LocalPDFApp {
 
     /// Files dropped while the signature pad shows the Image or Scan tab are imported there (the
     /// first one) instead of opening behind the dialog.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn drop_on_signature_pad(&mut self, dropped: Vec<egui::DroppedFileHandle>) -> Vec<egui::DroppedFileHandle> {
         let d = &self.signature_draft;
         if dropped.is_empty() || self.dialog != Some(crate::Dialog::Signature) || !(d.scan_mode || d.image_mode) {

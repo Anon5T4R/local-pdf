@@ -44,7 +44,6 @@ fn is_limit(e: &str) -> bool {
 }
 
 /// Steps between looks at the clock.
-#[cfg(not(target_arch = "wasm32"))]
 const CLOCK_EVERY: u64 = 256;
 
 // ── lexer ───────────────────────────────────────────────────────────────────────────────────
@@ -793,7 +792,6 @@ struct Interp<'h> {
     exited: bool,
     /// When the caller stops waiting: the script stops itself soon after (no thread is left
     /// burning a core to the loop limit).
-    #[cfg(not(target_arch = "wasm32"))]
     deadline: Option<std::time::Instant>,
 }
 
@@ -812,15 +810,12 @@ impl Interp<'_> {
         if self.steps > MAX_STEPS {
             return Err(RAN_TOO_LONG.into());
         }
-        #[cfg(not(target_arch = "wasm32"))]
         if self.steps / CLOCK_EVERY != before / CLOCK_EVERY
             && let Some(d) = self.deadline
             && std::time::Instant::now() > d
         {
             return Err(RAN_TOO_LONG.into());
         }
-        #[cfg(target_arch = "wasm32")]
-        let _ = before;
         Ok(())
     }
 
@@ -864,8 +859,8 @@ impl Interp<'_> {
     }
 
     /// What copying `v` (or the values it stands for) costs, in steps: one per 256 bytes, so
-    /// copying long strings over and over runs out of steps even where there is no clock
-    /// (wasm). A form object counts its value; a list its items too.
+    /// copying long strings over and over runs out of steps before the deadline does. A form
+    /// object counts its value; a list its items too.
     fn cost(&self, v: &Val) -> u64 {
         let mut bytes = 0usize;
         let mut todo = vec![v];
@@ -2350,26 +2345,12 @@ impl Interp<'_> {
             }
             // ── dates and times (days since 1900-01-01 = 1; milliseconds since midnight)
             "date" => {
-                #[cfg(not(target_arch = "wasm32"))]
-                {
-                    let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs() as i64).unwrap_or(0);
-                    Val::Num((secs.div_euclid(86_400) + 25_568) as f64)
-                }
-                #[cfg(target_arch = "wasm32")]
-                {
-                    Val::Num(25_568.0)
-                }
+                let secs = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs() as i64).unwrap_or(0);
+                Val::Num((secs.div_euclid(86_400) + 25_568) as f64)
             }
             "time" => {
-                #[cfg(not(target_arch = "wasm32"))]
-                {
-                    let ms = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0);
-                    Val::Num(ms.rem_euclid(86_400_000) as f64)
-                }
-                #[cfg(target_arch = "wasm32")]
-                {
-                    Val::Num(0.0)
-                }
+                let ms = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0);
+                Val::Num(ms.rem_euclid(86_400_000) as f64)
             }
             "date2num" | "isodate2num" => {
                 let s = self.arg_str(args, 0)?;
@@ -2562,7 +2543,7 @@ pub fn run_formcalc(script: &str, event: &XfaEvent, doc: &XfaDoc, root: &XfaNode
 }
 
 /// [`run_formcalc`] on an owned form, giving up at `deadline` (the clock is read every
-/// [`CLOCK_EVERY`] steps; unused on wasm, which has no clock).
+/// [`CLOCK_EVERY`] steps).
 pub(crate) fn run_formcalc_at(
     script: &str,
     event: &XfaEvent,
@@ -2583,8 +2564,6 @@ pub(crate) fn run_formcalc_at(
         Err(e) => return XfaOutcome { error: Some(e), ..Default::default() },
     };
     let mut host = XHost::new(root, &event.target, doc);
-    #[cfg(target_arch = "wasm32")]
-    let _ = deadline;
     let mut interp = Interp {
         h: &mut host,
         scopes: vec![HashMap::new()],
@@ -2597,7 +2576,6 @@ pub(crate) fn run_formcalc_at(
         // too, and the interpreter's frames are large.
         max_depth: limits.recursion.clamp(8, 128),
         exited: false,
-        #[cfg(not(target_arch = "wasm32"))]
         deadline: deadline.and_then(|d| std::time::Instant::now().checked_add(d)),
     };
     let mut out = XfaOutcome::default();

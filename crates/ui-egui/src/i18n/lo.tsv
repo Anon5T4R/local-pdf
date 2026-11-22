@@ -47,7 +47,6 @@
 	Show less	ສະແດງໜ້ອຍລົງ
 	Show {n} more	ສະແດງຕື່ມອີກ {n} ລາຍການ
 	The newest {n} of {total} PDFs	ໄຟລ໌ PDF ໃໝ່ສຸດ {n} ຈາກ {total} ໄຟລ໌
-	Pinned folders need the desktop app	ການປັກໝຸດໂຟນເດີຕ້ອງໃຊ້ແອັບເທິງເດັສທັອບ
 	Choose a folder on this computer to pin	ເລືອກໂຟນເດີໃນຄອມພິວເຕີນີ້ເພື່ອປັກໝຸດ
 	{folder} is already pinned to Home	{folder} ຖືກປັກໝຸດໄວ້ໜ້າຫຼັກແລ້ວ
 	You can pin up to {n} folders. Unpin one first.	ທ່ານສາມາດປັກໝຸດໄດ້ສູງສຸດ {n} ໂຟນເດີ. ກະລຸນາຖອນການປັກໝຸດໂຟນເດີໃດໜຶ່ງອອກກ່ອນ.
@@ -1566,13 +1565,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	ໄຟລ໌ນີ້ມີຂະໜາດນ້ອຍທີ່ສຸດເທົ່າທີ່ຈະເຮັດໄດ້ແລ້ວ ({size}). ບໍ່ມີການບັນທຶກສຳເນົາ.
 	Saved {place}: {before} → {after} (not smaller){detail}	ບັນທຶກໄວ້ທີ່ {place}: {before} → {after} (ບໍ່ໄດ້ຫຼຸດລົງ){detail}
 	Couldn't save the image: {e}	ບໍ່ສາມາດບັນທຶກຮູບພາບໄດ້: {e}
-	Adding images arrives on the web with file pickers for images	ການເພີ່ມຮູບພາບຈະໃຊ້ງານໄດ້ໃນເວັບເມື່ອມີຕົວເລືອກໄຟລ໌ຮູບພາບ
-	Replacing images on page {p} arrives on the web with image pickers ({i})	ການປ່ຽນແທນຮູບພາບໃນໜ້າ {p} ຈະໃຊ້ງານໄດ້ໃນເວັບເມື່ອມີຕົວເລືອກຮູບພາບ ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: ການເລືອກຮູບພາບຈະໃຊ້ງານໄດ້ໃນເວັບເມື່ອມີຕົວເລືອກໄຟລ໌ຮູບພາບ
-	Replacing images arrives on the web with image file pickers	ການປ່ຽນແທນຮູບພາບຈະໃຊ້ງານໄດ້ໃນເວັບເມື່ອມີຕົວເລືອກໄຟລ໌ຮູບພາບ
 	Couldn't create a PDF: {e}	ບໍ່ສາມາດສ້າງ PDF ໄດ້: {e}
 	The clipboard has no image or text	ຄລິບບອດບໍ່ມີຮູບພາບ ຫຼື ຂໍ້ຄວາມ
-	On the web, open or drop an image to convert it	ໃນເວັບ, ໃຫ້ເປີດ ຫຼື ລາກຮູບພາບມາວາງເພື່ອແປງໄຟລ໌
 	Couldn't optimize the file: {e}	ບໍ່ສາມາດປັບແຕ່ງໄຟລ໌ໃຫ້ເໝາະສົມໄດ້: {e}
 	Couldn't write {path}: {e}	ບໍ່ສາມາດຂຽນລົງ {path} ໄດ້: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	ຟອມຮ້ອງຂໍໃຫ້ສົ່ງໄປທີ່ {u}; Local PDF ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຟອມ. ກະລຸນາບັນທຶກເອກະສານເພື່ອຮັກສາສິ່ງທີ່ທ່ານປ້ອນໄວ້.
@@ -1633,7 +1627,6 @@
 	The document now conforms to {level}; save it to keep the changes	ປະຈຸບັນເອກະສານສອດຄ່ອງກັບ {level}; ບັນທຶກເພື່ອຮັກສາການປ່ຽນແປງ
 	Fixed what could be fixed; 1 problem remains	ແກ້ໄຂສິ່ງທີ່ແກ້ໄຂໄດ້ແລ້ວ; ຍັງເຫຼືອອີກ 1 ບັນຫາ
 	Fixed what could be fixed; {n} problems remain	ແກ້ໄຂສິ່ງທີ່ແກ້ໄຂໄດ້ແລ້ວ; ຍັງເຫຼືອອີກ {n} ບັນຫາ
-	Custom stamps arrive on the web with file pickers for images	ຕາປະທັບກຳນົດເອງຈະໃຊ້ງານໄດ້ໃນເວັບເມື່ອມີຕົວເລືອກໄຟລ໌ຮູບພາບ
 	{file} is too large for a stamp (at most {n} MB)	{file} ມີຂະໜາດໃຫຍ່ເກີນໄປສຳລັບຕາປະທັບ (ສູງສຸດບໍ່ເກີນ {n} MB)
 	Sent to {printer}	ສົ່ງໄປຍັງ {printer} ແລ້ວ
 	Sent to {printer}: {msg}	ສົ່ງໄປຍັງ {printer} ແລ້ວ: {msg}
@@ -1730,9 +1723,7 @@
 	Couldn't split: {e}	ບໍ່ສາມາດແບ່ງໄຟລ໌ໄດ້: {e}
 	Couldn't summarize comments: {e}	ບໍ່ສາມາດສະຫຼຸບຄວາມເຫັນໄດ້: {e}
 	Couldn't open the result: {e}	ບໍ່ສາມາດເປີດຜົນຮັບໄດ້: {e}
-	Importing data arrives on the web with file pickers for data files	ການນຳເຂົ້າຂໍ້ມູນຈະໃຊ້ງານໄດ້ໃນເວັບເມື່ອມີຕົວເລືອກໄຟລ໌ຂໍ້ມູນ
 	Exported to {path}	ສົ່ງອອກໄປຍັງ {path} ແລ້ວ
-	Merging data files needs the desktop app	ການຮວມໄຟລ໌ຂໍ້ມູນຕ້ອງການແອັບເດັສທັອບ
 	Merged 1 file into {path}	ຮວມ 1 ໄຟລ໌ເຂົ້າໃນ {path} ແລ້ວ
 	Merged {n} files into {path}	ຮວມ {n} ໄຟລ໌ເຂົ້າໃນ {path} ແລ້ວ
 	Combined {n} files	ຮວມແລ້ວ {n} ໄຟລ໌
@@ -1744,7 +1735,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	ໂໝດພົກພາປິດຢູ່: ບໍ່ສາມາດຂຽນໃສ່ {folder} ໄດ້ ({error}). ການຕັ້ງຄ່າຈະຖືກເກັບໄວ້ໃນໂຟນເດີຜູ້ໃຊ້ຂອງທ່ານແທນ.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF ກຳລັງແຕ້ມສະແດງຜົນໂດຍບໍ່ໃຊ້ໜ່ວຍປະມວນຜົນກຣາບຟິກ, ເຊິ່ງອາດເຮັດໃຫ້ຊ້າ. ການອັບເດດໄດຣເວີກຣາບຟິກອາດຊ່ວຍໄດ້.
 	Couldn't save: {e}	ບໍ່ສາມາດບັນທຶກໄດ້: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	ການດາວໂຫຼດໄຟລ໌ແນບໃນເວັບຈະມາພ້ອມກັບ M3.10 (ພ້ອມແລ້ວ {n} ໄບຕ໌)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	ຈະປ່ອຍໃຫ້ໃຊ້ງານໃນເປົ້າໝາຍ {m}
 	needs an AI provider (off by default)	ຕ້ອງການຜູ້ໃຫ້ບໍລິການ AI (ປິດຕາມຄ່າເລີ່ມຕົ້ນ)
@@ -2116,7 +2106,6 @@
 	About	ກ່ຽວກັບ
 	Add {what}	ເພີ່ມ {what}
 	Align fields	ຈັດລຽງຊ່ອງຂໍ້ມູນ
-	Another file dialog is still open. Finish with it first.	ກ່ອງເລືອກໄຟລ໌ອື່ນຍັງເປີດຢູ່. ກະລຸນາດຳເນີນການໃຫ້ສຳເລັດກ່ອນ.
 	Basic constraints	ຂໍ້ກຳນົດພື້ນຖານ
 	Binary assets added	ເພີ່ມໄຟລ໌ບາຍນາຣີແລ້ວ
 	Binary assets removed	ລຶບໄຟລ໌ບາຍນາຣີອອກແລ້ວ
@@ -2329,12 +2318,9 @@ animation effects	Off	ປິດ
 	Change the colour of line art as well as text	ປ່ຽນສີຂອງລາຍເສັ້ນພ້ອມທັງຂໍ້ຄວາມ
 	Colours are remapped while rendering; the document itself never changes.	ສີຈະຖືກຈັບຄູ່ໃໝ່ໃນຂະນະສະແດງຜົນ; ຕົວເອກະສານເອງຈະບໍ່ມີການປ່ຽນແປງ.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	ໄດຣເວີຂອງເຄື່ອງພິມນີ້ບໍ່ຮັບການຕັ້ງຄ່າການພິມສອງໜ້າຈາກໂປຣແກຣມອື່ນ, ດັ່ງນັ້ນຈຶ່ງໃຊ້ການຕັ້ງຄ່າຂອງມັນເອງ. ປ່ຽນແປງໄດ້ທີ່ ຄຸນສົມບັດ…
-	Browser's print dialog	ກ່ອງຂໍ້ຄວາມການພິມຂອງບຣາວເຊີ
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	ຈຳນວນຊຸດ, ການພິມສອງໜ້າ ແລະ ສີ ແມ່ນຖືກເລືອກໃນກ່ອງຂໍ້ຄວາມການພິມຂອງບຣາວເຊີ.
 	Preparing {n} sheets for printing…	ກຳລັງກຽມ {n} ແຜ່ນສຳລັບການພິມ…
 	Preparing sheet {done} of {total} for printing…	ກຳລັງກຽມແຜ່ນ {done} ຈາກ {total} ສຳລັບການພິມ…
 	Opening the browser's print dialog…	ກຳລັງເປີດກ່ອງຂໍ້ຄວາມການພິມຂອງບຣາວເຊີ…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	ບໍ່ສາມາດພິມຈາກບຣາວເຊີໄດ້ ({e}); ດາວໂຫຼດ {name} ເພື່ອນຳໄປພິມແທນ
 	Tools panel side	ດ້ານຂອງແຜງເຄື່ອງມື
 	Add comment	ເພີ່ມຄວາມເຫັນ
 	Change tag properties	ປ່ຽນຄຸນສົມບັດແທັກ

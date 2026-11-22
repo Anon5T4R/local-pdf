@@ -17,11 +17,11 @@ pub fn printer_options(printer: &str) -> Vec<PrinterOption> {
 /// `pt-br` or `zh-hans`) where its PPD has them (`*bg.Translation`, `*bg.InputSlot Tray2/…`);
 /// the driver's default names otherwise.
 pub fn printer_options_in(printer: &str, lang: &str) -> Vec<PrinterOption> {
-    #[cfg(all(unix, not(target_arch = "wasm32")))]
+    #[cfg(unix)]
     {
         printer_options_via_within(printer, std::path::Path::new("/etc/cups/ppd"), std::process::Command::new("lpoptions"), LPOPTIONS_LIMIT, lang)
     }
-    #[cfg(not(all(unix, not(target_arch = "wasm32"))))]
+    #[cfg(not(unix))]
     {
         let _ = lang;
         craft_print::printer_options(printer)
@@ -30,18 +30,18 @@ pub fn printer_options_in(printer: &str, lang: &str) -> Vec<PrinterOption> {
 
 /// How long `lpoptions` may take: a CUPS that has stopped answering must not hold whoever asked
 /// (#1818). After this the PPD's own defaults stand.
-#[cfg(all(unix, not(target_arch = "wasm32")))]
+#[cfg(unix)]
 const LPOPTIONS_LIMIT: std::time::Duration = std::time::Duration::from_secs(10);
 
 /// The most of a command's output that is kept (`lpoptions -l` is a few kilobytes).
-#[cfg(any(test, all(unix, not(target_arch = "wasm32"))))]
+#[cfg(any(test, unix))]
 const OUTPUT_CAP: u64 = 4 << 20;
 
 /// Run `command` and collect its standard output, giving it `limit`: a command still running
 /// then is killed and reaped, and the error is `TimedOut`. Standard input and error are not
 /// connected. The exit status is not checked, as `Command::output` leaves it to the caller.
 /// Only CUPS runs a command today; the tests cover every desktop platform.
-#[cfg(any(test, all(unix, not(target_arch = "wasm32"))))]
+#[cfg(any(test, unix))]
 pub(crate) fn output_within(command: &mut std::process::Command, limit: std::time::Duration) -> std::io::Result<Vec<u8>> {
     use std::io::Read as _;
     use std::process::Stdio;
@@ -101,7 +101,7 @@ pub(crate) fn output_within(command: &mut std::process::Command, limit: std::tim
 /// neither a system queue nor a physical printer. CUPS instances share their queue's PPD but
 /// have their own defaults, queried with the complete `queue/instance` destination. `limit` is
 /// how long the command may take before the PPD's defaults stand on their own.
-#[cfg(all(unix, not(target_arch = "wasm32")))]
+#[cfg(unix)]
 pub(crate) fn printer_options_via_within(
     printer: &str,
     ppd_dir: &std::path::Path,
@@ -160,7 +160,7 @@ pub fn open_printer_preferences(printer: &str) -> Result<(), crate::PrintError> 
 /// The PPD language codes (`*cupsLanguages`, the `ll` of `*ll.Translation`) to try for a UI
 /// language code, most specific first: `pt-br` → `pt_BR`, `pt`; `zh-hans` → `zh_CN`, `zh`.
 // Read only by the CUPS path; the tests exercise it everywhere.
-#[cfg_attr(not(all(unix, not(target_arch = "wasm32"))), allow(dead_code))]
+#[cfg_attr(not(unix), allow(dead_code))]
 fn ppd_languages(lang: &str) -> Vec<String> {
     let lang = lang.to_ascii_lowercase();
     let mut parts = lang.split(['-', '_']).filter(|p| !p.is_empty());
@@ -179,7 +179,7 @@ fn ppd_languages(lang: &str) -> Vec<String> {
 /// choices). Each line is read as UTF-8 on its own: drivers write them so in files whose other
 /// text is Latin-1. Names with no translation, or an empty one, stay as they are.
 // Read only by the CUPS path; the tests exercise it everywhere.
-#[cfg_attr(not(all(unix, not(target_arch = "wasm32"))), allow(dead_code))]
+#[cfg_attr(not(unix), allow(dead_code))]
 pub(crate) fn localize(options: &mut [PrinterOption], ppd: &[u8], lang: &str) {
     use std::collections::HashMap;
     let Some(code) = ppd_languages(lang).into_iter().find(|code| {

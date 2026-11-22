@@ -50,7 +50,6 @@
 	Show less	کەمتر پیشان بدە
 	Show {n} more	{n}ی تر پیشان بدە
 	The newest {n} of {total} PDFs	نوێترین {n} لە {total} PDF
-	Pinned folders need the desktop app	فۆڵدەرە جێگیرکراوەکان پێویستیان بە ئەپی سەر مێز هەیە
 	Choose a folder on this computer to pin	فۆڵدەرێک لەسەر ئەم کۆمپیوتەرە هەڵبژێرە بۆ جێگیرکردن
 	{folder} is already pinned to Home	{folder} پێشتر لە لاپەڕەی سەرەکی جێگیرکراوە
 	You can pin up to {n} folders. Unpin one first.	دەتوانیت تا {n} فۆڵدەر جێگیر بکەیت. سەرەتا یەکێکیان لابە.
@@ -1567,13 +1566,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	ئەم فایلە پێشتر هێندەی پێویست بچووکە ({size}). هیچ کۆپییەک پاشەکەوت نەکرا.
 	Saved {place}: {before} → {after} (not smaller){detail}	پاشەکەوتکرا {place}: {before} → {after} (بچووکتر نییە){detail}
 	Couldn't save the image: {e}	نەتوانرا وێنەکە پاشەکەوت بکرێت: {e}
-	Adding images arrives on the web with file pickers for images	زیادکردنی وێنە لە وێبدا بە هەڵبژێرەری فایلی وێنەوە بەردەست دەبێت
-	Replacing images on page {p} arrives on the web with image pickers ({i})	جێگرتنەوەی وێنەکان لە پەڕەی {p} لە وێبدا بە هەڵبژێرەری وێنەوە بەردەست دەبێت ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: هەڵبژاردنی وێنە لە وێبدا بە هەڵبژێرەری فایلی وێنەوە بەردەست دەبێت
-	Replacing images arrives on the web with image file pickers	جێگرتنەوەی وێنەکان لە وێبدا بە هەڵبژێرەری فایلی وێنەوە بەردەست دەبێت
 	Couldn't create a PDF: {e}	نەتوانرا PDF دروست بکرێت: {e}
 	The clipboard has no image or text	کلیپبۆرد هیچ وێنە یان دەقێکی تێدا نییە
-	On the web, open or drop an image to convert it	لە وێبدا، وێنەیەک بکەرەوە یان فڕێی بدە بۆ گۆڕینی
 	Couldn't optimize the file: {e}	نەتوانرا فایلەکە باشتر بکرێت: {e}
 	Couldn't write {path}: {e}	نەتوانرا لە {path} بنووسرێت: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	فۆڕمەکە داوای ناردن دەکات بۆ {u}؛ Local PDF داتای فۆڕم نانێرێت. بەڵگەنامەکە پاشەکەوت بکە بۆ پاراستنی تۆمارەکانت.
@@ -1625,7 +1619,6 @@
 	The document now conforms to {level}; save it to keep the changes	بەڵگەنامەکە ئێستا لەگەڵ {level} دەگونجێت؛ پاشەکەوتی بکە بۆ پاراستنی گۆڕانکارییەکان
 	Fixed what could be fixed; 1 problem remains	ئەوەی دەکرا چاک بکرێت چاککرا؛ 1 کێشە ماوە
 	Fixed what could be fixed; {n} problems remain	ئەوەی دەکرا چاک بکرێت چاککرا؛ {n} کێشە ماوە
-	Custom stamps arrive on the web with file pickers for images	مۆری تایبەت لە وێبدا بە هەڵبژێرەری فایلی وێنەوە بەردەست دەبێت
 	{file} is too large for a stamp (at most {n} MB)	{file} زۆر گەورەیە بۆ مۆر (بە زۆرترین {n} MB)
 	Sent to {printer}	نێردرا بۆ {printer}
 	Sent to {printer}: {msg}	نێردرا بۆ {printer}: {msg}
@@ -1723,9 +1716,7 @@
 	Couldn't split: {e}	نەتوانرا دابەش بکرێت: {e}
 	Couldn't summarize comments: {e}	نەتوانرا لێدوانەکان کورت بکرێنەوە: {e}
 	Couldn't open the result: {e}	نەتوانرا ئەنجامەکە بکرێتەوە: {e}
-	Importing data arrives on the web with file pickers for data files	هاوردەکردنی داتا لە وێبدا بە هەڵبژێرەری فایلی داتاوە بەردەست دەبێت
 	Exported to {path}	هەناردەکرا بۆ {path}
-	Merging data files needs the desktop app	یەکخستنی فایلی داتا پێویستی بە بەرنامەی سەر مێز هەیە
 	Merged 1 file into {path}	1 فایل یەکخرا لە {path}
 	Merged {n} files into {path}	{n} فایل یەکخرا لە {path}
 	Combined {n} files	{n} فایل تێکەڵکرا
@@ -1735,7 +1726,6 @@
 	Couldn't open {name}: {e}	نەتوانرا {name} بکرێتەوە: {e}
 	Couldn't read {name}: {e}	نەتوانرا {name} بخوێنرێتەوە: {e}
 	Couldn't save: {e}	نەتوانرا پاشەکەوت بکرێت: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	داگرتنی پێوەکراوەکان لە وێبدا لەگەڵ M3.10 بەردەست دەبێت ({n} بایت ئامادەیە)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	لە قۆناغی {m} دەردەچێت
 	needs an AI provider (off by default)	پێویستی بە دابینکەری AI هەیە (بە بنەڕەتی کوژاوەتەوە)
@@ -2183,7 +2173,6 @@ calendar date	December	کانوونی یەکەم
 	A script	سکریپت
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} لەم بەڵگەنامەیەدا هەوڵیدا ناونیشانێک بکاتەوە کە Local PDF نایکاتەوە: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} لەم بەڵگەنامەیەدا هەوڵیدا ناونیشانێک بکاتەوە کە Local PDF نایکاتەوە: {e}. تەنها بەستەری وێب (http, https) و ئیمەیڵ (mailto) لە بەڵگەنامەکانەوە دەکرێنەوە.
-	Another file dialog is still open. Finish with it first.	دیالۆگێکی تری فایل هێشتا کراوەیە. سەرەتا کارەکەی تەواو بکە.
 	Couldn't show the file picker. Please try again.	نەتوانرا هەڵبژێرەری فایل پیشان بدرێت. تکایە دووبارە هەوڵ بدەرەوە.
 	The document changed while you were choosing a file, so nothing was changed.	بەڵگەنامەکە گۆڕا لە کاتێکدا تۆ فایلێکت هەڵدەبژارد، بۆیە هیچ شتێک نەگۆڕدرا.
 	The document was closed before it could be saved.	بەڵگەنامەکە داخرا پێش ئەوەی بتوانرێت پاشەکەوت بکرێت.
@@ -2353,12 +2342,9 @@ animation effects	Off	ناچالاک
 	Change the colour of line art as well as text	ڕەنگی هێڵەکانیش بگۆڕە، نەک تەنها دەق
 	Colours are remapped while rendering; the document itself never changes.	ڕەنگەکان لە کاتی وێنەکێشاندا دووبارە دەنەخشێنرێن؛ خودی بەڵگەنامەکە هەرگیز ناگۆڕێت.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	درایڤەری ئەم چاپکەرە ڕێکخستنە دوولایەکان لە بەرنامەکانی ترەوە وەرناگرێت، بۆیە ڕێکخستنی خۆی جێبەجێ دەکرێت. لە «تایبەتمەندییەکان» بیگۆڕە…
-	Browser's print dialog	دیالۆگی چاپکردنی وێبگەڕ
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	ژمارەی کۆپی، چاپی دوولایە و ڕەنگ لە دیالۆگی چاپکردنی وێبگەڕدا هەڵدەبژێردرێن.
 	Preparing {n} sheets for printing…	ئامادەکردنی {n} کاغەز بۆ چاپ…
 	Preparing sheet {done} of {total} for printing…	ئامادەکردنی کاغەزی {done} لە {total} بۆ چاپ…
 	Opening the browser's print dialog…	کردنەوەی دیالۆگی چاپکردنی وێبگەڕ…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	چاپکردن لە وێبگەڕەوە نەکرا ({e})؛ {name} دابەزێنرا بۆ ئەوەی لە جیاتیدا چاپ بکرێت
 	Tools panel side	لای پانێڵی ئامرازەکان
 	Add comment	زیادکردنی لێدوان
 	Change tag properties	گۆڕینی تایبەتمەندییەکانی تاگ

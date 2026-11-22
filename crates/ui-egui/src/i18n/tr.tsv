@@ -1556,13 +1556,8 @@
 	Language	Dil
 	Saved {place}: {before} → {after} ({pct}% smaller){detail}	{place} kaydedildi: {before} → {after} (%{pct} daha küçük){detail}
 	Couldn't save the image: {e}	Resim kaydedilemedi: {e}
-	Adding images arrives on the web with file pickers for images	Resim ekleme, web'de resim dosyası seçicileriyle birlikte sunulacaktır
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Sayfa {p} üzerindeki resimlerin değiştirilmesi web'de resim seçicilerle ({i}) sunulacaktır
-	{name}: choosing images arrives on the web with file pickers for images	{name}: resim seçimi web'de resim dosyası seçicileriyle birlikte sunulacaktır
-	Replacing images arrives on the web with image file pickers	Resimleri değiştirme web'de resim dosyası seçicileriyle birlikte sunulacaktır
 	Couldn't create a PDF: {e}	PDF oluşturulamadı: {e}
 	The clipboard has no image or text	Panoda resim veya metin yok
-	On the web, open or drop an image to convert it	Web'de dönüştürmek için bir resim açın veya sürükleyip bırakın
 	Couldn't optimize the file: {e}	Dosya en iyileştirilemedi: {e}
 	Couldn't write {path}: {e}	{path} yazılamadı: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Form {u} adresine gönderilmek isteniyor; Local PDF form verilerini göndermez. Girdilerinizi korumak için belgeyi kaydedin.
@@ -1623,7 +1618,6 @@
 	The document now conforms to {level}; save it to keep the changes	Belge artık {level} standardına uygundur; değişiklikleri korumak için kaydedin
 	Fixed what could be fixed; 1 problem remains	Düzeltilebilecek olanlar düzeltildi; 1 sorun kaldı
 	Fixed what could be fixed; {n} problems remain	Düzeltilebilecek olanlar düzeltildi; {n} sorun kaldı
-	Custom stamps arrive on the web with file pickers for images	Özel damgalar web'de resim dosyası seçicileriyle birlikte sunulacaktır
 	{file} is too large for a stamp (at most {n} MB)	{file} damga için çok büyük (en fazla {n} MB)
 	Sent to {printer}	{printer} yazıcısına gönderildi
 	Sent to {printer}: {msg}	{printer} yazıcısına gönderildi: {msg}
@@ -1657,9 +1651,7 @@
 	Couldn't split: {e}	Bölünemedi: {e}
 	Couldn't summarize comments: {e}	Yorumlar özetlenemedi: {e}
 	Couldn't open the result: {e}	Sonuç açılamadı: {e}
-	Importing data arrives on the web with file pickers for data files	Veri içe aktarma web'de veri dosyası seçicileriyle birlikte sunulacaktır
 	Exported to {path}	{path} konumuna aktarıldı
-	Merging data files needs the desktop app	Veri dosyalarını birleştirmek masaüstü uygulamasını gerektirir
 	Merged 1 file into {path}	1 dosya {path} içine birleştirildi
 	Merged {n} files into {path}	{n} dosya {path} içine birleştirildi
 	Combined {n} files	{n} dosya birleştirildi
@@ -1671,7 +1663,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Taşınabilir mod kapalı: {folder} konumuna yazılamıyor ({error}). Ayarlar bunun yerine kullanıcı klasörünüzde tutulur.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF grafik işlemcisi olmadan çizim yapıyor, bu nedenle yavaş olabilir. Grafik sürücüsünü güncellemek yardımcı olabilir.
 	Couldn't save: {e}	Kaydedilemedi: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Web'de ek indirme M3.10 ile sunulacaktır ({n} bayt hazır)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	{m} kilometre taşında çıkacak
 	needs an AI provider (off by default)	bir yapay zeka sağlayıcısı gerektirir (varsayılan olarak kapalı)
@@ -2131,7 +2122,6 @@
 	Show less	Daha az göster
 	Show {n} more	{n} tane daha göster
 	The newest {n} of {total} PDFs	En yeni {n} / {total} PDF
-	Pinned folders need the desktop app	Sabitlenmiş klasörler masaüstü uygulamasını gerektirir
 	Choose a folder on this computer to pin	Bu bilgisayarda sabitlemek için bir klasör seçin
 	{folder} is already pinned to Home	{folder} zaten Giriş'e sabitlenmiş
 	You can pin up to {n} folders. Unpin one first.	En fazla {n} klasör sabitleyebilirsiniz. Önce birinin sabitlemesini kaldırın.
@@ -2163,7 +2153,6 @@ action wizard	Start	Başlat
 	A script	Bir komut dosyası
 	{who} in this document tried to open an address Local PDF won't open: {e}.	Bu belgedeki {who}, Local PDF'ın açamayacağı bir adresi açmaya çalıştı: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	Bu belgedeki {who}, Local PDF'ın açamayacağı bir adresi açmaya çalıştı: {e}. Belgelerden yalnızca web (http, https) ve e-posta (mailto) bağlantıları açılır.
-	Another file dialog is still open. Finish with it first.	Başka bir dosya iletişim kutusu hala açık. Önce onu tamamlayın.
 	Couldn't show the file picker. Please try again.	Dosya seçici gösterilemedi. Lütfen tekrar deneyin.
 	The document changed while you were choosing a file, so nothing was changed.	Bir dosya seçerken belge değişti, bu yüzden hiçbir şey değiştirilmedi.
 	The document was closed before it could be saved.	Belge kaydedilmeden önce kapatıldı.
@@ -2356,12 +2345,9 @@ animation effects	Off	Kapalı
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Bu yazıcının sürücüsü diğer programlardan gelen çift taraflı yazdırma ayarlarını kabul etmez, bu yüzden kendi ayarı geçerlidir. Değiştirmek için: Özellikler…
 	This field's font can't draw “{c}” ({code}), so Local PDF shows ? in its place. The value is saved, and other PDF viewers redraw the field from it.	Bu alanın yazı tipi “{c}” ({code}) karakterini çizemiyor, bu yüzden Local PDF yerine ? gösteriyor. Değer kaydedilir ve diğer PDF görüntüleyiciler alanı ondan yeniden çizer.
 	The fonts Local PDF writes with can't draw “{c}” ({code}), so it shows as ? in every PDF viewer. The text is saved.	Local PDF'ın yazdığı yazı tipleri “{c}” ({code}) karakterini çizemiyor, bu yüzden her PDF görüntüleyicide ? olarak görünür. Metin kaydedilir.
-	Browser's print dialog	Tarayıcının yazdırma penceresi
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Kopya sayısı, çift taraflı yazdırma ve renk tarayıcının yazdırma penceresinde seçilir.
 	Preparing {n} sheets for printing…	Yazdırma için {n} sayfa hazırlanıyor…
 	Preparing sheet {done} of {total} for printing…	Yazdırma için sayfa {done}/{total} hazırlanıyor…
 	Opening the browser's print dialog…	Tarayıcının yazdırma penceresi açılıyor…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Tarayıcıdan yazdırılamadı ({e}); bunun yerine yazdırmak için {name} indirildi
 	Tools panel side	Araçlar panelinin yeri
 	Add comment	Yorum ekle
 	Change tag properties	Etiket özelliklerini değiştir
@@ -2504,7 +2490,6 @@ animation effects	Off	Kapalı
 	Collapse all tools	Tüm araçları daralt
 	Attach a file…	Dosya ekle…
 	Delete attachment	Eki sil
-	Attaching files is not available on the web yet	Dosya eklemek web'de henüz kullanılamıyor
 	Attach {name}	{name} ekle
 	Delete attachment {key}	{key} ekini sil
 	Font	Yazı tipi

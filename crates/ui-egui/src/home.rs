@@ -102,7 +102,6 @@ pub fn show(app: &mut LocalPDFApp, ui: &mut egui::Ui) {
                     });
                 });
 
-            #[cfg(not(target_arch = "wasm32"))]
             {
                 ui.add_space(26.0);
                 crate::folders_ui::section(app, ui);

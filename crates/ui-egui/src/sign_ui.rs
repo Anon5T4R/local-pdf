@@ -458,7 +458,6 @@ impl LocalPDFApp {
         // Signing saves, as in Acrobat: choose where (a cancelled save cancels signing). The
         // document is signed once the user has chosen.
         let name = self.session.get(doc_id).map(|d| d.name.clone()).unwrap_or_default();
-        #[cfg(not(target_arch = "wasm32"))]
         let folder = self.session.get(doc_id).and_then(|d| d.path.clone());
         let stem = name.trim_end_matches(".pdf").trim_end_matches(".PDF").to_string();
         let sign_and_save = move |app: &mut Self, path: PathBuf| -> Result<(), String> {
@@ -470,7 +469,6 @@ impl LocalPDFApp {
             let signed = app.session.sign(doc_id, &id, opts).map_err(|e| e.to_string())?;
             crate::editing::write_atomically(&path.to_string_lossy(), signed.as_slice()).map_err(|e| format!("Could not save: {e}"))?;
             // Our own write is not a change on disk to reload (#431).
-            #[cfg(not(target_arch = "wasm32"))]
             app.watch.known_now(doc_id, &path.to_string_lossy());
             app.session.mark_signed(doc_id, signed, Some(path.to_string_lossy().into_owned())).map_err(|e| e.to_string())?;
             #[cfg(target_os = "macos")]
@@ -485,7 +483,6 @@ impl LocalPDFApp {
         };
         match self.save_override.clone() {
             Some(p) => sign_and_save(self, PathBuf::from(p)),
-            #[cfg(not(target_arch = "wasm32"))]
             None => {
                 let dialog = rfd::AsyncFileDialog::new().add_filter("PDF", &["pdf"]).set_file_name(format!("{stem}_signed.pdf"));
                 let dialog = crate::editing::in_document_folder(dialog, folder.as_deref());
@@ -502,11 +499,6 @@ impl LocalPDFApp {
                 });
                 if asked { Ok(()) } else { Err(String::new()) }
             }
-            #[cfg(target_arch = "wasm32")]
-            None => {
-                let _ = (stem, sign_and_save);
-                Err(String::new())
-            }
         }
     }
 
@@ -516,7 +508,6 @@ impl LocalPDFApp {
     }
 
     /// Sign as ▸ Choose image…: answered only into the signing dialog that asked.
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn pick_sign_graphic_image(&mut self) {
         let epoch = self.dialog_epoch();
         let dialog = rfd::AsyncFileDialog::new().add_filter(tl!("Image"), &["png", "jpg", "jpeg"]);
@@ -795,7 +786,6 @@ fn configure(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
     let mut close = false;
     let mut go = false;
     // Browse… is desktop-only.
-    #[cfg_attr(target_arch = "wasm32", allow(unused_mut))]
     let mut browse = false;
     widgets::radio_value(ui, &mut d.new_id.create, false, tl!("Use a Digital ID from a file"));
     widgets::radio_value(ui, &mut d.new_id.create, true, tl!("Create a new Digital ID (self-signed, saved to a password-protected file)"));
@@ -840,7 +830,6 @@ fn configure(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
             let l = ui.label(tl!("File (.p12, .pfx)"));
             ui.horizontal(|ui| {
                 ui.add(crate::widgets::line(&mut n.file).desired_width(220.0)).labelled_by(l.id);
-                #[cfg(not(target_arch = "wasm32"))]
                 if ui.button(tl!("Browse…")).clicked() {
                     browse = true;
                 }
@@ -882,7 +871,6 @@ fn configure(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
         }
     }
     // The picker answers on a later frame, into the draft if the same dialog is still open.
-    #[cfg(not(target_arch = "wasm32"))]
     if browse {
         let dialog = rfd::AsyncFileDialog::new().add_filter(tl!("Digital ID"), &["p12", "pfx"]);
         let epoch = app.dialog_epoch();
@@ -895,8 +883,6 @@ fn configure(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
             }
         });
     }
-    #[cfg(target_arch = "wasm32")]
-    let _ = browse;
     close
 }
 
@@ -1011,7 +997,6 @@ fn sign_as(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
     let in_os_key_store = entry.path.starts_with("keychain:") || entry.path.starts_with("windows:");
     let mut close = false;
     let mut go = false;
-    #[cfg(not(target_arch = "wasm32"))]
     let mut pick = false;
     if d.rect.is_some() || d.field.is_some() {
         ui.label(egui::RichText::new(tl!("Appearance")).font(theme::semibold(12.5)));
@@ -1051,7 +1036,6 @@ fn sign_as(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
                     d.graphic = SignGraphic::Image(image.clone());
                 }
             });
-            #[cfg(not(target_arch = "wasm32"))]
             if widgets::pill_button(ui, tl!("Choose image…"), false).clicked() {
                 pick = true;
             }
@@ -1119,7 +1103,6 @@ fn sign_as(ui: &mut egui::Ui, app: &mut LocalPDFApp, t: &Tokens) -> bool {
             }
         });
     });
-    #[cfg(not(target_arch = "wasm32"))]
     if pick {
         app.pick_sign_graphic_image();
     }

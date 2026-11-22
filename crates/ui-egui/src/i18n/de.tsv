@@ -1586,13 +1586,8 @@
 	This file is already as small as it can be made ({size}). No copy was saved.	Diese Datei ist bereits so klein wie möglich ({size}). Es wurde keine Kopie gespeichert.
 	Saved {place}: {before} → {after} (not smaller){detail}	{place} gespeichert: {before} → {after} (nicht kleiner){detail}
 	Couldn't save the image: {e}	Das Bild konnte nicht gespeichert werden: {e}
-	Adding images arrives on the web with file pickers for images	Bilder hinzufügen kommt im Web zusammen mit der Bildauswahl
-	Replacing images on page {p} arrives on the web with image pickers ({i})	Bilder auf Seite {p} ersetzen kommt im Web zusammen mit der Bildauswahl ({i})
-	{name}: choosing images arrives on the web with file pickers for images	{name}: Bilder auswählen kommt im Web zusammen mit der Bildauswahl
-	Replacing images arrives on the web with image file pickers	Bilder ersetzen kommt im Web zusammen mit der Bildauswahl
 	Couldn't create a PDF: {e}	PDF konnte nicht erstellt werden: {e}
 	The clipboard has no image or text	Die Zwischenablage enthält weder Bild noch Text
-	On the web, open or drop an image to convert it	Öffne im Web ein Bild oder zieh es hierher, um es zu konvertieren
 	Couldn't optimize the file: {e}	Die Datei konnte nicht optimiert werden: {e}
 	Couldn't write {path}: {e}	{path} konnte nicht geschrieben werden: {e}
 	The form asks to be submitted to {u}; Local PDF doesn't send form data. Save the document to keep your entries.	Das Formular soll an {u} gesendet werden; Local PDF sendet keine Formulardaten. Speichere das Dokument, um deine Eingaben zu behalten.
@@ -1653,7 +1648,6 @@
 	The document now conforms to {level}; save it to keep the changes	Das Dokument entspricht jetzt {level}; speichere es, um die Änderungen zu behalten
 	Fixed what could be fixed; 1 problem remains	Alles Behebbare wurde behoben; 1 Problem bleibt bestehen
 	Fixed what could be fixed; {n} problems remain	Alles Behebbare wurde behoben; {n} Probleme bleiben bestehen
-	Custom stamps arrive on the web with file pickers for images	Eigene Stempel kommen im Web zusammen mit der Bildauswahl
 	{file} is too large for a stamp (at most {n} MB)	{file} ist zu groß für einen Stempel (höchstens {n} MB)
 	Sent to {printer}	An {printer} gesendet
 	Sent to {printer}: {msg}	An {printer} gesendet: {msg}
@@ -1692,9 +1686,7 @@
 	Couldn't split: {e}	Teilen fehlgeschlagen: {e}
 	Couldn't summarize comments: {e}	Kommentare konnten nicht zusammengefasst werden: {e}
 	Couldn't open the result: {e}	Das Ergebnis konnte nicht geöffnet werden: {e}
-	Importing data arrives on the web with file pickers for data files	Daten importieren kommt im Web zusammen mit der Dateiauswahl für Datendateien
 	Exported to {path}	Nach {path} exportiert
-	Merging data files needs the desktop app	Zum Zusammenführen von Datendateien brauchst du die Desktop-App
 	Merged 1 file into {path}	1 Datei in {path} zusammengeführt
 	Merged {n} files into {path}	{n} Dateien in {path} zusammengeführt
 	Combined {n} files	{n} Dateien kombiniert
@@ -1706,7 +1698,6 @@
 	Portable mode is off: {folder} can't be written ({error}). Settings are kept in your user folder instead.	Der portable Modus ist aus: In {folder} kann nicht geschrieben werden ({error}). Die Einstellungen werden stattdessen in deinem Benutzerordner gespeichert.
 	Local PDF is drawing without a graphics processor, so it may be slow. Updating the graphics driver may help.	Local PDF zeichnet ohne Grafikprozessor und kann daher langsam sein. Ein aktualisierter Grafiktreiber kann helfen.
 	Couldn't save: {e}	Speichern fehlgeschlagen: {e}
-	Downloading attachments on the web arrives with M3.10 ({n} bytes ready)	Anhänge herunterladen kommt im Web mit M3.10 ({n} Bytes bereit)
 	`{command}` {when}	`{command}` {when}
 	ships in milestone {m}	erscheint mit Meilenstein {m}
 	needs an AI provider (off by default)	benötigt einen KI-Anbieter (standardmäßig aus)
@@ -2178,7 +2169,6 @@
 	Show less	Weniger anzeigen
 	Show {n} more	{n} weitere anzeigen
 	The newest {n} of {total} PDFs	Die neuesten {n} von {total} PDFs
-	Pinned folders need the desktop app	Angeheftete Ordner erfordern die Desktop-App
 	Choose a folder on this computer to pin	Wähle einen Ordner auf diesem Computer zum Anheften
 	{folder} is already pinned to Home	{folder} ist bereits an Start angeheftet
 	You can pin up to {n} folders. Unpin one first.	Du kannst bis zu {n} Ordner anheften. Löse zuerst einen.
@@ -2212,7 +2202,6 @@ action wizard	Start	Starten
 	A script	Ein Skript
 	{who} in this document tried to open an address Local PDF won't open: {e}.	{who} in diesem Dokument wollte eine Adresse öffnen, die Local PDF nicht öffnet: {e}.
 	{who} in this document tried to open an address Local PDF won't open: {e}. Only web (http, https) and email (mailto) links open from documents.	{who} in diesem Dokument wollte eine Adresse öffnen, die Local PDF nicht öffnet: {e}. Aus Dokumenten heraus öffnet Local PDF nur Web-Links (http, https) und E-Mail-Links (mailto).
-	Another file dialog is still open. Finish with it first.	Ein anderer Dateidialog ist noch geöffnet. Schließe ihn zuerst.
 	Couldn't show the file picker. Please try again.	Die Dateiauswahl konnte nicht angezeigt werden. Versuch es noch einmal.
 	The document changed while you were choosing a file, so nothing was changed.	Das Dokument hat sich geändert, während du eine Datei ausgewählt hast; deshalb wurde nichts geändert.
 	The document was closed before it could be saved.	Das Dokument wurde geschlossen, bevor es gespeichert werden konnte.
@@ -2372,12 +2361,9 @@ animation effects	Off	Aus
 	Change the colour of line art as well as text	Auch die Farbe von Strichzeichnungen ändern, nicht nur von Text
 	Colours are remapped while rendering; the document itself never changes.	Farben werden beim Rendern neu zugeordnet; das Dokument selbst bleibt unverändert.
 	This printer's driver doesn't take two-sided settings from other programs, so its own setting applies. Change it in Properties…	Der Treiber dieses Druckers übernimmt keine Einstellungen für beidseitigen Druck von anderen Programmen, daher gilt seine eigene Einstellung. Ändern unter Eigenschaften…
-	Browser's print dialog	Druckdialog des Browsers
-	Copies, two-sided printing and colour are chosen in the browser's print dialog.	Exemplare, beidseitiger Druck und Farbe werden im Druckdialog des Browsers gewählt.
 	Preparing {n} sheets for printing…	{n} Blätter werden für den Druck vorbereitet…
 	Preparing sheet {done} of {total} for printing…	Blatt {done} von {total} wird für den Druck vorbereitet…
 	Opening the browser's print dialog…	Der Druckdialog des Browsers wird geöffnet…
-	Couldn't print from the browser ({e}); downloaded {name} to print instead	Drucken aus dem Browser nicht möglich ({e}); stattdessen wurde {name} zum Drucken heruntergeladen
 	Tools panel side	Seite des Werkzeugbereichs
 	Add comment	Kommentar hinzufügen
 	Change tag properties	Tag-Eigenschaften ändern
@@ -2509,7 +2495,6 @@ animation effects	Off	Aus
 	Collapse all tools	Alle Werkzeuge einklappen
 	Attach a file…	Datei anhängen…
 	Delete attachment	Anhang löschen
-	Attaching files is not available on the web yet	Dateien anhängen ist im Web noch nicht verfügbar
 	Attach {name}	{name} anhängen
 	Delete attachment {key}	Anhang {key} löschen
 	Font	Schrift

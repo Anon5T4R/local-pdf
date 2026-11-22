@@ -2490,7 +2490,6 @@ impl EditCtx {
         if let Some(t) = now {
             seed ^= (t as u64).rotate_left(17);
         }
-        #[cfg(not(target_arch = "wasm32"))]
         if now.is_some() {
             // Real clock: mix in sub-second time so ids from two sessions don't collide.
             seed ^= std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.subsec_nanos() as u64).unwrap_or(0) << 32;
@@ -3067,10 +3066,7 @@ fn comment_list(doc: &localpdf_cos::Document) -> Vec<localpdf_render::Annotation
 
 /// Seconds to add to UTC for local time (0 where unknown).
 fn local_utc_offset() -> i64 {
-    #[cfg(not(target_arch = "wasm32"))]
-    return i64::from(chrono::Local::now().offset().local_minus_utc());
-    #[cfg(target_arch = "wasm32")]
-    return 0;
+    i64::from(chrono::Local::now().offset().local_minus_utc())
 }
 
 /// (year, month, day) from a PDF date `D:YYYYMMDD…`.
@@ -3615,17 +3611,16 @@ impl Session {
     /// Multiply the time an XFA form's scripts may take by `factor` (tests): the 3 s the
     /// scripts of an opening or a change share, the 5 s of a click's, the 10 s the script
     /// engine has to start, and each script's own 1 s or 3 s. A test that checks what the
-    /// scripts do passes a large factor, so that a busy machine does not stop them. On native
-    /// builds, 0 stops every script before it starts; the wasm build has no wall clock, so
-    /// there the factor has no effect.
+    /// scripts do passes a large factor, so that a busy machine does not stop them. 0 stops
+    /// every script before it starts.
     pub fn with_xfa_time_scale(mut self, factor: u32) -> Self {
         self.xfa_time_scale = Some(factor);
         self
     }
 
-    /// A real clock for a host that has neither a clock nor a time zone of its own (a
-    /// `wasm32-unknown-unknown` build: `now()` would be empty and `local_utc_offset()` is 0, so
-    /// Fill & Sign stamps 1 Jan 1970 and `/ModDate` is never written). `clock` is the UTC time in
+    /// A real clock for a host that has neither a clock nor a time zone of its own (`now()` would
+    /// be empty and `local_utc_offset()` is 0, so Fill & Sign stamps 1 Jan 1970 and `/ModDate` is
+    /// never written). `clock` is the UTC time in
     /// seconds since the epoch; `utc_offset` is the local zone's seconds east of UTC, asked on every
     /// use because the zone changes with the date (daylight saving). Unlike
     /// [`Session::with_clock`], which is a test shortcut, nothing here is taken as local time.
@@ -3654,10 +3649,7 @@ impl Session {
         if let Some(c) = self.clock {
             return Some(c());
         }
-        #[cfg(not(target_arch = "wasm32"))]
-        return std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).ok().map(|d| d.as_secs() as i64);
-        #[cfg(target_arch = "wasm32")]
-        return None;
+        std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).ok().map(|d| d.as_secs() as i64)
     }
 
     /// Today's date in local time: (year, month, day). With an injected clock (tests) the clock

@@ -509,7 +509,7 @@ fn printer_option_defaults_and_job_arguments() {
     assert!(spool::printer_options("../../etc/passwd").is_empty(), "not a queue name");
 }
 
-#[cfg(all(unix, not(target_arch = "wasm32")))]
+#[cfg(unix)]
 mod cups_options {
     use crate::spool;
 
@@ -864,7 +864,6 @@ fn imposed_pages_preserve_large_user_unit_matrices() {
 }
 
 /// `output_within` (#1818): the bounded wait every platform's `lpoptions` call goes through.
-#[cfg(not(target_arch = "wasm32"))]
 mod bounded_commands {
     const MODE: &str = "PDFCRAFT_COMMAND_TEST_MODE";
 

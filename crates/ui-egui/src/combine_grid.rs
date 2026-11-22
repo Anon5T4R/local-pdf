@@ -10,9 +10,7 @@
 //! count until they have actually exited ([`RenderPool::retire`]), so a render the watchdog gave
 //! up on, or one whose file left the list, holds its place until its thread is gone. A thread
 //! stuck for good in one step that can't be interrupted keeps its place for good: threads can't
-//! be killed safely. On the web the pool renders on the UI thread inside `try_recv`, with no
-//! watchdog: there, at most one thumbnail per frame, only one waits at a time (its pool holds the
-//! parsed document), and a very slow page still stalls that frame (as in the document view).
+//! be killed safely.
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -172,7 +170,7 @@ pub(crate) struct Thumbs {
     frame: u64,
     next_tag: u64,
     wants: Vec<Want>,
-    /// Render on the UI thread, as the web build does (tests).
+    /// Render on the UI thread (tests).
     #[cfg(test)]
     inline: bool,
 }
@@ -259,7 +257,7 @@ impl Thumbs {
         // Reconcile with the list as it is now (undo, redo, unlock, a new range, removal): a
         // thumbnail of another page, password or file is never shown again.
         self.entries.retain(|slot, e| current(*slot).is_some_and(|k| k.same_page(&e.key)));
-        // Renders nobody wants any more are let go of now (on the web, before they would render).
+        // Renders nobody wants any more are let go of now.
         let (keep, gone): (Vec<Job>, Vec<Job>) = self.jobs.drain(..).partition(|job| current(job.slot).is_some_and(|k| k.same_page(&job.key)));
         self.jobs = keep;
         self.retiring.extend(gone.into_iter().map(|job| job.pool.retire()));
@@ -268,7 +266,7 @@ impl Thumbs {
         self.open = keep;
         self.retiring.extend(gone.into_iter().map(|o| o.pool.retire()));
 
-        // Finished renders, a few per frame. A pool without threads (the web) renders inside
+        // Finished renders, a few per frame. A pool without threads (tests) renders inside
         // `try_recv`: at most one of those per frame.
         let gpu_side = ctx.input(|i| i.max_texture_side);
         let max_side = gpu_side.min(2 * MAX_SIDE as usize);
@@ -332,7 +330,7 @@ impl Thumbs {
         // New renders: the cards in view first, in grid order; one per thumbnail at a time.
         let mut wants = std::mem::take(&mut self.wants);
         wants.sort_by_key(|w| (w.slot != PREVIEW, !w.visible));
-        // A pool without threads (the web) parses its document when it is made and keeps it until
+        // A pool without threads (tests) parses its document when it is made and keeps it until
         // it renders, one per frame: while one waits, nothing else starts.
         // (Nor in the frame that rendered one: one heavy step per frame on the UI thread.)
         let mut threads = if inline_used || self.jobs.iter().any(|j| j.pool.is_inline()) { MAX_THREADS } else { self.threads() };
@@ -348,7 +346,7 @@ impl Thumbs {
                 continue;
             }
             // The same file, read the same way, still open from a render just done: no new read of
-            // the file (and its thread is already counted). On the web, not while another waits.
+            // the file (and its thread is already counted). Not while an inline one waits.
             let inline_waiting = self.jobs.iter().any(|j| j.pool.is_inline());
             if let Some(k) =
                 self.open.iter().position(|o| o.source == w.key.source && o.auth == w.key.auth && !(o.pool.is_inline() && inline_waiting))
@@ -1617,7 +1615,7 @@ mod tests {
     }
 
     #[test]
-    fn on_the_web_one_thumbnail_waits_at_a_time() {
+    fn an_inline_pool_runs_one_thumbnail_at_a_time() {
         // Regression: pools that render on the UI thread have no threads to count, so three
         // started every frame while one finished, each holding its parsed document.
         let ctx = egui::Context::default();
@@ -1688,7 +1686,7 @@ mod tests {
     }
 
     #[test]
-    fn on_the_web_a_render_that_never_answers_fails_and_lets_the_rest_through() {
+    fn an_inline_pool_that_never_answers_fails_and_lets_the_rest_through() {
         // A pool without threads answers on the call that renders: no answer then never comes.
         // It used to wait for good, so nothing else started and every frame asked for another.
         let ctx = egui::Context::default();

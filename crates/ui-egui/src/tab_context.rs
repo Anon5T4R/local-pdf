@@ -16,7 +16,6 @@ impl crate::LocalPDFApp {
                 }
             }
             Action::Reopen => {
-                #[cfg(not(target_arch = "wasm32"))]
                 if let Some(path) = self.closed_tabs.last().cloned() {
                     // A tab may already have been reopened through File > Open.
                     if let Some(index) = self.views.iter().position(|v| self.session.get(v.id).is_some_and(|d| d.path.as_deref() == Some(&path))) {
@@ -34,20 +33,16 @@ impl crate::LocalPDFApp {
                 }
             }
             Action::Reveal(id) => {
-                #[cfg(not(target_arch = "wasm32"))]
                 if let Some(path) = self.session.get(id).and_then(|d| d.path.clone())
                     && let Err(e) = reveal(std::path::Path::new(&path))
                 {
                     self.notify_error(e);
                 }
-                #[cfg(target_arch = "wasm32")]
-                let _ = id;
             }
         }
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn reveal(path: &std::path::Path) -> Result<(), String> {
     // Absolute paths also prevent a filename starting with '-' becoming an option.
     let path = std::path::absolute(path).map_err(|e| e.to_string())?;
@@ -73,7 +68,6 @@ fn reveal(path: &std::path::Path) -> Result<(), String> {
 /// The process that runs `program` with `args`. Windows: `reveal_command` already quotes what
 /// Explorer needs quoted, and Rust's own quoting of an argument with a space breaks `/select,`
 /// (#2579), so the arguments go on the command line as written.
-#[cfg(not(target_arch = "wasm32"))]
 fn reveal_process(program: &str, args: &[std::ffi::OsString]) -> std::process::Command {
     let mut command = std::process::Command::new(program);
     #[cfg(windows)]
@@ -88,7 +82,6 @@ fn reveal_process(program: &str, args: &[std::ffi::OsString]) -> std::process::C
     command
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn reveal_via(
     platform: &str,
     path: &std::path::Path,
@@ -108,7 +101,6 @@ fn reveal_via(
     Err("Could not reveal the file in the system file manager".into())
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn reveal_command(platform: &str, path: &std::path::Path) -> Result<(&'static str, Vec<std::ffi::OsString>), String> {
     match platform {
         "windows" => {
@@ -153,7 +145,7 @@ fn reveal_command(platform: &str, path: &std::path::Path) -> Result<(&'static st
     }
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 mod tests {
     use super::*;
     const PDF: &[u8] = include_bytes!("../tests/data/form.pdf");
@@ -283,7 +275,7 @@ mod tests {
     }
 }
 
-#[cfg(all(test, not(target_arch = "wasm32")))]
+#[cfg(test)]
 mod ui_tests {
     use crate::LocalPDFApp;
     use egui_kittest::{

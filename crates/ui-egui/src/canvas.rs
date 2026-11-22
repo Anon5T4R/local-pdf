@@ -2220,7 +2220,6 @@ impl DocView {
     pub fn receive(&mut self, ctx: &egui::Context, pool: &RenderPool) {
         let budget = if pool.is_inline() { 1 } else { RESULTS_PER_FRAME };
         let mut uploaded = 0usize;
-        #[cfg(not(target_arch = "wasm32"))]
         let started = std::time::Instant::now();
         for _ in 0..budget {
             let Some(r) = pool.try_recv() else { break };
@@ -2229,7 +2228,6 @@ impl DocView {
             if uploaded >= UPLOAD_BYTES_PER_FRAME {
                 break;
             }
-            #[cfg(not(target_arch = "wasm32"))]
             if started.elapsed() >= std::time::Duration::from_millis(4) {
                 break;
             }
@@ -2920,10 +2918,7 @@ pub fn document_area(app: &mut LocalPDFApp, index: usize, ui: &mut egui::Ui) {
     let secured = show_secured_notice && doc.security_summary().is_some_and(|s| !(s.owner || (s.permissions.modify() && s.permissions.assemble())));
     let repaired = !doc.repair_log().is_empty();
     match notices(view, doc, secured, repaired, crate::sign_ui::banner(&doc.signatures), ui, &t) {
-        #[cfg(not(target_arch = "wasm32"))]
         Some(Notice::Reload) => app.watch.reload_request = Some(view.id),
-        #[cfg(target_arch = "wasm32")]
-        Some(Notice::Reload) => {}
         Some(Notice::Repairs) => app.dialog = Some(crate::Dialog::Properties(crate::PropsTab::Advanced)),
         Some(Notice::Security) => app.dialog = Some(crate::Dialog::Properties(crate::PropsTab::Security)),
         Some(Notice::Unlock) => app.unlock_prompt = Some(crate::UnlockPrompt::new(doc, None)),
@@ -5630,8 +5625,8 @@ pub(crate) fn drop_gap(cells: &[(usize, Rect)], p: Pos2) -> Option<usize> {
 /// Ctrl (Option on macOS) held when a page drag drops copies the dragged pages into the gap
 /// instead of moving them, as Acrobat's Organize Pages does.
 ///
-/// The OS comes from the context, not `cfg!`: the wasm build runs on macOS too, where
-/// `cfg!(target_os = "macos")` is false, so Option has to copy there as well (#3092 review).
+/// The OS comes from the context, not `cfg!`: a Mac's ⌘ shortcuts are what the user sees, whatever
+/// the build target's default would be (#3092 review).
 fn copy_modifier(ctx: &egui::Context, m: &egui::Modifiers) -> bool {
     if crate::commands::mac_shortcuts(ctx) { m.alt } else { m.ctrl }
 }
