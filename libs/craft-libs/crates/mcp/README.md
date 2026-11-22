@@ -42,7 +42,7 @@ draws anything and keeps no state beyond one server's connection.
    configuration shape works for every app of the suite.
 
 `Local Vector` (`local-vector`) is the reference implementation: its `crates/mcp` shows the full
-surface (910 commands, resources, prompts, completion, progress and cancellation) on top of the
+surface (commands, resources, prompts, completion, progress and cancellation) on top of the
 same ideas. Its engine already enforces the automation roots process-wide, so it uses
 `RootFlags` only to read the command line the same way; an app without that uses `Roots` too.
 
