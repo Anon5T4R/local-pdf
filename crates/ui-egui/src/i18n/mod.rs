@@ -1046,28 +1046,20 @@ mod tests {
         }
     }
 
-    /// With craft-fonts, every Japanese translation has glyphs: with all interface faces (desktop)
-    /// and with BIZ UDPGothic Regular alone (the web build's only Japanese face).
+    /// With craft-fonts, every Japanese translation has glyphs in the interface faces.
     #[test]
     fn japanese_labels_have_glyphs() {
         let craft = localpdf_fonts::ui_japanese_fonts();
-        let Some(web) = craft.iter().find(|f| f.family == "BIZ UDPGothic" && f.style == "Regular") else {
+        if craft.is_empty() {
             eprintln!("skipping Japanese glyph checks: build with CRAFT_FONTS_DIR to run them");
             return;
-        };
+        }
         let (entries, _) = parse_entries(JA().0.source, 1);
         let labels: String = entries.iter().flat_map(|e| e.translation.chars()).chain(JA().name().chars()).filter(|c| !c.is_control()).collect();
-        let web_name = web.name();
-        let mut web_only = crate::theme::font_definitions();
-        for family in web_only.families.values_mut() {
-            family.retain(|name| !localpdf_fonts::CRAFT_FONTS.iter().any(|face| face.name() == *name) || *name == web_name);
-        }
         use egui::epaint::text::{Fonts, TextOptions};
-        for (build, defs) in [("desktop", crate::theme::font_definitions()), ("web", web_only)] {
-            let mut fonts = Fonts::new(TextOptions::default(), defs);
-            for id in [egui::FontId::proportional(13.0), egui::FontId::monospace(13.0), crate::theme::medium(13.0), crate::theme::semibold(17.0)] {
-                assert!(fonts.has_glyphs(&id, &labels), "{build}: {id:?} lacks a Japanese label glyph");
-            }
+        let mut fonts = Fonts::new(TextOptions::default(), crate::theme::font_definitions());
+        for id in [egui::FontId::proportional(13.0), egui::FontId::monospace(13.0), crate::theme::medium(13.0), crate::theme::semibold(17.0)] {
+            assert!(fonts.has_glyphs(&id, &labels), "{id:?} lacks a Japanese label glyph");
         }
     }
 
@@ -1228,8 +1220,8 @@ mod tests {
     }
 
     /// With a craft-fonts Telugu face, every Telugu translation has glyphs: with all interface
-    /// faces (desktop) and with the Telugu face as the only craft-fonts face (the web build keeps
-    /// it; Telugu labels must not need a Japanese or Arabic face).
+    /// faces and with the Telugu face as the only craft-fonts face (Telugu labels must not need a
+    /// Japanese or Arabic face).
     #[test]
     fn telugu_labels_have_glyphs() {
         let telugu: Vec<String> = localpdf_fonts::ui_telugu_fonts().iter().map(|f| f.name()).collect();
@@ -1801,8 +1793,8 @@ mod tests {
     }
 
     /// With a craft-fonts Arabic face, every Arabic translation has glyphs: with all interface
-    /// faces (desktop) and with the Arabic face as the only craft-fonts face (the web build keeps
-    /// it; Arabic labels must not need a Japanese face).
+    /// faces and with the Arabic face as the only craft-fonts face (Arabic labels must not need a
+    /// Japanese face).
     #[test]
     fn arabic_labels_have_glyphs() {
         let faces: Vec<String> = localpdf_fonts::ui_arabic_fonts().iter().map(|f| f.name()).collect();
