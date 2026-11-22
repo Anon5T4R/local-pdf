@@ -13,7 +13,6 @@ handwritten JS/TS, in the product or the build.
 |---|---|
 | `apps/localpdf` | The desktop app (macOS, Windows, Linux, FreeBSD): eframe/egui on wgpu, single instance, Apple events, update check on request |
 | `apps/localpdf-cli` | `inspect`, `edit`, `combine`, `extract`, `split`, `run` (any automation tool or a JSON script), `tools`, `ui` (drive the running app), and the opt-in `mcp` server |
-| `apps/localpdf-web` | The same egui shell compiled to WebAssembly |
 
 ## Layers
 
@@ -29,7 +28,7 @@ standalone and publishable.
 | L3 core services | `render`, `annot`, `forms`, `js`, `xfa` | Rendering and inspection (bootstrap: vendored `hayro`, `lopdf`); annotation builders and appearance streams; AcroForm model, filling, appearances; sandboxed JavaScript (boa) and FormCalc; XFA template layout and data |
 | L4 features | `edit`, `organize`, `redact`, `xfdf`, `sign`, `ocr`, `create`, `export`, `optimize`, `preflight`, `a11y`, `compare`, `measure`, `print` | One crate per Acrobat tool family |
 | L6 façade | `engine` | Session, open documents, edit history, the command registry and tool catalogue. Frontends never reach past it |
-| L7 platform and frontends | `platform`, `ui-egui`, `automation` | OS services; the egui shell (desktop and web); headless JSON-Schema tools, CLI and MCP |
+| L7 platform and frontends | `platform`, `ui-egui`, `automation` | OS services; the egui shell; headless JSON-Schema tools, CLI and MCP |
 
 Planned crates that the layer table already reserves (`arlington`, `color`, `ops`, `text`, `ml`,
 `security`, `prepress`, `search`, `media`, `ai`, `viewport`, `tools`, `ui-common`) don't exist yet.
@@ -98,7 +97,7 @@ Every user-facing feature is reachable headlessly (`AGENTS.md` §3):
 `cargo xtask ci` runs fmt, clippy (`-D warnings`), a check of `localpdf-cli` without default
 features, the tests (`xtask test`: cargo-nextest when installed, else `cargo test`, then the
 doctests), `xtask i18n-report` (the strings each interface language has no translation for; it
-never fails), the layering check, the WASM check (one `cargo check` over every crate below L8),
+never fails), the layering check,
 `xtask assets` (asset licences and hashes), `xtask parity` (checklist claims must cite real commands,
 tools and tests) and `xtask deny` (dependency licences). Other tasks: `xtask fuzz`, `xtask corpus` and `xtask check` (robustness
 sweep over the pinned pdf.js corpus), `xtask text-oracle` (word F1 and reading order against `pdftotext`),

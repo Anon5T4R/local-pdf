@@ -16,12 +16,12 @@ Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de t
 
 ## Estrutura
 - `crates/` — engine e módulos (`localpdf-*`)
-- `apps/localpdf` — app desktop; `apps/localpdf-cli` — CLI/MCP; `apps/localpdf-web` — wasm
+- `apps/localpdf` — app desktop; `apps/localpdf-cli` — CLI/MCP
 - `libs/` — forks vendored: `craft-libs`, `egui`, `winit`, `winprint.rs`, `local-ai`
   (BYOK — chave de API/config, consumido pelo `crates/ai`; fonte em
   `C:\Dev\underworld\local-ai`, NÃO é o app LocalAI da suíte antiga)
 - `vendor/` — patches de terceiros (hayro, lopdf, vello_common, provenance winit/egui-wgpu)
-- `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS, web
+- `packaging/` — Windows (WiX/MSI), Linux (AppImage/deb/rpm/tar FHS com `install.sh`), Arch (PKGBUILD), macOS
 - `scripts/check-mirror.sh` — confere as crates e os assets (`craft-fonts`) espelhados do `local-libs` contra a fonte (CI e `xtask ci`)
 - `xtask/` — tarefas de build/CI (`cargo xtask ci`, `fmt`)
 
@@ -37,7 +37,8 @@ array ou JSON Lines; `tools --search TEXT` filtra o catálogo. Docs: `docs/mcp.m
 ```
 cargo build --locked          # debug
 cargo test --locked           # testes (as fontes vendored entram sempre: .cargo/config.toml, igual ao CI)
-cargo xtask ci                # o gate local: fmt, clippy, testes, camadas, wasm, assets, cargo-deny, espelhos do local-libs, parity
+cargo xtask ci                # o gate local: fmt, clippy, testes, camadas, assets,
+                              # cargo-deny, espelhos do local-libs, parity
 packaging/windows/package.ps1 # MSI + portable (Windows)
 packaging/linux/package.sh    # AppImage/deb/rpm/tar (Linux)
 ```
