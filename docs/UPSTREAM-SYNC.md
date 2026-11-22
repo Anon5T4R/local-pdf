@@ -20,6 +20,19 @@ Porta/rebrand da suíte Local: o main é nosso, o upstream é fonte de mudanças
 - Nada é lido de `C:\Dev\storytold` em build, teste ou release; a pasta é só referência local para a
   skill `sync-upstream`.
 
+## Vendorizado
+
+Fork de upstream que este app vendoriza e cujo sync este documento cobre; os demais forks vendored
+(`craft-libs`, `egui`, `winit`, `local-ai`) têm o rev no `AGENTS.md`.
+
+| Crate | Upstream | Rev | O que entrou |
+|-------|----------|-----|--------------|
+| `libs/winprint.rs` | `storytold/winprint.rs` | `f084d35` (2026-11-21) | job de PDF por stream (`17f5f1e`, `b334ebb`, `03a4fb6`, `800a6f9`), página renderizada na resolução do job (`6f3012d`), fábrica Direct2D multi-thread (`f256775`), ticket XML (`2390a37`, `cbffb07`), `PrintTicket::from_dev_mode` e `PrinterDevice::is_xps_driver` sem uso por ora (`8ae097e`, `bc06a7c`) e o teardown das portas de arquivo dos testes (`f084d35`) |
+
+Ficaram de fora: os commits de CI, StepSecurity e Harden-Runner do upstream, e `6758393` (deixa as
+build-dependencies do download do PDFium opcionais atrás da feature `pdfium`), que só mexe em
+`Cargo.toml`/`build.rs` de build — o `build.rs` aqui continua o do `5f80b9b`.
+
 ## craft-update vendored: fork permanente da suíte (fora do sync)
 
 `libs/craft-libs/crates/update` está **fora do escopo** deste sync com o upstream. É um crate nosso, hospedado no `craft-libs` da suíte Local, e um **fork permanente consciente** do `craft-update` upstream — unificado nos 10 apps em 2026-11-13, com um diff de milhares de linhas contra `storytold/craft-libs/crates/update` (MSI context/migrate, pins do launcher, `offers_update`, `desktop_register`, catálogo único de apps). Nenhum diff de sync encaixa nele.
