@@ -2791,7 +2791,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Master artwork; every other app-icon file is rendered from it (packaging/icons.sh)"
-sha256 = "984448680f5f0130458e9ba3f08d207428d442433b603979ef5356d900f7b8ca"
+sha256 = "f1b1a2a022215dcca0054834c6f9886067eabef275f3edfe7c57ce8fb3abd0fa"
 
 [[asset]]
 path = "assets/app-icon/localpdf-small.svg"
@@ -2802,7 +2802,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "README header and assets/app-icon/README.md"
-sha256 = "984448680f5f0130458e9ba3f08d207428d442433b603979ef5356d900f7b8ca"
+sha256 = "f1b1a2a022215dcca0054834c6f9886067eabef275f3edfe7c57ce8fb3abd0fa"
 
 [[asset]]
 path = "assets/app-icon/localpdf-1024.png"
@@ -2813,7 +2813,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Runtime window/Dock icon on macOS (apps/localpdf/src/main.rs)"
-sha256 = "58726aef91e6b9ba9e9f3c0a187e35244595dabeb2bfae72949aa15f85eefe84"
+sha256 = "31594aaa36a085d6c66a7e83ccdb3a14dd05aa122ec960521371f6991fe8ee44"
 
 [[asset]]
 path = "assets/app-icon/localpdf.icns"
@@ -2824,7 +2824,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "macOS app bundle icon"
-sha256 = "dcacf9b31026ab7b22505fad45124efac6ed2fc6bce7a4533b527e4bffb1104d"
+sha256 = "e942a0f3a469f522dabc05322bf496851e9049fecb5d3c469645144be605cc1d"
 
 [[asset]]
 path = "assets/app-icon/localpdf.ico"
@@ -2835,7 +2835,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Embedded in localpdf.exe by apps/localpdf/build.rs (Explorer, taskbar, Start menu, Alt-Tab)"
-sha256 = "b7be82874d3360f100570b960bd5e186bb5684f62d3cc3e12b3b48da77d35928"
+sha256 = "831078053b6291a2716a6afb1525c9f999cff695dc2c9d2597b0396f720ac656"
 
 [[asset]]
 path = "assets/app-icon/localpdf-document.svg"
@@ -2868,7 +2868,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "3cc946892e3eea808de4ca5193f01f3e26cd0da1b63fb17bdc2992e845a033be"
+sha256 = "56f075105472e279282485617e1002b69bca67b2d53adba9e0f309669ee5630d"
 
 [[asset]]
 path = "assets/app-icon/hicolor/24x24/apps/com.local.localpdf.png"
@@ -2879,7 +2879,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "bef4dd15db55bdd09463abff1d6fec06f00146643e17933dddfaec0fe4e88482"
+sha256 = "f975ba5c15bb9e215d8725d4cc745daf055909682aca64a0d289ed69915c478d"
 
 [[asset]]
 path = "assets/app-icon/hicolor/32x32/apps/com.local.localpdf.png"
@@ -2890,7 +2890,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "405bf5fad6112820cf2615b8cbc08f8429efda68044d2b250be05c37e120d8c4"
+sha256 = "cacd9fcb8fee85b0269123e3b857580d103e94091e445e01e69a2b8af57c7d8e"
 
 [[asset]]
 path = "assets/app-icon/hicolor/48x48/apps/com.local.localpdf.png"
@@ -2901,7 +2901,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "4517ee73d101df03bf6f14a29412939081ff2635ee6174f8d260d0ecea925c4f"
+sha256 = "0cd0b1031d8cea7e8a85e1e7fe3052207c5fde46986eac4ed5a06c4483f3ba7e"
 
 [[asset]]
 path = "assets/app-icon/hicolor/64x64/apps/com.local.localpdf.png"
@@ -2912,7 +2912,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "6910fc98b3124f2ad2cad6d5b91a5b706816b0d1e6332bff310d06d226070d66"
+sha256 = "0b0b2def65d462189c676304641fad5dc52036af8ce4e9c1cfa5f7ac4d570e29"
 
 [[asset]]
 path = "assets/app-icon/hicolor/128x128/apps/com.local.localpdf.png"
@@ -2923,7 +2923,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "8eb067ff45cc096a447d3f90a9283f9d3927940267bd655267e5219737c886e7"
+sha256 = "d35c4f40c88ddc2d7255e1b53eb9e0a70853d991d7d5006b29e1ab5822cbb94a"
 
 [[asset]]
 path = "assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png"
@@ -2934,7 +2934,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop); runtime window icon on Windows and Linux (apps/localpdf/src/main.rs)"
-sha256 = "5706b90a3e4ca150e20633856f8337d0c7a85877c799ce3bf87bbb6f11c8d5d5"
+sha256 = "03f1c8dbf1941744e4a00d8bcf1db111973b246b3496d950bb672b667edf163c"
 
 [[asset]]
 path = "assets/app-icon/hicolor/512x512/apps/com.local.localpdf.png"
@@ -2945,7 +2945,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "81f2a3e0ba167e6d8036a7257834c55dbaff84950ea55b417f462dbc5b6002d5"
+sha256 = "71639ca7368ad86202014cd797491c6839631ec61e1b73ea92ece3328651e4a1"
 
 [[asset]]
 path = "assets/app-icon/hicolor/scalable/apps/com.local.localpdf.svg"
@@ -2956,7 +2956,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "Linux hicolor theme icon (packaging/linux/com.local.localpdf.desktop)"
-sha256 = "984448680f5f0130458e9ba3f08d207428d442433b603979ef5356d900f7b8ca"
+sha256 = "f1b1a2a022215dcca0054834c6f9886067eabef275f3edfe7c57ce8fb3abd0fa"
 
 [[asset]]
 path = "docs/images/localpdf-bookmarks.png"
