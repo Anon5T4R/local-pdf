@@ -6,7 +6,8 @@ use egui_kittest::Harness;
 use localpdf_ui_egui::LocalPDFApp;
 
 /// The one-minute load average, where the OS reports it (macOS `vm.loadavg`, Linux
-/// `/proc/loadavg`).
+/// `/proc/loadavg`). Windows has no load average; [`cpu_busy`] samples the CPU there.
+#[cfg(not(windows))]
 fn load_average() -> Option<f64> {
     if let Ok(s) = std::fs::read_to_string("/proc/loadavg") {
         return s.split_whitespace().next()?.parse().ok();
@@ -15,16 +16,60 @@ fn load_average() -> Option<f64> {
     String::from_utf8_lossy(&out.stdout).trim_matches(|c: char| c == '{' || c == '}' || c.is_whitespace()).split_whitespace().next()?.parse().ok()
 }
 
-/// Frame budgets only mean something on a machine that isn't overcommitted: with the load
-/// average above twice the core count (other builds running), skip and say so.
+/// How much of the machine is busy, 0 to 1, measured over a short window of the CPU time counters (`GetSystemTimes`:
+/// idle, kernel and user times, in 100 ns units; the kernel time includes the idle time). `None` when the counters
+/// cannot be read or did not move.
+#[cfg(windows)]
+fn cpu_busy() -> Option<f64> {
+    let sample = || {
+        let (idle, kernel, user) = winsafe::GetSystemTimes().ok()?;
+        Some([u64::from(idle), u64::from(kernel), u64::from(user)])
+    };
+    let before = sample()?;
+    std::thread::sleep(CPU_SAMPLE);
+    utilization(before, sample()?)
+}
+
+#[cfg(windows)]
+const CPU_SAMPLE: std::time::Duration = std::time::Duration::from_millis(200);
+
+/// The busy share of the machine between two `GetSystemTimes` samples (`idle`, `kernel`, `user`).
+fn utilization(before: [u64; 3], after: [u64; 3]) -> Option<f64> {
+    let delta = |i: usize| after[i].checked_sub(before[i]);
+    let (idle, kernel, user) = (delta(0)?, delta(1)?, delta(2)?);
+    let total = kernel + user;
+    (total > 0).then(|| (total.saturating_sub(idle) as f64 / total as f64).clamp(0.0, 1.0))
+}
+
+/// A CPU busier than this share of the machine is another build running.
+const BUSY: f64 = 0.5;
+
+fn is_busy(share: f64) -> bool {
+    share > BUSY
+}
+
+/// Frame budgets only mean something on a machine that isn't overcommitted: with the load average above twice the
+/// core count (other builds running), skip and say so. Windows reports no load average, so there the guard samples
+/// the CPU time counters instead.
 fn overloaded() -> bool {
-    let cores = std::thread::available_parallelism().map_or(4, std::num::NonZeroUsize::get) as f64;
-    match load_average() {
-        Some(l) if l > 2.0 * cores => {
-            eprintln!("PERF skipped: load average {l:.0} on {cores} cores; frame budgets need a quiet machine");
+    #[cfg(windows)]
+    return match cpu_busy() {
+        Some(busy) if is_busy(busy) => {
+            eprintln!("PERF skipped: the CPU was {:.0}% busy; frame budgets need a quiet machine", busy * 100.0);
             true
         }
         _ => false,
+    };
+    #[cfg(not(windows))]
+    {
+        let cores = std::thread::available_parallelism().map_or(4, std::num::NonZeroUsize::get) as f64;
+        match load_average() {
+            Some(l) if l > 2.0 * cores => {
+                eprintln!("PERF skipped: load average {l:.0} on {cores} cores; frame budgets need a quiet machine");
+                true
+            }
+            _ => false,
+        }
     }
 }
 
@@ -191,4 +236,26 @@ fn panels_with_hundreds_of_items_stay_within_the_frame_budget() {
         });
         assert!(avg < BUDGET, "{panel}: average frame {avg:?}");
     }
+}
+
+#[test]
+fn the_busy_share_of_the_machine_comes_from_the_cpu_time_counters() {
+    // Before: 100 idle, 300 kernel, 100 user. After: each grew by 100, so half of the elapsed time was idle.
+    assert_eq!(utilization([100, 300, 100], [200, 400, 200]), Some(0.5));
+    assert_eq!(utilization([100, 300, 100], [100, 300, 100]), None, "counters that did not move say nothing");
+    assert_eq!(utilization([200, 400, 200], [100, 300, 100]), None, "counters going backwards say nothing");
+}
+
+#[test]
+fn the_line_between_a_quiet_and_an_overcommitted_machine() {
+    assert!(!is_busy(0.2));
+    assert!(!is_busy(BUSY), "half the machine is still a quiet machine");
+    assert!(is_busy(0.8));
+}
+
+#[cfg(windows)]
+#[test]
+fn the_windows_guard_samples_the_cpu_instead_of_a_load_average() {
+    let busy = cpu_busy().expect("the CPU time counters are readable");
+    assert!((0.0..=1.0).contains(&busy), "a share of the machine: {busy}");
 }
