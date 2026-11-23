@@ -1,12 +1,13 @@
 //! Time and calendar conversions for release timestamps.
 //!
-//! Calendar conversion goes through chrono, in accordance with the AGENTS.md shared standard.
+//! Calendar conversion goes through jiff, in accordance with the AGENTS.md shared standard (chrono is unmaintained:
+//! RUSTSEC-2026-0543; no hand-rolled calendar code).
 
-use chrono::DateTime;
+use jiff::Timestamp;
 
 /// Seconds since the Unix epoch for an RFC 3339 UTC timestamp such as `2026-10-08T14:52:50Z`.
 pub fn parse_rfc3339(text: &str) -> Option<i64> {
-    DateTime::parse_from_rfc3339(text.trim()).ok().map(|dt| dt.timestamp())
+    text.trim().parse::<Timestamp>().ok().map(Timestamp::as_second)
 }
 
 #[cfg(test)]
