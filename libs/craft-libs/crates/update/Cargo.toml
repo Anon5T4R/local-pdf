@@ -44,7 +44,9 @@ rustls-rustcrypto = { version = "0.0.2-alpha", default-features = false, feature
 # Verificação da cadeia pelo SO com um provider arbitrário — o
 # `probe_pure` do teste (opcional) ignora o ureq e faz o handshake direto.
 rustls-platform-verifier = { version = "0.7", default-features = false }
-chrono = { workspace = true }
+# RFC 3339 release timestamps (release dates). chrono is unmaintained (RUSTSEC-2026-0543); jiff is the suite's
+# calendar library. No time zone data: parsing and formatting UTC offsets only.
+jiff = { version = "0.2", default-features = false, features = ["std"] }
 semver = { version = "1", features = ["serde"] }
 
 [dev-dependencies]
