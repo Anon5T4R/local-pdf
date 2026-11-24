@@ -28,6 +28,12 @@ ignore = true
 multiple-versions = "allow"
 wildcards = "deny"
 allow-wildcard-paths = true
+deny = [
+    # No embedded C (audit A-005): `aws-lc-*` and `ring` only came in through winprint's build script.
+    { crate = "aws-lc-sys" },
+    { crate = "aws-lc-rs" },
+    { crate = "ring" },
+]
 
 [sources]
 unknown-registry = "deny"

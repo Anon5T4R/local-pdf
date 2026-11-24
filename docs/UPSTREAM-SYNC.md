@@ -29,9 +29,11 @@ Fork de upstream que este app vendoriza e cujo sync este documento cobre; os dem
 |-------|----------|-----|--------------|
 | `libs/winprint.rs` | `storytold/winprint.rs` | `f084d35` (2026-11-21) | job de PDF por stream (`17f5f1e`, `b334ebb`, `03a4fb6`, `800a6f9`), página renderizada na resolução do job (`6f3012d`), fábrica Direct2D multi-thread (`f256775`), ticket XML (`2390a37`, `cbffb07`), `PrintTicket::from_dev_mode` e `PrinterDevice::is_xps_driver` sem uso por ora (`8ae097e`, `bc06a7c`) e o teardown das portas de arquivo dos testes (`f084d35`) |
 
-Ficaram de fora: os commits de CI, StepSecurity e Harden-Runner do upstream, e `6758393` (deixa as
-build-dependencies do download do PDFium opcionais atrás da feature `pdfium`), que só mexe em
-`Cargo.toml`/`build.rs` de build — o `build.rs` aqui continua o do `5f80b9b`.
+Ficaram de fora: os commits de CI, StepSecurity e Harden-Runner do upstream.
+
+`6758393` (build-dependencies do download do PDFium opcionais atrás da feature `pdfium`, com o código do
+`build.rs` num módulo sob a mesma feature) entrou à parte do rev acima. O app usa o `winprint` com
+`default-features = false`; `reqwest`, `sigstore-*` e `aws-lc-sys` deixaram de ser compilados.
 
 ## craft-update vendored: fork permanente da suíte (fora do sync)
 
