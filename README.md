@@ -164,7 +164,7 @@ actual size / fit width / whole page, `Ctrl+L` full screen, `Ctrl+P` print, `Ctr
 [Local Paint](https://github.com/Anon5T4R/Local-Paint) ·
 [Local Vector](https://github.com/Anon5T4R/Local-Vector) ·
 [Local Player](https://github.com/Anon5T4R/Local-Player) ·
-[Local Obsidian](https://github.com/Anon5T4R/Local-Obsidian) ·
+[Local Notebook](https://github.com/Anon5T4R/Local-Obsidian) ·
 [Local Mind](https://github.com/Anon5T4R/Local-Mind) ·
 [Local Utils](https://github.com/Anon5T4R/Local-Utils)
 
