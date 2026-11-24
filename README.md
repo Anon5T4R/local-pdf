@@ -9,7 +9,7 @@
   <a href="https://github.com/Anon5T4R/local-pdf/releases/latest">Download</a> ·
   <a href="ROADMAP.md">Roadmap and status</a> ·
   <a href="#where-it-comes-from">Where it comes from</a> ·
-  <a href="#how-we-make-the-local-apps">How it is made</a>
+  <a href="#how-it-is-made">How it is made</a>
 </p>
 
 <!-- README-SHOT: main window with a real document open; dark and light -->
@@ -121,33 +121,15 @@ A crate may depend only on lower layers, and nothing below the front ends knows 
 An edit runs on a copy-on-write clone of the document and becomes one incremental revision; the page
 on screen is rendered from the same bytes that Save writes. Details: [docs/architecture.md](docs/architecture.md).
 
-## How we make the Local apps
+## How it is made
 
-**Decisions that apply to every Local app:**
-
-- **Local files, no account.** The apps open and save files on your disk. Nothing needs a login or a
-  server of ours.
-- **Rust only, including the UI.** One toolchain, memory safety by default, and no native libraries
-  to install. The UI is [egui](https://github.com/emilk/egui) on wgpu.
-- **One repository per app, self-contained.** Each app vendors what it builds with (our forks of
-  egui and winit, the shared crates), so a release depends only on the repository and crates.io.
-  Shared code (updater, AI panel, MCP server, icons) has one source and is mirrored into each app
-  with a hash check.
-- **Forks with selective sync.** Most apps start from an open-source Rust app. The fork is ours; the
-  upstream is a source of fixes, not of direction.
-- **Dependencies are governed.** A dependency is added only with its license and source checked, and
-  every app's inventory is kept in one place. No git dependencies, no pre-built binaries.
-- **AI is optional and yours.** No model or key ships with the apps. You bring a provider (cloud or
-  local); the app sends only what you ask it to.
-- **Agents can use the apps.** Every app exposes its commands over MCP, so an AI agent can operate it
-  the way a person does.
-- **Windows and Linux.** That is what we use and test. Other systems may build, but are not published.
-
-**Made with AI agents.** Most of the code in these apps is written by AI coding agents (Claude Code
-and OpenCode), working from a written plan and reviewed by the maintainer. Every change has to pass
-the same local checks (format, lints, tests, layer rules, license audit) and the CI on Windows and
-Linux before it is released. We say this so you can judge the code with that in mind: report what is
-wrong, and it gets fixed the same way.
+Local PDF follows the same rules as every Local app: local files and no account, Rust only
+(including the UI and the cryptography), one self-contained repository per app, forks with selective
+sync, governed dependencies, signed releases built from a tag, optional AI with your own provider,
+and MCP so agents can use the app. Most of the code is written by AI coding agents (Claude Code and
+OpenCode) from written plans, reviewed by the maintainer and held to the same checks and CI. The
+reasons for each decision:
+[How we make the Local apps](https://github.com/Styx-Studios/.github/blob/main/profile/README.md#how-we-make-the-local-apps).
 
 ## Build from source
 
