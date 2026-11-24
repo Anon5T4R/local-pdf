@@ -1,180 +1,172 @@
 <p align="center">
-  <img src="assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png" width="112" height="112" alt="Local PDF icon">
+  <img src="assets/app-icon/hicolor/256x256/apps/com.local.localpdf.png" width="96" height="96" alt="Local PDF icon">
 </p>
 
 <h1 align="center">Local PDF</h1>
 
 <p align="center">
-  <b>Read, edit, fill, sign and organize PDFs in a fast native app.</b><br>
-  No account, no telemetry, no cloud. Written in Rust from the file parser up.
+  A desktop PDF reader and editor for Windows and Linux. Works offline, needs no account, written in Rust.<br>
+  <a href="https://github.com/Anon5T4R/local-pdf/releases/latest">Download</a> ·
+  <a href="ROADMAP.md">Roadmap and status</a> ·
+  <a href="#where-it-comes-from">Where it comes from</a> ·
+  <a href="#how-we-make-the-local-apps">How it is made</a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/Anon5T4R/local-pdf/releases/latest"><b>Download</b></a> ·
-  <a href="#what-it-does">Features</a> ·
-  <a href="#privacy-and-security">Privacy and security</a> ·
-  <a href="#why-pure-rust">Why pure Rust</a> ·
-  <a href="#build-from-source">Build</a>
-</p>
-
-<p align="center">
-  <img alt="Windows and Linux" src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-3b4252?style=flat-square">
-  <img alt="Written in Rust" src="https://img.shields.io/badge/written%20in-Rust-b7410e?style=flat-square">
-  <img alt="No account, no telemetry" src="https://img.shields.io/badge/no%20account-no%20telemetry-2e7d32?style=flat-square">
-  <img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-3b4252?style=flat-square">
-</p>
-
-<!-- README-SHOT: hero — a real multi-page document open, comments panel visible; dark and light -->
+<!-- README-SHOT: main window with a real document open; dark and light -->
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/hero-dark.png">
-    <img src="docs/images/readme/hero-light.png" width="860" alt="Local PDF with a document open and the comments panel">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/main-dark.png">
+    <img src="docs/images/readme/main-light.png" width="820" alt="Local PDF with a document open">
   </picture>
 </p>
 
 ## What it does
 
-- **Read and navigate.** Opens PDFs, including password-protected ones. Single page, continuous and
-  two-page layouts, find and advanced search, and side panels for comments, bookmarks, pages, forms,
-  layers, attachments, signatures and the tag tree.
-- **Edit what is already there.** Change existing text and images on the page, move or duplicate
-  several objects at once, add stamps, watermarks, headers and footers, and backgrounds.
-- **Organize.** Insert, extract, split, combine, rotate and reorder pages; manage bookmarks.
-- **Forms.** Fill and flatten AcroForms, import and export XFDF, and open static and dynamic XFA
-  forms. Form scripts run in a sandboxed JavaScript engine.
-- **Sign and protect.** Digital signatures with your certificate, password protection and
-  permissions, and true redaction (the content is removed, not covered).
-- **Convert and repair.** OCR for scanned pages, export pages as images or text, PDF/A, compression,
-  and accessibility and prepress audits. Compare two versions of a file.
-- **Print** straight from the app.
-- **Automate.** `localpdf-cli` runs the same tools from the command line or as an MCP server for AI
-  agents, and can drive the open app ([docs/mcp.md](docs/mcp.md), [docs/cli-batch.md](docs/cli-batch.md)).
+- Read PDFs, including password-protected ones: single page, continuous and two-page views, search,
+  and panels for comments, bookmarks, pages, forms, layers, attachments, signatures and tags.
+- Edit existing text and images on the page; add comments, stamps, watermarks, headers and footers.
+- Organize pages: insert, extract, split, combine, rotate, reorder.
+- Fill, flatten and export AcroForm forms; open XFA forms.
+- Sign with your own certificate, protect with a password, and redact (the content is removed).
+- OCR scanned pages, export pages as images or text, compress, convert to PDF/A, compare two files.
+- Print.
+- Run the same tools from the command line, or let an AI agent drive them over MCP
+  ([docs/mcp.md](docs/mcp.md)).
 
-<!-- README-SHOT: two small shots side by side — page organizer, and form filling -->
-<p align="center">
-  <img src="docs/images/readme/organize.png" width="420" alt="Organizing pages">
-  <img src="docs/images/readme/forms.png" width="420" alt="Filling a form">
-</p>
+What works well, what is weak and what is planned is in the [roadmap](ROADMAP.md).
 
 ## Download
 
-Get the latest version from [Releases](https://github.com/Anon5T4R/local-pdf/releases/latest).
+Windows 10/11 (x64): `.msi` installer or portable `.zip`. Linux (x86_64): `.AppImage`, `.deb`,
+`.rpm`, Arch `.pkg.tar.zst` or `.tar.gz`. All in
+[Releases](https://github.com/Anon5T4R/local-pdf/releases/latest). macOS is not published.
 
-| System | File |
-|---|---|
-| Windows 10/11 (x64) | `localpdf-<version>-windows-x64.msi` (installer) or `-portable.zip` |
-| Linux (x86_64) | `.AppImage`, `.deb`, `.rpm`, Arch `.pkg.tar.zst` or `.tar.gz` |
-
-When it starts, the app asks GitHub whether there is a newer version and offers it; nothing is
-downloaded or installed without your OK.
-
-Every file is signed with [minisign](https://jedisct1.github.io/minisign/). To check a download by hand:
+Each file is signed with [minisign](https://jedisct1.github.io/minisign/), and each release has a
+`SHA256SUMS.txt`. To check a file:
 
 ```sh
-minisign -Vm localpdf-<version>-windows-x64.msi -P RWTqN+hTTCFbDCGCA1cEJRLp2FSluxIUiJfqdoAYwkwNNVH5MTYH8qSN
+minisign -Vm <file> -P RWTqN+hTTCFbDCGCA1cEJRLp2FSluxIUiJfqdoAYwkwNNVH5MTYH8qSN
 ```
 
-The same public key is in [packaging/minisign.pub](packaging/minisign.pub), and `SHA256SUMS.txt` comes
-with each release.
+The public key is also in [packaging/minisign.pub](packaging/minisign.pub). It is the same key for
+every Local app.
 
-## Privacy and security
+## Network and privacy
 
-**What leaves your computer.** Your documents never do. The app makes exactly two kinds of network
-request, both to GitHub: the update check when it starts, and the download when you accept an update. AI features
-are off until you add your own provider and key (any OpenAI-compatible service, or a local server
-such as llama.cpp or Ollama); then the text you send goes only to the service you chose.
-No account, no analytics, no crash reporting.
+- Your documents never leave the computer.
+- On start, the app asks GitHub if a newer version exists. If you accept an update, it downloads it
+  from this repository's releases. There is no setting to turn the check off yet.
+- AI features do nothing until you add a provider and your own key (any OpenAI-compatible service, or
+  a local server such as llama.cpp or Ollama). The text you send goes only to that provider.
+- No account, analytics or crash reporting.
 
-**Why opening a hostile PDF is safer here.**
+Security notes, all checkable in this repository:
 
-- The whole PDF pipeline is memory-safe Rust: parser, decryption, content streams, fonts, rendering,
-  forms, JavaScript and OCR. There is no C or C++ PDF engine (no PDFium, MuPDF or Poppler), which is
-  where most PDF reader vulnerabilities live.
-- The app's own code has **no `unsafe` blocks**: none of its 34 crates or two binaries. `unsafe` only
-  exists further down, in the window and GPU layers every desktop app needs (winit, wgpu).
-- Damaged files are repaired from what is actually in them: a broken cross-reference table is rebuilt
-  instead of trusted.
-- Form JavaScript runs in a sandbox with no file or network access.
-- Encrypted documents stay encrypted in autosave and crash recovery, and signed documents are
-  protected from rewrites that would break the signature.
+- The PDF pipeline (parser, decryption, fonts, rendering, forms, scripts, OCR) is Rust. There is no
+  C or C++ PDF library such as PDFium, MuPDF or Poppler.
+- The app's own code (34 crates and two binaries) has no `unsafe` blocks. Lower layers do, as every
+  desktop app's do: the window system (winit) and the GPU (wgpu).
+- Form JavaScript runs in a sandboxed interpreter (boa) with no file or network access.
+- Releases are built only by GitHub Actions from a tagged commit, with locked dependencies. Every
+  dependency passes `cargo-deny` (advisories, licenses, bans), and none comes from a git URL.
+- The program you install contains no `ring`, `aws-lc` or OpenSSL: TLS is rustls with RustCrypto.
 
-**How releases are made.**
+## Where it comes from
 
-- Built only by GitHub Actions from a tagged commit, for Windows and Linux, with `--locked`
-  dependencies.
-- Every dependency is checked by `cargo-deny` (known vulnerabilities, licenses, banned crates), and
-  none comes from a git URL. Third-party code we patch is vendored in the repository, with its origin
-  recorded.
-- TLS for the update check is pure Rust too (rustls with RustCrypto): the program you install contains
-  no `ring`, `aws-lc` or OpenSSL.
+Local PDF is a fork of [PdfCraft](https://github.com/storytold/pdfcraft) by
+[ArtCraft](https://getartcraft.com), licensed MIT or Apache-2.0. The PDF engine (parser, renderer,
+forms, editing) is their work, and so is the decision to write it all in Rust.
 
-## Why pure Rust
+**Why a fork.** We wanted a set of desktop apps that look and behave the same, update and sign the
+same way, and follow our own priorities: Windows and Linux first, files that stay local, AI only with
+your own key, and agents able to drive every app. A fork lets us decide that without asking the
+upstream to change direction.
 
-Local PDF started as a fork of an open-source Rust PDF editor. We kept its engine and went further:
-everything the app runs is Rust, so one toolchain builds it, one memory-safety story covers it, and
-there is no native library to download at build or run time.
+**What changed here:**
 
-What we removed or replaced along the way:
+- Name, icon and app identifiers.
+- The shell shared by all Local apps: mode tabs, command palette (`Ctrl+K`), Automatic/Light/Dark
+  themes, the AI panel, and the update card.
+- Our own updater, which checks minisign signatures, and our own release pipeline (Windows and
+  Linux packages).
+- TLS for the updater moved to a pure-Rust provider.
+- The web (WebAssembly) build was removed; macOS and FreeBSD are not published.
+- Live automation of the open app goes through `craft-mcp`, shared by every Local app.
 
-- the web build (WebAssembly) and everything that only existed for it;
-- C-based TLS and crypto providers (`ring`, `aws-lc`), replaced by pure-Rust ones;
-- the upstream's branding and links: this fork talks to nothing but its own GitHub releases.
+**What we still take from upstream:** bug fixes that matter to us (crashes, data loss, security,
+file compatibility), reviewed one by one and adapted. New features and UI changes are not merged
+automatically. Each sync is recorded in [docs/UPSTREAM-SYNC.md](docs/UPSTREAM-SYNC.md).
 
-What it costs: some rare PDF constructs still render differently from Acrobat, and we fix them in our
-own parser instead of borrowing a C engine. The [roadmap](ROADMAP.md) lists what is still missing.
+## How the app is built
 
-## How it is built
-
-One Cargo workspace: 34 library crates in layers, the desktop app, and the `localpdf-cli` tool.
+One Cargo workspace: 34 library crates in layers, the desktop app `localpdf`, and `localpdf-cli`.
+A crate may depend only on lower layers, and nothing below the front ends knows about the UI;
+`cargo xtask layers` enforces it.
 
 | Layer | Crates | Role |
 |---|---|---|
 | Foundation | `geom`, `filters`, `crypt` | geometry, stream filters, the PDF security handler |
 | Objects | `cos` | tolerant parser with repair, copy-on-write object graph, incremental writer |
 | Document | `content`, `model`, `fonts` | content streams, page tree, font metrics |
-| Services | `render`, `annot`, `forms`, `js`, `xfa` | rendering, annotations, forms, sandboxed scripts |
+| Services | `render`, `annot`, `forms`, `js`, `xfa` | rendering, annotations, forms, scripts |
 | Tools | `edit`, `organize`, `redact`, `sign`, `ocr`, `export`, … | one crate per tool family |
 | Façade | `engine` | open documents, edit history, the command registry |
-| Front ends | `ui-egui`, `automation`, `platform` | the desktop UI, the CLI/MCP tools, OS services |
+| Front ends | `ui-egui`, `automation`, `platform` | the desktop UI, the CLI and MCP tools, OS services |
 
-Lower layers never depend on higher ones or on the UI, and `cargo xtask layers` enforces it. Edits
-work on a copy-on-write clone of the document, every change becomes one incremental revision, and what
-you see on screen is rendered from the same bytes that Save writes.
-More in [docs/architecture.md](docs/architecture.md).
+An edit runs on a copy-on-write clone of the document and becomes one incremental revision; the page
+on screen is rendered from the same bytes that Save writes. Details: [docs/architecture.md](docs/architecture.md).
 
-## Keyboard shortcuts
+## How we make the Local apps
 
-| Action | Shortcut |
-|---|---|
-| Find any tool or command | `Ctrl+K` |
-| Open / Save / Save as | `Ctrl+O` / `Ctrl+S` / `Ctrl+Shift+S` |
-| Find / Advanced search | `Ctrl+F` / `Ctrl+Shift+F` |
-| Go to page | `Ctrl+Shift+N` |
-| Actual size / Fit width / Whole page | `Ctrl+1` / `Ctrl+2` / `Ctrl+0` |
-| Full screen | `Ctrl+L` |
-| Print | `Ctrl+P` |
-| Undo / Redo | `Ctrl+Z` / `Ctrl+Shift+Z` |
+**Decisions that apply to every Local app:**
 
-Every command and its shortcut is listed in the `Ctrl+K` palette.
+- **Local files, no account.** The apps open and save files on your disk. Nothing needs a login or a
+  server of ours.
+- **Rust only, including the UI.** One toolchain, memory safety by default, and no native libraries
+  to install. The UI is [egui](https://github.com/emilk/egui) on wgpu.
+- **One repository per app, self-contained.** Each app vendors what it builds with (our forks of
+  egui and winit, the shared crates), so a release depends only on the repository and crates.io.
+  Shared code (updater, AI panel, MCP server, icons) has one source and is mirrored into each app
+  with a hash check.
+- **Forks with selective sync.** Most apps start from an open-source Rust app. The fork is ours; the
+  upstream is a source of fixes, not of direction.
+- **Dependencies are governed.** A dependency is added only with its license and source checked, and
+  every app's inventory is kept in one place. No git dependencies, no pre-built binaries.
+- **AI is optional and yours.** No model or key ships with the apps. You bring a provider (cloud or
+  local); the app sends only what you ask it to.
+- **Agents can use the apps.** Every app exposes its commands over MCP, so an AI agent can operate it
+  the way a person does.
+- **Windows and Linux.** That is what we use and test. Other systems may build, but are not published.
+
+**Made with AI agents.** Most of the code in these apps is written by AI coding agents (Claude Code
+and OpenCode), working from a written plan and reviewed by the maintainer. Every change has to pass
+the same local checks (format, lints, tests, layer rules, license audit) and the CI on Windows and
+Linux before it is released. We say this so you can judge the code with that in mind: report what is
+wrong, and it gets fixed the same way.
 
 ## Build from source
 
-You need Rust 1.95 or newer.
+Rust 1.95 or newer.
 
 ```sh
 git clone https://github.com/Anon5T4R/local-pdf
 cd local-pdf
 cargo run --release -p localpdf     # the app
-cargo xtask models                  # optional: the OCR models
-cargo xtask ci                      # the full local check: format, lints, tests, layers, licenses
+cargo xtask models                  # optional: OCR models
+cargo xtask ci                      # all local checks
 ```
 
-Low on disk? See [docs/development.md](docs/development.md) for the `low-disk` profile.
+Low on disk: see the `low-disk` profile in [docs/development.md](docs/development.md).
 
-## Part of the Local suite
+## Keyboard shortcuts
 
-Local PDF is one of a family of desktop apps with the same promise: your files stay on your
-computer, and the app works without an account.
+`Ctrl+K` lists every command with its shortcut. The common ones: `Ctrl+O` open, `Ctrl+S` save,
+`Ctrl+Shift+S` save as, `Ctrl+F` find, `Ctrl+Shift+N` go to page, `Ctrl+1` / `Ctrl+2` / `Ctrl+0`
+actual size / fit width / whole page, `Ctrl+L` full screen, `Ctrl+P` print, `Ctrl+Z` /
+`Ctrl+Shift+Z` undo / redo.
+
+## The Local apps
+
 [Local Word](https://github.com/Anon5T4R/local-office) ·
 [Local Sheets](https://github.com/Anon5T4R/local-sheets) ·
 [Local Slides](https://github.com/Anon5T4R/local-slides) ·
@@ -191,11 +183,8 @@ computer, and the app works without an account.
 
 ## License and credits
 
-Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your option. Required
-notices are in [NOTICE](NOTICE).
-
-Local PDF is an independent fork of [pdfcraft](https://github.com/storytold/pdfcraft); the original
-authors' credits are kept in [ATTRIBUTION.md](ATTRIBUTION.md), together with every bundled font, icon,
-model and image and its license. Release builds embed the Japanese fonts of
-[craft-fonts](https://github.com/storytold/craft-fonts/blob/main/ATTRIBUTION.md) (SIL Open Font
-License 1.1).
+MIT or Apache-2.0, at your option ([LICENSE-MIT](LICENSE-MIT), [LICENSE-APACHE](LICENSE-APACHE),
+[NOTICE](NOTICE)). The original PdfCraft authors' credits, and every bundled font, icon, model and
+image with its license, are in [ATTRIBUTION.md](ATTRIBUTION.md). Release builds embed the Japanese
+fonts of [craft-fonts](https://github.com/storytold/craft-fonts/blob/main/ATTRIBUTION.md) (SIL Open
+Font License 1.1).
