@@ -1,37 +1,35 @@
-# Local PDF — estado e fila
+# Local PDF — state and queue
 
-Fork independente do pdfcraft (ArtCraft), rebrandado para a suíte Local. Versão e release notes:
-`cargo xtask version`, tags e GitHub Releases. Onde cada coisa mora: `AGENTS.md`.
+Independent fork of pdfcraft (ArtCraft), rebranded for the Local suite. Version and release notes:
+`cargo xtask version`, tags and GitHub Releases. Where everything lives: `AGENTS.md`.
 
-## O que está pronto
+## What is ready
 
-- **Ler e navegar**: abrir PDF (inclusive protegido por senha), busca, painéis (comentários,
-  marcadores, páginas, formulários, camadas, anexos, assinaturas, acessibilidade, tags), modos de
-  exibição (uma página, contínuo, duas páginas) e impressão direta no desktop (`craft-print`).
-- **Editar**: texto existente e figuras na página, mover/duplicar vários objetos, redigir, marcar
-  com carimbo, marca d'água, cabeçalho/rodapé e fundo; organizar páginas (inserir, extrair,
-  dividir, combinar, girar).
-- **Formulários**: AcroForm completo (preencher, achatar, exportar/importar XFDF) e XFA 3.3
-  estático e dinâmico (`crates/xfa`); JavaScript de formulário por um subconjunto próprio
-  (`crates/js`).
-- **Documento**: assinatura digital, comparação entre arquivos, otimização/compactação, OCR,
-  exportar imagens/texto, PDF/A, auditoria de acessibilidade e de pré-impressão.
-- **Agente nativo**: `localpdf-cli mcp` (headless, `crates/automation`) e `mcp --connect` no app
-  aberto, servido pelo `craft-mcp` (`docs/mcp.md`, `docs/cli-batch.md`).
-- **Casca no padrão da suíte**: barra de modo com abas (All tools, Edit, Convert, E-Sign), painel de
-  IA, paleta, temas Automático/Claro/Escuro, cartão de atualização do `craft-update`.
+- **Read and navigate**: open PDFs (including password-protected), search, panels (comments,
+  bookmarks, pages, forms, layers, attachments, signatures, accessibility, tags), view modes (single
+  page, continuous, two pages) and direct printing on the desktop (`craft-print`).
+- **Edit**: existing text and figures on the page, move/duplicate several objects, redact, stamp,
+  watermark, header/footer and background; organize pages (insert, extract, split, combine, rotate).
+- **Forms**: full AcroForm (fill, flatten, export/import XFDF) and static and dynamic XFA 3.3
+  (`crates/xfa`); form JavaScript through a homegrown subset (`crates/js`).
+- **Document**: digital signature, file comparison, optimization/compression, OCR, export
+  images/text, PDF/A, accessibility and prepress audits.
+- **Agent-native**: `localpdf-cli mcp` (headless, `crates/automation`) and `mcp --connect` in the
+  open app, served by `craft-mcp` (`docs/mcp.md`, `docs/cli-batch.md`).
+- **Suite-standard shell**: mode bar with tabs (All tools, Edit, Convert, E-Sign), AI panel,
+  palette, Automatic/Light/Dark themes, update card from `craft-update`.
 
-## O que falta
+## What is missing
 
-Na ordem em que dói no uso diário (levantado em 2026-10, e desde então corrigido por partes):
+In the order it hurts daily use (surveyed 2026-10, and fixed in parts since then):
 
-1. **Fidelidade em PDFs difíceis**: quem lê a especificação toda é `crates/cos`/`crates/render`;
-   páginas com construções raras (fontes Type 3 malformadas, cores não suportadas, estruturas
-   danificadas) ainda divergem do Acrobat e não há comparação página a página automatizada.
-2. **XFA**: cobertura dos formulários reais ainda incompleta (`crates/xfa`).
-3. **JavaScript de documento**: o subconjunto de `crates/js` não cobre todas as APIs do Acrobat.
-4. **Interface espelhada (RTL)** e os catálogos de tradução ainda incompletos em alguns idiomas.
-5. **Plataformas**: este fork publica Windows e Linux; macOS, BSD e Flatpak não são publicados.
+1. **Fidelity on hard PDFs**: what reads the whole specification is `crates/cos`/`crates/render`;
+   pages with rare constructions (malformed Type 3 fonts, unsupported colors, broken structures)
+   still diverge from Acrobat and there is no automated page-by-page comparison.
+2. **XFA**: coverage of real forms is still incomplete (`crates/xfa`).
+3. **Document JavaScript**: the subset in `crates/js` does not cover all of Acrobat's APIs.
+4. **Mirrored interface (RTL)** and the translation catalogs still incomplete in some languages.
+5. **Platforms**: this fork publishes Windows and Linux; macOS, BSD and Flatpak are not published.
 
-Itens de release, CI e gate local: `AGENTS.md` (§ Regras, § Build) e `docs/git-protocol.md` do
-dev-notes. Decisões do sync com o upstream: `docs/UPSTREAM-SYNC.md`.
+Release, CI and local gate items: `AGENTS.md` (§ Regras, § Build) and `docs/git-protocol.md` in the
+dev-notes. Upstream sync decisions: `docs/UPSTREAM-SYNC.md`.

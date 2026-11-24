@@ -1,42 +1,50 @@
-# Sincronização com o upstream
+# Upstream sync
 
-Porta/rebrand da suíte Local: o main é nosso, o upstream é fonte de mudanças candidatas e nada entra sem revisão. Regras gerais em `docs/planos/licoes-de-porta.md` (dev-notes).
+The Local suite's port/rebrand: main is ours, the upstream is a source of candidate changes and
+nothing enters without review. General rules in `docs/planos/licoes-de-porta.md` (dev-notes).
 
 ## Base
 
 - Upstream: `storytold/pdfcraft`, commit **64e0868b** (`feat(ui): menus from craft-menu, native on
-  macOS (#4752)`, 2026-10-26). A árvore partiu desse commit no fork (`f8e52c5`, 26/out), sem
-  histórico.
-- Prova (conferida em 2026-11-21 no clone raso de `C:\Dev\storytold\pdfcraft`): carregamos a mudança
-  de `64e0868b` — 8 dos 9 arquivos testáveis de `01b696df2..64e0868b` batem (ex.:
-  `crates/ui-egui/tests/it/editing.rs`; o nono é `Cargo.toml`, que é nosso) — e **nenhum** dos 46
-  arquivos testáveis dos 11 commits seguintes do `main` entrou. O primeiro filho, `d28d047a9` (split
-  do engine), não está: `crates/engine/src/tests.rs` aqui ainda importa só `super::*`, sem
-  `super::document::is_placeholder_title`/`super::edit::check_permission`.
-- Os hashes citados no `ROADMAP.md` (`99941daa`, `33c14e07`, `a6bc63a`) vêm das entradas herdadas do
-  upstream (rebases internos deles); o `merge-base` dos três é `33c14e07` (10/out) e não diz nada
-  sobre a nossa base — a base é 16 dias depois, no `main` de 26/out.
-- Fork: `Styx-Studios/Local-PDF`, versão própria na linha `0.14.x`.
-- Nada é lido de `C:\Dev\storytold` em build, teste ou release; a pasta é só referência local para a
-  skill `sync-upstream`.
+  macOS (#4752)`, 2026-10-26). The tree started from that commit in the fork (`f8e52c5`, Oct 26),
+  with no history.
+- Proof (checked 2026-11-21 against the shallow clone at `C:\Dev\storytold\pdfcraft`): we carry the
+  change from `64e0868b` — 8 of the 9 testable files of `01b696df2..64e0868b` match (e.g.
+  `crates/ui-egui/tests/it/editing.rs`; the ninth is `Cargo.toml`, which is ours) — and **none** of
+  the 46 testable files from the 11 following commits on `main` entered. The first child,
+  `d28d047a9` (the engine split), is not here: `crates/engine/src/tests.rs` still imports only
+  `super::*`, without `super::document::is_placeholder_title`/`super::edit::check_permission`.
+- The hashes cited in `ROADMAP.md` (`99941daa`, `33c14e07`, `a6bc63a`) come from entries inherited
+  from the upstream (their internal rebases); the `merge-base` of the three is `33c14e07` (Oct 10)
+  and says nothing about our base — the base is 16 days later, on the `main` of Oct 26.
+- Fork: `Styx-Studios/Local-PDF`, own version on the `0.14.x` line.
+- Nothing is read from `C:\Dev\storytold` in build, test or release; the folder is only a local
+  reference for the `sync-upstream` skill.
 
-## Vendorizado
+## Vendored
 
-Fork de upstream que este app vendoriza e cujo sync este documento cobre; os demais forks vendored
-(`craft-libs`, `egui`, `winit`, `local-ai`) têm o rev no `AGENTS.md`.
+An upstream fork this app vendors and whose sync this document covers; the other vendored forks
+(`craft-libs`, `egui`, `winit`, `local-ai`) have their rev in `AGENTS.md`.
 
-| Crate | Upstream | Rev | O que entrou |
+| Crate | Upstream | Rev | What entered |
 |-------|----------|-----|--------------|
-| `libs/winprint.rs` | `storytold/winprint.rs` | `f084d35` (2026-11-21) | job de PDF por stream (`17f5f1e`, `b334ebb`, `03a4fb6`, `800a6f9`), página renderizada na resolução do job (`6f3012d`), fábrica Direct2D multi-thread (`f256775`), ticket XML (`2390a37`, `cbffb07`), `PrintTicket::from_dev_mode` e `PrinterDevice::is_xps_driver` sem uso por ora (`8ae097e`, `bc06a7c`) e o teardown das portas de arquivo dos testes (`f084d35`) |
+| `libs/winprint.rs` | `storytold/winprint.rs` | `f084d35` (2026-11-21) | PDF job by stream (`17f5f1e`, `b334ebb`, `03a4fb6`, `800a6f9`), page rendered at the job's resolution (`6f3012d`), multi-thread Direct2D factory (`f256775`), XML ticket (`2390a37`, `cbffb07`), `PrintTicket::from_dev_mode` and `PrinterDevice::is_xps_driver` unused for now (`8ae097e`, `bc06a7c`) and the teardown of the tests' file ports (`f084d35`) |
 
-Ficaram de fora: os commits de CI, StepSecurity e Harden-Runner do upstream.
+Left out: the upstream's CI, StepSecurity and Harden-Runner commits, and `6758393` (makes the
+PDFium download's build-dependencies optional behind the `pdfium` feature), which only touches
+build's `Cargo.toml`/`build.rs` — the `build.rs` here is still the one from `5f80b9b`.
 
-`6758393` (build-dependencies do download do PDFium opcionais atrás da feature `pdfium`, com o código do
-`build.rs` num módulo sob a mesma feature) entrou à parte do rev acima. O app usa o `winprint` com
-`default-features = false`; `reqwest`, `sigstore-*` e `aws-lc-sys` deixaram de ser compilados.
+## Vendored craft-update: the suite's permanent fork (outside the sync)
 
-## craft-update vendored: fork permanente da suíte (fora do sync)
+`libs/craft-libs/crates/update` is **out of scope** for this upstream sync. It is our crate, hosted
+in the Local suite's `craft-libs`, and a **conscious permanent fork** of the upstream
+`craft-update` — unified across the 10 apps on 2026-11-13, with a diff of thousands of lines
+against `storytold/craft-libs/crates/update` (MSI context/migrate, launcher pins, `offers_update`,
+`desktop_register`, single app catalog). No sync diff fits it.
 
-`libs/craft-libs/crates/update` está **fora do escopo** deste sync com o upstream. É um crate nosso, hospedado no `craft-libs` da suíte Local, e um **fork permanente consciente** do `craft-update` upstream — unificado nos 10 apps em 2026-11-13, com um diff de milhares de linhas contra `storytold/craft-libs/crates/update` (MSI context/migrate, pins do launcher, `offers_update`, `desktop_register`, catálogo único de apps). Nenhum diff de sync encaixa nele.
-
-Bugfix e feature vão **direto na fonte única** — repo `Styx-Studios/local-libs` (crate `crates/update`) — e daí são replicados para os apps pelo script de sincronização (`sync.ps1 -Mode push`, guarda de hash ×10; a cópia vendored aqui é espelho). Nunca edite a cópia local diretamente: o próximo sync sobrescreve. Contribuições ao upstream só via **Issue/PR manual**, em inglês, quando o problema também existir lá - mesma política do `UPSTREAM-CONTRIBUTIONS.md` do local-office. O restante do `craft-libs` segue o fluxo normal deste documento.
+Bugfix and feature go **straight into the single source** — repo `Styx-Studios/local-libs` (crate
+`crates/update`) — and from there are replicated to the apps by the sync script (`sync.ps1 -Mode
+push`, ×10 hash guard; the copy vendored here is a mirror). Never edit the local copy directly: the
+next sync overwrites it. Upstream contributions only through a **manual Issue/PR**, in English,
+when the problem also exists there — the same policy as local-office's `UPSTREAM-CONTRIBUTIONS.md`.
+The rest of `craft-libs` follows the normal flow of this document.
