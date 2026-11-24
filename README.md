@@ -82,6 +82,11 @@ same way, and follow our own priorities: Windows and Linux first, files that sta
 your own key, and agents able to drive every app. A fork lets us decide that without asking the
 upstream to change direction.
 
+We also wanted "written in Rust" to hold for everything the app runs, not only the PDF engine. In
+the upstream apps the updater's TLS runs on `ring`, which is partly C and assembly, and `aws-lc`
+(C) is in their dependency tree. Here the updater and every other network path use pure-Rust
+cryptography (RustCrypto), and neither library is in the program you install.
+
 **What changed here:**
 
 - Name, icon and app identifiers.
@@ -89,7 +94,7 @@ upstream to change direction.
   themes, the AI panel, and the update card.
 - Our own updater, which checks minisign signatures, and our own release pipeline (Windows and
   Linux packages).
-- TLS for the updater moved to a pure-Rust provider.
+- TLS moved from `ring` to a pure-Rust provider (RustCrypto).
 - The web (WebAssembly) build was removed; macOS and FreeBSD are not published.
 - Live automation of the open app goes through `craft-mcp`, shared by every Local app.
 
