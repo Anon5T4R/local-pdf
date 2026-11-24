@@ -9,8 +9,13 @@ pub struct App {
     pub name: &'static str,
     /// What it's for, in a few words (English). Written into the menu entries installers add.
     pub tagline: &'static str,
-    /// GitHub `owner/repo`. Releases are only ever downloaded from this repository.
+    /// GitHub `owner/repo`. Releases are only ever downloaded from this repository (or a former one).
     pub repo: &'static str,
+    /// Earlier `owner/repo` names of the repository (a rename or a move to another owner). GitHub
+    /// redirects them, but the releases then list downloads under the current name, and a copy
+    /// installed before the rename knows only the old one: each is queried when the current
+    /// repository has no releases, and its downloads are accepted like the current repository's.
+    pub former_repos: &'static [&'static str],
     /// Older names its release assets may carry (PdfCraft shipped as PrintCraft until 0.2.1).
     pub former_ids: &'static [&'static str],
     /// Older display names its installers registered (PdfCraft's MSI said PrintCraft until 0.2.1).
@@ -37,13 +42,14 @@ pub const DEVELOPER: &str = "Anon5T4R";
 pub const UPSTREAM_PUBLISHER: &str = "Learning Machines LLC";
 
 impl App {
-    /// An app with no former names and no icon.
+    /// An app with no former names or repositories and no icon.
     pub const fn new(id: &'static str, name: &'static str, tagline: &'static str, repo: &'static str) -> Self {
         Self {
             id,
             name,
             tagline,
             repo,
+            former_repos: &[],
             former_ids: &[],
             former_names: &[],
             icon_png: None,
@@ -59,10 +65,12 @@ impl App {
     /// `Info.plist` carries.
     pub fn bundle_id(&self) -> String {
         match self.id {
-            "localpaint" => "com.localpaint.app".into(),
+            // The renamed apps (Local Paint -> Raster, Local Obsidian -> Notebook) keep the packaging id
+            // they shipped with, so an installed copy is still the same app to the system.
+            "localpaint" | "localraster" => "com.localpaint.app".into(),
             "localphoto" => "com.localphoto.app".into(),
-            "localobsidian" => "com.localobsidian.app".into(),
-            "localmind" => "com.localmind.app".into(),
+            "localobsidian" | "localnotebook" => "com.localobsidian.app".into(),
+            "localmind" | "localmindmap" => "com.localmind.app".into(),
             _ => format!("ai.storyteller.{}", self.id),
         }
     }
@@ -114,9 +122,12 @@ mod tests {
     fn the_suites_own_apps_use_their_packaging_bundle_ids() {
         for (id, bundle) in [
             ("localpaint", "com.localpaint.app"),
+            ("localraster", "com.localpaint.app"),
             ("localphoto", "com.localphoto.app"),
             ("localobsidian", "com.localobsidian.app"),
+            ("localnotebook", "com.localobsidian.app"),
             ("localmind", "com.localmind.app"),
+            ("localmindmap", "com.localmind.app"),
         ] {
             let app = App::new(id, id, "", "");
             assert_eq!(app.bundle_id(), bundle);

@@ -99,11 +99,14 @@ pub fn safe_release_html_url(repo: &str, url: &str) -> Option<String> {
     if !safe_web_link(url) {
         return None;
     }
-    let releases = format!("https://github.com/{repo}/releases");
-    if url == releases {
+    // The app's current repository or a former one: a renamed repository's releases name the new one.
+    let rest = repo_aliases(repo).into_iter().find_map(|r| {
+        let releases = format!("https://github.com/{r}/releases");
+        (url == releases).then_some("").or_else(|| url.strip_prefix(&releases))
+    })?;
+    if rest.is_empty() {
         return Some(url.to_string());
     }
-    let rest = url.strip_prefix(&releases)?;
     let path = rest.strip_prefix('/')?;
     if path.is_empty() || path.contains(['?', '#', '\\']) {
         return None;
@@ -116,9 +119,36 @@ pub fn safe_release_html_url(repo: &str, url: &str) -> Option<String> {
     Some(url.to_string())
 }
 
-/// The prefix every download of `repo` must start with.
+/// The repositories that count as `repo`: itself first, then the former repositories of the suite
+/// app that has `repo` as its current or a former one (a renamed repository's releases list
+/// download URLs under the new name, while installs that predate the rename know only the old).
+/// A repository no suite app owns stands alone. This is the one place that decides it.
+pub fn repo_aliases(repo: &str) -> Vec<&str> {
+    let mut all = vec![repo];
+    if let Some(app) = crate::suite::SUITE.iter().find(|a| a.repo == repo || a.former_repos.contains(&repo)) {
+        for r in std::iter::once(app.repo).chain(app.former_repos.iter().copied()) {
+            if !all.contains(&r) {
+                all.push(r);
+            }
+        }
+    }
+    all
+}
+
+/// The prefix a download of exactly `repo` must start with.
 pub fn download_prefix(repo: &str) -> String {
     format!("https://github.com/{repo}/releases/download/")
+}
+
+/// Every prefix a download of the app owning `repo` may start with: [`download_prefix`] of each of
+/// [`repo_aliases`], and nothing else.
+pub fn download_prefixes(repo: &str) -> Vec<String> {
+    repo_aliases(repo).into_iter().map(download_prefix).collect()
+}
+
+/// Whether `url` is a download (see [`download_url_under`]) from the app's repository or a former one.
+pub fn download_url_of(url: &str, repo: &str) -> bool {
+    download_prefixes(repo).iter().any(|prefix| download_url_under(url, prefix))
 }
 
 /// Whether `url` is a download that truly belongs to `repo`.
@@ -200,14 +230,13 @@ fn release_from_value(v: &serde_json::Value, repo: &str) -> Result<Release, Stri
     let tag = v["tag_name"].as_str().filter(|t| !t.is_empty() && t.len() <= 64).ok_or("no release found")?.to_string();
     let releases = format!("https://github.com/{repo}/releases");
     let html_url = v["html_url"].as_str().and_then(|u| safe_release_html_url(repo, u)).unwrap_or_else(|| releases.clone());
-    let prefix = download_prefix(repo);
     let assets = v["assets"]
         .as_array()
         .map(|list| {
             list.iter()
                 .filter_map(|a| {
                     let name = a["name"].as_str().filter(|n| valid_file_name(n))?.to_string();
-                    let url = a["browser_download_url"].as_str().filter(|u| download_url_under(u, &prefix))?.to_string();
+                    let url = a["browser_download_url"].as_str().filter(|u| download_url_of(u, repo))?.to_string();
                     let sha256 = a["digest"].as_str().and_then(|d| d.strip_prefix("sha256:")).filter(|h| is_hex64(h)).map(str::to_ascii_lowercase);
                     Some(Asset { name, size: a["size"].as_u64().unwrap_or(0), url, sha256 })
                 })
@@ -249,7 +278,7 @@ pub fn release_from_sums(repo: &str, tag: &str, sums: &[(String, String)]) -> Re
 
 /// The tag in a `https://github.com/<repo>/releases/tag/<tag>` redirect target.
 pub fn tag_from_redirect(location: &str, repo: &str) -> Option<String> {
-    let rest = location.strip_prefix(&format!("https://github.com/{repo}/releases/tag/"))?;
+    let rest = repo_aliases(repo).into_iter().find_map(|r| location.strip_prefix(&format!("https://github.com/{r}/releases/tag/")))?;
     (!rest.is_empty() && rest.len() <= 64 && rest.bytes().all(|b| b.is_ascii_alphanumeric() || b"._-+".contains(&b))).then(|| rest.to_string())
 }
 
@@ -440,5 +469,94 @@ mod tests {
             assert!(!valid_file_name(bad), "{bad:?}");
         }
         assert!(valid_file_name("photocraft-0.5.0-linux-x86_64.AppImage"));
+    }
+
+    const NEW: &str = "Styx-Studios/Local-Writer";
+    const OLD: &str = "Anon5T4R/local-office";
+
+    fn asset_at(repo: &str) -> String {
+        format!("https://github.com/{repo}/releases/download/v1.0.0/localwriter-1.0.0-windows-x64.msi")
+    }
+
+    fn assets_of(json_url: &str, repo: &str) -> usize {
+        parse_github_release(&api_json(json_url), repo).unwrap().assets.len()
+    }
+
+    #[test]
+    fn a_renamed_repository_accepts_downloads_under_either_name() {
+        assert_eq!(repo_aliases(NEW), [NEW, OLD]);
+        assert_eq!(repo_aliases(OLD), [OLD, NEW]);
+        // The release JSON names the new repository; an install that queried the old one takes it too.
+        for queried in [NEW, OLD] {
+            assert_eq!(assets_of(&asset_at(NEW), queried), 1, "queried {queried}");
+            assert_eq!(assets_of(&asset_at(OLD), queried), 1, "queried {queried}");
+        }
+        // A repository that is not the app's still is refused, whichever of its names was queried.
+        for queried in [NEW, OLD] {
+            assert_eq!(assets_of(&asset_at("Anon5T4R/Local-Other"), queried), 0);
+            assert_eq!(assets_of(&asset_at("evil/local-office"), queried), 0);
+        }
+        // An app without former repositories stands alone.
+        assert_eq!(repo_aliases(REPO), [REPO]);
+        assert_eq!(repo_aliases("nobody/unknown"), ["nobody/unknown"]);
+    }
+
+    #[test]
+    fn a_former_repository_keeps_every_download_safety_rule() {
+        for url in [
+            "https://github.com/Anon5T4R/local-office/releases/download/../../../../attacker/repo/releases/download/v9/x.msi",
+            "https://github.com/Anon5T4R/local-office/releases/download/v1/../../../attacker/repo/x.msi",
+            "https://github.com/Anon5T4R/local-office/releases/download/./v1/x.msi",
+            "https://github.com/Anon5T4R/local-office/releases/download/v1/sub/x.msi",
+            "https://github.com/Anon5T4R/local-office/releases/download/v1%2f..%2fx.msi",
+            "https://github.com/Anon5T4R/local-office/releases/download/v1/x%2fy.msi",
+            "https://github.com/Anon5T4R/local-office/releases/download/v1/x.msi?a=1",
+            "https://github.com/Anon5T4R/local-office2/releases/download/v1/x.msi",
+            "http://github.com/Anon5T4R/local-office/releases/download/v1/x.msi",
+        ] {
+            assert!(!download_url_of(url, NEW), "{url}");
+            assert!(!download_url_of(url, OLD), "{url}");
+        }
+        assert!(download_url_of(&asset_at(OLD), NEW));
+    }
+
+    #[test]
+    fn the_release_page_may_be_under_a_former_repository() {
+        for repo in [NEW, OLD] {
+            for page in [
+                "https://github.com/Styx-Studios/Local-Writer/releases/tag/v1.0.0",
+                "https://github.com/Anon5T4R/local-office/releases/tag/v1.0.0",
+                "https://github.com/Anon5T4R/local-office/releases",
+            ] {
+                assert_eq!(safe_release_html_url(repo, page).as_deref(), Some(page), "{repo}: {page}");
+            }
+            for bad in [
+                "https://github.com/Anon5T4R/local-office/releases/../../attacker/repo/releases/tag/v1",
+                "https://github.com/Anon5T4R/local-office/releases/tag/v1%2f..%2f..",
+                "https://github.com/Anon5T4R/local-office/releasesx",
+                "https://github.com/Anon5T4R/Local-Other/releases/tag/v1.0.0",
+            ] {
+                assert!(safe_release_html_url(repo, bad).is_none(), "{repo}: {bad}");
+            }
+        }
+        let json = r#"{"tag_name":"v1.0.0","html_url":"https://github.com/Anon5T4R/local-office/releases/tag/v1.0.0","assets":[]}"#;
+        assert_eq!(parse_github_release(json, NEW).unwrap().html_url, "https://github.com/Anon5T4R/local-office/releases/tag/v1.0.0");
+    }
+
+    #[test]
+    fn redirects_and_sums_follow_the_former_repository_too() {
+        // `github.com/<old>/releases/latest` redirects to the new name.
+        for queried in [NEW, OLD] {
+            assert_eq!(tag_from_redirect("https://github.com/Styx-Studios/Local-Writer/releases/tag/v1.0.0", queried).as_deref(), Some("v1.0.0"));
+            assert_eq!(tag_from_redirect("https://github.com/Anon5T4R/local-office/releases/tag/v1.0.0", queried).as_deref(), Some("v1.0.0"));
+            assert_eq!(tag_from_redirect("https://github.com/Anon5T4R/Local-Other/releases/tag/v1.0.0", queried), None);
+        }
+        // Queried under the old name, the sums release lists old-name URLs, which are accepted.
+        let sums = [(HASH.to_string(), "localwriter-1.0.0-windows-x64.msi".to_string())];
+        let r = release_from_sums(OLD, "v1.0.0", &sums);
+        assert_eq!(r.assets[0].url, asset_at(OLD));
+        assert_eq!(r.assets[1].url, "https://github.com/Anon5T4R/local-office/releases/download/v1.0.0/SHA256SUMS.txt");
+        assert_eq!(r.html_url, "https://github.com/Anon5T4R/local-office/releases/tag/v1.0.0");
+        assert!(r.assets.iter().all(|a| download_url_of(&a.url, NEW)));
     }
 }

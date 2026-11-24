@@ -954,7 +954,7 @@ mod tests {
     #[test]
     fn every_suite_app_that_is_ours_carries_its_own_icon() {
         let mut seen = 0;
-        for app in crate::suite::SUITE.iter().filter(|app| app.repo.starts_with("Anon5T4R/")) {
+        for app in crate::suite::SUITE.iter().filter(|app| app.repo.starts_with("Styx-Studios/")) {
             let png = app.icon_png.unwrap_or_else(|| panic!("{} carries no icon", app.name));
             let image = decode_icon(png, ICON_MAX_SIDE).unwrap_or_else(|| panic!("{}'s icon does not decode", app.name));
             assert_eq!(image.size, [128, 128], "{}'s icon is not 128 px", app.name);

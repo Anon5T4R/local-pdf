@@ -146,8 +146,37 @@ fn retry_at(reset: Option<i64>, now: i64) -> i64 {
     reset.unwrap_or(now + 15 * 60).min(now + MAX_LIMIT_WAIT)
 }
 
-impl ReleaseSource for GitHubSource {
-    fn latest(&self, repo: &str, prereleases: bool) -> Answer {
+/// The former repositories of `repo`'s app (see [`release::repo_aliases`] without `repo` itself).
+fn former_repos(repo: &str) -> Vec<&str> {
+    release::repo_aliases(repo).into_iter().filter(|r| *r != repo).collect()
+}
+
+/// Asks `ask` about `repo` first and, only when that repository says it has no releases, about
+/// each former repository in order, answering with the first that has releases (or fails). A rate limit or any
+/// other failed answer (including one served from the cache) ends the search: those say nothing
+/// about the repository, so another one is not asked.
+fn latest_or_former(repo: &str, ask: impl Fn(&str) -> Answer) -> Answer {
+    let answer = ask(repo);
+    if !is_no_releases(&answer) {
+        return answer;
+    }
+    for former in former_repos(repo) {
+        let older = ask(former);
+        if !is_no_releases(&older) {
+            return older;
+        }
+    }
+    answer
+}
+
+/// An answer that says the repository has no releases (not one that fell back to the cache).
+fn is_no_releases(answer: &Answer) -> bool {
+    answer.latest == LatestRelease::None && answer.source != Source::Cache
+}
+
+impl GitHubSource {
+    /// [`ReleaseSource::latest`] for exactly `repo`, former repositories not consulted.
+    fn latest_of(&self, repo: &str, prereleases: bool) -> Answer {
         let api_error = if self.limited() {
             None
         } else {
@@ -164,17 +193,18 @@ impl ReleaseSource for GitHubSource {
             }
         }
         let why = api_error.unwrap_or_else(|| "GitHub's request limit was reached".into());
-        match self.cached(repo, prereleases) {
+        match self.cached_of(repo, prereleases) {
             Some(latest) => Answer { latest, source: Source::Cache },
             None => Answer { latest: LatestRelease::Failed(why), source: Source::Cache },
         }
     }
 
-    fn cached(&self, repo: &str, prereleases: bool) -> Option<LatestRelease> {
+    /// The last answer saved for exactly `repo`.
+    fn cached_of(&self, repo: &str, prereleases: bool) -> Option<LatestRelease> {
         self.entry(repo, prereleases).map(|e| e.release.map_or(LatestRelease::None, LatestRelease::Found))
     }
 
-    fn newest_tag(&self, repo: &str) -> Option<String> {
+    fn newest_tag_of(&self, repo: &str) -> Option<String> {
         match self.http.redirect_target(&format!("https://github.com/{repo}/releases/latest")) {
             Ok(location) => location.as_deref().and_then(|l| release::tag_from_redirect(l, repo)),
             Err(e) => {
@@ -182,6 +212,30 @@ impl ReleaseSource for GitHubSource {
                 None
             }
         }
+    }
+}
+
+impl ReleaseSource for GitHubSource {
+    fn latest(&self, repo: &str, prereleases: bool) -> Answer {
+        latest_or_former(repo, |r| self.latest_of(r, prereleases))
+    }
+
+    /// The current repository's saved answer, or the first former repository's that has a release.
+    fn cached(&self, repo: &str, prereleases: bool) -> Option<LatestRelease> {
+        let mut first = self.cached_of(repo, prereleases);
+        if matches!(first, Some(LatestRelease::None) | None) {
+            for former in former_repos(repo) {
+                match self.cached_of(former, prereleases) {
+                    found @ Some(LatestRelease::Found(_)) => return found,
+                    other => first = first.or(other),
+                }
+            }
+        }
+        first
+    }
+
+    fn newest_tag(&self, repo: &str) -> Option<String> {
+        std::iter::once(repo).chain(former_repos(repo)).find_map(|r| self.newest_tag_of(r))
     }
 
     fn rate_limited_until(&self) -> Option<i64> {
@@ -219,5 +273,90 @@ mod tests {
     fn a_reset_past_the_quota_window_cannot_stop_the_api_for_good() {
         assert_eq!(retry_at(Some(i64::MAX), 1_000), 1_000 + 60 * 60);
         assert_eq!(retry_at(Some(99_999_999_999), 1_000), 1_000 + 60 * 60);
+    }
+
+    const NEW: &str = "Styx-Studios/Local-Writer";
+    const OLD: &str = "Anon5T4R/local-office";
+
+    fn release_tagged(tag: &str) -> Release {
+        Release { tag: tag.into(), ..Release::default() }
+    }
+
+    fn said(latest: LatestRelease, source: Source) -> Answer {
+        Answer { latest, source }
+    }
+
+    /// Looks `repo` up as the repositories answer (by name); returns the answer and who was asked, in order.
+    fn lookup(answers: &[(&str, Answer)]) -> (Answer, Vec<String>) {
+        let asked = std::cell::RefCell::new(Vec::new());
+        let answer = latest_or_former(NEW, |repo| {
+            asked.borrow_mut().push(repo.to_string());
+            answers.iter().find(|(r, _)| *r == repo).map(|(_, a)| a.clone()).expect("an unexpected repository was asked")
+        });
+        (answer, asked.into_inner())
+    }
+
+    #[test]
+    fn a_repository_with_releases_is_the_only_one_asked() {
+        let (answer, asked) = lookup(&[(NEW, said(LatestRelease::Found(release_tagged("v2")), Source::GitHubApi))]);
+        assert_eq!(answer.latest, LatestRelease::Found(release_tagged("v2")));
+        assert_eq!(asked, [NEW]);
+    }
+
+    #[test]
+    fn a_repository_without_releases_falls_back_to_the_former_one() {
+        let (answer, asked) = lookup(&[
+            (NEW, said(LatestRelease::None, Source::GitHubApi)),
+            (OLD, said(LatestRelease::Found(release_tagged("v1")), Source::GitHubApi)),
+        ]);
+        assert_eq!(answer.latest, LatestRelease::Found(release_tagged("v1")));
+        assert_eq!(asked, [NEW, OLD]);
+        // The quota-free route's "no release" counts the same.
+        let (answer, _) = lookup(&[
+            (NEW, said(LatestRelease::None, Source::GitHubPages)),
+            (OLD, said(LatestRelease::Found(release_tagged("v1")), Source::GitHubPages)),
+        ]);
+        assert!(matches!(answer.latest, LatestRelease::Found(_)));
+    }
+
+    #[test]
+    fn nothing_anywhere_is_no_releases() {
+        let (answer, asked) = lookup(&[(NEW, said(LatestRelease::None, Source::GitHubApi)), (OLD, said(LatestRelease::None, Source::GitHubApi))]);
+        assert_eq!(answer.latest, LatestRelease::None);
+        assert_eq!(asked, [NEW, OLD]);
+    }
+
+    #[test]
+    fn a_rate_limit_or_an_error_does_not_fall_back() {
+        // A limit or error reaches the caller as an answer from the cache (see `latest_of`): even a
+        // cached "no releases" says nothing about the repository.
+        for refused in [
+            said(LatestRelease::Failed("GitHub's request limit was reached".into()), Source::Cache),
+            said(LatestRelease::None, Source::Cache),
+            said(LatestRelease::Found(release_tagged("v0")), Source::Cache),
+        ] {
+            let (answer, asked) = lookup(&[(NEW, refused.clone())]);
+            assert_eq!(answer.latest, refused.latest);
+            assert_eq!(asked, [NEW]);
+        }
+    }
+
+    #[test]
+    fn a_former_repository_that_fails_ends_the_search_with_its_error() {
+        let failed = said(LatestRelease::Failed("offline".into()), Source::Cache);
+        let (answer, asked) = lookup(&[(NEW, said(LatestRelease::None, Source::GitHubApi)), (OLD, failed.clone())]);
+        assert_eq!(answer.latest, failed.latest);
+        assert_eq!(asked, [NEW, OLD]);
+    }
+
+    #[test]
+    fn an_app_without_former_repositories_is_asked_once() {
+        let asked = std::cell::RefCell::new(Vec::new());
+        let answer = latest_or_former("storytold/photocraft", |repo| {
+            asked.borrow_mut().push(repo.to_string());
+            said(LatestRelease::None, Source::GitHubApi)
+        });
+        assert_eq!(answer.latest, LatestRelease::None);
+        assert_eq!(asked.into_inner(), ["storytold/photocraft"]);
     }
 }

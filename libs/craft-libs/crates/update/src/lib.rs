@@ -59,12 +59,21 @@ pub use dialog::{CheckResultDialog, CheckResultResponse, StartupPrompt, StartupP
 pub fn check_for_update(app: &App, http: &Http, current_version: &str) -> Result<Option<Release>, String> {
     let version = self_update::current_version(app, current_version).map(|v| v.to_string());
     let current_version = version.as_deref().unwrap_or(current_version);
-    let url = format!("https://api.github.com/repos/{}/releases?per_page=30", app.repo);
-    match http.get_api(&url, None)? {
-        crate::http::Fetched::Body { text, .. } => offered_release(&text, app.repo, current_version),
-        crate::http::Fetched::RateLimited { .. } => Err("GitHub's request limit was reached".into()),
-        crate::http::Fetched::NotModified | crate::http::Fetched::NotFound => Ok(None),
+    // The current repository first; each former one only when that says it has no releases (a rate
+    // limit or an error ends the search).
+    for repo in std::iter::once(app.repo).chain(app.former_repos.iter().copied()) {
+        let url = format!("https://api.github.com/repos/{repo}/releases?per_page=30");
+        match http.get_api(&url, None)? {
+            crate::http::Fetched::Body { text, .. } => {
+                if crate::release::parse_github_release_list(&text, repo, false)?.is_some() {
+                    return offered_release(&text, repo, current_version);
+                }
+            }
+            crate::http::Fetched::RateLimited { .. } => return Err("GitHub's request limit was reached".into()),
+            crate::http::Fetched::NotModified | crate::http::Fetched::NotFound => {}
+        }
     }
+    Ok(None)
 }
 
 /// Unix seconds now.
