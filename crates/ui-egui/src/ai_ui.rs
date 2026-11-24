@@ -587,12 +587,12 @@ mod tests {
     }
 
     /// The key the ignored real-model test uses: the environment first, then the suite's
-    /// `ai-test.env` on the Desktop (never printed).
+    /// `ai-test.env` in `%USERPROFILE%\Segredos` (never printed).
     fn real_key() -> String {
         if let Some(key) = std::env::var("OPENROUTER_API_KEY").ok().filter(|key| !key.trim().is_empty()) {
             return key.trim().to_string();
         }
-        let path = std::path::PathBuf::from(std::env::var("USERPROFILE").unwrap_or_default()).join("Desktop").join("ai-test.env");
+        let path = std::path::PathBuf::from(std::env::var("USERPROFILE").unwrap_or_default()).join("Segredos").join("ai-test.env");
         let text = std::fs::read_to_string(&path).unwrap_or_else(|error| panic!("OPENROUTER_API_KEY or {}: {error}", path.display()));
         for line in text.lines() {
             let line = line.trim();
