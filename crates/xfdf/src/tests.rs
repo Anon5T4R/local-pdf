@@ -1022,7 +1022,7 @@ fn vertices(doc: &Document) -> Vec<(String, Vec<f64>)> {
     out
 }
 
-/// Anon5T4R/local-pdf#809: XFDF exchange dropped polygon and polyline vertices, so the
+/// Styx-Studios/Local-PDF#809: XFDF exchange dropped polygon and polyline vertices, so the
 /// imported comments had no shape (and no appearance).
 #[test]
 fn xfdf_keeps_polygon_and_polyline_vertices() {

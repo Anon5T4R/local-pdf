@@ -16,7 +16,7 @@ Porta/rebrand da suíte Local: o main é nosso, o upstream é fonte de mudanças
 - Os hashes citados no `ROADMAP.md` (`99941daa`, `33c14e07`, `a6bc63a`) vêm das entradas herdadas do
   upstream (rebases internos deles); o `merge-base` dos três é `33c14e07` (10/out) e não diz nada
   sobre a nossa base — a base é 16 dias depois, no `main` de 26/out.
-- Fork: `Anon5T4R/local-pdf`, versão própria na linha `0.14.x`.
+- Fork: `Styx-Studios/Local-PDF`, versão própria na linha `0.14.x`.
 - Nada é lido de `C:\Dev\storytold` em build, teste ou release; a pasta é só referência local para a
   skill `sync-upstream`.
 
@@ -39,4 +39,4 @@ Ficaram de fora: os commits de CI, StepSecurity e Harden-Runner do upstream.
 
 `libs/craft-libs/crates/update` está **fora do escopo** deste sync com o upstream. É um crate nosso, hospedado no `craft-libs` da suíte Local, e um **fork permanente consciente** do `craft-update` upstream — unificado nos 10 apps em 2026-11-13, com um diff de milhares de linhas contra `storytold/craft-libs/crates/update` (MSI context/migrate, pins do launcher, `offers_update`, `desktop_register`, catálogo único de apps). Nenhum diff de sync encaixa nele.
 
-Bugfix e feature vão **direto na fonte única** — repo `Anon5T4R/local-libs` (crate `crates/update`) — e daí são replicados para os apps pelo script de sincronização (`sync.ps1 -Mode push`, guarda de hash ×10; a cópia vendored aqui é espelho). Nunca edite a cópia local diretamente: o próximo sync sobrescreve. Contribuições ao upstream só via **Issue/PR manual**, em inglês, quando o problema também existir lá - mesma política do `UPSTREAM-CONTRIBUTIONS.md` do local-office. O restante do `craft-libs` segue o fluxo normal deste documento.
+Bugfix e feature vão **direto na fonte única** — repo `Styx-Studios/local-libs` (crate `crates/update`) — e daí são replicados para os apps pelo script de sincronização (`sync.ps1 -Mode push`, guarda de hash ×10; a cópia vendored aqui é espelho). Nunca edite a cópia local diretamente: o próximo sync sobrescreve. Contribuições ao upstream só via **Issue/PR manual**, em inglês, quando o problema também existir lá - mesma política do `UPSTREAM-CONTRIBUTIONS.md` do local-office. O restante do `craft-libs` segue o fluxo normal deste documento.

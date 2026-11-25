@@ -4,13 +4,13 @@
 use icu_properties::props::Script;
 use std::path::{Path, PathBuf};
 
-/// The app's name in Local URLs (`github.com/Anon5T4R/local-pdf`).
+/// The app's name in Local URLs (`github.com/Styx-Studios/Local-PDF`, without the hyphen).
 pub const APP: &str = "localpdf";
 
-pub const DISCORD: &str = "https://github.com/Anon5T4R/local-pdf/discussions";
-pub const WEBSITE: &str = "https://github.com/Anon5T4R";
-pub const APP_PAGE: &str = "https://github.com/Anon5T4R/local-pdf";
-pub const GITHUB: &str = "https://github.com/Anon5T4R/local-pdf";
+pub const DISCORD: &str = "https://github.com/Styx-Studios/Local-PDF/discussions";
+pub const WEBSITE: &str = "https://github.com/Styx-Studios";
+pub const APP_PAGE: &str = "https://github.com/Styx-Studios/Local-PDF";
+pub const GITHUB: &str = "https://github.com/Styx-Studios/Local-PDF";
 
 /// A link and the registry command that opens it.
 #[derive(Clone, Copy, Debug)]
@@ -562,7 +562,7 @@ mod tests {
     #[test]
     fn urls_follow_the_local_scheme() {
         assert_eq!(super::APP_PAGE, super::GITHUB);
-        assert_eq!(super::GITHUB, format!("https://github.com/Anon5T4R/{}", "local-pdf"));
+        assert_eq!(super::GITHUB, format!("https://github.com/Styx-Studios/{}", "Local-PDF"));
         for l in super::LINKS {
             assert!(l.url.starts_with("https://"), "{}", l.url);
             assert!(crate::commands::command(l.command).is_some(), "{} is a registered command", l.command);

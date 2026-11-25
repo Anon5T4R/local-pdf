@@ -12,7 +12,7 @@ rust-version = "1.95"
 # Nada da suíte vai ao crates.io: dependência `path` sem versão numa crate publicável reprova o
 # `cargo-deny` (wildcards). Cada membro herda com `publish.workspace = true`.
 publish = false
-repository = "https://github.com/Anon5T4R/local-pdf"
+repository = "https://github.com/Styx-Studios/Local-PDF"
 
 [workspace.dependencies]
 # Shared frontend components; engines remain independent of egui.

@@ -44,7 +44,7 @@ This change does not alter persistence of other print preferences.
 Headless `doc_print` defaults are unchanged.
 
 `spool` delegates discovery, driver options, preferences and submission to
-[`craft-print`](https://github.com/Anon5T4R/local-deps/tree/main/crates/print).
+[`craft-print`](https://github.com/Styx-Studios/local-deps/tree/main/crates/print).
 Local PDF retains page selection, imposition, annotations and print-permission checks.
 CUPS jobs stream through stdin with `fit-to-page=false`. Windows renders sheets through
 `Windows.Data.Pdf` and spools them at their physical PDF size with per-page paper and

@@ -11,7 +11,7 @@ fn release(tag: &str) -> craft_update::Release {
     craft_update::Release {
         tag: tag.to_string(),
         version: craft_update::parse_version(tag),
-        html_url: format!("https://github.com/Anon5T4R/local-pdf/releases/tag/{tag}"),
+        html_url: format!("https://github.com/Styx-Studios/Local-PDF/releases/tag/{tag}"),
         ..Default::default()
     }
 }

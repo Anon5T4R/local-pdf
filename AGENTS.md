@@ -5,7 +5,7 @@ Rust puro + egui. Sem conta, sem telemetria, sem dependência de servidores de t
 
 ## Regras
 - **Dependências:** toda dep que entra/sai/atualiza exige `Cargo.lock` commitado +
-  linha no inventário do repo `Anon5T4R/local-deps` (regra completa em
+  linha no inventário do repo `Styx-Studios/local-deps` (regra completa em
   `local-deps/WORKFLOW.md`). PR sem isso não mergea.
 - **Sem fontes git:** nenhuma dependência pode apontar para `git+` (o CI valida).
   Tudo vem do crates.io (pinado pelo lock) ou de `libs/`/`vendor/` (vendored).

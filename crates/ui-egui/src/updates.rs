@@ -7,7 +7,7 @@ use egui::{Align, Layout};
 use crate::{LocalPDFApp, theme, widgets};
 
 /// Where every LocalPDF release is listed.
-pub const RELEASES_PAGE: &str = "https://github.com/Anon5T4R/local-pdf/releases";
+pub const RELEASES_PAGE: &str = "https://github.com/Styx-Studios/Local-PDF/releases";
 
 /// Stands in for the network in tests.
 pub type UpdateSource = CheckSource;

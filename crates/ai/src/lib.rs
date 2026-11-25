@@ -11,7 +11,7 @@ pub use local_ai::{Job, Msg, PROVIDERS, Provider, provider};
 
 /// LocalPDF's identity in the shared `local-ai` crate: config folder and keychain service both
 /// `"LocalPDF"`, and the OpenRouter referer points at this repository.
-pub const APP: local_ai::App = local_ai::App { id: "LocalPDF", url: "https://github.com/Anon5T4R/local-pdf" };
+pub const APP: local_ai::App = local_ai::App { id: "LocalPDF", url: "https://github.com/Styx-Studios/Local-PDF" };
 
 /// A saved connection: which provider, its base URL (editable for `custom` or when a gateway
 /// moves) and the model the picker last chose. The API key is never in this file. Same shape

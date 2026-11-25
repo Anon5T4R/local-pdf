@@ -19,10 +19,10 @@
   <launchable type="desktop-id">com.local.localpdf.desktop</launchable>
   <icon type="stock">com.local.localpdf</icon>
   <!-- Only url types known to appstream 0.15 (Ubuntu 22.04, where CI validates): no vcs-browser. -->
-  <url type="homepage">https://github.com/Anon5T4R/apps/localpdf</url>
-  <url type="bugtracker">https://github.com/Anon5T4R/local-pdf/issues</url>
-  <url type="help">https://github.com/Anon5T4R/local-pdf</url>
-  <url type="contact">https://github.com/Anon5T4R/local-pdf/discussions</url>
+  <url type="homepage">https://github.com/Styx-Studios/Local-PDF</url>
+  <url type="bugtracker">https://github.com/Styx-Studios/Local-PDF/issues</url>
+  <url type="help">https://github.com/Styx-Studios/Local-PDF</url>
+  <url type="contact">https://github.com/Styx-Studios/Local-PDF/discussions</url>
   <categories>
     <category>Office</category>
     <category>Viewer</category>
@@ -36,7 +36,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>A PDF open with its threaded comments</caption>
-      <image>https://raw.githubusercontent.com/Anon5T4R/local-pdf/main/docs/images/localpdf-viewer.png</image>
+      <image>https://raw.githubusercontent.com/Styx-Studios/Local-PDF/main/docs/images/localpdf-viewer.png</image>
     </screenshot>
   </screenshots>
   <branding>

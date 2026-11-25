@@ -1,5 +1,5 @@
 //! Times and hashes the renders the desktop canvas asks for on page 1 of a PDF, for before and after
-//! comparisons (Anon5T4R/local-pdf#623, item 8).
+//! comparisons (Styx-Studios/Local-PDF#623, item 8).
 //!
 //! Each round queues one scenario's requests on a render pool with the engine's worker count and
 //! prints the time to the first answer, the wall time, the slowest request, the text glyph count,

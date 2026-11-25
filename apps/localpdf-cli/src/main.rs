@@ -89,7 +89,7 @@ localpdf-cli run    --script steps.json [--root DIR] [--report]
     "\
 localpdf-cli ui     --control FILE <method> [key=value …] [--out shot.png]
                                                            drive a running app started with --control FILE
-help and feedback: https://github.com/Anon5T4R/local-pdf/discussions"
+help and feedback: https://github.com/Styx-Studios/Local-PDF/discussions"
 );
 
 fn main() -> ExitCode {

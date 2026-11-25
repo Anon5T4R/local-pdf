@@ -16,7 +16,7 @@ section: graphics
 priority: optional
 maintainer: ${LOCALPDF_MAINTAINER}
 vendor: Anon5T4R
-homepage: https://github.com/Anon5T4R/local-pdf
+homepage: https://github.com/Styx-Studios/Local-PDF
 license: MIT OR Apache-2.0
 description: |-
   Open-source, native PDF workbench: read, comment, fill and sign forms,
