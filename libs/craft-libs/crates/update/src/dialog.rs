@@ -840,7 +840,7 @@ mod tests {
         let mut prompt = prompt_for(false);
         frame(&ctx, &mut prompt, Vec::new());
         let (_, output) = frame(&ctx, &mut prompt, Vec::new());
-        assert!(painted_text(&output).lines().any(|l| l == "by Anon5T4R"), "every suite app is Anon5T4R's by default");
+        assert!(painted_text(&output).lines().any(|l| l == "by Styx Studios"), "every suite app is Styx Studios' by default");
 
         // An app can name its own developer.
         static OTHER: std::sync::OnceLock<App> = std::sync::OnceLock::new();
@@ -850,7 +850,7 @@ mod tests {
         frame(&ctx, &mut prompt, Vec::new());
         let (_, output) = frame(&ctx, &mut prompt, Vec::new());
         let painted = painted_text(&output);
-        assert!(painted.lines().any(|l| l == "by Someone Else") && !painted.contains("by Anon5T4R"), "{painted}");
+        assert!(painted.lines().any(|l| l == "by Someone Else") && !painted.contains("by Styx Studios"), "{painted}");
     }
 
     #[test]

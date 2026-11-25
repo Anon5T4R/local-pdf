@@ -78,7 +78,7 @@ pub const LOCALSLIDES: App = App {
 };
 pub const LOCALSHEETS: App = App {
     former_repos: &["Anon5T4R/local-sheets"],
-    developer: "Anon5T4R",
+    developer: "Styx Studios",
     publisher: "Anon5T4R",
     icon_png: Some(include_bytes!("../assets/icons/localsheets.png")),
     ..App::new("localsheets", "Local Sheets", "Spreadsheets and data", "Styx-Studios/Local-Sheets")
